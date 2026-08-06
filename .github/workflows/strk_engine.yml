@@ -180,13 +180,20 @@ jobs:
           STRICT_NO_TRADING: 'true'
         run: python3 scripts/detectors/decision_layer.py || true
       
+      # ─── SHADOW VOTERS (HYPOTHESIS, не влияет на решение) ───
+      - name: Close shadow forecasts (postmortem)
+        run: python3 scripts/detectors/shadow_postmortem.py || true
+      
+      - name: Write new shadow votes (72h & 7d)
+        run: python3 scripts/detectors/shadow_voter.py || true
+      
       - name: Send unified digest
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/daily_digest.py
       
-      - name: Commit updated seeds + history logs + liquidity shift cache
+      - name: Commit updated seeds + history logs + liquidity shift cache + shadow votes
         run: |
           mkdir -p data/history data/cache
           if git diff --quiet \
@@ -194,6 +201,7 @@ jobs:
               data/history/cohort_snapshots.jsonl \
               data/history/forecasts.jsonl \
               data/history/postmortems.jsonl \
+              data/history/shadow_votes.jsonl \
               data/cache/native_staking_state.json \
               data/cache/liquidity_shift.json \
               data/cache/ekubo_flow.json \
@@ -207,12 +215,13 @@ jobs:
                     data/history/cohort_snapshots.jsonl \
                     data/history/forecasts.jsonl \
                     data/history/postmortems.jsonl \
+                    data/history/shadow_votes.jsonl \
                     data/cache/native_staking_state.json \
                     data/cache/liquidity_shift.json \
                     data/cache/ekubo_flow.json \
                     data/cache/endur_lst_flow.json \
                     data/cache/native_staking_flow.json 2>/dev/null || true
-            git commit -m "chore: history logs + liquidity shift update [skip ci]" || echo "Nothing to commit"
+            git commit -m "chore: history logs + liquidity shift + shadow votes update [skip ci]" || echo "Nothing to commit"
             git push || echo "Push failed"
           fi
       
@@ -254,6 +263,7 @@ jobs:
             data/cache/ekubo_flow.json
             data/cache/endur_lst_flow.json
             data/cache/native_staking_flow.json
+            data/history/shadow_votes.jsonl
             data/dashboards/
             data/graphs/
             data/reports/
@@ -387,8 +397,4 @@ jobs:
         run: python3 scripts/scenario_engine.py
       
       - name: Weekly cohort analysis (behavior trends + reversals)
-<<<<<<< Updated upstream
         run: python3 scripts/weekly_cohort_analysis.py || true
-=======
-        run: python3 scripts/weekly_cohort_analysis.py || true
->>>>>>> Stashed changes
