@@ -1,532 +1,549 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-FULL INSTALLER — STRK ENGINE LIQUIDITY SHIFT + DAY MODE + TELEGRAM COMMANDS
-Запустите один раз из корня репозитория.
-Все новые файлы и патчи встроены.
+telegram_bot_commands.py — Управляй watchlist прямо из Telegram
+
+Poll-based Telegram bot handler. Каждый запуск читает новые сообщения
+своему боту и обрабатывает команды.
+
+Команды:
+    /list                       — показать всех отслеживаемых
+    /list <category>            — по категории
+    /add <addr> <name>          — в watchlist (простой формат)
+    /add <addr> <name> <cat>    — в конкретную категорию
+    /remove <addr_or_name>      — убрать из watchlist
+    /note <addr> <text>         — добавить заметку
+    /search <text>              — найти по подстроке
+    /status                     — сколько адресов в каждой категории
+    /help                       — эта справка
+
+Usage:
+    python3 telegram_bot_commands.py --once     # разовая проверка
+    python3 telegram_bot_commands.py            # loop (не для GitHub Actions)
+
+Deploy: запускается каждые 30 минут через GitHub Actions вместе с whale monitor.
 """
+
 import os
 import sys
 import json
-import shutil
-from pathlib import Path
-from datetime import datetime
-
-REPO_ROOT = Path(__file__).parent.absolute()
-
-# ------------------------------------------------------------
-# 1. СОЗДАНИЕ НОВЫХ ФАЙЛОВ (если их нет)
-# ------------------------------------------------------------
-NEW_FILES = {
-    "scripts/collectors/ekubo_flow.py": '''#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-\"\"\"Ekubo L2 pools — TVL delta 24h/7d по 11 STRK-парам\"\"\"
-import json, urllib.request, sys, logging
-from datetime import datetime, timezone
-from pathlib import Path
-
-API_URL = "https://prod-api.ekubo.org/overview/pairs"
-CACHE_DIR = Path(__file__).parent.parent.parent / "data" / "cache"
-OUTPUT = CACHE_DIR / "ekubo_flow.json"
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger("ekubo_flow")
-
-def fetch_pairs():
-    try:
-        req = urllib.request.Request(API_URL, headers={"User-Agent": "STRK-Engine/1.0"})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return json.loads(r.read())
-    except Exception as e:
-        logger.error(f"Ekubo API error: {e}")
-        return None
-
-def main():
-    data = fetch_pairs()
-    if not data:
-        sys.exit(1)
-    strk_pairs = [p for p in data if p.get("token0_symbol") == "STRK" or p.get("token1_symbol") == "STRK"]
-    net_delta = 0.0
-    result = {"timestamp": datetime.now(timezone.utc).isoformat(), "pairs": []}
-    for p in strk_pairs:
-        try:
-            tvl0 = float(p.get("tvl0_delta_24h", 0))
-            # tvl0_delta_24h уже в STRK (по токену0)
-            net_delta += tvl0
-            result["pairs"].append({
-                "pair": f"{p.get('token0_symbol')}/{p.get('token1_symbol')}",
-                "tvl0_delta_24h": tvl0,
-                "tvl0": float(p.get("tvl0", 0)),
-                "tvl1": float(p.get("tvl1", 0))
-            })
-        except Exception:
-            continue
-    result["net_delta_24h_strk"] = round(net_delta, 0)
-    result["direction"] = "LP_ADDING" if net_delta > 50_000 else "LP_REMOVING" if net_delta < -50_000 else "STABLE"
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-    logger.info(f"Saved: {OUTPUT}  net_delta={net_delta:.0f} STRK")
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
-''',
-
-    "scripts/collectors/endur_lst_flow.py": '''#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-\"\"\"Endur xSTRK — net mint/redeem в STRK-count\"\"\"
-import json, urllib.request, sys, logging
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-
-DEFILLAMA_URL = "https://api.llama.fi/protocol/endur"
-CACHE_DIR = Path(__file__).parent.parent.parent / "data" / "cache"
-OUTPUT = CACHE_DIR / "endur_lst_flow.json"
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger("endur_lst_flow")
-
-def fetch_data():
-    try:
-        req = urllib.request.Request(DEFILLAMA_URL, headers={"User-Agent": "STRK-Engine/1.0"})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return json.loads(r.read())
-    except Exception as e:
-        logger.error(f"DefiLlama error: {e}")
-        return None
-
-def main():
-    data = fetch_data()
-    if not data:
-        sys.exit(1)
-    tvl_by_token = data.get("tokens", {}).get("STRK", {})
-    if not tvl_by_token:
-        logger.error("No STRK token data in Endur response")
-        sys.exit(1)
-    # Ищем количество STRK (не USD)
-    # У DefiLlama есть поле 'tokens' -> 'STRK' -> 'tvl' в USD, но нам нужно количество.
-    # Используем текущий TVL USD / price = количество.
-    # Однако лучше использовать исторические данные по количеству, но ограничимся текущим.
-    # В ответе API есть также 'chainTvls' но не даёт count.
-    # Для дельты используем изменение TVL USD / цену, но это искажает цену.
-    # Поэтому мы используем только текущий snapshot, а историю будем хранить локально.
-    # Чтобы не усложнять, пока выводим только текущее значение и помечаем, что нужно state.
-    # В реальности для delta нужен state cache, как в native_staking_flow.
-    # Пока заглушка:
-    result = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "tvl_strk": tvl_by_token.get("tvl", 0),
-        "status": "OK",
-        "note": "delta computed from DefiLlama tokens count (needs state cache for 24h)",
-        "delta_24h_strk": 0,  # будет вычисляться после кеширования
-        "delta_7d_strk": 0
-    }
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-    logger.info(f"Saved: {OUTPUT}")
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
-''',
-
-    "scripts/collectors/native_staking_flow.py": '''#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-\"\"\"Native staking — total_stake via RPC + state cache\"\"\"
-import json, sys, logging, os
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
+import time
+import logging
+import argparse
+import urllib.request
+import urllib.parse
 import subprocess
-
-CACHE_DIR = Path(__file__).parent.parent.parent / "data" / "cache"
-OUTPUT = CACHE_DIR / "native_staking_flow.json"
-STATE_FILE = CACHE_DIR / "native_staking_state.json"
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger("native_staking")
-
-STAKING_CONTRACT = "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7"
-RPC_URL = "https://starknet-mainnet.g.alchemy.com/v2/your-key"  # заменить на реальный
-
-def call_rpc(method, params):
-    # Заглушка, т.к. нужны ключи. Возвращаем NOT_CHECKED.
-    return None
-
-def main():
-    # Проверяем наличие staking_selector в окружении
-    selector = os.environ.get("staking_selector") or os.environ.get("STAKING_SELECTOR")
-    if not selector:
-        logger.warning("staking_selector not in env → NOT_CHECKED")
-        result = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "status": "NOT_CHECKED",
-            "reason": "staking_selector not in config.env or env",
-            "total_stake": None,
-            "delta_24h": None,
-            "delta_7d": None
-        }
-        CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        with open(OUTPUT, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2, ensure_ascii=False)
-        logger.info(f"Saved NOT_CHECKED: {OUTPUT}")
-        return 0
-    # Здесь реальный вызов RPC
-    # ...
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
-''',
-
-    "scripts/detectors/liquidity_shift.py": '''#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-\"\"\"Aggregate liquidity shift from Ekubo + Endur + native staking\"\"\"
-import json, sys, logging
 from datetime import datetime, timezone
 from pathlib import Path
 
-CACHE_DIR = Path(__file__).parent.parent.parent / "data" / "cache"
-OUTPUT = CACHE_DIR / "liquidity_shift.json"
+SCRIPT_DIR = Path(__file__).parent.parent
+CACHE_DIR = SCRIPT_DIR / 'data' / 'cache'
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+STATE_FILE = CACHE_DIR / 'telegram_bot_state.json'
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger("liquidity_shift")
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '')
 
-def load_json(name):
-    f = CACHE_DIR / name
-    if not f.exists():
-        return None
-    with open(f, "r", encoding="utf-8") as fp:
-        return json.load(fp)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+logger = logging.getLogger('tg_bot')
 
-def main():
-    ekubo = load_json("ekubo_flow.json")
-    endur = load_json("endur_lst_flow.json")
-    native = load_json("native_staking_flow.json")
 
-    lp_delta = ekubo.get("net_delta_24h_strk", 0) if ekubo else 0
-    stake_delta = 0
-    if endur and endur.get("status") == "OK":
-        stake_delta += endur.get("delta_24h_strk", 0)
-    if native and native.get("status") == "OK":
-        stake_delta += native.get("delta_24h", 0)
-
-    if lp_delta > 100_000 and stake_delta > 50_000:
-        direction = "LP_ADDING_STAKE_INFLOW"
-    elif lp_delta > 100_000 and stake_delta < -50_000:
-        direction = "LP_ADDING_STAKE_OUTFLOW"
-    elif lp_delta < -100_000 and stake_delta > 50_000:
-        direction = "LP_REMOVING_STAKE_INFLOW"
-    elif lp_delta < -100_000 and stake_delta < -50_000:
-        direction = "LP_REMOVING_STAKE_OUTFLOW"
-    elif lp_delta > 100_000:
-        direction = "LP_ADDING"
-    elif lp_delta < -100_000:
-        direction = "LP_REMOVING"
-    elif stake_delta > 50_000:
-        direction = "STAKE_INFLOW"
-    elif stake_delta < -50_000:
-        direction = "STAKE_OUTFLOW"
-    else:
-        direction = "STABLE"
-
-    result = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "lp_delta_24h_strk": lp_delta,
-        "stake_delta_24h_strk": stake_delta,
-        "overall_direction": direction,
-        "description": {
-            "LP_REMOVING": "Отток из DEX-пулов — тонкие книги ближе.",
-            "LP_ADDING": "Приток в DEX-пулы — глубина растёт.",
-            "STAKE_INFLOW": "Увеличение стейкинга — долгосрочный холд.",
-            "STAKE_OUTFLOW": "Выход из стейкинга — готовятся к продаже.",
-            "STABLE": "Нет значимых сдвигов.",
-        }.get(direction, direction)
-    }
-    with open(OUTPUT, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-    logger.info(f"Saved: {OUTPUT}  direction={direction}")
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
-''',
-
-    "scripts/day_analysis.py": '''#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-\"\"\"DAY mode — intraday snapshot (levels, range, phase, funding, MC/TVL)\"\"\"
-import json, sys, logging, os
-from datetime import datetime, timezone
-from pathlib import Path
-
-REPO_ROOT = Path(__file__).parent.parent
-CACHE_DIR = REPO_ROOT / "data" / "cache"
-OUTPUT_FILE = REPO_ROOT / "data" / "reports" / "STRK_DAY_latest.html"
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger("day_analysis")
-
-def load_json(name):
-    f = CACHE_DIR / name
-    if not f.exists():
-        return {}
-    with open(f, "r", encoding="utf-8") as fp:
-        return json.load(fp)
-
-def main():
-    price_data = load_json("technical_momentum.json")
-    wyckoff = load_json("wyckoff_phase.json")
-    funding = load_json("funding_signal.json")
-    cexflow = load_json("cex_flow.json")
-
-    price = price_data.get("price", 0)
-    high_7d = price_data.get("high_7d", price * 1.1) if price else price * 1.1
-    low_7d = price_data.get("low_7d", price * 0.9) if price else price * 0.9
-    resistance = [round(high_7d * 0.98, 4), round(high_7d, 4)]
-    support = [round(low_7d, 4), round(low_7d * 1.02, 4)]
-
-    if price and high_7d > low_7d:
-        pos_7d = (price - low_7d) / (high_7d - low_7d) * 100
-    else:
-        pos_7d = 50
-
-    phase = wyckoff.get("phase", "UNKNOWN") if wyckoff else "UNKNOWN"
-    funding_rate = funding.get("funding_rate", 0) if funding else 0
-    btc_cycle = "DOWN"  # заглушка
-
-    # Генерация HTML отчёта (краткого)
-    html = f'''<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>DAY Analysis</title></head>
-<body>
-<h1>📊 DAY — внутридневной анализ</h1>
-<p><b>Цена:</b> ${price:.4f}</p>
-<p><b>7d диапазон:</b> ${low_7d:.4f} – ${high_7d:.4f} (позиция {pos_7d:.1f}%)</p>
-<p><b>Сопротивление:</b> ${resistance[0]:.4f}, ${resistance[1]:.4f}</p>
-<p><b>Поддержка:</b> ${support[0]:.4f}, ${support[1]:.4f}</p>
-<p><b>Фаза (Wyckoff):</b> {phase}</p>
-<p><b>Funding:</b> {funding_rate*100:.2f}%</p>
-<p><b>BTC цикл:</b> {btc_cycle}</p>
-<p><b>MC/TVL:</b> (заглушка)</p>
-<p><i>Это НЕ инвестиционный вердикт, только карта дня.</i></p>
-</body></html>
-'''
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(html)
-    logger.info(f"Saved: {OUTPUT_FILE}")
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
-'''
-}
-
-def create_new_files():
-    for rel_path, content in NEW_FILES.items():
-        full = REPO_ROOT / rel_path
-        if not full.exists():
-            full.parent.mkdir(parents=True, exist_ok=True)
-            with open(full, "w", encoding="utf-8") as f:
-                f.write(content)
-            print(f"[CREATED] {rel_path}")
-        else:
-            print(f"[SKIP] {rel_path} already exists")
-
-# ------------------------------------------------------------
-# 2. ПРИМЕНЕНИЕ ПАТЧЕЙ (встроены)
-# ------------------------------------------------------------
-PATCHES = {
-    "patch_flow_seeds_l2_defi": {
-        "file": REPO_ROOT / "data" / "seeds" / "flow_seeds.json",
-        "add": {
-            "l2_defi": {
-                "_note": "DeFi контракты L2 для отслеживания liquidity shift",
-                "ekubo_core": {
-                    "address": "0x00000005dd3d2f4429af886cd1a3b08289dbcea99a294197e9eb43b0e0325b4b",
-                    "role": "Ekubo Protocol Core (singleton, все STRK-пулы)",
-                    "importance": "critical"
-                },
-                "ekubo_positions": {
-                    "address": "0x02e0af29598b407c8716b17f6d2795eca1b471413fa03fb145a5e33722184067",
-                    "role": "Ekubo Positions NFT-контракт",
-                    "importance": "medium"
-                },
-                "avnu_exchange": {
-                    "address": "0x04270219d365d6b017231b52e92b3fb5d7c8378b05e9abc97724537a80e93b0f",
-                    "role": "AVNU Aggregator Exchange",
-                    "importance": "medium"
-                },
-                "endur_xstrk": {
-                    "address": "0x28d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a",
-                    "role": "Endur xSTRK (Liquid Staking Token)",
-                    "importance": "critical"
-                }
-            }
-        }
-    },
-    "patch_wallet_registry": {
-        "file": REPO_ROOT / "scripts" / "wallet_registry.py",
-        "old": "VALID_CATEGORIES = {",
-        "new": "VALID_CATEGORIES = {\n    'l2_defi',\n    # existing"
-    },
-    "patch_whale_monitor": {
-        "file": REPO_ROOT / "scripts" / "collectors" / "whale_monitor.py",
-        "old": "CATEGORY_TO_TYPE = {",
-        "new": "CATEGORY_TO_TYPE = {\n        'l2_defi': 'DEFI',\n        # existing"
-    },
-    "patch_telegram_bot_commands": {
-        "file": REPO_ROOT / "scripts" / "telegram_bot_commands.py",
-        "old": "def process_commands(update):",
-        "new": '''
-def process_commands(update):
-    # --- ADDED /run, /day, /liq ---
-    # (вставка кода будет ниже)
-'''
-    },
-    "patch_gitignore": {
-        "file": REPO_ROOT / ".gitignore",
-        "old": "data/reports/",
-        "new": "# data/reports/  # теперь коммитим HTML\n!data/reports/*.html"
-    },
-    "patch_workflow_liquidity_shift": {
-        "file": REPO_ROOT / ".github" / "workflows" / "main.yml",
-        "old": "      - name: Also run orchestrator",
-        "new": '''      - name: Compute liquidity shift (Ekubo pools + Endur LST + native staking)
-        env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
-          STRICT_NO_TRADING: 'true'
-        run: |
-          python3 scripts/collectors/ekubo_flow.py || true
-          python3 scripts/collectors/endur_lst_flow.py || true
-          python3 scripts/collectors/native_staking_flow.py || true
-          python3 scripts/detectors/liquidity_shift.py || true
-'''
-    }
-}
-
-def apply_patch(name, patch):
-    file = patch["file"]
-    if not file.exists():
-        print(f"[WARN] {name} target file not found: {file}")
-        return
-    content = file.read_text(encoding="utf-8")
-    if "old" in patch:
-        if patch["old"] not in content:
-            print(f"[SKIP] {name} old pattern not found (already patched?)")
-            return
-        content = content.replace(patch["old"], patch["new"], 1)
-        file.write_text(content, encoding="utf-8")
-        print(f"[PATCHED] {name}")
-    elif "add" in patch:
-        # для JSON добавляем ключ
-        data = json.loads(content)
-        if patch["add"].keys() - data.keys():
-            data.update(patch["add"])
-            file.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-            print(f"[PATCHED] {name} (JSON added)")
-        else:
-            print(f"[SKIP] {name} already has keys")
-    else:
-        print(f"[ERROR] {name} no patch method")
-
-def apply_all_patches():
-    for name, patch in PATCHES.items():
-        apply_patch(name, patch)
-
-# ------------------------------------------------------------
-# 3. ВСТАВКА КОДА В TELEGRAM (более точная)
-# ------------------------------------------------------------
-def patch_telegram_commands():
-    f = REPO_ROOT / "scripts" / "telegram_bot_commands.py"
-    if not f.exists():
-        print("[WARN] telegram_bot_commands.py not found")
-        return
-    content = f.read_text(encoding="utf-8")
-    # Проверим, есть ли уже /run
-    if "/run" in content:
-        print("[SKIP] telegram already has /run")
-        return
-    # Найдём место после обработки /scenario
-    lines = content.splitlines()
-    new_lines = []
-    inserted = False
-    for i, line in enumerate(lines):
-        new_lines.append(line)
-        if not inserted and "elif cmd == '/scenario':" in line:
-            # вставляем новые команды после блока /scenario
-            # Просто добавим перед elif cmd == '/add':
-            # Здесь сложно точно определить, поэтому добавим в конец функции process_command
+def load_state():
+    if STATE_FILE.exists():
+        try:
+            with open(STATE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
             pass
-    # Просто добавим в конец файла перед if __name__ == '__main__':
-    # Но проще добавить в функцию process_commands в раздел elif
-    # Сделаем грубо: найдём место, где обрабатывается /add и вставим перед ним.
-    if "elif cmd == '/add':" in content:
-        # Вставим после блока /scenario или перед /add
-        # Сделаем через замену:
-        marker = "elif cmd == '/add':"
-        if marker in content:
-            new_block = '''
-    elif cmd == '/run':
-        send_message(chat_id, "🚀 Running full RUN report (60-90s)...")
-        # вызов subprocess и отправка отчёта
-        # (реализация как в INSTALL.md)
+    return {'last_update_id': 0}
+
+
+def save_state(state):
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(STATE_FILE, 'w', encoding='utf-8') as f:
+        json.dump(state, f, indent=2)
+
+
+def get_offset_from_telegram():
+    """Fallback: get last processed update_id via Telegram API itself.
+    
+    Telegram's getUpdates with offset=0 returns all unconfirmed messages.
+    We call it with offset=-1 to get just the last message ID, then use
+    that+1 as our real offset. This avoids re-processing on cache miss.
+    """
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates?offset=-1&limit=1&timeout=0"
+    try:
+        with urllib.request.urlopen(url, timeout=15) as resp:
+            data = json.loads(resp.read())
+        if data.get('ok') and data.get('result'):
+            last = data['result'][0]
+            return last['update_id'] + 1
+    except Exception:
         pass
-    elif cmd == '/day':
-        send_message(chat_id, "📊 Building intraday DAY analysis (30-45s)...")
-        pass
-    elif cmd == '/liq':
-        send_message(chat_id, "💧 Running liquidity shift analysis (20-30s)...")
-        pass
-'''
-            # Вставим перед marker
-            content = content.replace(marker, new_block + "\n    " + marker)
-            f.write_text(content, encoding="utf-8")
-            print("[PATCHED] telegram_bot_commands.py (added /run /day /liq)")
+    return 0
+
+
+def api_call(method, params=None):
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}"
+    if params:
+        data = json.dumps(params).encode()
+        req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+    else:
+        req = urllib.request.Request(url)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        logger.error(f"Telegram API error: {e}")
+        return None
+
+
+def send_message(chat_id, text):
+    return api_call('sendMessage', {
+        'chat_id': chat_id,
+        'text': text,
+        'parse_mode': 'HTML',
+    })
+
+
+def get_updates(offset=0):
+    """Get new messages via long-polling with timeout=0 (no wait)."""
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates?offset={offset}&timeout=0"
+    try:
+        with urllib.request.urlopen(url, timeout=15) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        logger.error(f"getUpdates error: {e}")
+        return None
+
+
+def call_registry(args):
+    """Call wallet_registry.py subprocess and return output."""
+    cmd = [sys.executable, str(SCRIPT_DIR / 'scripts' / 'wallet_registry.py')] + args
+    env = os.environ.copy()
+    env['PYTHONUTF8'] = '1'
+    env['PYTHONIOENCODING'] = 'utf-8'
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', timeout=30, env=env)
+        return r.stdout + ('\n' + r.stderr if r.stderr else '')
+    except Exception as e:
+        return f"Error running registry: {e}"
+
+
+HELP_TEXT = """<b>🤖 STRK-GUARD Commands</b>
+
+Робот всё делает сам. Ты можешь только:
+
+<b>/status</b> — что происходит сейчас
+<b>/scenario</b> — сценарии Bull/Base/Bear на неделю
+<b>/cexflow</b> — CEX flow direction анализ
+<b>/queue</b> — кандидаты в очереди на review
+<b>/list</b> — все отслеживаемые wallets
+<b>/add &lt;0xADDR&gt; &lt;name&gt;</b> — вручную добавить
+<b>/remove &lt;name&gt;</b> — вручную удалить
+<b>/help</b> — эта справка
+
+<b>Digest приходит раз в 6 часов автоматически.</b>
+Ты не должна ничего делать между digest'ами.
+
+<b>Scenarios приходят раз в неделю (пятница).</b>
+
+<b>Advanced (по желанию):</b>
+/dashboard 0xADDR — HTML отчёт
+/graph 0xADDR — граф funders/dests
+/search &lt;text&gt; — поиск
+"""
+
+
+def resolve_short_address(short, seeds_snapshot=None):
+    """Resolve 0xabc123... shortcut to full address by searching in known candidates + seeds."""
+    if not short.startswith('0x'):
+        return short
+    short_prefix = short.split('...')[0].lower() if '...' in short else short.lower()
+    
+    # Try full address first (42 chars)
+    if len(short_prefix) == 42:
+        return short_prefix
+    
+    # Search in auto_discovery candidates
+    cand_file = SCRIPT_DIR / 'data' / 'cache' / 'auto_discovery_candidates.json'
+    if cand_file.exists():
+        try:
+            with open(cand_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            for c in data.get('candidates', []):
+                if c['address'].startswith(short_prefix):
+                    return c['address']
+        except Exception:
+            pass
+    
+    # Search in seeds
+    if seeds_snapshot:
+        for cat, cdata in seeds_snapshot.items():
+            if isinstance(cdata, dict):
+                for name, entry in cdata.items():
+                    if isinstance(entry, dict):
+                        a = entry.get('address', '').lower()
+                        if a.startswith(short_prefix):
+                            return a
+    
+    return short_prefix
+
+
+def handle_command(chat_id, text, from_user_id):
+    """Process a single command."""
+    # Only accept from authorized chat
+    if str(chat_id) != str(TELEGRAM_CHAT_ID):
+        logger.warning(f"Ignored message from unauthorized chat {chat_id}")
+        return
+    
+    text = text.strip()
+    if not text.startswith('/'):
+        return
+    
+    parts = text.split()
+    cmd = parts[0].lower().split('@')[0]  # /list@bot -> /list
+    args_ = parts[1:]
+    
+    try:
+        if cmd == '/help' or cmd == '/start':
+            send_message(chat_id, HELP_TEXT)
+        
+        elif cmd == '/list':
+            registry_args = ['list']
+            if args_:
+                registry_args.extend(['--category', args_[0]])
+            output = call_registry(registry_args)
+            # Truncate if too long for Telegram
+            if len(output) > 3800:
+                output = output[:3800] + '\n...(truncated)'
+            send_message(chat_id, f"<pre>{output}</pre>")
+        
+        elif cmd == '/add':
+            if len(args_) < 2:
+                send_message(chat_id, "Usage: /add &lt;address&gt; &lt;name&gt; [category]")
+                return
+            addr, name = args_[0], args_[1]
+            cat = args_[2] if len(args_) > 2 else 'watchlist'
+            output = call_registry(['add', addr, name, cat])
+            send_message(chat_id, f"<pre>{output}</pre>")
+        
+        elif cmd == '/remove':
+            if not args_:
+                send_message(chat_id, "Usage: /remove &lt;address_or_name&gt;")
+                return
+            output = call_registry(['remove', args_[0], '--yes'])
+            send_message(chat_id, f"<pre>{output}</pre>")
+        
+        elif cmd == '/note':
+            if len(args_) < 2:
+                send_message(chat_id, "Usage: /note &lt;address_or_name&gt; &lt;text&gt;")
+                return
+            note_text = ' '.join(args_[1:])
+            output = call_registry(['note', args_[0], note_text])
+            send_message(chat_id, f"<pre>{output}</pre>")
+        
+        elif cmd == '/search':
+            if not args_:
+                send_message(chat_id, "Usage: /search &lt;text&gt;")
+                return
+            output = call_registry(['search', ' '.join(args_)])
+            if len(output) > 3800:
+                output = output[:3800] + '\n...(truncated)'
+            send_message(chat_id, f"<pre>{output}</pre>")
+        
+        elif cmd == '/status':
+            SEEDS_FILE = SCRIPT_DIR / 'data' / 'seeds' / 'flow_seeds.json'
+            with open(SEEDS_FILE, 'r', encoding='utf-8') as f:
+                seeds = json.load(f)
+            
+            SKIP = {'_meta', '_phantoms'}
+            lines = ["<b>📊 Registry Status</b>\n"]
+            total = 0
+            for cat, data in sorted(seeds.items()):
+                if cat in SKIP or not isinstance(data, dict):
+                    continue
+                count = sum(1 for k, v in data.items() 
+                          if not k.startswith('_') and isinstance(v, dict))
+                if count > 0:
+                    lines.append(f"· {cat}: <b>{count}</b>")
+                    total += count
+            lines.append(f"\n<b>Total: {total} wallets</b>")
+            send_message(chat_id, '\n'.join(lines))
+        
+        elif cmd == '/queue':
+            log_file = SCRIPT_DIR / 'data' / 'cache' / 'decision_log.json'
+            if not log_file.exists():
+                send_message(chat_id, "No queue yet.")
+                return
+            try:
+                with open(log_file, 'r', encoding='utf-8') as f:
+                    dlog = json.load(f)
+                queued = dlog.get('queued', [])
+                if not queued:
+                    send_message(chat_id, "Queue empty. Robot handles everything automatically.")
+                    return
+                
+                lines = [f"<b>? Queued for review ({len(queued)})</b>\n"]
+                for q in queued[:10]:
+                    addr = q['address']
+                    pat = q.get('pattern', '?')
+                    bal_m = (q.get('current_balance', 0)) / 1e6
+                    reason = q.get('reason', '')[:60]
+                    lines.append(f"<code>{addr[:12]}...</code>")
+                    lines.append(f"  {pat} · {bal_m:.1f}M · {reason}")
+                    lines.append(f"  /add {addr} name_here (to accept)")
+                    lines.append("")
+                if len(queued) > 10:
+                    lines.append(f"...and {len(queued)-10} more")
+                send_message(chat_id, '\n'.join(lines))
+            except Exception as e:
+                send_message(chat_id, f"Error: {e}")
+        
+        elif cmd == '/discover':
+            send_message(chat_id, "🔍 Scanning for new candidates... (30-60s)")
+            try:
+                cmd_args = [sys.executable, str(SCRIPT_DIR / 'scripts' / 'detectors' / 'auto_discovery.py'), '--hours', '48', '--max', '3']
+                env = os.environ.copy()
+                env['PYTHONUTF8'] = '1'
+                subprocess.run(cmd_args, timeout=180, env=env)
+                send_message(chat_id, "✓ Discovery complete. Check messages above.")
+            except Exception as e:
+                send_message(chat_id, f"Discovery error: {e}")
+        
+        elif cmd == '/accept':
+            if not args_:
+                send_message(chat_id, "Usage: /accept &lt;address&gt; [name]")
+                return
+            addr = resolve_short_address(args_[0])
+            if not addr.startswith('0x') or len(addr) != 42:
+                send_message(chat_id, f"Could not resolve address: {args_[0]}\nUse full 0x address.")
+                return
+            name = args_[1] if len(args_) > 1 else f"discovered_{addr[:8]}"
+            output = call_registry(['add', addr, name, 'watchlist'])
+            
+            # Update discovery state
+            state_file = SCRIPT_DIR / 'data' / 'cache' / 'auto_discovery_state.json'
+            if state_file.exists():
+                try:
+                    with open(state_file, 'r', encoding='utf-8') as f:
+                        st = json.load(f)
+                    st.setdefault('accepted', []).append(addr)
+                    if addr in st.get('proposed', {}):
+                        st['proposed'][addr]['decision'] = 'accepted'
+                    with open(state_file, 'w', encoding='utf-8') as f:
+                        json.dump(st, f, indent=2)
+                except Exception:
+                    pass
+            
+            send_message(chat_id, f"<pre>{output}</pre>\n✓ Added to watchlist as <b>{name}</b>")
+        
+        elif cmd == '/reject':
+            if not args_:
+                send_message(chat_id, "Usage: /reject &lt;address&gt;")
+                return
+            addr = resolve_short_address(args_[0])
+            if not addr.startswith('0x'):
+                send_message(chat_id, f"Invalid address: {args_[0]}")
+                return
+            
+            state_file = SCRIPT_DIR / 'data' / 'cache' / 'auto_discovery_state.json'
+            try:
+                st = {}
+                if state_file.exists():
+                    with open(state_file, 'r', encoding='utf-8') as f:
+                        st = json.load(f)
+                st.setdefault('rejected', []).append(addr)
+                if addr in st.get('proposed', {}):
+                    st['proposed'][addr]['decision'] = 'rejected'
+                with open(state_file, 'w', encoding='utf-8') as f:
+                    json.dump(st, f, indent=2)
+                send_message(chat_id, f"✓ Rejected {addr[:12]}... — won't propose again.")
+            except Exception as e:
+                send_message(chat_id, f"Error: {e}")
+        
+        elif cmd == '/graph':
+            if not args_:
+                # Show watchlist addresses to choose from
+                SEEDS_FILE = SCRIPT_DIR / 'data' / 'seeds' / 'flow_seeds.json'
+                try:
+                    with open(SEEDS_FILE, 'r', encoding='utf-8') as f:
+                        seeds = json.load(f)
+                    lines = ["<b>Which wallet?</b>\n"]
+                    lines.append("Choose one from watchlist:\n")
+                    watchlist = seeds.get('watchlist', {})
+                    for name, entry in watchlist.items():
+                        if not name.startswith('_') and isinstance(entry, dict):
+                            addr = entry.get('address', '')
+                            lines.append(f"<code>/graph {addr}</code>")
+                            lines.append(f"  → {name}\n")
+                    send_message(chat_id, '\n'.join(lines))
+                except Exception:
+                    send_message(chat_id, "Usage: /graph &lt;address&gt;")
+                return
+            addr = resolve_short_address(args_[0])
+            if not addr.startswith('0x') or len(addr) != 42:
+                send_message(chat_id, f"Invalid address")
+                return
+            
+            send_message(chat_id, f"🕸 Building graph for {addr[:12]}... (30s)")
+            try:
+                cmd_args = [sys.executable, str(SCRIPT_DIR / 'scripts' / 'detectors' / 'graph_analysis.py'),
+                            '--address', addr, '--days', '90']
+                env = os.environ.copy()
+                env['PYTHONUTF8'] = '1'
+                subprocess.run(cmd_args, timeout=120, env=env)
+            except Exception as e:
+                send_message(chat_id, f"Graph error: {e}")
+        
+        elif cmd == '/dashboard':
+            if not args_:
+                SEEDS_FILE = SCRIPT_DIR / 'data' / 'seeds' / 'flow_seeds.json'
+                try:
+                    with open(SEEDS_FILE, 'r', encoding='utf-8') as f:
+                        seeds = json.load(f)
+                    lines = ["<b>Which wallet?</b>\n"]
+                    lines.append("Choose one from watchlist:\n")
+                    watchlist = seeds.get('watchlist', {})
+                    for name, entry in watchlist.items():
+                        if not name.startswith('_') and isinstance(entry, dict):
+                            addr = entry.get('address', '')
+                            lines.append(f"<code>/dashboard {addr}</code>")
+                            lines.append(f"  → {name}\n")
+                    send_message(chat_id, '\n'.join(lines))
+                except Exception:
+                    send_message(chat_id, "Usage: /dashboard &lt;address&gt;")
+                return
+            addr = resolve_short_address(args_[0])
+            if not addr.startswith('0x') or len(addr) != 42:
+                send_message(chat_id, f"Invalid address")
+                return
+            
+            send_message(chat_id, f"📊 Building dashboard for {addr[:12]}... (60s)")
+            try:
+                cmd_args = [sys.executable, str(SCRIPT_DIR / 'scripts' / 'detectors' / 'wallet_dashboard.py'), addr]
+                env = os.environ.copy()
+                env['PYTHONUTF8'] = '1'
+                r = subprocess.run(cmd_args, capture_output=True, text=True, encoding='utf-8', timeout=180, env=env)
+                if r.returncode == 0:
+                    lines = [l for l in r.stdout.strip().split('\n') if l.strip()]
+                    if lines and lines[-1].endswith('.html'):
+                        send_message(chat_id, f"✓ Dashboard ready: <code>{Path(lines[-1]).name}</code>\nDownload from GitHub Actions artifacts.")
+                    else:
+                        send_message(chat_id, "✓ Dashboard built (check artifacts)")
+                else:
+                    send_message(chat_id, f"❌ Error: {r.stderr[:200]}")
+            except subprocess.TimeoutExpired:
+                send_message(chat_id, "❌ Timeout building dashboard")
+            except Exception as e:
+                send_message(chat_id, f"❌ Error: {e}")
+        
+        elif cmd == '/scenario':
+            send_message(chat_id, "🎯 Generating scenarios (Bull/Base/Bear)...")
+            try:
+                cmd_args = [sys.executable, str(SCRIPT_DIR / 'scripts' / 'scenario_engine.py')]
+                env = os.environ.copy()
+                env['PYTHONUTF8'] = '1'
+                r = subprocess.run(cmd_args, capture_output=True, text=True, encoding='utf-8', timeout=60, env=env)
+                if r.returncode == 0:
+                    # Scenario engine already sends to Telegram
+                    pass
+                else:
+                    send_message(chat_id, f"❌ Scenario error: {r.stderr[:200]}")
+            except Exception as e:
+                send_message(chat_id, f"❌ Error: {e}")
+        
+        elif cmd == '/cexflow':
+            send_message(chat_id, "🏦 Running CEX flow analysis (30s)...")
+            try:
+                cmd_args = [sys.executable, str(SCRIPT_DIR / 'scripts' / 'detectors' / 'cex_flow.py')]
+                env = os.environ.copy()
+                env['PYTHONUTF8'] = '1'
+                env['ETHERSCAN_API_KEY'] = os.environ.get('ETHERSCAN_API_KEY', '')
+                r = subprocess.run(cmd_args, capture_output=True, text=True, encoding='utf-8', timeout=120, env=env)
+                if r.returncode == 0:
+                    output = r.stdout
+                    # Extract key parts
+                    lines = output.split('\n')
+                    relevant = [l for l in lines if '=== SIGNAL' in l or 'STRONG_' in l or 'MILD_' in l or 
+                                'net:' in l or 'Consecutive' in l]
+                    if relevant:
+                        send_message(chat_id, f"<pre>{chr(10).join(relevant[:15])}</pre>")
+                    else:
+                        send_message(chat_id, "✓ CEX flow updated")
+                else:
+                    send_message(chat_id, f"❌ Error: {r.stderr[:200]}")
+            except Exception as e:
+                send_message(chat_id, f"❌ Error: {e}")
+        
         else:
-            print("[WARN] Could not find '/add' marker in telegram_bot_commands.py")
+            send_message(chat_id, f"Unknown command: {cmd}\nSend /help for list.")
+    
+    except Exception as e:
+        logger.error(f"Command error: {e}")
+        send_message(chat_id, f"Error: {e}")
 
-# ------------------------------------------------------------
-# 4. TEST RUN
-# ------------------------------------------------------------
-def test_run():
-    print("\n=== SMOKE TEST ===")
-    # Вызовем liquidity_shift.py
-    import subprocess
-    result = subprocess.run([sys.executable, "scripts/detectors/liquidity_shift.py"], cwd=REPO_ROOT, capture_output=True, text=True)
-    if result.returncode == 0:
-        print("[OK] liquidity_shift.py ran successfully")
-        with open(REPO_ROOT / "data" / "cache" / "liquidity_shift.json", "r") as f:
-            data = json.load(f)
-            print(f"     Direction: {data.get('overall_direction')}")
-    else:
-        print("[ERROR] liquidity_shift.py failed")
-        print(result.stderr)
 
-    # day_analysis.py
-    result = subprocess.run([sys.executable, "scripts/day_analysis.py"], cwd=REPO_ROOT, capture_output=True, text=True)
-    if result.returncode == 0:
-        print("[OK] day_analysis.py ran successfully")
-    else:
-        print("[ERROR] day_analysis.py failed")
-        print(result.stderr)
+def check_and_process():
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.error("TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set")
+        return 0
+    
+    state = load_state()
+    offset = state.get('last_update_id', 0) + 1
+    
+    # If state file was empty/missing (cache miss on GitHub Actions),
+    # skip old messages instead of replaying them all
+    if offset <= 1:
+        logger.info("Cold start / cache miss - skipping to latest message")
+        offset = get_offset_from_telegram()
+        state['last_update_id'] = max(0, offset - 1)
+        save_state(state)
+        return 0  # skip processing this run to avoid replay
+    
+    updates = get_updates(offset=offset)
+    if not updates or not updates.get('ok'):
+        return 0
+    
+    processed = 0
+    for upd in updates.get('result', []):
+        state['last_update_id'] = upd['update_id']
+        msg = upd.get('message', {})
+        text = msg.get('text', '')
+        chat_id = msg.get('chat', {}).get('id')
+        from_user_id = msg.get('from', {}).get('id')
+        
+        if text and chat_id:
+            logger.info(f"Command from {chat_id}: {text[:50]}")
+            handle_command(chat_id, text, from_user_id)
+            processed += 1
+    
+    save_state(state)
+    logger.info(f"Processed {processed} commands")
+    return processed
 
-# ------------------------------------------------------------
-# MAIN
-# ------------------------------------------------------------
+
 def main():
-    print("="*60)
-    print("STRK ENGINE FULL INSTALLER v1.0")
-    print("="*60)
-    create_new_files()
-    apply_all_patches()
-    patch_telegram_commands()
-    print("\n[INFO] All files created and patches applied.")
-    test_run()
-    print("\n[DONE] Installation complete.")
-    print("Now you can commit and push your repository.")
-    print("Don't forget to set your API keys in config.env and GitHub secrets.")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--once', action='store_true', help='Single check')
+    parser.add_argument('--interval', type=int, default=1800, help='Loop interval seconds')
+    args = parser.parse_args()
+    
+    if args.once:
+        check_and_process()
+        return 0
+    
+    logger.info(f"Telegram bot command handler started (interval={args.interval}s)")
+    while True:
+        try:
+            check_and_process()
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            logger.error(f"Error: {e}")
+        time.sleep(args.interval)
+    return 0
 
-if __name__ == "__main__":
-    main()
+
+if __name__ == '__main__':
+    sys.exit(main())
