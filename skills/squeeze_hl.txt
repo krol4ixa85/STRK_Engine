@@ -1,0 +1,164 @@
+NAME: squeeze_hl
+VERSION: 2.0 · 01.08.2026 · trader_quality_filter добавлен · R75 correction
+STATUS: FILLED · canonical
+
+═══════════════════════════════════════════════════════════════════
+
+НАЗНАЧЕНИЕ:
+
+Модуль анализа Hyperliquid perps — определить наличие squeeze
+топлива (long cascade vs short squeeze), правильно классифицировать
+качество трейдеров в топе, скорректировать CONFLICT_GATE.
+
+INPUTS:
+  · Nansen token_info mode=perps tokenAddress=STRK
+  · Nansen token_current_top_holders mode=perps orderBy=holding_size
+  · funding rate (annual %)
+  · для каждого top-25 адреса: entry_price, PnL, position_size,
+    liquidation_price, leverage_type
+
+═══════════════════════════════════════════════════════════════════
+
+КЛЮЧЕВЫЕ ПРАВИЛА (учёт R71/R72 и R75 ошибок)
+
+┌────────────────────────────────────────────────────────────────┐
+│ ПРАВИЛО 1 · OI + PRICE ИНТЕРПРЕТАЦИЯ (из R71/R72 correction)   │
+└────────────────────────────────────────────────────────────────┘
+
+⛔ КАНОН: OI↓ + цена↑ ≠ шорт-сквиз, если shorts=0 в топе.
+   Правильное чтение: OI↓ + 100% long = ЛОНГИ ЗАКРЫВАЮТСЯ.
+
+Формула:
+  if short_count_top25 == 0 → SHORT_SQUEEZE_UP невозможен
+  if long_count_top25 == 0  → LONG_CASCADE_DOWN невозможен
+
+┌────────────────────────────────────────────────────────────────┐
+│ ПРАВИЛО 2 · TRADER QUALITY FILTER (NEW v2.0, из R75 correction)│
+└────────────────────────────────────────────────────────────────┘
+
+⛔ КАНОН: наличие крупных LONG в топ-25 при negative funding
+   ≠ смарт-мани сигнал. Проверить качество трейдера ПРЕЖДЕ чем
+   засчитывать позицию как bullish в CONFLICT_GATE.
+
+Классификация трейдера:
+  · SMART: win_rate ≥ 60% ИЛИ realized_PnL_total ≥ +$50k
+    → signal weight × 1.0 (полное доверие)
+  · NEUTRAL: 40% ≤ win_rate < 60% И PnL в [-$20k, +$50k]
+    → signal weight × 0.5 (половинное доверие)
+  · POOR: win_rate < 40% ИЛИ realized_PnL_total < −$20k
+    → signal weight × 0.0 (ноль веса) или CONTRARIAN
+  · UNKNOWN (нет истории): default NEUTRAL
+
+Формула для BULLISH_STACK contribution:
+  bullish_contribution = base_signal × trader_quality_weight
+
+Пример (metaphilosopher.eth, R75):
+  · win_rate 18% (по внешней проверке)
+  · realized_PnL -$36.8k
+  · Классификация: POOR
+  · re-entry signal → weight × 0.0 = НЕ в bullish stack
+
+┌────────────────────────────────────────────────────────────────┐
+│ ПРАВИЛО 3 · CONTRARIAN INTERPRETATION (v2.0)                   │
+└────────────────────────────────────────────────────────────────┘
+
+Когда top-25 = 100% LONG + funding < −15% годовых + средний PnL
+crash негативный:
+
+  → это НЕ bullish сигнал
+  → это BEARISH contrarian signal: "trapped losers"
+  → добавить пункт в BEARISH_STACK: "top-25 = trapped losers,
+    100% LONG при negative funding = contrarian bearish"
+
+Проверить через:
+  total_top25_PnL = sum(unrealized_PnL for pos in top25)
+  if total_top25_PnL < -$500k AND all_LONG AND funding < -15%:
+      → CONTRARIAN BEARISH triggered
+
+Пример (R75, 01.08.2026):
+  · 11 крупнейших лузеров суммарный PnL: -$930k
+  · 100% LONG в топе
+  · funding -21.67% годовых
+  → CONTRARIAN BEARISH сработал → добавка в BEARISH_STACK
+
+═══════════════════════════════════════════════════════════════════
+
+FORMULA / STEPS:
+
+1. Собрать топ-25 через Nansen
+2. Считать: long_count, short_count, avg_leverage
+3. Для каждой позиции — классифицировать трейдера (SMART/NEUTRAL/POOR)
+4. Определить fuel_side:
+   · LONG_CASCADE_DOWN если все LONG + funding negative
+   · SHORT_SQUEEZE_UP только если shorts ≥ 3 в топе
+   · BALANCED если mix
+   · NONE если пусто
+5. Кластеры ликвидаций: группировать liq_price по окну ±1.5%
+6. Ближайшие клиастеры к mark price → nearest_long_cluster, nearest_short_cluster
+
+═══════════════════════════════════════════════════════════════════
+
+OUTPUTS:
+
+MUST #5:
+  HL: top L/S ratio · funding · fuel_side
+  fuel_side ∈ {LONG_CASCADE_DOWN, SHORT_SQUEEZE_UP, BALANCED, NONE}
+  
+NEW v2.0:
+  top25_quality: SMART_MIX / NEUTRAL_MIX / TRAPPED_LOSERS
+  contrarian_signal: CONTRARIAN_BEARISH / CONTRARIAN_BULLISH / NONE
+
+MUST #11:
+  liq map: nearest_long_cluster, nearest_short_cluster
+  cushion до nearest cluster (% от mark)
+
+═══════════════════════════════════════════════════════════════════
+
+GATES → CONFLICT_GATE:
+
+Fuel_side:
+  LONG_CASCADE_DOWN → BEARISH weight 2
+  SHORT_SQUEEZE_UP  → BULLISH weight 2 (только если shorts реально ≥3)
+
+Contrarian signal (NEW v2.0):
+  CONTRARIAN_BEARISH → BEARISH weight 2 (trapped losers)
+  CONTRARIAN_BULLISH → BULLISH weight 2 (trapped shorts)
+
+Individual trader entries:
+  Учитывать в CONFLICT только SMART тир (weight × 1.0)
+  NEUTRAL — контекст, не в стеке
+  POOR — игнорировать или CONTRARIAN
+
+═══════════════════════════════════════════════════════════════════
+
+TRAPS:
+
+⛔ liquidation_price = 0 не значит «нет риска» — cross-margin ликвидируется по account balance, не по price
+⛔ Топ-25 ≠ вся книга (funding отражает всю книгу)
+⛔ Hyperliquid ≠ весь рынок перпов
+⛔ Запертые лонги ≠ сильные руки
+⛔ Крупная позиция ≠ смарт-мани (проверять win rate и PnL history)
+⛔ NEW v2.0: re-entry плохого трейдера ≠ bullish signal
+⛔ NEW v2.0: 100% LONG при negative funding = trapped, не smart
+
+═══════════════════════════════════════════════════════════════════
+
+PROVENANCE:
+
+· Ярус A — каждый RUN обязательно (свежесть критична для fuel_side)
+· Trader quality history — обновление раз в 30 дней или при
+  явной ре-открытии крупной позиции
+
+CANONICAL SOURCE: skills/squeeze_hl.txt
+
+CHANGELOG:
+  v0.1 (30.07): STUB, метод в BLOCK_SKILLS
+  v1.0 (перенос): полная логика fuel_side + OI×price правило
+  v2.0 (01.08): trader_quality_filter + contrarian_signal
+                (следует из R75 metaphilosopher fallacy correction)
+
+NEXT:
+  v2.1: интеграция с Nansen wallet_pnl_summary для автоматической
+        классификации SMART/NEUTRAL/POOR (сейчас ручной вход)
+  v3.0: address-level tracking с историей entries по крупным
+        anchor addresses (metaphilosopher, Galaxy Digital, etc.)

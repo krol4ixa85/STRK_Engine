@@ -1,0 +1,202 @@
+STRK ENGINE — ARCHITECTURE MAP
+v1.0 · 30.07.2026 · как есть после рефакторинга v5.2 / v1.13
+
+═══════════════════════════════════════════════════════════════════════
+
+1) СЕЙЧАС (as-is)
+
+Файлы в /mnt/project/:
+
+    STRK_SYSTEM_PROMPT.md       ~3.4k    указатель + hard constraints
+    STRK_MASTER_INSTRUCTION.md ~99k     поведение · гейты · протокол RUN · §0.35 таблица чтения
+    STRK_BLOCK_SKILLS.md       ~73k     методы MUST #17-19 · триггеры · реестр опровергнутого · squeeze · playbook · flow
+    STRK_HISTORY.md            ~56k     аудит инструментов · changelog v3.7-v5.1 · ретроспективы (ТОЛЬКО REVIEW/DEV)
+    STRK_REPORT_TEMPLATE.md    ~45k     структура блоков отчёта
+    STRK_REPORT_TEMPLATE.html  ~66k     HTML-шаблон
+    STRK_FORWARDTEST_LOG.md     ~7k     машиночитаемый лог прогнозов
+    skills/
+      decision_contract.txt    ~8.6k    FILLED · 11 полей + запреты вердиктов
+      structure_mesto.txt      ~9.6k    FILLED · VAL/POC/VAH + PHASE + CYCLE_BTC
+      regime.txt               ~6.3k    FILLED · adx/bb/eff → 5 режимов
+      playbook.txt             ~2.2k    STUB · указатель на BLOCK_SKILLS
+      squeeze_hl.txt           ~2.4k    STUB · указатель на BLOCK_SKILLS
+      flow_playbook.txt        ~2.3k    STUB · указатель на BLOCK_SKILLS
+      forwardtest.txt          ~2.5k    STUB · указатель на MASTER §0.25
+      scenario_pressure.txt    ~3.2k    STUB · логика НЕ реализована
+
+
+Что читает LIQ:
+
+    MASTER
+       + skills/decision_contract.txt
+       + skills/structure_mesto.txt
+       + skills/regime.txt
+    ─────────────────────────────
+    итого ~30k токенов (было ~75k)
+
+    LIQ НЕ читает:
+      · BLOCK_SKILLS (кроме событийных случаев)
+      · HISTORY
+      · остальные skills (STUB)
+      · scenario_pressure
+
+
+Что читает RUN:
+
+    MASTER + BLOCK_SKILLS + skills/ (3 FILLED + forwardtest) + FORWARDTEST_LOG
+    ─────────────────────────────
+    итого ~55k токенов (было ~90k)
+
+    RUN НЕ читает:
+      · HISTORY
+      · scenario_pressure
+
+
+Что видно на экране (обязательные блоки любого LIQ/RUN):
+
+    1. MUST-CALC — таблица 19 пунктов + неявный #0
+                    (статусы ✓ЗАКРЫТ · ⚠NOT_CHECKED · ⊘SKIP · ◆CONFLICT · ◐INHERITED)
+    2. DECISION — 11 полей контракта
+                    (NEW_ENTRY · OPEN_SPEC · OPEN_CORE · SIZE_NEW · SIZE_OPEN ·
+                     STOP · T1/T2 · INVALIDATION · WHY · MONITOR_72h · GATES)
+    3. МЕСТО — 9 строк
+                    (REGIME · CYCLE_BTC · PHASE · STRUCTURE · POSITION ·
+                     → DECISION · UNLOCKS · HOLDERS · LIQUIDITY)
+    4. MONITOR — 2-4 конкретных порога с временным окном
+
+
+Где канон методов:
+
+    regime         → skills/regime.txt              (canonical)
+    structure/VA   → skills/structure_mesto.txt     (canonical)
+    phase/cycle    → skills/structure_mesto.txt     (canonical)
+    decision       → skills/decision_contract.txt   (canonical)
+    unlocks (#17)  → BLOCK_SKILLS §MUST #17         (canonical)
+    holders (#18)  → BLOCK_SKILLS §MUST #18         (canonical)
+    dex depth (#19)→ BLOCK_SKILLS §MUST #19         (canonical)
+    squeeze HL     → BLOCK_SKILLS §Squeeze          (canonical, ptr в skills/squeeze_hl.txt)
+    playbook       → BLOCK_SKILLS §PLAYBOOK линии   (canonical, ptr в skills/playbook.txt)
+    flow_playbook  → BLOCK_SKILLS §PLAYBOOK_FLOW    (canonical, ptr в skills/flow_playbook.txt)
+    forwardtest    → MASTER §0.25 + FORWARDTEST_LOG (canonical, ptr в skills/forwardtest.txt)
+    scenario       → skills/scenario_pressure.txt   (STUB, логики нет)
+
+    Правило конфликта: skills/*.txt FILLED > BLOCK_SKILLS > HISTORY.
+
+
+═══════════════════════════════════════════════════════════════════════
+
+2) ПОТОК РЕШЕНИЯ (одна цепочка, без ветвлений)
+
+
+    ┌──────────────────────────────────────────────────────────────┐
+    │  ДАННЫЕ (Ярус A)                                              │
+    │  · OKX bash (price, OHLCV)                                    │
+    │  · Starknet RPC (stake)                                       │
+    │  · Starkscan REST (fees, txs)                                 │
+    │  · Nansen (perps snapshot, top holders)                       │
+    │  · discord (firings 24h)                                      │
+    │  · DefiLlama (TVL, DEX pools)                                 │
+    └────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │  MUST-CALC (19 пунктов + #0) — гейт допуска                  │
+    │  · технические (1-13): цена, стейк, fees, HL, FLOW, гейты    │
+    │  · погода/место (15-16): regime, cycle_btc, phase, VAL       │
+    │  · здоровье (17-19): unlocks, holders, liquidity              │
+    │  Пропуск → NOT_CHECKED (не удаление строки)                   │
+    └────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │  CONFLICT_GATE (MUST #14)                                     │
+    │  BULLISH_STACK vs BEARISH_STACK (только закрытые пункты)     │
+    │  Обе непустые → CONFLICT → NEW_ENTRY не YES                  │
+    └────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │  DECISION (11 полей, ПЕРВЫЙ содержательный блок)             │
+    │  NEW_ENTRY: YES/NO/WAIT (5 условий) · OPEN_* · SIZE · STOP · │
+    │  T1/T2 · INVALIDATION · WHY · MONITOR_72h · GATES             │
+    └────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │  МЕСТО (MUST #16, 9 строк) — сразу после DECISION            │
+    │  READS: regime · cycle_btc · phase · VAL/POC/VAH ·           │
+    │         position · unlocks · holders · liquidity              │
+    └────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │  ЭКРАН (HTML отчёт)                                           │
+    │  MUST-CALC table + DECISION card + МЕСТО block + MONITOR     │
+    │  + доказательная база (evidence blocks)                       │
+    └──────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════
+
+3) НЕ ДЕЛАЕМ СЕЙЧАС (чтобы не смешивать с рефакторингом)
+
+    · RedString (кит-граф) — не вызывается
+    · scenario_pressure — только STUB, логики нет
+    · Telegram-автопилот — нет
+    · Python-оркестратор — нет
+    · Big-bang перенос BLOCK_SKILLS в skills/ — по одному в v5.3+
+    · MAX_SWING (Kelly vs risk%) — хронически открыто
+    · Nansen profiler на 3 unknown bridge-адреса — отложено
+    · Ping / уведомления — нет
+
+═══════════════════════════════════════════════════════════════════════
+
+4) КУДА ПОТОМ (очередь, не план на сегодня)
+
+    а) СТАБИЛИЗАЦИЯ КОРОТКОГО LIQ
+       Проверить в реальной работе (7-14 дней), что LIQ на ~30k токенов
+       не теряет строки на экране. Если что-то падает в NOT_CHECKED
+       постоянно — это сигнал перевести метод в базовый LIQ-набор.
+
+    б) WATCHER-ПОРОГИ (когда звать человека)
+       Определить 3-5 порогов, где система должна прервать сон и
+       вызвать пользователя (близость к liq-кластеру, смена регима,
+       крупный distribution). Формат — простое правило, не автопилот.
+
+    в) FLOW DEEPER
+       Заполнить skills/flow_playbook.txt полностью (перенести из
+       BLOCK_SKILLS с шаблонами маршрутов). Опциональный RedString
+       как отдельное DEV — но НЕ вызов, а исследование графа.
+
+    г) SCENARIO SKILL
+       Отдельное DEV на заполнение scenario_pressure.txt:
+       PRESSURE MAP + NEED_SCORE + Base/Bull/Bear. Строго без
+       NEW_ENTRY / buy-sell. Только симуляция давления.
+
+    д) ЛЁГКИЙ PING (не автопилот)
+       После шага (б): простое чтение WATCHER-порогов и текстовое
+       уведомление. Никакой торговой логики.
+
+═══════════════════════════════════════════════════════════════════════
+
+5) КРИТЕРИЙ «РЕФАКТОРИНГ НЕ СЛОМАЛ ОТЧЁТ»
+
+    После ЛЮБОЙ будущей правки на экране обязательно остаётся:
+
+    · MUST-CALC — все 19 пунктов + неявный #0, ни одна строка не
+      удаляется. Пропущенная метрика = ⚠NOT_CHECKED, никогда молча.
+
+    · DECISION — все 11 полей контракта присутствуют, включая пустые
+      (пустое поле = N/A, не пропуск).
+
+    · МЕСТО — все 9 строк заполнены или явно NOT_CHECKED. Ссылка
+      «см. прошлый RUN» запрещена.
+
+    · Смысл гейтов не изменён: NEW_ENTRY = YES только при 5 условиях
+      одновременно. CONFLICT → NEW_ENTRY не YES.
+
+    · Экран показывает ЧТО ждать (MONITOR порогами), а не «туман NO».
+
+═══════════════════════════════════════════════════════════════════════
+
+Карта завершена. Открыл → понял картину.

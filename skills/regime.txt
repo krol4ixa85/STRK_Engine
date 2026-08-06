@@ -1,0 +1,125 @@
+NAME: regime
+VERSION: 1.0 · 30.07.2026
+STATUS: FILLED · canonical (был в BLOCK_SKILLS §"Regime Classifier operational")
+
+═══════════════════════════════════════════════════════════════════
+
+INPUTS:
+  · 90D OKX 1D бары (те же, что для σ и PLAYBOOK — не отдельный запрос)
+  · endpoint: https://www.okx.com/api/v5/market/candles?instId=STRK-USDT&bar=1D&limit=90
+  · поля: high, low, close (из OHLCV)
+
+═══════════════════════════════════════════════════════════════════
+
+FORMULA / STEPS:
+
+lookback = 50 баров
+
+# ADX proxy (14)
+plus_dm  = high.diff().clip(lower=0)
+minus_dm = (-low.diff()).clip(lower=0)
+atr      = (high - low).rolling(14).mean()
+plus_di  = plus_dm.rolling(14).mean()  / atr.replace(0, np.nan) * 100
+minus_di = minus_dm.rolling(14).mean() / atr.replace(0, np.nan) * 100
+dx       = abs(plus_di - minus_di) / (plus_di + minus_di).replace(0, np.nan) * 100
+adx      = dx.rolling(14).mean().iloc[-1]
+
+# BB width (20)
+sma20    = close.rolling(20).mean()
+std20    = close.rolling(20).std()
+bb_width = ((std20 * 2) / sma20).iloc[-1] * 100
+
+# MA alignment (10/20/50)
+sma10 = close.rolling(10).mean().iloc[-1]
+sma20v = sma20.iloc[-1]
+sma50 = close.rolling(50).mean().iloc[-1] if len(close) >= 50 else sma20v
+ma_up   = sma10 > sma20v > sma50
+ma_down = sma10 < sma20v < sma50
+
+# Efficiency ratio
+net_move  = abs(close[-1] - close[0])
+total_path = returns.abs().sum() * close.mean()
+efficiency = net_move / max(total_path, 1e-10)
+
+# КЛАССИФИКАЦИЯ (порядок проверки важен):
+if adx > 25 and ma_up   and efficiency > 0.3:  regime = "trending_up"
+elif adx > 25 and ma_down and efficiency > 0.3: regime = "trending_down"
+elif bb_width > 3.0 and adx < 20:               regime = "volatile"
+elif bb_width < 1.0 and adx < 15:               regime = "quiet"
+else:                                            regime = "ranging"
+
+# CONFIDENCE (0-1):
+base = 0.3
++0.3 если adx > 30, +0.2 если adx < 15
++0.2 если bb_width экстремальный (>3 или <1)
++0.2 если efficiency экстремальный (>0.4 или <0.1)
+cap = 0.95
+
+═══════════════════════════════════════════════════════════════════
+
+OUTPUTS:
+
+размерные множители:
+  trending_up + сетап_лонг  → ×1.0
+  trending_up + сетап_шорт  → ×0.3 (против режима)
+  trending_down + сетап_шорт → ×1.0
+  trending_down + сетап_лонг → ×0.3
+  ranging                   → ×0.8
+  volatile                  → ×0.5 + стопы шире ×1.5
+  quiet                     → ×0.5 (готовим breakout, не входим)
+
+СТРОКА В ОТЧЁТЕ (МУСТ #15 + первая строка блока МЕСТО):
+  REGIME: <режим> · adx=X · bb=Y · eff=Z · conf=C · size_mult=M
+
+═══════════════════════════════════════════════════════════════════
+
+GATES:
+
+MUST #15 · Regime + size_mult — обязателен каждый RUN/LIQ.
+NOT_CHECKED → NEW_ENTRY не YES.
+
+CONFLICT_GATE вклад:
+  regime = trending_up + PLAYBOOK-пробой → BULLISH_STACK item
+  regime = trending_down                 → BEARISH_STACK item
+  regime = ranging + PLAYBOOK-пробой БЕЗ ретеста → conflict-item
+    (не входит ни в стек, помечает CONFLICT-риск)
+
+PLAYBOOK правки:
+  trending_up/down → пробой в сторону тренда можно без ретеста
+  ranging          → пробой ТРЕБУЕТ УДЕРЖАННЫЙ РЕТЕСТ (иначе NO)
+                     false-breakout-rate в ranging ≈60%
+  volatile         → пробой можно, стоп расширить
+  quiet            → только breakout-ордер, не market
+
+═══════════════════════════════════════════════════════════════════
+
+TRAPS:
+
+⛔ ranging — самый частый режим STRK (90 из 90 дней Jul-2026).
+   Не значит «ничего не происходит», значит «структура не даёт trend».
+
+⛔ efficiency в ranging может быть высокой при широком range.
+   Смотреть adx первым фильтром, не efficiency.
+
+⛔ regime может кратковременно сменяться на volatile из-за bb_width
+   при новостном спайке. Требовать подтверждения 3 последовательных
+   дней в новом режиме перед сменой стратегии.
+
+⛔ MA alignment на 10/20/50 шумит на дневках. Поддерживающий сигнал,
+   не единственный.
+
+⛔ Confidence < 0.5 → печатать "regime uncertain", применять regime_mult
+   как среднее с ×0.8.
+
+═══════════════════════════════════════════════════════════════════
+
+PROVENANCE:
+
+· Пересчитывается КАЖДЫЙ RUN (Ярус A) — bar-based, дёшево
+· Наследование не допускается (свежесть критична)
+· Между RUN — если >6ч старое → пересчитать перед DECISION
+· При смене режима — сравнивать с прошлым: «regime: было ranging → стало volatile»
+
+CANONICAL SOURCE: skills/regime.txt (этот файл)
+LEGACY DUPLICATE: STRK_BLOCK_SKILLS.md §"Regime Classifier operational" (v5.0)
+DE-DUP DEADLINE: v5.2 · удалить из BLOCK_SKILLS

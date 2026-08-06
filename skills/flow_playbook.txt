@@ -1,0 +1,49 @@
+NAME: flow_playbook
+VERSION: 0.1 · 30.07.2026
+STATUS: STUB · метод пока в BLOCK_SKILLS §"PLAYBOOK_FLOW" · перенос v5.2
+
+═══════════════════════════════════════════════════════════════════
+
+INPUTS:
+  · Discord алерты (discord_read_messages)
+  · Nansen profiler адресов + counterparties (1 hop max)
+
+FORMULA / STEPS:
+  ⤳ полный текст: STRK_BLOCK_SKILLS.md §"PLAYBOOK_FLOW"
+
+  Маршрут → шаблон → класс:
+  - REBALANCE      · CEX↔CEX same-owner (Binance14 ↔ BingX)
+  - INTERNAL       · within one exchange (deposit → hot → cold)
+  - DISTRIBUTION   · whale → множество retail-адресов
+  - ACCUMULATION   · множество → один HOLDS (retention >90%, <2 out/30d)
+  - UNKNOWN        · маршрут не совпадает с шаблоном
+  - NOT_CHECKED    · Nansen не вызывался
+
+OUTPUTS:
+  MUST #6: FLOW: <класс> · vol · route from → to · src
+
+GATES:
+  CONFLICT_GATE:
+    FLOW=ACCUMULATION → BULLISH_STACK
+    FLOW=DISTRIBUTION → BEARISH_STACK
+    REBALANCE / INTERNAL / UNKNOWN → нейтрально
+
+TRAPS:
+  ⛔ «отток CEX = накопление» — часто REBALANCE
+  ⛔ «приток CEX = дамп» — часто deposit перед rebalance
+  ⛔ класс по одному net-числу без маршрута
+  ⛔ ярлык алерта Nansen ≠ реальный класс (пример Jul-27:
+     «Custody Outflow» лейбл, а факт — CEX↔CEX инфра-ребаланс)
+
+ON_DISCORD_ALERT_FLOW (лёгкий 5-шаговый процесс):
+  ⤳ BLOCK_SKILLS §"ON_DISCORD_ALERT_FLOW"
+  Триггер: алерт ≥5M STRK ЛИБО ≥p50 объёма
+  Запрет: BFS 5-10 hop, networkx, graph-код в RUN
+
+PROVENANCE:
+  Ярус A: firings_24h — каждый RUN (правило 1 честности)
+  Классификация — по мере алертов (event-driven)
+
+CANONICAL SOURCE (после переноса): skills/flow_playbook.txt
+CURRENT SOURCE: STRK_BLOCK_SKILLS.md §"PLAYBOOK_FLOW", §"ON_DISCORD_ALERT_FLOW"
+NEXT: v5.2 · перенести с шаблонами маршрутов

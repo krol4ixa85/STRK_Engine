@@ -1,0 +1,34 @@
+# Secrets - NEVER commit
+config/config.env
+*.env
+.env
+
+# Logs
+logs/
+*.log
+
+# Cache (regenerated each run) - EXCEPT state files
+data/cache/*.csv
+data/cache/*.json
+!data/cache/.gitkeep
+
+# ALLOW state files (needed across runs)
+!data/cache/telegram_bot_state.json
+!data/cache/discord_monitor_state.json
+!data/cache/whale_monitor_state.json
+!data/cache/auto_discovery_state.json
+!data/cache/decision_log.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Backups (не пушить)
+data/seeds/backups/
+data/dashboards/*.html
+data/graphs/*.json
+data/validation/*.json
+data/history/*.json

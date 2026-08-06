@@ -1,0 +1,177 @@
+NAME: structure_mesto
+VERSION: 1.0 · 30.07.2026
+STATUS: FILLED · canonical (был в BLOCK_SKILLS §"STRUCTURE LEVELS", "PHASE", "CYCLE_BTC")
+
+═══════════════════════════════════════════════════════════════════
+
+INPUTS:
+  · 90D OKX 1D бары (те же, что для σ и Regime — общий датасет)
+  · BTC 250D 1D бары для CYCLE_BTC
+    endpoint: https://www.okx.com/api/v5/market/candles?instId=BTC-USDT&bar=1D&limit=250
+
+═══════════════════════════════════════════════════════════════════
+
+FORMULA / STEPS:
+
+┌────────────────────────────────────────────────────────────────┐
+│ 1. VAL / POC / VAH — Volume Profile 90D                       │
+└────────────────────────────────────────────────────────────────┘
+
+bins = np.linspace(low.min(), high.max(), 51)
+vol_at_price = np.zeros(len(bins) - 1)
+
+for _, row in df.iterrows():
+    bar_mask = (bins[:-1] <= row['high']) & (bins[1:] >= row['low'])
+    n = bar_mask.sum()
+    if n > 0:
+        vol_at_price[bar_mask] += row['volume'] / n
+
+poc_idx = vol_at_price.argmax()
+poc = (bins[poc_idx] + bins[poc_idx+1]) / 2
+
+# VA = смежные бины вокруг POC, покрывающие 70% общего объёма
+total_target = vol_at_price.sum() * 0.7
+covered = vol_at_price[poc_idx]
+lo_i, hi_i = poc_idx, poc_idx
+while covered < total_target:
+    left  = vol_at_price[lo_i-1] if lo_i > 0 else 0
+    right = vol_at_price[hi_i+1] if hi_i < len(vol_at_price)-1 else 0
+    if left >= right and lo_i > 0: lo_i -= 1; covered += left
+    elif hi_i < len(vol_at_price)-1: hi_i += 1; covered += right
+    else: break
+
+val = bins[lo_i]        # Value Area Low
+vah = bins[hi_i + 1]    # Value Area High
+
+┌────────────────────────────────────────────────────────────────┐
+│ 2. PHASE — компактный enum (B/C/D/E)                          │
+└────────────────────────────────────────────────────────────────┘
+
+B — база / баланс внутри VA
+    Цена колеблется между VAL и VAH, ни к одному краю не жмётся
+    Дно и потолок не пробиваются с объёмом
+    Типичное состояние STRK в ranging
+
+C — сжатие / пружина у края VA
+    Цена жмётся к VAL (bull-C) или к VAH (bear-C)
+    Ложные пробои у края (springs / upthrusts) характерны
+    Объём подсыхает
+
+D — выход из VA с удержанием
+    Разрешён ТОЛЬКО при обоих условиях:
+      1) close за VAH (лонг) или за VAL (шорт)
+      2) в ranging (regime=ranging) — дополнительно удержанный ретест
+    Без обоих → остаётся C или откат в B
+
+E — разгон / тренд после D
+    Regime обычно уже trending_up/down
+    Cushion от прежнего VAH/VAL > 3-5%
+    Momentum-стратегии работают
+
+Переход PHASE требует ≥2 последовательных подтверждений
+(не тренд, а шум оценки, если меняется каждую свечу).
+
+┌────────────────────────────────────────────────────────────────┐
+│ 3. CYCLE_BTC — отдельная от REGIME строка                     │
+└────────────────────────────────────────────────────────────────┘
+
+close_btc_now  = BTC close сейчас
+ma200_btc      = BTC.close[-200:].mean()
+ma200_prev     = BTC.close[-230:-30].mean()
+dist_pct       = (close_btc_now / ma200_btc - 1) * 100
+slope30_pct    = (ma200_btc / ma200_prev - 1) * 100
+
+if dist_pct > 5 and slope30_pct > 0:
+    cycle = "UP";      cycle_mult = 1.0
+elif dist_pct < -5 and slope30_pct < 0:
+    cycle = "DOWN";    cycle_mult = 0.25
+else:
+    cycle = "NEUTRAL"; cycle_mult = 0.5
+
+═══════════════════════════════════════════════════════════════════
+
+OUTPUTS:
+
+Блок МЕСТО (MUST #16) — 9 строк:
+
+  1. REGIME     (из skills/regime.txt)
+  2. CYCLE_BTC  <UP|NEUTRAL|DOWN> vs MA200 · slope=<+/->X% · cycle_mult=M
+  3. PHASE      <B|C|D|E> · одна фраза «почему»
+  4. STRUCTURE  VAL=$X · POC=$Y · VAH=$Z  ИЛИ  STRUCTURE: NOT_CHECKED
+  5. POSITION   цена $X · до VAL -/+A% · до invalidation B% · R:R=Z ИЛИ «плана нет»
+  6. → см. DECISION
+  7. UNLOCKS    (из будущего skills/unlocks.txt · пока BLOCK_SKILLS §MUST#17)
+  8. HOLDERS    (из будущего skills/holders.txt · пока BLOCK_SKILLS §MUST#18)
+  9. LIQUIDITY  (из будущего skills/dex_depth.txt · пока BLOCK_SKILLS §MUST#19)
+
+═══════════════════════════════════════════════════════════════════
+
+GATES:
+
+MUST #16 · STRUCTURE/МЕСТО — обязателен каждый RUN/LIQ.
+Пустой блок или «см. прошлый RUN» ЗАПРЕЩЕНЫ.
+
+Если STRUCTURE = NOT_CHECKED И одновременно «тайминг = не догон»:
+  NEW_ENTRY = YES ЗАПРЕЩЕНО.
+  Причина: «не догон» относительно чего?
+
+Если PLAYBOOK-линия ИНВАЛИДИРОВАНА в этом RUN:
+  STRUCTURE ОБЯЗАНА обновиться (новая VA или NOT_CHECKED).
+  Мёртвая линия НЕ подменяет структурный якорь.
+
+CONFLICT_GATE вклад:
+  PHASE=B/C + попытка D-входа без уровней → BEARISH/CONFLICT item
+  ranging + breakout без ретеста → conflict-item (см. regime.txt)
+
+═══════════════════════════════════════════════════════════════════
+
+TRAPS:
+
+⛔ POC как «зона входа» — в реестре опровергнутого с ранних версий.
+   POC = центр стоимости, не сигнал направления. Вход у POC = вход в шум.
+
+⛔ «Не догон» без VAL/VAH = пустая фраза. Догон относительно чего?
+
+⛔ Мёртвая линия PLAYBOOK после MISS НЕ подменяет STRUCTURE.
+   Обязательно: новая VA или NOT_CHECKED.
+
+⛔ Копировать VAL/POC/VAH из прошлого RUN без пересчёта — только с
+   провенансом «из R__». Одно унаследованное значение недостаточно
+   для NEW_ENTRY.
+
+⛔ PHASE смешивается с REGIME.
+   REGIME = погода 90 дней. PHASE = отрезок сценария внутри.
+   Внутри 90д ranging могут быть B (баланс), C (сжатие у края),
+   даже кратковременный D (пробой без удержания = false-D → откат в B).
+
+⛔ PHASE=D записана сразу после пробоя — рано. Нужен ≥2 дня удержания
+   на закрытии за уровнем (в ranging).
+
+⛔ PHASE без якорной цены («база вокруг $X») = метка без якоря.
+
+⛔ CYCLE_BTC ≡ REGIME → нет.
+   CYCLE_BTC = какой ветер капитала.
+   REGIME    = какая погода у STRK.
+   Могут расходиться: BTC UP + STRK ranging = STRK отстаёт.
+
+═══════════════════════════════════════════════════════════════════
+
+PROVENANCE:
+
+VAL / POC / VAH:
+  · пересчёт каждые 2-3 RUN, ИЛИ
+  · при смене REGIME, ИЛИ
+  · при инвалидации PLAYBOOK-линии
+  · между пересчётами — провенанс «VAL/POC/VAH из R__»
+
+PHASE:
+  · каждый RUN как enum
+  · смена требует ≥2 последовательных подтверждений
+
+CYCLE_BTC:
+  · каждый RUN (дёшево: одна svc-функция bash)
+  · наследование не допускается
+
+CANONICAL SOURCE: skills/structure_mesto.txt (этот файл)
+LEGACY DUPLICATE: STRK_BLOCK_SKILLS.md §"STRUCTURE LEVELS", §"PHASE", §"CYCLE_BTC" (v5.0)
+DE-DUP DEADLINE: v5.2 · удалить из BLOCK_SKILLS

@@ -1,0 +1,798 @@
+NAME: scenario_pressure
+VERSION: 0.5 · 31.07.2026 · ROADMAP компонент filled
+STATUS: PARTIAL (UNLOCK + STRUCTURE + USAGE + NARRATIVE + ROADMAP · 5/6) · только REGULATORY STUB
+
+═══════════════════════════════════════════════════════════════════
+
+НАЗНАЧЕНИЕ:
+
+Scenario Pressure Engine — оценка совокупного давления на STRK из
+6 источников за средне-долгосрочный горизонт (30-180 дней).
+
+НЕ выдаёт торговый вердикт. НЕ пишет NEW_ENTRY. НЕ рендерит DECISION.
+Только PRESSURE MAP + NEED_SCORE + Base/Bull/Bear-Regimes.
+
+Вызывается только в режиме SCENARIO.
+
+═══════════════════════════════════════════════════════════════════
+
+АРХИТЕКТУРА · 6 ИСТОЧНИКОВ ДАВЛЕНИЯ
+
+Каждый источник → одна оценка pressure в диапазоне [-10 .. +10]:
+  +10 = максимальное давление ВВЕРХ (bullish)
+     0 = нейтрально
+  -10 = максимальное давление ВНИЗ (bearish)
+
+┌──────────────────────────────────────────────────────────────┐
+│ 1. UNLOCK PRESSURE (supply side) · FILLED v0.1               │
+├──────────────────────────────────────────────────────────────┤
+│ INPUT: /mnt/project/vesting_schedule_json.txt                │
+│ MODEL: см. секцию UNLOCK ниже                                 │
+│ OUTPUT: unlock_pressure_score [-10 .. 0]                      │
+│ (unlock — только давление вниз, никогда не bullish)          │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│ 2. ROADMAP EVENTS (demand side) · FILLED v0.5                │
+├──────────────────────────────────────────────────────────────┤
+│ INPUT: surf_search events (project=starknet UUID),           │
+│        starknet.io/roadmap (web_fetch если требуется),       │
+│        Twitter @Starknet upcoming events                     │
+│ MODEL: 4 подкомпонента (upcoming + executed + delay + BTC/ETH)│
+│ OUTPUT: roadmap_pressure_score [-3 .. +8]                     │
+│ NEXT: none · компонент готов                                  │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│ 3. NARRATIVE (attention side) · FILLED v0.4                  │
+├──────────────────────────────────────────────────────────────┤
+│ INPUT: surf_news (30d STRK news), surf_project (AI-news),    │
+│        surf_search (Twitter/X mentions),                      │
+│        (опционально) MACRO_YOUTUBE_SOURCES skill for context │
+│ MODEL: 4 подкомпонента (volume + sentiment + voice + share)  │
+│ OUTPUT: narrative_pressure_score [-8 .. +8]                   │
+│ NEXT: calibration после ≥3 месяцев baseline                   │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│ 4. USAGE (fundamental) · FILLED v0.3                         │
+├──────────────────────────────────────────────────────────────┤
+│ INPUT: fees (MUST #2), TVL (MUST #19), txs, MC/TVL ratio     │
+│ MODEL: 4 подкомпонента (trends + threshold + valuation)      │
+│ OUTPUT: usage_pressure_score [-5 .. +8]                       │
+│ NEXT: none · компонент готов                                  │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│ 5. REGULATORY (external) · STUB                              │
+├──────────────────────────────────────────────────────────────┤
+│ INPUT: SEC filings, EU MiCA news (web_fetch, event-driven)   │
+│ MODEL: significant events last 30 days                        │
+│ OUTPUT: regulatory_pressure_score [-10 .. +3]                 │
+│ NEXT: v0.5                                                    │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│ 6. STRUCTURE (technical) · FILLED v0.2                        │
+├──────────────────────────────────────────────────────────────┤
+│ INPUT: VAL/POC/VAH + PHASE + regime + cycle_btc + long_liq   │
+│        (все уже в skills/structure_mesto + MUST #16)          │
+│ MODEL: 4 подкомпонента × различные веса (см. секцию ниже)     │
+│ OUTPUT: structure_pressure_score [-6 .. +6]                   │
+│ NEXT: none · компонент готов                                  │
+└──────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════
+
+UNLOCK PRESSURE · FILLED v0.1
+
+INPUT (из /mnt/project/vesting_schedule_json.txt):
+  · max_supply · circulating_supply
+  · allocations: [Early Contributors, Team & Shareholders, Investors]
+  · upcoming_unlocks (5 записей, ноя 2026 - март 2027)
+
+ФОРМУЛА:
+
+Для каждого upcoming unlock в окне [today, today + 180д]:
+
+  # 1. базовое давление размера
+  size_ratio = unlock_tokens / circulating_supply
+  # size_ratio 1.28% ~= 1 пункт давления
+
+  # 2. умножить на CEX_share (эмпирика 0.5 для STRK)
+  effective_selling = size_ratio × 0.5
+
+  # 3. умножить на bearish weight в зависимости от source
+  # Early Contributors: 0.6 (частично долгосрочные)
+  # Team & Shareholders: 0.4 (сильные stake incentives)
+  # Investors: 1.0 (максимальное давление, private VC exit)
+
+  # 4. распад с временем (unlock через 90 дней давит меньше сейчас)
+  days_to_unlock = (unlock_date - today).days
+  time_decay = max(0.2, 1 - days_to_unlock / 180)
+  # unlock завтра = ×1.0, через 90 дней = ×0.5, через 180 дней = ×0.2
+
+  # 5. накопить давление по всем unlock в окне
+  pressure_i = -1 × size_ratio × 100 × cex_share × source_weight × time_decay
+
+TOTAL:
+  unlock_pressure_score = sum(pressure_i for all unlocks in 180d window)
+  clip to [-10, 0]
+
+═══════════════════════════════════════════════════════════════════
+
+ЖИВОЙ РАСЧЁТ на 31.07.2026 (для проверки):
+
+Circulating: 6,746,937,561 STRK
+Today: 2026-07-31
+Window: до 2027-01-27 (180 дней)
+
+Upcoming unlocks в окне:
+  · 2026-11-15 · 127.6M STRK (Early Contributors + Investors)
+    days_to = 107 · time_decay = 0.41
+    size_ratio = 127.6M / 6.747B = 1.89%
+    Split: 60% Early (weight 0.6) + 40% Investors (weight 1.0)
+    weighted = 0.6×0.6 + 0.4×1.0 = 0.76
+    pressure = -1 × 1.89 × 0.5 × 0.76 × 0.41 = -0.29
+
+  · 2026-12-15 · 127.6M STRK
+    days_to = 137 · time_decay = 0.24
+    pressure = -1 × 1.89 × 0.5 × 0.76 × 0.24 = -0.17
+
+  · 2027-01-15 · 127.6M STRK
+    days_to = 168 · time_decay = 0.07
+    pressure = -1 × 1.89 × 0.5 × 0.76 × 0.07 = -0.05
+
+TOTAL unlock_pressure_score = -0.29 - 0.17 - 0.05 = -0.51
+
+Округляем: unlock_pressure = -0.5 (лёгкое давление вниз)
+
+Интерпретация:
+  0 to -1     → лёгкое давление (сейчас)
+  -1 to -3    → умеренное
+  -3 to -6    → сильное
+  -6 to -10   → критическое (обычно cliff-разлок >5% supply близко)
+
+═══════════════════════════════════════════════════════════════════
+
+STRUCTURE PRESSURE · FILLED v0.2
+
+INPUT (из MUST #16 · skills/structure_mesto.txt):
+  · current price
+  · VAL / POC / VAH (свежий VP расчёт)
+  · regime (5 состояний из skills/regime.txt)
+  · CYCLE_BTC (UP / NEUTRAL / DOWN)
+  · PHASE (B / C / D / E, включая half-weight подтипы)
+  · long_liq_cluster (ближайший из HL Squeeze module)
+
+ФОРМУЛА (4 подкомпонента):
+
+┌────────────────────────────────────────────────────────────────┐
+│ 1. POSITIONAL vs VA (где мы в комнате) · [-2 .. +1.5]         │
+└────────────────────────────────────────────────────────────────┘
+
+  if px < VAL:
+      depth_pct = (VAL - px) / VAL × 100
+      positional = -2.0 × min(1.0, depth_pct / 5.0)
+      # клип на 5% ниже VAL для максимального penalty
+
+  elif VAL <= px <= VAH:
+      positional = 0
+      # «дома» — нейтрально
+
+  else:  # px > VAH
+      height_pct = (px - VAH) / VAH × 100
+      positional = +1.5 × min(1.0, height_pct / 10.0)
+      # extension пейс max, клип на 10% выше VAH
+
+Логика: чем глубже цена ниже VAL — тем сильнее bearish давление,
+но клипается через 5% (иначе positional может съесть весь score).
+Extension выше VAH — умеренно bullish (тренд), но с меньшим весом
+чем dump ниже VAL (крипто-асимметрия downside).
+
+┌────────────────────────────────────────────────────────────────┐
+│ 2. REGIME × CYCLE_BTC (условия крипто-риска) · [-2 .. +2]     │
+└────────────────────────────────────────────────────────────────┘
+
+Матрица 5 × 3:
+                       cycle=UP  cycle=NEUTRAL  cycle=DOWN
+  trending_up          +2.0      +1.0            0.0
+  ranging              +0.5       0.0           -0.5
+  volatile             -0.5      -1.0           -1.5
+  trending_down        -1.0      -1.5           -2.0
+  quiet                 0.0       0.0            0.0
+
+Логика: 
+  · UP-cycle + trend up = лучший setup
+  · DOWN-cycle + volatile / trending_down = худший
+  · quiet = нулевой (нет контекста для ставки)
+
+┌────────────────────────────────────────────────────────────────┐
+│ 3. PHASE (позиция в сценарии внутри волны) · [-1.5 .. +1.5]   │
+└────────────────────────────────────────────────────────────────┘
+
+  B (баланс внутри VA)                       →  0
+  C-bull (сжатие у VAL, потенциальный up)    →  +1.0
+  C-bear (сжатие у VAH, потенциальный down)  →  -1.0
+  D-up (пробой VAH + удержание)              →  +1.5
+  D-down (пробой VAL + удержание)            →  -1.5
+  E-up (разгон верх)                         →  +1.0
+  E-down (разгон вниз)                       →  -1.0
+
+  Half-weight для непотдвержденных:
+  ?→D-up  (пробой VAH без удержания)         →  +1.0
+  ?→D-down (пробой VAL без удержания)        →  -1.0
+
+┌────────────────────────────────────────────────────────────────┐
+│ 4. DISTANCE to INVALIDATION (запас до ликвидации) [-0.5..+0.5]│
+└────────────────────────────────────────────────────────────────┘
+
+  cushion = (px - long_liq_cluster) / long_liq_cluster × 100
+
+  cushion > 15%      →  +0.5   безопасная зона
+  cushion 8-15%      →   0     нейтрально
+  cushion 3-8%       →  -0.25  приближение
+  cushion < 3%       →  -0.5   критическое приближение
+
+Логика: даже при bearish setup цена ДАЛЕКО от каскада — это
+частичный бонус (нет форсированной распродажи в 72ч).
+
+════════════════════════════════════════════════════════════════
+
+TOTAL:
+  structure_pressure_score = positional + regime_cycle + phase + distance
+  clip to [-6, +6]
+
+Интерпретация:
+   +3 to +6    → сильное давление ВВЕРХ (structure bullish)
+   +1 to +3    → давление вверх
+   -1 to +1    → нейтрально
+   -3 to -1    → давление вниз
+   -6 to -3    → сильное давление ВНИЗ (structure bearish)
+
+════════════════════════════════════════════════════════════════
+
+ЖИВОЙ РАСЧЁТ на 31.07.2026 (R74):
+
+INPUTS:
+  px = $0.02563 · VAL = $0.02790 · POC = $0.02985 · VAH = $0.04429
+  regime = volatile · CYCLE_BTC = DOWN
+  phase = ?→D-вниз (не подтверждён)
+  long_liq_cluster = $0.02217
+
+РАСЧЁТ:
+  1. POSITIONAL:  px < VAL, depth = 8.14% (>5% clip) → -2.00
+  2. REGIME×CYCLE: volatile + DOWN                    → -1.50
+  3. PHASE:       ?→D-down (half weight)              → -1.00
+  4. DISTANCE:    cushion +15.6% (>15% порог)         → +0.50
+  ──────────────────────────────────────────────────────────
+  TOTAL structure_pressure_score:                       -4.00
+
+Интерпретация: сильное давление ВНИЗ (structure bearish)
+
+Комментарий: все 3 негативных компонента бьют одновременно.
+Cushion до invalidation +15.6% — единственный частичный buffer.
+Смена regime на volatile за 3 дня, cycle_btc глубокий DOWN
+и цена ниже VAL — комбинация делает structure сейчас максимально
+медвежьей на средне-долгосрочном горизонте.
+
+Как это может измениться:
+  · BTC над MA200 (cycle → NEUTRAL): score improve на +1 → -3
+  · price отскок в VA (positional 0): score improve на +2 → -2
+  · regime возврат в ranging: score improve на +1 → -3
+  · PHASE подтверждается D-вниз (полный вес): худше на -0.5 → -4.5
+
+═══════════════════════════════════════════════════════════════════
+
+USAGE PRESSURE · FILLED v0.3
+
+INPUT:
+  · weekday fees 30-day (из MUST #2 · только blockIntervalSecondsSum=86400)
+  · TVL 30-day trend (из MUST #19 · DefiLlama historical)
+  · latest weekday fees $ (последний полный будний день)
+  · MC / TVL ratio (px × circulating supply vs current TVL)
+
+ФОРМУЛА (4 подкомпонента):
+
+┌────────────────────────────────────────────────────────────────┐
+│ 1. WEEKDAY FEES TREND (10d vs prev 10d) · [-2 .. +2]          │
+└────────────────────────────────────────────────────────────────┘
+
+fees_trend_pct = (recent10_avg / prev10_avg - 1) × 100
+
+  >= +50%     →  +2.0   сильный рост
+  +20 to +50  →  +1.0   умеренный рост
+  -10 to +20  →   0     стабильно
+  -20 to -10  →  -0.5   лёгкое падение
+  -50 to -20  →  -1.0   заметное падение
+  <  -50%     →  -2.0   критическое падение
+
+Только полные дни (blockIntervalSecondsSum == 86400) и только
+будни (weekday 0-4). Исключение выходных из тренда — Usage
+характер STRK: L2 использование заметно ниже в Sat/Sun.
+
+┌────────────────────────────────────────────────────────────────┐
+│ 2. TVL TREND 30-DAY · [-2 .. +2]                              │
+└────────────────────────────────────────────────────────────────┘
+
+tvl_trend_30d = (today_tvl / day30_ago_tvl - 1) × 100
+
+  >= +30%     →  +2.0
+  +10 to +30  →  +1.0
+  -5 to +10   →   0
+  -10 to -5   →  -0.5
+  -30 to -10  →  -1.0
+  <  -30%     →  -2.0
+
+┌────────────────────────────────────────────────────────────────┐
+│ 3. WEEKDAY FEES ABSOLUTE THRESHOLD · [-2 .. +2]               │
+└────────────────────────────────────────────────────────────────┘
+
+latest_weekday_fee_usd (последний полный будний день)
+
+  > $6,000    →  +2.0   сильный usage
+  $4-6k       →  +1.0   нормальный
+  $2-4k       →  -1.0   слабый (jaundice)
+  < $2,000    →  -2.0   Usage RED (bearish threshold из R56 audit)
+
+Порог $4,000 = медиана 90D weekday fees за last 6 months
+(эмпирика STRK, requires update at v1.0 with 15+ months data).
+
+┌────────────────────────────────────────────────────────────────┐
+│ 4. MC / TVL RATIO (fundamental valuation) · [-2 .. +2]        │
+└────────────────────────────────────────────────────────────────┘
+
+mc_tvl = (price × circulating_supply) / current_tvl
+
+  < 0.5        →  +2.0   сильно недооценён (usage превышает cap)
+  0.5 to 1.5   →  +1.0   умеренно недооценён
+  1.5 to 3     →   0     норма
+  3 to 5       →  -1.0   переоценён
+  > 5          →  -2.0   сильно переоценён
+
+Логика: MC/TVL = P/S ratio proxy. Классический ETH ~1.5-2.5.
+STRK при 1.0 — недооценён относительно usage. При 5+ — только
+hype без fundamentals.
+
+════════════════════════════════════════════════════════════════
+
+TOTAL:
+  usage_pressure_score = SC1 + SC2 + SC3 + SC4
+  clip to [-5, +8]
+
+Асимметрия диапазона: usage-based bullish может быть очень
+сильным (реальное принятие), но usage-based bearish обычно
+постепенный (fees падают медленно), редко катастрофический.
+
+Интерпретация:
+   +4 to +8    → сильное bullish (fundamental usage растёт)
+   +1 to +4    → мягкое bullish (usage адекватный)
+   -1 to +1    → нейтрально
+   -3 to -1    → мягкое bearish (usage слабеет)
+   -5 to -3    → сильное bearish (fundamental usage разрушается)
+
+════════════════════════════════════════════════════════════════
+
+ЖИВОЙ РАСЧЁТ на 31.07.2026 (R74):
+
+INPUTS:
+  · Weekday fees 10d avg: $4,702 · prev 10d avg: $4,702 · trend 0.00%
+  · TVL: $167.0M · 30d ago $174.5M · trend −4.32%
+  · Latest weekday fee: $4,759 (Jul-27 Mon 🟢)
+  · MC: $172.9M (0.02563 × 6.747B) · MC/TVL: 1.04
+
+РАСЧЁТ:
+  1. FEES trend (+0.00%, стабильно):          0.00
+  2. TVL trend (−4.32%, лёгкое падение):      0.00
+  3. FEES threshold ($4,759, нормальный):    +1.00
+  4. MC/TVL (1.04, умеренно недооценён):     +1.00
+  ──────────────────────────────────────────────
+  TOTAL usage_pressure_score:                +2.00
+
+Интерпретация: мягкое bullish (usage адекватный)
+
+Комментарий: STRK usage стабильный, не растёт, но и не падает.
+MC/TVL = 1.04 значит вся капитализация примерно равна TVL —
+редкая undervaluation для L2. Fees будни $4,759 (норма).
+Transactions падают на -9%, но это не входит в формулу v0.3
+(наблюдение для v0.4 расширения).
+
+Как может измениться:
+  · TVL восстановление к $200M → +1 (trend flip к +5%)
+  · Fees > $6k в будний → +1 (сильный usage)
+  · MC/TVL > 3 (рост цены без TVL) → -1
+  · Fees < $2k (event) → -2 (Usage RED)
+
+═══════════════════════════════════════════════════════════════════
+
+NARRATIVE PRESSURE · FILLED v0.4
+
+INPUT (30-дневное окно):
+  · surf_news feed по project=starknet (аргрегатор источников)
+  · surf_project ai-news (если доступно, часто пусто для starknet)
+  · surf_search web/token STRK (X/Twitter mentions если открыты)
+  · вручную-собранные founder tweets (Ben-Sasson @EliBenSasson, 
+    StarkWare @StarkWareLtd, StarkNet Foundation @Starknet)
+  · опционально: YouTube через MACRO_YOUTUBE_SOURCES skill
+
+Важно: NARRATIVE — самый субъективный компонент, требует явной
+пометки [ГИПОТЕЗА]. Идеально доверять формуле только после
+≥3 месяцев наблюдения baseline (calibration debt).
+
+ФОРМУЛА (4 подкомпонента):
+
+┌────────────────────────────────────────────────────────────────┐
+│ 1. MENTION VOLUME TREND (30d vs prev 30d) · [-2 .. +2]        │
+└────────────────────────────────────────────────────────────────┘
+
+Через surf_news feed count за 30 дней по project=starknet.
+
+  >= +100%    →  +2.0   резкое привлечение внимания
+  +30 to +100 →  +1.0   рост интереса
+  -20 to +30  →   0     стабильно
+  -20 to -50  →  -1.0   потеря внимания
+  <  -50%     →  -2.0   забыт (нет упоминаний)
+
+Примечание: baseline для STRK ≈ 15-25 articles/30d. Требует
+калибровки после ≥6 месяцев данных.
+
+┌────────────────────────────────────────────────────────────────┐
+│ 2. SENTIMENT SCORE (30d aggregated) · [-3 .. +3]              │
+└────────────────────────────────────────────────────────────────┘
+
+Оценка тона новостей за 30 дней:
+
+  +3   Very positive (major launches, big adoption events)
+  +1.5 Positive (roadmap wins, partnerships, dev progress)
+   0   Neutral / mixed
+  -1.5 Negative (FUD, hack rumors, delistings, missed roadmap)
+  -3   Very negative (post-exploit, drama, major user harm)
+
+Оценка вручную по summary из surf_news feed. Правило:
+  · major launch в 30д → +2 базово (Liquid staking, STRK20)
+  · founder visibility (Ben-Sasson, StarkWare) → +0.5
+  · CeFi partner shutdown → -0.5
+  · exchange technical suspend → -0.25
+  · exploit / hack → -3 (немедленно)
+
+┌────────────────────────────────────────────────────────────────┐
+│ 3. VOICE CONCENTRATION (кто говорит) · [-1.5 .. +1.5]         │
+└────────────────────────────────────────────────────────────────┘
+
+  +1.5  Тир 1 (founders/официальные) активно + позитивно
+  +0.5  Тир 2 (известные аналитики) поддерживают
+   0   Только retail-шум, без больших голосов
+  -0.5  Известные аналитики критикуют
+  -1.5  Founder молчит + retail FUD доминирует
+
+Тир 1 STRK: Eli Ben-Sasson (co-founder, @EliBenSasson),
+StarkWare (@StarkWareLtd), StarkNet Foundation (@Starknet).
+Тир 2 STRK: L2 researchers, известные крипто-аналитики.
+
+┌────────────────────────────────────────────────────────────────┐
+│ 4. ECOSYSTEM vs COMPETITORS SHARE OF VOICE · [-1.5 .. +1.5]   │
+└────────────────────────────────────────────────────────────────┘
+
+Относительно основных L2/ZK конкурентов: Arbitrum, Optimism,
+Base, zkSync, Polygon.
+
+  +1.5  STRK доминирует в narrative L2 (unique story)
+  +0.5  STRK лидирует в узкой нише (privacy / BTCfi / ZK)
+   0    STRK равновесие с конкурентами
+  -0.5  STRK в тени других L2
+  -1.5  STRK забыт в narrative L2
+
+════════════════════════════════════════════════════════════════
+
+TOTAL:
+  narrative_pressure_score = SC1 + SC2 + SC3 + SC4
+  clip to [-8, +8]
+
+Симметричный диапазон [-8, +8]: narrative может как убить
+токен (post-exploit FUD спираль), так и родить bull run
+(vitalik-like endorsement).
+
+Интерпретация:
+   +5 to +8    → сильное bullish attention (major cycle)
+   +2 to +5    → умеренное bullish attention
+   -2 to +2    → нейтрально
+   -5 to -2    → умеренное bearish (потеря интереса)
+   -8 to -5    → сильное bearish (наrrative kill)
+
+════════════════════════════════════════════════════════════════
+
+ЖИВОЙ РАСЧЁТ на 31.07.2026 (R74):
+
+INPUTS (surf_news feed последние 30 дней):
+  · 20 upstream articles за 30 дней (норма ~15-25)
+  · ключевые positive events:
+    - Liquid staking launched (Jul-29) · major infra
+    - Sats Terminal live BTCfi (Jul-22) · BTC-backed USDC 100k+ wallets
+    - STRK20 privacy framework (Jul-15) · unique L2 narrative
+    - Ben-Sasson ZK STARKs for BTC (Jul-10) · founder visibility
+    - Quantum-resistance roadmap · forward-thinking
+  · negative events:
+    - Ready card program shutdown (Jul-30, Kulipa issuer wind-down)
+    - Bithumb suspend (Jul-6, technical, resolved)
+    - Upbit suspend (Jul-5, technical, resolved)
+
+РАСЧЁТ:
+  1. Volume trend (20 articles/30d = норма):        0.00
+  2. Sentiment (много крупных launches, немного 
+     negative CeFi):                              +1.50
+  3. Voice concentration (Ben-Sasson active, 
+     official channels регулярны):                +1.00
+  4. Ecosystem share (STRK unique privacy+BTCfi 
+     narrative в L2 сегменте):                    +1.00
+  ──────────────────────────────────────────────────
+  TOTAL narrative_pressure_score:                 +3.50
+
+Округлим до +3.0 (правило: сентимент без калибровки — округление
+консервативное в сторону нейтральности).
+
+Интерпретация: умеренное bullish attention
+
+Комментарий: STRK испытывает реальный narrative-momentum вокруг
+privacy (STRK20) и BTCfi (Sats Terminal). Liquid staking launch
+только что произошёл (Jul-29). Founder Ben-Sasson активно виден
+в дискурсе о Bitcoin scaling. Это redkiy случай, когда attention
+и fundamental совпадают. Единственный негатив — shutdown Ready
+card program (CeFi partner Kulipa).
+
+Как может измениться:
+  · Ещё один major launch в 30д (Cairo v3, mainnet upgrade) → +1
+  · Exploit / drama → мгновенный -3 (catastrophic tail risk)
+  · Founder визитная активность → +0.5 (стабилизирует attention)
+  · Общий крипто медвежий рынок → -1 (attention переключается)
+
+Требует калибровки: пороги volume и voice — subjective, нужны
+≥3 месяца истории. Пока v0.4 = [ГИПОТЕЗА].
+
+═══════════════════════════════════════════════════════════════════
+
+ROADMAP PRESSURE · FILLED v0.5
+
+INPUT:
+  · surf_search events project=<starknet_uuid> · 90-дневное окно
+  · surf_news feed для upcoming announced events
+  · web_fetch starknet.io/roadmap (при необходимости, ручной)
+  · Twitter @Starknet upcoming events (ручной)
+  · Cross-reference с MACRO_YOUTUBE_SOURCES при macro-калибровке
+
+ФОРМУЛА (4 подкомпонента):
+
+┌────────────────────────────────────────────────────────────────┐
+│ 1. UPCOMING CONFIRMED EVENTS (30-90d ahead) · [-1 .. +3]      │
+└────────────────────────────────────────────────────────────────┘
+
+Подтверждённые события в календаре 30-90 дней:
+
+  +3   Major mainnet upgrade / breaking release (Cairo v3, 
+       tokenomics burn model activation)
+  +2   Roadmap milestone (framework launch, protocol update)
+  +1   Partner/institution launch on Starknet
+   0   Nothing scheduled или события слишком мелкие
+  -1   Missed / delayed событие в календаре
+
+Правило: события должны быть с конкретной датой из официального
+источника (twitter, blog, starknet.io). Слухи не считаются.
+
+┌────────────────────────────────────────────────────────────────┐
+│ 2. EXECUTED EVENTS (past 30d, momentum) · [-1 .. +3]          │
+└────────────────────────────────────────────────────────────────┘
+
+Успешно исполненные события за последние 30 дней:
+
+  +3   Major launch (Liquid staking, mainnet feature)
+  +2   Framework launch (STRK20 privacy stack)
+  +1   Partner integration (Sats Terminal BTCfi)
+   0   Мелкие апдейты / нет заметных launches
+  -1   Post-execution disappointment / broken feature
+
+Максимум +3 (даже если несколько major launches — clip cap).
+
+┌────────────────────────────────────────────────────────────────┐
+│ 3. DELAY / MISS TRACK RECORD (past 6 months) · [-2 .. +1]     │
+└────────────────────────────────────────────────────────────────┘
+
+Способность держать сроки:
+
+  +1   Zero major delays past 6 months
+   0   Regular delivery, минорные сдвиги допустимы
+  -1   1 major miss / roadmap credibility hit
+  -2   Multiple misses / broken roadmap credibility
+
+Важно: STRK исторически задерживал (Regenesis 2022, staking
+activation 2024-2025 delay), но последние 6 месяцев (Q2-Q3 2026)
+delivery стабильна. Метрика — окно 6 месяцев, не lifetime.
+
+┌────────────────────────────────────────────────────────────────┐
+│ 4. BITCOIN / ETHEREUM ALIGNMENT · [-0.5 .. +1.5]              │
+└────────────────────────────────────────────────────────────────┘
+
+Синхронизация STRK с narrative BTC/ETH:
+
+  +1.5  Strong BTC alignment (Sats Terminal BTCfi, strkBTC, 
+        ZK STARKs for Bitcoin scaling)
+  +0.5  Partial alignment (ETH scaling, L2 growth)
+   0    Neutral / independent path
+  -0.5  Misaligned / competing with ETH direction
+
+Важно: STRK долгосрочно синхронизирован с ETH (L2 rollup), но
+short-term BTCfi narrative может дать extra push.
+
+════════════════════════════════════════════════════════════════
+
+TOTAL:
+  roadmap_pressure_score = SC1 + SC2 + SC3 + SC4
+  clip to [-3, +8]
+
+Асимметрия: положительные события намного значимее для
+scenario-driven trading, чем неудачи (missed roadmap = -3 max).
+
+Интерпретация:
+   +5 to +8    → сильное bullish (мощный execution + upcoming)
+   +2 to +5    → мягкое bullish (регулярная delivery)
+   -1 to +2    → нейтрально
+   -3 to -1    → мягкое bearish (задержки / потеря momentum)
+
+════════════════════════════════════════════════════════════════
+
+ЖИВОЙ РАСЧЁТ на 31.07.2026 (R74):
+
+INPUTS (surf_search events + surf_news feed 90-дневное окно):
+
+Executed events past 30 days:
+  · Jul-29 Liquid staking launched (major)
+  · Jul-22 Sats Terminal BTCfi (partner)
+  · Jul-21 Private swaps on avnu (STRK20 impl)
+  · Jul-15 STRK20 Privacy dev stack (framework)
+  · Jul-14 STRK20 Privacy framework (framework)
+  · Jul-14 Memory Protocol AI draft (community)
+
+Executed past 90 days (context):
+  · Jun-25 Privacy tools live (early STRK20)
+  · May-22 Privacy narrative capital rotation
+  · May-12 strkBTC launch (BTCfi entry)
+
+Upcoming confirmed (surf показывает пусто):
+  · Roadmap items known (Cairo v3, quantum-resistance 3-stage)
+    но без конкретных дат в 30-90д окне
+
+РАСЧЁТ:
+  1. Upcoming (нет подтверждённых дат в 90д):     0.00
+  2. Executed (3 major launches Jul):            +3.00  (cap)
+  3. Delay track (zero delays 6 месяцев):        +1.00
+  4. BTC alignment (Sats Terminal + strkBTC):    +1.50
+  ──────────────────────────────────────────────────
+  TOTAL roadmap_pressure_score:                  +5.50
+
+Округлим консервативно до +5.0 (правило: без ≥3 месяцев
+формальной калибровки округляем к нейтральности).
+
+Интерпретация: сильное bullish (мощный execution momentum)
+
+Комментарий: STRK за июль 2026 исполнил три крупных roadmap
+события: Liquid staking (Jul-29), STRK20 privacy stack (Jul-15),
+Sats Terminal BTCfi (Jul-22). Это редкая концентрация successful
+launches. Delay track record clean за 6 месяцев. BTC alignment
+сильная через Sats Terminal и strkBTC. Единственный слабый
+момент — отсутствие подтверждённых upcoming events в календаре
+30-90д (surf нет данных, требует ручной проверки starknet.io).
+
+Как может измениться:
+  · Cairo v3 announcement + дата → +2 (upcoming)
+  · Tokenomics burn model activation → +3 (major upcoming)
+  · Задержка одного из объявленных events → -1 (delay track)
+  · ETH L2 upgrade competing с STRK narrative → -0.5
+
+═══════════════════════════════════════════════════════════════════
+
+NEED_SCORE = sum(all 6 pressure_scores) в диапазоне [-60, +40]
+
+Как читать:
+  +20 to +40  → сильный bullish setup, ждать формирования входа
+  +5 to +20   → нейтрально-позитивный контекст
+  -5 to +5    → нейтрально, «нет ставки»
+  -20 to -5   → нейтрально-негативный, снизить exposure
+  -40 to -20  → сильный bearish setup, готовиться к downside
+  < -40       → критическое давление вниз, exit-mode
+
+При заполнении 5/6 компонентов (v0.5):
+  NEED_SCORE (partial) = unlock + structure + usage + narrative + roadmap
+                       = -0.6 + (-4.0) + (+2.0) + (+3.0) + (+5.0) = +5.4
+  Интерпретация: нейтрально-позитивный (в +5..+20 диапазоне).
+  Четыре компонента bullish (USAGE, NARRATIVE, ROADMAP, UNLOCK-легкий)
+  явно перевешивают STRUCTURE bearish. Финальный NEED_SCORE ждёт
+  REGULATORY (v0.6), но картина уже сформировалась: technical
+  bearish vs fundamental+attention+execution bullish contrarian.
+
+═══════════════════════════════════════════════════════════════════
+
+Base/Bull/Bear-REGIMES (три сценария 30-90 дней)
+
+Для каждого сценария:
+  условия срабатывания (какие компоненты должны быть в каком диапазоне)
+  ожидаемая цена (диапазон, не конкретное число!)
+  вероятность (subjective, помечать [ГИПОТЕЗА])
+
+Пример шаблона (v1.0 будет содержать реальные):
+  Base:  «Продолжение ranging/volatile mix. NEED_SCORE в [-10, +10].
+          Цена в диапазоне текущей ±20%. Вероятность 50%.»
+  Bull:  «Смена cycle_btc на UP + roadmap event + narrative +.
+          NEED_SCORE > +15. Цена +30-60%. Вероятность 25%.»
+  Bear:  «Cliff unlock + Foundation → CEX + regulatory event.
+          NEED_SCORE < -20. Цена -30-50%. Вероятность 25%.»
+
+═══════════════════════════════════════════════════════════════════
+
+OUTPUTS · пример вывода на 31.07.2026 (v0.5 · 5/6 filled):
+
+PRESSURE MAP · v0.5 (STRK · 31.07.2026)
+────────────────────────────────────────────
+UNLOCK:      -0.6   (лёгкое, 3 разлока в 180-дн окне)
+STRUCTURE:   -4.0   (сильное bearish · ниже VAL, volatile+DOWN)
+USAGE:       +2.0   (мягкое bullish · MC/TVL 1.04)
+NARRATIVE:   +3.0   (умеренное bullish · privacy+BTCfi story)
+ROADMAP:     +5.0   (сильное bullish · 3 major launches в Jul)
+REGULATORY:  STUB   (v0.6)
+────────────────────────────────────────────
+NEED_SCORE (partial): +5.4   [ГИПОТЕЗА · 5/6]
+
+Читается: STRK находится в интересной bullish contrarian точке
+на средне-долгосрочном горизонте. STRUCTURE технически bearish
+(ниже VAL, volatile, cycle DOWN), но четыре других компонента
+(USAGE +2, NARRATIVE +3, ROADMAP +5, UNLOCK -0.6 лёгкий) в сумме
+дают +9.4, перевешивая structural давление.
+
+Особенно сильный ROADMAP (+5): за июль 2026 Starknet исполнил
+три крупных launches — Liquid staking, STRK20 Privacy stack,
+Sats Terminal BTCfi. Это редкая концентрация successful delivery.
+
+NEED_SCORE +5.4 = нейтрально-позитивный контекст на 30-90 дней.
+Structure может дать точку входа при отскоке в VA, а fundamental
++ attention + execution support рост при таком отскоке.
+
+Ключевые триггеры изменения:
+  · BTC over MA200 → STRUCTURE regime × cycle +1.5 → NEED +7
+  · price отскок в VA → STRUCTURE positional +2 → NEED +7.4
+  · Cairo v3 announcement с датой → ROADMAP +2 (upcoming) → NEED +7.4
+  · Exploit / major hack → NARRATIVE -3 catastrophic → NEED +2.4
+  · unlock 15.11.2026 через 30д → UNLOCK -2.0 → NEED +3.4
+  · Fees < $2k Mon → USAGE -3 → NEED +2.4
+
+═══════════════════════════════════════════════════════════════════
+
+FORBIDDEN (из MASTER §8 «Режимы проекта»):
+
+⛔ NEW_ENTRY / OPEN_SPEC / SIZE как приказ
+⛔ проценты роста без метки [ГИПОТЕЗА]
+⛔ рендер MUST-CALC / DECISION / МЕСТО
+⛔ buy / sell / торговый вердикт
+⛔ ссылка «см. DECISION» — DECISION не строится в SCENARIO
+
+═══════════════════════════════════════════════════════════════════
+
+PROVENANCE:
+
+v0.1 (31.07): архитектура + UNLOCK компонент.
+  Vesting данные — прикреплены пользователем, могут требовать проверки.
+  CEX_share = 0.5 — эмпирика, нужна калибровка через backtest после
+  первого cliff-разлока (2026-11-15).
+
+v0.2+ будет добавлять по одному компоненту, чтобы не сломать
+protocol RUN и не смешать с trading logic.
+
+CANONICAL SOURCE: skills/scenario_pressure.txt
+
+CHANGELOG:
+  v0.0 (30.07): STUB · только PURPOSE и FORBIDDEN
+  v0.1 (31.07): архитектура 6 источников + UNLOCK FILLED
+  v0.2 (31.07): STRUCTURE FILLED (4 подкомпонента) · 2/6 completed
+  v0.3 (31.07): USAGE FILLED (fees + TVL + MC/TVL) · 3/6 completed
+  v0.4 (31.07): NARRATIVE FILLED (volume+sentiment+voice+share) · 4/6
+  v0.5 (31.07): ROADMAP FILLED (upcoming+executed+delay+BTC) · 5/6
+
+NEXT:
+  v0.6: REGULATORY (SEC/EU MiCA event-driven, редкие но важные)
+  v1.0: все 6 компонентов + Base/Bull/Bear-REGIMES с backtest

@@ -1,0 +1,42 @@
+NAME: playbook
+VERSION: 0.1 · 30.07.2026
+STATUS: STUB · метод пока в BLOCK_SKILLS §"PLAYBOOK линии" · перенос v5.2
+
+═══════════════════════════════════════════════════════════════════
+
+INPUTS:
+  · 90D OKX 1D бары (общий датасет с regime и structure_mesto)
+  · алгоритмические swing highs/lows через фракталы Вильямса W=3
+
+FORMULA / STEPS:
+  ⤳ полный текст: STRK_BLOCK_SKILLS.md §"PLAYBOOK линии"
+
+  Краткое:
+  - фракталы W=3 → swing points
+  - линейная регрессия по 3-4 последним swing highs (Falling Wedge)
+    или swing lows (Rising Wedge / Ascending Triangle)
+  - формально пробой: close D1 за линией + следующий D1 в ту же сторону
+  - формально удержанный ретест: возврат к линии + отскок в 1-2 барах
+
+OUTPUTS:
+  playbook_line_slope, playbook_line_price_at_current_bar,
+  breakout_status: NONE | PROBED | CONFIRMED | INVALIDATED
+  retest_status: NONE | PENDING | HELD | FAILED
+
+GATES:
+  MUST #9 R:R — вычисляется относительно playbook_line как стопа
+  CONFLICT_GATE: см. связку с regime (skills/regime.txt) и
+    structure_mesto (skills/structure_mesto.txt)
+
+TRAPS:
+  ⛔ Покупка пробойной свечи (в реестре опровергнутого)
+  ⛔ Пробой в ranging без ретеста = 60% false-signal
+  ⛔ Живая инвалидация: R72 Falling Wedge пробит вниз Jul-28
+
+PROVENANCE:
+  Пересчёт каждый RUN (свежие swing points).
+  Инвалидированная линия → полное удаление из STRUCTURE, не «мёртвый якорь».
+
+CANONICAL SOURCE (после переноса): skills/playbook.txt
+CURRENT SOURCE (до переноса): STRK_BLOCK_SKILLS.md §"PLAYBOOK"
+NEXT: v5.2 · заполнить полностью с формулами

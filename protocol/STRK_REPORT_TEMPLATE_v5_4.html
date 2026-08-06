@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRK ENGINE · REPORT TEMPLATE · v5.4</title>
+<style>
+/* CANONICAL TEMPLATE v5.4 (01.08.2026)
+   MASTER v1.16 · 11 обязательных блоков в фиксированном порядке:
+   1. HERO (title + date + version)
+   2. LAYMAN «Что происходит» (5 предложений)
+   3. MUST-CALC (19+#0)
+   4. DECISION (11 полей)
+   5. МЕСТО (9 строк)
+   6. WATCHERS (layman v1.1)
+   7. CONFLICT_GATE (с trader_quality_filter)
+   8. PROBABILITY MODULE (v1.0 · вероятности + EV) ← NEW в v5.4
+   9. TRADING MAP (4 сценария + сводная таблица уровней)
+   10. SCENARIO context (краткая справка NEED_SCORE + Base/Bull/Bear)
+   11. FORECAST для FORWARDTEST_LOG
+*/
+:root{--bg:#0A0C10;--card:#12151C;--border:#1E2330;--text:#E2E8F0;--dim:#64748B;--green:#22C55E;--red:#EF4444;--yellow:#EAB308;--blue:#3B82F6;--purple:#A855F7;--cyan:#06B6D4;--orange:#F97316}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',monospace;font-size:13px;padding:18px;max-width:940px;margin:0 auto;line-height:1.5}
+.g{color:var(--green)}.r{color:var(--red)}.y{color:var(--yellow)}.b{color:var(--blue)}.c{color:var(--cyan)}.o{color:var(--orange)}.dim{color:var(--dim)}.p{color:var(--purple)}
+
+/* Block 1: HERO */
+.hdr{background:linear-gradient(135deg,#12151C,#0f1219);border:2px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.hdr-title{font-size:16px;font-weight:bold;margin-bottom:4px}
+
+/* Block 2: LAYMAN (v5.3) */
+.layman{background:linear-gradient(135deg,#0a1a20,#0f1219);border:2px solid var(--cyan);border-radius:12px;padding:18px;margin-bottom:14px}
+.layman-title{font-size:15px;font-weight:bold;color:var(--cyan);margin-bottom:10px;letter-spacing:1px}
+.layman-item{padding:8px 0;border-bottom:1px dashed #1a1f2a;font-size:14px;line-height:1.6}
+.layman-item:last-child{border:none}
+.layman-lbl{font-weight:bold;color:var(--cyan);text-transform:uppercase;font-size:11px;letter-spacing:1px;display:block;margin-bottom:2px}
+
+/* Block 3: MUST-CALC */
+.mustcalc{background:#0c1015;border:2px solid var(--red);border-radius:10px;padding:14px;margin-bottom:8px}
+.mc-title{font-size:13px;font-weight:bold;color:var(--yellow);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px}
+@media(max-width:640px){.mc-grid{grid-template-columns:1fr}}
+.mc-row{display:grid;grid-template-columns:22px 1fr 90px;gap:6px;padding:4px 6px;border-radius:3px;line-height:1.4;align-items:center}
+.mc-row.done{background:#0a1a12}
+.mc-row.inh{background:#141410}
+.mc-row.gap{background:#1a0a0a}
+.mc-row.hot{background:#2a1408;border:1px solid var(--orange)}
+.mc-num{color:var(--dim);font-weight:bold;text-align:right}
+.mc-stat{text-align:right;font-weight:bold;font-size:9.5px;letter-spacing:0.5px}
+.mc-manifest{margin-top:12px;padding:10px;background:#0c1015;border-radius:5px;font-size:11px;text-align:center;color:var(--dim);border:1px dashed var(--border);line-height:1.6}
+
+/* Block 4: DECISION */
+.decision{border:3px solid var(--red);border-radius:12px;padding:16px;margin-bottom:12px;background:linear-gradient(135deg,#2a0f0f,#0f1219)}
+.dec-title{font-size:15px;font-weight:bold;letter-spacing:2px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15)}
+.dec-grid{display:grid;grid-template-columns:150px 1fr;gap:5px 12px;font-size:12px;line-height:1.7}
+@media(max-width:640px){.dec-grid{grid-template-columns:1fr}}
+.dec-k{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;padding-top:2px}
+.dec-v{font-weight:bold}
+.dec-sep{grid-column:1/-1;height:1px;background:var(--border);margin:6px 0}
+
+/* Block 5: МЕСТО */
+.place{background:#0a1420;border:2px solid var(--blue);border-radius:10px;padding:14px;margin-bottom:12px}
+.place-title{font-size:14px;font-weight:bold;color:var(--blue);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.place-row{display:grid;grid-template-columns:120px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #1a1f2a;font-size:12px;line-height:1.5}
+.place-row:last-child{border:none}
+.place-k{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;padding-top:2px;font-weight:bold}
+
+/* Block 6: WATCHERS */
+.watchers{background:#12100a;border:2px solid var(--orange);border-radius:10px;padding:14px;margin-bottom:12px}
+.watchers-title{font-size:13px;font-weight:bold;color:var(--orange);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.w-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.w-count{text-align:center;padding:8px;border-radius:5px;background:#0c1015}
+.w-count-num{font-size:20px;font-weight:bold}
+.w-count-lbl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.w-item{display:grid;grid-template-columns:44px 60px 1fr;gap:8px;padding:6px 8px;font-size:11px;line-height:1.4;border-radius:4px;margin-bottom:4px}
+.w-code{font-weight:bold;color:var(--dim)}
+.w-level{font-weight:bold;font-size:10px;text-align:center;letter-spacing:1px}
+.w-layman{margin-top:4px;padding:4px 8px 4px 52px;color:var(--cyan);font-style:italic;font-size:11px;line-height:1.5;background:#0a1420;border-radius:0 4px 4px 0;margin-bottom:8px}
+
+/* Block 7: CONFLICT_GATE */
+.conflict{background:#12100a;border:1px solid var(--orange);border-radius:8px;padding:12px;margin-bottom:10px}
+.cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+@media(max-width:640px){.cf-grid{grid-template-columns:1fr}}
+.cf-col{background:#0c1015;border-radius:6px;padding:10px}
+.cf-col-title{font-size:12px;font-weight:bold;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.cf-item{font-size:11px;line-height:1.5;padding:3px 0}
+
+/* Block 8: PROBABILITY MODULE (NEW v5.4) */
+.probmod{background:linear-gradient(135deg,#0f1219,#1a1225);border:3px solid var(--purple);border-radius:12px;padding:16px;margin-bottom:14px}
+.probmod-title{font-size:15px;font-weight:bold;color:var(--purple);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.prob-scenario{background:#0c1015;border-radius:6px;padding:12px;margin-bottom:10px;font-size:11.5px}
+.prob-header{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;padding-bottom:8px;border-bottom:1px dashed var(--border);margin-bottom:8px}
+.prob-name{font-weight:bold;font-size:13px}
+.prob-num{font-size:24px;font-weight:bold;font-family:monospace}
+.prob-A{color:var(--green)}
+.prob-B{color:var(--yellow)}
+.prob-C{color:var(--red)}
+.prob-D{color:var(--cyan)}
+.prob-breakdown{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-size:11px;line-height:1.5}
+.prob-factor-k{color:var(--dim);font-weight:bold}
+.prob-factor-v{color:var(--text)}
+.prob-factor-mult{color:var(--purple);font-family:monospace;text-align:right}
+.prob-formula{background:#1a1225;border-left:2px solid var(--purple);padding:6px 10px;margin-top:6px;font-size:11px;color:var(--dim);line-height:1.5}
+.ev-row{margin-top:8px;padding:6px 10px;border-radius:5px;font-size:11px;font-weight:bold}
+.ev-neg{background:#1a0f0f;color:var(--red)}
+.ev-pos{background:#0a1a12;color:var(--green)}
+.ev-neutral{background:#141410;color:var(--yellow)}
+.rank-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:4px;font-size:12px;background:#0c1015}
+.rank-num{font-weight:bold;color:var(--dim);font-size:14px}
+.rank-name{font-weight:bold}
+.rank-prob{font-family:monospace;font-weight:bold;font-size:14px}
+.formula-explain{background:#0a1420;border:1px solid var(--cyan);border-radius:8px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.6}
+.formula-explain-title{font-weight:bold;color:var(--cyan);margin-bottom:6px}
+
+/* Block 9: TRADING MAP */
+.trademap{background:#0a1420;border:2px solid var(--yellow);border-radius:12px;padding:16px;margin-bottom:14px}
+.trademap-title{font-size:15px;font-weight:bold;color:var(--yellow);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.tm-section{margin-bottom:16px}
+.tm-section:last-child{margin-bottom:0}
+.tm-shead{display:flex;align-items:center;gap:8px;font-weight:bold;font-size:13px;padding:6px 10px;border-radius:6px;margin-bottom:8px}
+.tm-shead-long{background:#0a2818;color:var(--green)}
+.tm-shead-short{background:#2a0a08;color:var(--red)}
+.tm-shead-accum{background:#1a1225;color:var(--purple)}
+.tm-shead-levels{background:#0a1420;color:var(--cyan)}
+.tm-scenario{background:#0c1015;border-radius:6px;padding:10px;margin-bottom:8px;font-size:11.5px;line-height:1.6}
+.tm-scenario-title{font-weight:bold;font-size:12px;margin-bottom:6px}
+.tm-levels{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin-top:6px;font-size:11px}
+.tm-lvl-k{color:var(--dim);font-weight:bold}
+.tm-lvl-v{color:var(--text)}
+.tm-warning{background:#1a0f0f;border:1px solid var(--red);border-radius:4px;padding:6px 8px;margin-top:6px;font-size:10.5px;color:var(--dim);line-height:1.5}
+
+/* Block 10: SCENARIO */
+.scenario-box{background:#1a1225;border:1px solid var(--purple);border-radius:8px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.6}
+
+/* Block 11: FORECAST */
+.evidence{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px}
+.ev-title{font-size:12px;font-weight:bold;color:var(--cyan);margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{padding:5px 7px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--dim);font-weight:normal;text-transform:uppercase;font-size:9.5px}
+.reads{font-size:11px;color:var(--cyan);margin-top:8px;padding:7px 9px;background:#0a1420;border-left:2px solid var(--cyan);border-radius:0 5px 5px 0;line-height:1.5}
+.mini-block{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;font-size:11px;line-height:1.5}
+.mini-block-title{font-size:11px;font-weight:bold;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<!-- ============================================= -->
+<!-- BLOCK 1 · HERO                                -->
+<!-- ============================================= -->
+<div class="hdr">
+<div class="hdr-title">STRK ENGINE · [MODE R__] · v5.4/v1.16</div>
+<span class="dim">[DATE] [TIME] UTC · STRK $[PRICE] · [краткая суть в 1 строку]</span>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 2 · LAYMAN «Что происходит»             -->
+<!-- ============================================= -->
+<div class="layman">
+<div class="layman-title">💬 ЧТО ПРОИСХОДИТ (простым языком)</div>
+
+<div class="layman-item">
+<span class="layman-lbl">Цена</span>
+[Одно предложение о цене, тренде, расстоянии до опасной точки %.]
+</div>
+
+<div class="layman-item">
+<span class="layman-lbl">Что на рынке</span>
+[Одно предложение о BTC/крупных держателях/скрытых силах.]
+</div>
+
+<div class="layman-item">
+<span class="layman-lbl">Что говорит фундамент</span>
+[Одно предложение о валюации (MC/TVL), проекте, стейкинге.]
+</div>
+
+<div class="layman-item">
+<span class="layman-lbl">Твоя позиция</span>
+[FLAT / OPEN + правильно/неправильно.]
+</div>
+
+<div class="layman-item">
+<span class="layman-lbl">Что делать сейчас</span>
+[Конкретное действие или ожидание · ссылка на probability результат.]
+</div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 3 · MUST-CALC 19+#0                     -->
+<!-- ============================================= -->
+<div class="mustcalc">
+<div class="mc-title">✅ MUST-CALC · 19 пунктов + #0 (все на экране)</div>
+<div class="mc-grid">
+<div>
+<div class="mc-row done"><div class="mc-num">0</div><div>MASTER_INSTRUCTION прочитана</div><div class="mc-stat g">✓ v1.16</div></div>
+<div class="mc-row done"><div class="mc-num">1</div><div>цена + stop/invalidation</div><div class="mc-stat g">✓ $[PRICE]</div></div>
+<!-- MUST 2-7 -->
+</div>
+<div>
+<!-- MUST 8-19 -->
+</div>
+</div>
+<div class="mc-manifest"><strong>MANIFEST · ✓ЗАКРЫТ N · ◐INHERITED M · ⚠NOT_CHECKED K · ◆CONFLICT L</strong></div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 4 · DECISION (11 полей)                 -->
+<!-- ============================================= -->
+<div class="decision">
+<div class="dec-title r">🎯 DECISION</div>
+<div class="dec-grid">
+<div class="dec-k">NEW_ENTRY</div><div class="dec-v">YES | NO | WAIT</div>
+<div class="dec-k">Математика</div><div class="dec-v">EV всех сценариев → см. PROBABILITY MODULE (блок 8)</div>
+<div class="dec-k">OPEN_SPEC / CORE</div><div class="dec-v">FLAT / HOLD / TIGHTEN / SCALE_OUT / EXIT | FLAT / HOLD / REDUCE / EXIT</div>
+<div class="dec-k">SIZE_NEW</div><div class="dec-v">% · $</div>
+<div class="dec-k">SIZE_OPEN</div><div class="dec-v">% · вход @ · дата | —</div>
+<div class="dec-k">STOP</div><div class="dec-v">уровень + условие</div>
+<div class="dec-k">T1 / T2</div><div class="dec-v">уровни + доли</div>
+<div class="dec-k">INVALIDATION</div><div class="dec-v r">конкретный порог</div>
+<div class="dec-k">WHY</div><div class="dec-v">одна фраза + EV аргумент</div>
+<div class="dec-k">MONITOR_72h</div><div class="dec-v">1-3 метрики с порогами</div>
+<div class="dec-k">GATES</div><div class="dec-v dim">CORE · SPEC · CONFLICT · CYCLE_BTC · WATCHER · SCENARIO NEED</div>
+</div>
+<div class="reads">→ При NEW_ENTRY=NO см. TRADING MAP (блок 9) — конкретные сценарии + PROBABILITY (блок 8) — их вероятности.</div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 5 · МЕСТО (9 строк v5.0)                -->
+<!-- ============================================= -->
+<div class="place">
+<div class="place-title">📍 МЕСТО (MUST #16 · 9 строк)</div>
+<div class="place-row"><div class="place-k">1 REGIME</div><div>...</div></div>
+<div class="place-row"><div class="place-k">2 CYCLE_BTC</div><div>...</div></div>
+<div class="place-row"><div class="place-k">3 PHASE</div><div>...</div></div>
+<div class="place-row"><div class="place-k">4 STRUCTURE</div><div>VAL / POC / VAH</div></div>
+<div class="place-row"><div class="place-k">5 POSITION</div><div>...</div></div>
+<div class="place-row"><div class="place-k">6 DECISION</div><div class="dim">→ см. выше</div></div>
+<div class="place-row" style="border-top:2px solid var(--dim);padding-top:8px"><div class="place-k">7 UNLOCKS</div><div>...</div></div>
+<div class="place-row"><div class="place-k">8 HOLDERS</div><div>...</div></div>
+<div class="place-row"><div class="place-k">9 LIQUIDITY</div><div>...</div></div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 6 · WATCHERS (v1.1 layman)              -->
+<!-- ============================================= -->
+<div class="watchers">
+<div class="watchers-title">🔔 WATCHERS (skills/watchers.txt v1.1 · layman actions)</div>
+
+<div class="w-summary">
+<div class="w-count"><div class="w-count-num g">X</div><div class="w-count-lbl">L1 · наблюдать</div></div>
+<div class="w-count"><div class="w-count-num y">Y</div><div class="w-count-lbl">L2 · готовиться</div></div>
+<div class="w-count"><div class="w-count-num r">Z</div><div class="w-count-lbl">L3 · действовать</div></div>
+</div>
+
+<!-- Пример активного watcher: -->
+<div class="w-item" style="background:#2a0a08;border-left:3px solid var(--red)">
+<div class="w-code r">W_</div>
+<div class="w-level r">L3</div>
+<div><strong class="r">GROUP NAME</strong> — техническое описание.</div>
+</div>
+<div class="w-layman">→ <strong>Вам:</strong> [layman фраза из skills/watchers.txt v1.1]</div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 7 · CONFLICT_GATE                       -->
+<!-- (с trader_quality_filter v1.15)               -->
+<!-- ============================================= -->
+<div class="conflict">
+<div class="watchers-title" style="color:var(--orange)">◆ CONFLICT_GATE (MUST #14) — bull N vs bear M</div>
+<div class="cf-grid">
+<div class="cf-col">
+<div class="cf-col-title g">🟢 BULLISH_STACK · N</div>
+<!-- WARNING: только SMART-tier signals с trader_quality_filter -->
+<div class="cf-item">1. ...</div>
+</div>
+<div class="cf-col">
+<div class="cf-col-title r">🔴 BEARISH_STACK · M</div>
+<!-- Include CONTRARIAN_BEARISH if 100% long + funding <-15% + trapped losers -->
+<div class="cf-item">1. ...</div>
+</div>
+</div>
+<div class="reads">→ trader_quality_filter применён (v1.15): POOR-tier entries НЕ засчитаны в bullish.</div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 8 · PROBABILITY MODULE (NEW v5.4)       -->
+<!-- (skills/probability_module.txt v1.0)          -->
+<!-- ============================================= -->
+<div class="probmod">
+<div class="probmod-title">🎲 PROBABILITY MODULE · вероятности свинг-сценариев (5 дней)</div>
+
+<!-- Formula explanation -->
+<div class="formula-explain">
+<div class="formula-explain-title">Как это считается</div>
+<strong>Prob(scenario) = Base_prior × Prior_mod × Trigger_proximity × Conditions_match × 1/N</strong><br><br>
+· <strong>Base prior</strong> — базовая вероятность каждого сценария (A=0.25, B=0.20, C=0.20, D=0.35). Subjective, откалибруется на ≥15 прогнозах.<br>
+· <strong>Prior mod</strong> — модификатор от SCENARIO NEED_SCORE (см. блок 10)<br>
+· <strong>Trigger proximity</strong> — расстояние от цены до триггера (5%=1.0 · 8%=0.8 · 15%=0.5 · &gt;15%=0.3)<br>
+· <strong>Conditions match</strong> — сколько компонентов поддерживают сценарий, диапазон [0.4, 1.5]<br>
+· <strong>1/N</strong> — нормализация суммы к 100%<br><br>
+
+<strong>Все компоненты уже посчитаны в других блоках</strong> — вероятности НЕ выдуманы, а выведены из существующих сигналов. <span class="y">[ГИПОТЕЗА]</span> до калибровки.
+</div>
+
+<!-- Ranking summary -->
+<div class="mini-block">
+<div class="mini-block-title">Ранжирование сценариев (5 дней)</div>
+<div class="rank-row">
+<div class="rank-num prob-D">1.</div><div class="rank-name">[Scenario name]</div><div class="rank-prob prob-D">XX.X%</div>
+</div>
+<!-- остальные 3 сценария в порядке убывания -->
+</div>
+
+<!-- Scenario A · LONG SAFE breakdown -->
+<div class="prob-scenario">
+<div class="prob-header">
+<div class="prob-name prob-A">A · LONG SAFE</div>
+<div><span class="dim">Trigger:</span> D1 close ≥ $[VAL]</div>
+<div class="prob-num prob-A">X.X%</div>
+</div>
+<div class="prob-breakdown">
+<div class="prob-factor-k">Base prior:</div><div class="prob-factor-v">bull baseline</div><div class="prob-factor-mult">0.25</div>
+<div class="prob-factor-k">Prior mod:</div><div class="prob-factor-v">NEED [score] → [интерпретация]</div><div class="prob-factor-mult">× X.XX</div>
+<div class="prob-factor-k">Trigger prox:</div><div class="prob-factor-v">дистанция +X%</div><div class="prob-factor-mult">× X.XX</div>
+<div class="prob-factor-k">Conditions:</div><div class="prob-factor-v">CYCLE + REGIME + CONFLICT + FLOW</div><div class="prob-factor-mult">× X.XX</div>
+</div>
+<div class="prob-formula">Raw = X.XXX · Normalized → X.X%</div>
+<div class="ev-row ev-neg">EV = P × R/R − (1-P) × 1R = <strong>±X.XXR</strong> · [интерпретация]</div>
+</div>
+
+<!-- Scenario B · LONG AGGRESSIVE breakdown -->
+<div class="prob-scenario">
+<div class="prob-header">
+<div class="prob-name prob-B">B · LONG AGGRESSIVE</div>
+<div><span class="dim">Trigger:</span> wick к $[LIQ] + close выше $[RECOVERY]</div>
+<div class="prob-num prob-B">X.X%</div>
+</div>
+<div class="prob-breakdown">
+<div class="prob-factor-k">Base prior:</div><div class="prob-factor-v">agg bull baseline</div><div class="prob-factor-mult">0.20</div>
+<!-- остальные факторы -->
+</div>
+<div class="prob-formula">Raw = X.XXX · Normalized → X.X%</div>
+<div class="ev-row ev-neg">EV = ±X.XXR · [интерпретация]</div>
+</div>
+
+<!-- Scenario C · SHORT breakdown -->
+<div class="prob-scenario">
+<div class="prob-header">
+<div class="prob-name prob-C">C · SHORT</div>
+<div><span class="dim">Trigger:</span> wick к $[VAL] + rejection</div>
+<div class="prob-num prob-C">X.X%</div>
+</div>
+<div class="prob-breakdown">
+<div class="prob-factor-k">Base prior:</div><div class="prob-factor-v">bear baseline</div><div class="prob-factor-mult">0.20</div>
+<!-- остальные факторы, включая funding penalty -->
+</div>
+<div class="prob-formula">Raw = X.XXX · Normalized → X.X%</div>
+<div class="ev-row ev-neg">EV = ±X.XXR · funding [X]% съедает [X]%/мес</div>
+</div>
+
+<!-- Scenario D · DRIFT breakdown -->
+<div class="prob-scenario">
+<div class="prob-header">
+<div class="prob-name prob-D">D · DRIFT</div>
+<div><span class="dim">Trigger:</span> ни один из A/B/C не срабатывает за 5 дней</div>
+<div class="prob-num prob-D">XX.X%</div>
+</div>
+<div class="prob-breakdown">
+<div class="prob-factor-k">Base prior:</div><div class="prob-factor-v">drift baseline</div><div class="prob-factor-mult">0.35</div>
+<div class="prob-factor-k">Prior mod:</div><div class="prob-factor-v">NEED [score] → drift ×1.0</div><div class="prob-factor-mult">× 1.00</div>
+<div class="prob-factor-k">Trigger prox:</div><div class="prob-factor-v">N/A (нет триггера)</div><div class="prob-factor-mult">× 1.00</div>
+<div class="prob-factor-k">Conditions:</div><div class="prob-factor-v">regime [type] × X.X</div><div class="prob-factor-mult">× X.XX</div>
+</div>
+<div class="prob-formula">Raw = X.XXX · Normalized → XX.X%</div>
+<div class="ev-row ev-neutral">Нет позиции = 0R · [интерпретация: подтверждает/не подтверждает FLAT]</div>
+</div>
+
+<div class="reads">
+<strong>Как читать:</strong> Самый вероятный исход ([X.X]%) — [интерпретация]. Активные сценарии дают [EV summary]. <strong>DECISION [NEW_ENTRY] обосновывается математически</strong> через P × R/R.
+</div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 9 · TRADING MAP                         -->
+<!-- ============================================= -->
+<div class="trademap">
+<div class="trademap-title">🗺 ТОРГОВАЯ КАРТА — все сценарии входа/выхода</div>
+
+<!-- LONG SAFE -->
+<div class="tm-section">
+<div class="tm-shead tm-shead-long">🟢 LONG · свинг 3-10 дней</div>
+
+<div class="tm-scenario">
+<div class="tm-scenario-title g">Сценарий A · Safe long от VAL bounce <span class="dim">(P = [X.X%] · EV = [±X.XXR])</span></div>
+[Описание условия входа.]
+<div class="tm-levels">
+<div class="tm-lvl-k">Trigger:</div><div class="tm-lvl-v">D1 close ≥ $[VAL] с bounce</div>
+<div class="tm-lvl-k">Entry:</div><div class="tm-lvl-v">$X - $Y zone</div>
+<div class="tm-lvl-k">Stop:</div><div class="tm-lvl-v"><strong class="r">$Z</strong> (buffer ×1.5 при volatile)</div>
+<div class="tm-lvl-k">Size:</div><div class="tm-lvl-v"><strong>$AA</strong> (formula: pillar × cycle × tac × regime)</div>
+<div class="tm-lvl-k">T1:</div><div class="tm-lvl-v"><strong class="c">$B</strong> (POC · +BB%) → fix 50%</div>
+<div class="tm-lvl-k">T2:</div><div class="tm-lvl-v">$C (mid-VA · +CC%) → fix 30%</div>
+<div class="tm-lvl-k">T3:</div><div class="tm-lvl-v">$D (VAH · +DD%) → trailing</div>
+<div class="tm-lvl-k">R/R:</div><div class="tm-lvl-v">~1:R</div>
+</div>
+<div class="tm-warning">⚠ Warning: [условия при которых сценарий не работает]</div>
+</div>
+
+<div class="tm-scenario">
+<div class="tm-scenario-title y">Сценарий B · Aggressive long от liq bounce <span class="dim">(P = [X.X%] · EV = [±X.XXR])</span></div>
+[Fake breakdown play — только с подтверждением bounce.]
+<!-- аналогичные уровни -->
+</div>
+</div>
+
+<!-- SHORT -->
+<div class="tm-section">
+<div class="tm-shead tm-shead-short">🔴 SHORT · свинг 3-10 дней</div>
+
+<div class="tm-scenario">
+<div class="tm-scenario-title r">Сценарий C · Short при VAL rejection <span class="dim">(P = [X.X%] · EV = [±X.XXR])</span></div>
+<!-- уровни -->
+<div class="tm-warning">⚠ Funding <strong class="r">[FUNDING]%</strong> = short платит [MONTHLY_COST]%/мес. Быстро закрывать (5-10 дней max).</div>
+</div>
+</div>
+
+<!-- FUNDAMENTAL -->
+<div class="tm-section">
+<div class="tm-shead tm-shead-accum">🟣 FUNDAMENTAL ACCUMULATION · 30-180 дней</div>
+
+<div class="tm-scenario">
+<div class="tm-scenario-title p">Сценарий D · DCA-накопление в undervaluation зоне <span class="dim">(P не применяется — не свинг)</span></div>
+<div class="tm-levels">
+<div class="tm-lvl-k">Основа:</div><div class="tm-lvl-v">MC/TVL [ratio] · SCENARIO NEED_SCORE [score]</div>
+<div class="tm-lvl-k">DCA зона:</div><div class="tm-lvl-v">$X - $Y</div>
+<div class="tm-lvl-k">Tranche 1:</div><div class="tm-lvl-v">$A → 25% (сейчас)</div>
+<div class="tm-lvl-k">Tranche 2:</div><div class="tm-lvl-v">$B → 25%</div>
+<div class="tm-lvl-k">Tranche 3:</div><div class="tm-lvl-v">$C → 50%</div>
+<div class="tm-lvl-k">Total size:</div><div class="tm-lvl-v"><strong>$XXX</strong> (fundamental bucket)</div>
+<div class="tm-lvl-k">Hold horizon:</div><div class="tm-lvl-v">30-180 дней · target rerating $D-$E</div>
+<div class="tm-lvl-k">Exit T1:</div><div class="tm-lvl-v">$D (MC/TVL X) → fix 50%</div>
+<div class="tm-lvl-k">Exit T2:</div><div class="tm-lvl-v">$E (MC/TVL Y) → fix 30%</div>
+<div class="tm-lvl-k">Invalidation:</div><div class="tm-lvl-v r">TVL &lt; $[floor] ИЛИ SEC ИЛИ exploit → exit ВСЁ</div>
+</div>
+<div class="tm-warning">⚠ НЕ проверяется по LIQ/RUN. Проверка ежемесячно (SCENARIO режим). Работает параллельно свингам.</div>
+</div>
+</div>
+
+<!-- LEVELS SUMMARY -->
+<div class="tm-section">
+<div class="tm-shead tm-shead-levels">🎯 КЛЮЧЕВЫЕ УРОВНИ · сводная карта</div>
+<div class="tm-scenario">
+<table>
+<tr><th>уровень</th><th>что это</th><th>значение</th></tr>
+<tr><td class="c">$VAH</td><td>верх комфортной зоны</td><td>swing T3 · +X%</td></tr>
+<tr><td class="c">$mid</td><td>Mid-VA</td><td>swing T2 · +Y%</td></tr>
+<tr><td class="c">$POC</td><td>центр объёма</td><td>swing T1 · +Z%</td></tr>
+<tr><td class="c">$VAL</td><td>низ комфортной зоны</td><td>ключевой long trigger · +A%</td></tr>
+<tr><td class="g">$CURRENT</td><td>Текущая цена</td><td>[статус]</td></tr>
+<tr><td class="r">$LIQ1</td><td>Long-liq cluster #1</td><td>invalidation · −B%</td></tr>
+<tr><td class="r">$LIQ2</td><td>Long-liq cluster #2</td><td>каскад step 2 · −C%</td></tr>
+<tr><td class="r">$LIQ3</td><td>Long-liq cluster #3</td><td>каскад step 3 · −D%</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 10 · SCENARIO context                   -->
+<!-- ============================================= -->
+<div class="scenario-box">
+<div style="color:var(--p);font-weight:bold;margin-bottom:6px">🔮 SCENARIO 30-90 дней (справка)</div>
+NEED_SCORE <strong>+X.X</strong> [ГИПОТЕЗА] · Base X% / Bull Y% / Bear Z%<br>
+Bullish (USAGE + NARRATIVE + ROADMAP + UNLOCK[light]) = +N<br>
+Bearish (STRUCTURE + REGULATORY) = -M<br>
+Net tilt: +N.N (на 30-90 дней)<br>
+Используется в PROBABILITY MODULE как Prior mod (см. блок 8).
+</div>
+
+<!-- ============================================= -->
+<!-- BLOCK 11 · FORECAST для FORWARDTEST_LOG       -->
+<!-- ============================================= -->
+<div class="evidence">
+<div class="ev-title">🎯 Новый прогноз R__ для FORWARDTEST_LOG</div>
+<table>
+<tr><td>id</td><td>R__</td></tr>
+<tr><td>issued_at</td><td>[ISO date]</td></tr>
+<tr><td>hypothesis</td><td>[одна фраза]</td></tr>
+<tr><td>HIT criterion</td><td>D1 close ≥ $X в 5 дней</td></tr>
+<tr><td>MISS criterion</td><td>D1 close &lt; $Y в 5 дней</td></tr>
+<tr><td>PARTIAL</td><td>range между X и Y</td></tr>
+<tr><td>verify_after</td><td>[DATE + 5 trading days]</td></tr>
+<tr><td>expected_scenario</td><td>[A/B/C/D] с P = X% (из блока 8)</td></tr>
+</table>
+</div>
+
+<div style="text-align:center;color:var(--dim);font-size:10px;margin-top:16px;padding:8px">
+STRK ENGINE · TEMPLATE · v5.4 · 01.08.2026 · MASTER v1.16 · 11 mandatory blocks (LAYMAN + TRADING MAP + TRADER QUALITY FILTER + PROBABILITY MODULE)
+</div>
+
+</body>
+</html>

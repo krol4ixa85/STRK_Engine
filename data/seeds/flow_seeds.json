@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "purpose": "SEED-адреса которые мы мониторим для flow map. Это НЕ токен контракты.",
+    "version": "1.1",
+    "updated": "2026-08-03",
+    "critical_rule": "SEED != TOKEN. TOKEN контракты вынесены в config/tokens.json",
+    "source": "STRK_BLOCK_SKILLS.md · КЛЮЧЕВЫЕ АДРЕСА раздел",
+    "phantoms_note": "Реестр ФАНТОМОВ (проверенно несуществующих) внизу под ключом _phantoms — НЕ обрабатывать",
+    "last_modified": "2026-08-04T15:41:00.069589+00:00"
+  },
+  "l1_infrastructure": {
+    "_note": "Ethereum L1: bridges, foundation, contracts",
+    "bridge_starkgate_l1": {
+      "address": "0xce5485cfb26914c5dce00b9baf0580364dafc7a4",
+      "role": "L1 StarkGate bridge to Starknet",
+      "importance": "critical",
+      "watch_for": "large deposits (bridge_in signals accumulation intent)"
+    }
+  },
+  "custody_and_transit": {
+    "_note": "Known custody endpoints и транзитные адреса из аудита проекта",
+    "custody_endpoint_1": {
+      "address": "0x9b6c368d707481eb215f52b6ced3b81b281ca65c",
+      "role": "CUSTODY ENDPOINT (16.95M STRK)",
+      "importance": "critical",
+      "watch_for": "outflows to CEX (potential distribution) или к multisig (custody rebalance)",
+      "trap_note": "Не путать с накопителем. Это конечная точка кастодиала."
+    },
+    "transit_bridger_1": {
+      "address": "0xa8a5b3d0c320ac2ed724169b7f554e3740230586",
+      "role": "TRANSIT BRIDGER (100 STRK residual)",
+      "importance": "medium",
+      "watch_for": "проход больших сумм через этот адрес — маркер бриджера",
+      "trap_note": "Retention ~0 — это транзит, не silent accumulator"
+    },
+    "team_multisig": {
+      "address": "0xb1c561105359f549f6e9438867b435580ba3a6b0",
+      "role": "MULTISIG казна команды",
+      "importance": "critical",
+      "watch_for": "любые исходящие транзакции (team treasury movements)"
+    },
+    "coinbase_prime_gas_funder": {
+      "address": "0xa86309988947559b6e72ef716c5058f479386c0f",
+      "role": "Coinbase Prime Gas Funder · КОРЕНЬ фактор-графа",
+      "importance": "high",
+      "watch_for": "новые адреса с First Funder = этот root — маркер связанной сущности",
+      "usage_note": "используется для факторизации адресов через address_related_addresses"
+    }
+  },
+  "cex_hot_wallets_known_dynamic": {
+    "_note": "Динамические адреса Binance/Bybit — требуют актуализации через Etherscan labels. Обычно не фиксированы, ищутся по меткам.",
+    "binance_14_representative": {
+      "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+      "role": "Binance 14 (представительский адрес)",
+      "importance": "high",
+      "watch_for": "flow между Binance sub-wallets (обычно REBALANCE)",
+      "trap_note": "ЛОВУШКА ПРЕФИКСА: адрес 0x5a52e96...b64c6572 в фантомах, ПОЛНЫЙ адрес всегда сверять"
+    }
+  },
+  "l2_native": {
+    "_note": "Starknet L2 адреса — стейкинг контракт, DeFi протоколы",
+    "staking_contract": {
+      "address": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
+      "role": "Starknet staking contract",
+      "importance": "critical",
+      "watch_for": "stake acceleration, unstake events (7-day withdrawal window)"
+    },
+    "bridge_starknet_l2": {
+      "address": "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
+      "role": "L2 side of StarkGate bridge",
+      "importance": "critical",
+      "watch_for": "bridge_in flows на L2 (соответствие L1 depositу)"
+    },
+    "vstrk_governance": {
+      "address": "0x0782f0ddca11d9950bc3220e35ac82cf868778edb67a5e58b39838544bc4cd0f",
+      "role": "vSTRK governance token contract",
+      "importance": "medium",
+      "watch_for": "governance participation flows"
+    }
+  },
+  "_phantoms": {
+    "_note": "ПРОВЕРЕНО НЕСУЩЕСТВУЮТ — не обрабатывать в скриптах. Ссылки в BLOCK_SKILLS.md",
+    "invalid_1": {
+      "address": "0x55bdc8a3c1b1daaa5b5f5c5e5d5c5b5a5958575655",
+      "reason": "невалиден"
+    },
+    "empty_binance_cold": {
+      "address": "0x5a52e96bacdabb82fd05763e25335261b64c6572",
+      "reason": "'Binance Cold 144.3M' — фактически пуст",
+      "trap": "ЛОВУШКА ПРЕФИКСА: первые 33 символа совпадают с живым Binance 14 (b270efcb), но это разные адреса"
+    },
+    "empty_bithumb_187m": {
+      "address": "0xfd45b4a1db20e8d84d9c09f95d4d6e8b7e7e9b5e",
+      "reason": "'Bithumb 187M' — фактически пуст"
+    }
+  },
+  "watchlist": {
+    "smart_accumulator_1": {
+      "address": "0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43",
+      "added": "2026-08-04T13:57:48.767636+00:00",
+      "role": "Smart accumulator holding 12.96M STRK (from Rally #1 discovery)",
+      "importance": "high",
+      "note": "Discovered via Rally #1 backtest 2024-11-05"
+    },
+    "discovered_a4b9569b": {
+      "address": "0xa4b9569bf942c3aad23c0c2d322fe4aff8e1bf30",
+      "added": "2026-08-04T15:40:59.933791+00:00",
+      "role": "Auto-discovered ACCUMULATOR pattern",
+      "note": "Auto-accepted by decision_layer at 2026-08-04T15:40:59.584751+00:00"
+    },
+    "discovered_76ec5a0d": {
+      "address": "0x76ec5a0d3632b2133d9f1980903305b62678fbd3",
+      "added": "2026-08-04T15:41:00.068441+00:00",
+      "role": "Auto-discovered PURE_HOLDER pattern",
+      "note": "Auto-accepted by decision_layer at 2026-08-04T15:41:00.031597+00:00"
+    }
+  }
+}

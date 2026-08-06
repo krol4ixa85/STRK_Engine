@@ -1,0 +1,49 @@
+NAME: forwardtest
+VERSION: 0.1 · 30.07.2026
+STATUS: STUB · метод пока в MASTER §0.25 · перенос v5.2
+
+═══════════════════════════════════════════════════════════════════
+
+INPUTS:
+  · /mnt/project/STRK_FORWARDTEST_LOG.md (машиночитаемый формат v2.0)
+  · OHLCV OKX для верификации цены на verify_after
+
+FORMULA / STEPS:
+  ⤳ полный текст: STRK_MASTER_INSTRUCTION.md §0.25
+
+  ШАГ 0.7 в протоколе RUN:
+  1. view FORWARDTEST_LOG
+  2. найти все прогнозы status=PENDING И verify_after ≤ сегодня
+  3. для каждого:
+     а) взять цену на дату verify_after
+     б) применить критерий falsification из записи
+     в) HIT / MISS / PARTIAL / EXPIRED_UNCLEAR
+     г) записать evaluated_at, outcome, сменить status
+  4. печать в отчёт «Пост-мортем R__: PENDING → HIT/MISS»
+  5. если MISS-паттерн (≥3 подряд одного сигнала) →
+     калибровка: доверие сигналу снижено на 20%
+
+OUTPUTS:
+  Строка в отчёте вверху ШАГА 0.7:
+    Пост-мортем: R__ → HIT/MISS, outcome $X.XXX
+  Обновлённая таблица калибровки в FORWARDTEST_LOG.md
+
+GATES:
+  MUST-CALC затрагивается косвенно:
+    калибровка сигнала → вес в CONFLICT_GATE
+    сигнал с HIT-rate <30% (≥15 случаев) → половинный вес
+
+TRAPS:
+  ⛔ HIT засчитывается раньше verify_after (правило R59→R60)
+  ⛔ Переписывать уже оценённые записи
+  ⛔ Пропускать MISS «по объективным причинам»
+  ⛔ EXPIRED_UNCLEAR как HIT
+  ⛔ Прогноз без числового falsification-критерия в лог не попадает
+
+PROVENANCE:
+  ШАГ 0.7 в каждом RUN, до сбора Яруса A.
+  Прогнозы иммутабельны после оценки.
+
+CANONICAL SOURCE: MASTER §0.25 (поведение) + skills/forwardtest.txt (метод)
+FORECAST LOG: /mnt/project/STRK_FORWARDTEST_LOG.md
+NEXT: v5.2 · заполнить полный алгоритм парсинга + PARTIAL-логика
