@@ -476,25 +476,6 @@ def handle_command(chat_id, text, from_user_id):
             except Exception as e:
                 send_message(chat_id, f"❌ Error: {e}")
         
-        elif cmd == '/calibrate':
-            send_message(chat_id, "📊 Building shadow calibration report...")
-            try:
-                env = os.environ.copy()
-                env['PYTHONUTF8'] = '1'
-                env['TELEGRAM_BOT_TOKEN'] = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-                env['TELEGRAM_CHAT_ID'] = os.environ.get('TELEGRAM_CHAT_ID', '')
-                script = SCRIPT_DIR / 'scripts' / 'calibration_report.py'
-                if not script.exists():
-                    send_message(chat_id, "❌ calibration_report.py не установлен")
-                    return
-                r = subprocess.run([sys.executable, str(script), '--telegram'],
-                                   capture_output=True, text=True, encoding='utf-8',
-                                   timeout=60, env=env)
-                if r.returncode != 0:
-                    send_message(chat_id, f"❌ Error: {r.stderr[:300]}")
-            except Exception as e:
-                send_message(chat_id, f"❌ Error: {e}")
-
         else:
             send_message(chat_id, f"Unknown command: {cmd}\nSend /help for list.")
     

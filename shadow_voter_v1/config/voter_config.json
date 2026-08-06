@@ -1,0 +1,63 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "status": "HYPOTHESIS",
+    "created": "2026-08-06",
+    "note": "Пороги никогда не бэктестились. Shadow-фаза для калибровки — voters НЕ влияют на confluence_gate.signal.",
+    "calibration_rules": {
+      "min_closed_forecasts_per_voter": 15,
+      "min_precision_to_enable_live": 0.55,
+      "windows": ["72h", "7d"],
+      "outcome_neutral_zone_pct": 3.0
+    },
+    "outcome_signal_thresholds": {
+      "_note": "Как классифицируется outcome для сравнения с shadow-vote. Меняется через config, не через код.",
+      "rally_min_pct_change": 3.0,
+      "crash_max_pct_change": -3.0,
+      "neutral_range": "[-3%, +3%]"
+    }
+  },
+  "voters": {
+    "liquidity_shift": {
+      "source_file": "data/cache/liquidity_shift.json",
+      "read_path": "overall_direction",
+      "rally_values": ["LOCKING_UP", "ROTATING_TO_STAKE", "STAKE_INFLOW", "LP_ADDING"],
+      "crash_values": ["EXTRACTING", "ROTATING_TO_DEX", "STAKE_OUTFLOW", "LP_REMOVING"],
+      "neutral_values": ["STABLE", "PARTIAL", "UNKNOWN"],
+      "rationale": "Прямой L2-flow сигнал. LOCKING_UP = долгосрочные держатели наращивают позиции."
+    },
+    "bridge_activity": {
+      "source_file": "data/cache/bridge_activity.json",
+      "read_path": "classification.signal",
+      "rally_values": ["NET_INFLOW", "STRONG_INFLOW", "HIGH_ACTIVITY_INFLOW"],
+      "crash_values": ["NET_OUTFLOW", "STRONG_OUTFLOW", "DISTRIBUTION"],
+      "neutral_values": ["LOW_ACTIVITY", "BALANCED", "NEUTRAL"],
+      "rationale": "StarkGate L1→L2 direct capital flow — leading indicator для L2 activity."
+    },
+    "cross_token": {
+      "source_file": "data/cache/cross_token_correlation.json",
+      "read_path": "strk_alpha.alpha_7d_pct",
+      "type": "numeric",
+      "rally_threshold_gte": 5.0,
+      "crash_threshold_lte": -5.0,
+      "neutral_range": "[-5, +5]",
+      "rationale": "STRK alpha vs L2 sector. Положительная альфа = capital rotating IN, отрицательная = rotating OUT."
+    },
+    "cvd_analysis": {
+      "source_file": "data/cache/cvd_analysis.json",
+      "read_path": "consensus",
+      "rally_values": ["BULLISH_DIVERGENCE", "BULLISH_LEAN"],
+      "crash_values": ["BEARISH_DIVERGENCE", "BEARISH_LEAN"],
+      "neutral_values": ["MIXED", "NEUTRAL", "AGREEMENT"],
+      "rationale": "Classic divergence signal — если цена вверх а CVD вниз, retail buying vs smart selling."
+    },
+    "effort_result": {
+      "source_file": "data/cache/effort_result.json",
+      "read_path": "consensus",
+      "rally_values": ["ACCUMULATION", "MARKUP", "QUIET_ACCUMULATION", "HEALTHY_MARKUP"],
+      "crash_values": ["DISTRIBUTION", "MARKDOWN", "ABSORPTION_DISTRIBUTION", "MARKDOWN_CAPITULATION", "CHURN"],
+      "neutral_values": ["MIXED", "NEUTRAL"],
+      "rationale": "Wyckoff effort-vs-result — expansion volume without price = distribution."
+    }
+  }
+}

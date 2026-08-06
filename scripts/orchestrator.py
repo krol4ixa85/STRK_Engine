@@ -50,8 +50,6 @@ LOG_FILE = SCRIPT_DIR / 'logs' / 'orchestrator.log'
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-STRICT_NO_TRADING = os.environ.get('STRICT_NO_TRADING', 'true').lower() == 'true'
-
 # ============================================================
 # LOGGING
 # ============================================================
@@ -66,10 +64,39 @@ logging.basicConfig(
 )
 logger = logging.getLogger('orchestrator')
 
+# ============================================================
+# LOAD CONFIG.ENV (локально, для GitHub Actions уже есть env)
+# ============================================================
+
+def load_env():
+    """Загружает переменные из config/config.env в os.environ (если не заданы)."""
+    env_path = SCRIPT_DIR / 'config' / 'config.env'
+    if env_path.exists():
+        with open(env_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    if '=' in line:
+                        key, value = line.split('=', 1)
+                        key = key.strip()
+                        value = value.strip()
+                        # Не перезаписываем уже существующие переменные (из GitHub Secrets)
+                        if key not in os.environ:
+                            os.environ[key] = value
+        logger.info("Loaded config.env into environment")
+    else:
+        logger.warning("config.env not found. Rely on existing environment variables.")
+
+load_env()
+
+# ============================================================
+# STRICT MODE CHECK (после загрузки .env)
+# ============================================================
+
+STRICT_NO_TRADING = os.environ.get('STRICT_NO_TRADING', 'true').lower() == 'true'
 if not STRICT_NO_TRADING:
     logger.error("STRICT_NO_TRADING=false. Aborting.")
     sys.exit(1)
-
 
 # ============================================================
 # STEP RUNNERS
@@ -104,7 +131,6 @@ def run_step(name: str, script_path: Path, extra_args: list = None) -> bool:
             return True
         else:
             logger.error(f"  ✗ {name} failed with code {result.returncode}")
-            # Log FULL stderr, not truncated 500 chars
             if result.stderr:
                 logger.error(f"  --- stderr ---")
                 for line in result.stderr.strip().split('\n'):
