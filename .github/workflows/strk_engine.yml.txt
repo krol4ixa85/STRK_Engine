@@ -1,0 +1,400 @@
+name: STRK Engine Automation
+
+on:
+  schedule:
+    # Composite signal · каждые 6 часов (полный анализ 14д flow)
+    - cron: '0 */6 * * *'
+    # Whale + Discord monitors · каждые 30 минут (real-time alerts)
+    - cron: '*/30 * * * *'
+    # Scenario engine · раз в неделю по пятницам в 12:00 UTC
+    - cron: '0 12 * * 5'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Which job to run manually'
+        required: true
+        default: 'composite'
+        type: choice
+        options:
+          - composite
+          - whale
+          - discord
+          - scenario
+          - all
+
+jobs:
+  composite:
+    if: |
+      github.event.schedule == '0 */6 * * *' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.job == 'composite' || inputs.job == 'all'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Restore state files
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/cache/whale_monitor_state.json
+            data/cache/discord_monitor_state.json
+          key: state-${{ github.run_id }}
+          restore-keys: state-
+      
+      - name: Run cross-window pattern analysis (7d/14d/30d)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/cross_window_pattern.py || true
+      
+      - name: Compute HHI + Shannon Entropy (concentration)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/concentration_metrics.py || true
+      
+      - name: Compute Effort/Result (Wyckoff efficiency)
+        run: python3 scripts/detectors/effort_result.py || true
+      
+      - name: Compute CVD divergence
+        run: python3 scripts/detectors/cvd_analysis.py || true
+      
+      - name: Compute CEX flow direction (7d)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/cex_flow.py || true
+      
+      - name: Compute Technical Momentum (live, price/volume)
+        run: python3 scripts/detectors/technical_momentum.py || true
+      
+      - name: Fetch GitHub dev activity (Starknet ecosystem)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/detectors/github_activity.py || true
+      
+      - name: Aggregate news RSS (STRK-related mentions)
+        run: python3 scripts/detectors/news_aggregator.py || true
+      
+      - name: Update event calendar (unlocks + milestones)
+        run: python3 scripts/detectors/event_calendar.py || true
+      
+      - name: Fetch L1 to L2 bridge activity (StarkGate)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/bridge_activity.py || true
+      
+      - name: Cross-token correlation (STRK vs L2 peers)
+        run: python3 scripts/detectors/cross_token_correlation.py || true
+      
+      - name: Starknet Discord announcements monitor
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          STARKNET_ANNOUNCEMENTS_CHANNEL_ID: ${{ secrets.STARKNET_ANNOUNCEMENTS_CHANNEL_ID }}
+        run: python3 scripts/detectors/starknet_discord.py || true
+      
+      - name: Twitter/X tracking (via Nitter RSS)
+        run: python3 scripts/detectors/twitter_nitter.py || true
+      
+      - name: Aggregate event layer (GH + News + Calendar + Bridge + Sector + Discord + Twitter)
+        run: python3 scripts/detectors/event_layer.py || true
+      
+      - name: Run Wyckoff phase detector (v2 baseline + weak confirmatory)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/wyckoff_phase.py || true
+      
+      - name: Run composite detector v2 (silent - creates agent_input, funding, unlock)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          COMPOSITE_SILENT: 'true'
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/composite_detector_v2.py
+      
+      - name: Build scenarios (Base/Bull/Bear) — silent, digest sends
+        run: python3 scripts/scenario_engine.py || true
+      
+      - name: Compute Confluence Gate (multi-signal decision)
+        run: python3 scripts/detectors/confluence_gate.py || true
+      
+      - name: Whale auto-analysis (top-3 events classification)
+        run: python3 scripts/detectors/whale_auto_analysis.py || true
+      
+      - name: Cohort tracker (4 groups + history log)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/cohort_tracker.py || true
+      
+      - name: Interpretation layer (narrative synthesis)
+        run: python3 scripts/detectors/interpretation_layer.py || true
+      
+      - name: Auto post-mortem (verify PENDING forecasts + create new)
+        run: python3 scripts/auto_postmortem.py || true
+      
+      - name: Generate FULL HTML RUN report (11 blocks)
+        run: python3 scripts/run_report.py || true
+      
+      - name: Also run orchestrator (flow map for MUST #6)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/orchestrator.py || true
+      
+      # ─── NEW: liquidity shift (Ekubo + Endur LST + native staking) ───
+      - name: Compute liquidity shift (Ekubo pools + Endur LST + native staking)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: |
+          python3 scripts/collectors/ekubo_flow.py || true
+          python3 scripts/collectors/endur_lst_flow.py || true
+          python3 scripts/collectors/native_staking_flow.py || true
+          python3 scripts/detectors/liquidity_shift.py || true
+      
+      - name: Auto-discovery scan (silent)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCOVERY_SILENT: 'true'
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/auto_discovery.py --hours 48 --max 10 || true
+      
+      - name: Decision layer (auto-accept/reject)
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/decision_layer.py || true
+      
+      # ─── SHADOW VOTERS (HYPOTHESIS, не влияет на решение) ───
+      - name: Close shadow forecasts (postmortem)
+        run: python3 scripts/detectors/shadow_postmortem.py || true
+      
+      - name: Write new shadow votes (72h & 7d)
+        run: python3 scripts/detectors/shadow_voter.py || true
+      
+      - name: Send unified digest
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/daily_digest.py
+      
+      - name: Commit updated seeds + history logs + liquidity shift cache + shadow votes
+        run: |
+          mkdir -p data/history data/cache
+          if git diff --quiet \
+              data/seeds/flow_seeds.json \
+              data/history/cohort_snapshots.jsonl \
+              data/history/forecasts.jsonl \
+              data/history/postmortems.jsonl \
+              data/history/shadow_votes.jsonl \
+              data/cache/native_staking_state.json \
+              data/cache/liquidity_shift.json \
+              data/cache/ekubo_flow.json \
+              data/cache/endur_lst_flow.json \
+              data/cache/native_staking_flow.json 2>/dev/null; then
+            echo "No changes"
+          else
+            git config user.email "bot@github.com"
+            git config user.name "STRK Engine Bot"
+            git add data/seeds/flow_seeds.json \
+                    data/history/cohort_snapshots.jsonl \
+                    data/history/forecasts.jsonl \
+                    data/history/postmortems.jsonl \
+                    data/history/shadow_votes.jsonl \
+                    data/cache/native_staking_state.json \
+                    data/cache/liquidity_shift.json \
+                    data/cache/ekubo_flow.json \
+                    data/cache/endur_lst_flow.json \
+                    data/cache/native_staking_flow.json 2>/dev/null || true
+            git commit -m "chore: history logs + liquidity shift + shadow votes update [skip ci]" || echo "Nothing to commit"
+            git push || echo "Push failed"
+          fi
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strk-signal-${{ github.run_id }}
+          path: |
+            data/cache/composite_signal_v2.json
+            data/cache/agent_input.json
+            data/cache/funding_signal.json
+            data/cache/unlock_signal.json
+            data/cache/auto_discovery_candidates.json
+            data/cache/cross_window_pattern.json
+            data/cache/wyckoff_phase.json
+            data/cache/concentration_metrics.json
+            data/cache/effort_result.json
+            data/cache/cvd_analysis.json
+            data/cache/cex_flow.json
+            data/cache/technical_momentum.json
+            data/cache/github_activity.json
+            data/cache/news_aggregator.json
+            data/cache/event_calendar.json
+            data/cache/bridge_activity.json
+            data/cache/cross_token_correlation.json
+            data/cache/starknet_discord.json
+            data/cache/twitter_nitter.json
+            data/cache/event_layer.json
+            data/cache/confluence_gate.json
+            data/cache/scenario_analysis.json
+            data/cache/interpretation.json
+            data/cache/whale_auto_analysis.json
+            data/cache/cohort_tracker.json
+            data/cache/auto_postmortem.json
+            data/cache/weekly_cohort_analysis.json
+            data/cache/decision_log.json
+            data/cache/liquidity_shift.json
+            data/cache/ekubo_flow.json
+            data/cache/endur_lst_flow.json
+            data/cache/native_staking_flow.json
+            data/history/shadow_votes.jsonl
+            data/dashboards/
+            data/graphs/
+            data/reports/
+            data/history/
+          retention-days: 30
+
+  whale:
+    if: |
+      github.event.schedule == '*/30 * * * *' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.job == 'whale' || inputs.job == 'all'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Restore whale state
+        uses: actions/cache/restore@v4
+        with:
+          path: data/cache/whale_monitor_state.json
+          key: whale-state-${{ github.run_id }}
+          restore-keys: whale-state-
+      
+      - name: Run whale monitor
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/collectors/whale_monitor.py --once --window 35
+      
+      - name: Save whale state
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: data/cache/whale_monitor_state.json
+          key: whale-state-${{ github.run_id }}
+
+  discord:
+    if: |
+      github.event.schedule == '*/30 * * * *' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.job == 'discord' || inputs.job == 'all'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Restore discord state
+        uses: actions/cache/restore@v4
+        with:
+          path: data/cache/discord_monitor_state.json
+          key: discord-state-${{ github.run_id }}
+          restore-keys: discord-state-
+      
+      - name: Run discord monitor
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          STRICT_NO_TRADING: 'true'
+        run: |
+          if [ -n "$DISCORD_BOT_TOKEN" ]; then
+            python3 scripts/collectors/discord_monitor.py --once
+          else
+            echo "DISCORD_BOT_TOKEN not set - skipping Discord module"
+          fi
+      
+      - name: Process Telegram bot commands
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/telegram_bot_commands.py --once
+      
+      - name: Commit updated seeds + bot state if changed
+        run: |
+          mkdir -p data/cache
+          if git diff --quiet data/seeds/flow_seeds.json data/cache/telegram_bot_state.json data/cache/discord_monitor_state.json 2>/dev/null; then
+            echo "No changes to commit"
+          else
+            git config user.email "bot@github.com"
+            git config user.name "STRK Engine Bot"
+            git add data/seeds/flow_seeds.json data/cache/telegram_bot_state.json data/cache/discord_monitor_state.json 2>/dev/null || true
+            git commit -m "chore: bot state + wallet updates [skip ci]" || echo "Nothing to commit"
+            git push || echo "Push failed"
+          fi
+      
+      - name: Save discord state
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: data/cache/discord_monitor_state.json
+          key: discord-state-${{ github.run_id }}
+
+  scenario:
+    if: |
+      github.event.schedule == '0 12 * * 5' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.job == 'scenario' || inputs.job == 'all'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Restore recent cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/cache
+          key: composite-cache-${{ github.run_id }}
+          restore-keys: |
+            composite-cache-
+      
+      - name: Run Scenario Engine (Friday — sends dedicated message)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SCENARIO_SEND_TELEGRAM: 'true'
+        run: python3 scripts/scenario_engine.py
+      
+      - name: Weekly cohort analysis (behavior trends + reversals)
+        run: python3 scripts/weekly_cohort_analysis.py || true
