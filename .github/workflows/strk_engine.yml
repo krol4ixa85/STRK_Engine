@@ -106,13 +106,6 @@ jobs:
       - name: Aggregate event layer (GH + News + Calendar + Bridge + Sector + Discord + Twitter)
         run: python3 scripts/detectors/event_layer.py || true
       
-      # ─────────────────────────────────────────────
-      # ORDER MATTERS: wyckoff + composite BEFORE scenario/report
-      # composite creates: agent_input.json, funding_signal.json, unlock_signal.json
-      # wyckoff creates: wyckoff_phase.json
-      # scenario reads: all of the above
-      # ─────────────────────────────────────────────
-      
       - name: Run Wyckoff phase detector (v2 baseline + weak confirmatory)
         env:
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -135,7 +128,6 @@ jobs:
       - name: Compute Confluence Gate (multi-signal decision)
         run: python3 scripts/detectors/confluence_gate.py || true
       
-      # NEW: Interpretation + Cohort + Whale auto analysis
       - name: Whale auto-analysis (top-3 events classification)
         run: python3 scripts/detectors/whale_auto_analysis.py || true
       
@@ -197,8 +189,6 @@ jobs:
       - name: Commit updated seeds + history logs + liquidity shift cache
         run: |
           mkdir -p data/history data/cache
-          # добавляем native_staking_state.json и liquidity_shift.json —
-          # state должен быть persistent (GitHub Actions cache ненадёжен для delta-24h)
           if git diff --quiet \
               data/seeds/flow_seeds.json \
               data/history/cohort_snapshots.jsonl \
@@ -347,9 +337,7 @@ jobs:
       
       - name: Commit updated seeds + bot state if changed
         run: |
-          # Ensure state files exist
           mkdir -p data/cache
-          
           if git diff --quiet data/seeds/flow_seeds.json data/cache/telegram_bot_state.json data/cache/discord_monitor_state.json 2>/dev/null; then
             echo "No changes to commit"
           else
