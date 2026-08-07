@@ -5,6 +5,16 @@ on:
     - cron: '0 */6 * * *'
   workflow_dispatch:
 
+# Global env для job — все шаги получают доступ к secrets
+env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
+  DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+  DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  STRICT_NO_TRADING: 'true'
+
 jobs:
   composite:
     runs-on: ubuntu-latest
@@ -19,117 +29,154 @@ jobs:
       - name: Install dependencies
         run: pip install requests urllib3
 
-      - name: Run all data collectors + composite signal v2
-        env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
-          STRICT_NO_TRADING: 'true'
-        run: |
-          if [ -f scripts/collectors/run_all_collectors.py ]; then
-            python3 scripts/collectors/run_all_collectors.py
-          else
-            echo "::warning::scripts/collectors/run_all_collectors.py NOT FOUND - workflow continues with stale cache from previous runs"
-          fi
+      # ============================================================
+      # STAGE 1 · COLLECTORS (внешние данные)
+      # ============================================================
+      - name: Collect flow_eth (L1 STRK flow)
+        run: python3 scripts/collectors/flow_eth.py || true
 
-      - name: Also run orchestrator (flow map for MUST #6)
+      - name: Collect flow_starknet (L2 STRK flow)
+        run: python3 scripts/collectors/flow_starknet.py || true
+
+      - name: Collect funding_history (perp funding data)
+        run: python3 scripts/collectors/funding_history.py || true
+
+      - name: Collect unlock_calendar
+        run: python3 scripts/collectors/unlock_calendar.py || true
+
+      - name: Collect ekubo_flow (DEX pools)
+        run: python3 scripts/collectors/ekubo_flow.py || true
+
+      - name: Collect endur_lst_flow (LST)
+        run: python3 scripts/collectors/endur_lst_flow.py || true
+
+      - name: Collect native_staking_flow
+        run: python3 scripts/collectors/native_staking_flow.py || true
+
+      # ============================================================
+      # STAGE 2 · DISCORD MONITORS (читают алерты)
+      # ============================================================
+      - name: Discord monitor (Nansen whale alerts)
+        run: python3 scripts/collectors/discord_monitor.py --once || true
+
+      - name: Starknet Discord announcements
         env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
-          STRICT_NO_TRADING: 'true'
+          STARKNET_ANNOUNCEMENTS_CHANNEL_ID: ${{ secrets.STARKNET_ANNOUNCEMENTS_CHANNEL_ID }}
+        run: python3 scripts/detectors/starknet_discord.py || true
+
+      # ============================================================
+      # STAGE 3 · WHALE MONITOR (шлёт свои алерты в Telegram)
+      # ============================================================
+      - name: Whale monitor (single check, sends alerts if triggered)
+        run: python3 scripts/collectors/whale_monitor.py --once || true
+
+      # ============================================================
+      # STAGE 4 · ORCHESTRATOR (flow map)
+      # ============================================================
+      - name: Orchestrator (flow map for MUST #6)
         run: python3 scripts/orchestrator.py || true
-      
-      - name: Compute liquidity shift (Ekubo pools + Endur LST + native staking)
-        env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
-          STRICT_NO_TRADING: 'true'
-        run: |
-          python3 scripts/collectors/ekubo_flow.py || true
-          python3 scripts/collectors/endur_lst_flow.py || true
-          python3 scripts/collectors/native_staking_flow.py || true
-          python3 scripts/detectors/liquidity_shift.py || true
 
-      - name: Auto-discovery scan (find new large addresses)
-        env:
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
-          STRICT_NO_TRADING: 'true'
+      # ============================================================
+      # STAGE 5 · CORE DETECTORS (пишут signals)
+      # ============================================================
+      - name: Auto-discovery scan
         run: python3 scripts/detectors/auto_discovery.py || true
 
       - name: Cross-window pattern detection
         run: python3 scripts/detectors/cross_window_pattern.py || true
 
-      - name: Auto-decision layer (accept/reject/queue)
+      - name: Auto-decision layer
         run: python3 scripts/detectors/decision_layer.py || true
 
-      - name: Compute Wyckoff phase (main)
+      # composite_detector_v2 — ГЛАВНЫЙ mozg, теперь запускается явно
+      - name: Composite detector v2 (main brain)
+        env:
+          COMPOSITE_SILENT: 'true'
+        run: python3 scripts/detectors/composite_detector_v2.py || true
+
+      - name: Wyckoff phase
         run: python3 scripts/detectors/wyckoff_phase.py || true
 
-      - name: Compute event calendar signal
+      - name: Event calendar signal
         run: python3 scripts/detectors/event_calendar.py || true
 
-      - name: Compute funding regime signal
+      - name: Funding regime signal
         run: python3 scripts/detectors/funding_signal.py || true
 
-      - name: Compute unlock signal
+      - name: Unlock signal
         run: python3 scripts/detectors/unlock_signal.py || true
 
-      - name: Compute concentration metrics
+      - name: Concentration metrics
         run: python3 scripts/detectors/concentration_metrics.py || true
 
-      - name: Compute effort/result signal
+      - name: Bridge activity signal
+        run: python3 scripts/detectors/bridge_activity.py || true
+
+      - name: Effort/result signal
         run: python3 scripts/detectors/effort_result.py || true
 
-      - name: Compute CVD analysis
+      - name: CVD analysis
         run: python3 scripts/detectors/cvd_analysis.py || true
 
-      - name: Compute CEX flow analysis
+      - name: CEX flow analysis
         run: python3 scripts/detectors/cex_flow.py || true
 
-      - name: Compute technical momentum
+      - name: Technical momentum
         run: python3 scripts/detectors/technical_momentum.py || true
 
-      - name: Compute cross-token correlation
+      - name: Cross-token correlation
         run: python3 scripts/detectors/cross_token_correlation.py || true
 
-      - name: Compute event layer (calendar impact)
+      - name: GitHub activity
+        run: python3 scripts/detectors/github_activity.py || true
+
+      - name: News aggregator
+        run: python3 scripts/detectors/news_aggregator.py || true
+
+      - name: Twitter (nitter RSS)
+        run: python3 scripts/detectors/twitter_nitter.py || true
+
+      - name: Event layer (calendar impact)
         run: python3 scripts/detectors/event_layer.py || true
 
-      - name: Compute Confluence Gate (multi-signal decision)
+      - name: Confluence Gate (multi-signal decision)
         run: python3 scripts/detectors/confluence_gate.py || true
-      
-      # === SHADOW LAYER (STATUS: HYPOTHESIS, does NOT affect decisions) ===
-      - name: Shadow postmortem — close PENDING shadow forecasts
+
+      # ============================================================
+      # STAGE 6 · SHADOW LAYER (HYPOTHESIS)
+      # ============================================================
+      - name: Shadow postmortem
         run: python3 scripts/detectors/shadow_postmortem.py || true
-      
-      - name: Shadow voter — write new shadow votes (72h + 7d)
+
+      - name: Shadow voter
         env:
           STRK_RUN_ID: shadow_${{ github.run_id }}
         run: python3 scripts/detectors/shadow_voter.py || true
-      # === END SHADOW LAYER ===
-      
-      # === COVERT FLOW + HISTORY LAYER (v1) ===
-      - name: Covert flow detector (shadow, reads edges CSV from orchestrator)
-        env:
-          STRICT_NO_TRADING: 'true'
+
+      # ============================================================
+      # STAGE 7 · COVERT FLOW + HISTORY
+      # ============================================================
+      - name: Covert flow detector
         run: python3 scripts/detectors/covert_flow_detector.py || true
-      
-      - name: History postmortem — close PENDING all_history records
+
+      - name: History postmortem
         run: python3 scripts/history_postmortem.py || true
-      
-      - name: History accumulator — write compact snapshot for this RUN
+
+      - name: History accumulator
         env:
           STRK_RUN_ID: hist_${{ github.run_id }}_${{ github.run_number }}
         run: python3 scripts/history_accumulator.py || true
-      # === END COVERT FLOW + HISTORY LAYER ===
 
-      - name: Compute interpretation layer (narrative synthesis)
+      # ============================================================
+      # STAGE 8 · SYNTHESIS (interpretation + scenarios)
+      # ============================================================
+      - name: Interpretation layer
         run: python3 scripts/detectors/interpretation_layer.py || true
 
-      - name: Compute scenario engine (Bull/Base/Bear)
+      - name: Scenario engine (Bull/Base/Bear)
         run: python3 scripts/detectors/scenario_engine.py || true
 
-      - name: Auto post-mortem (evaluate PENDING forecasts)
+      - name: Auto post-mortem (real forecasts)
         run: python3 scripts/detectors/auto_postmortem.py || true
 
       - name: Weekly cohort analysis (Sunday only)
@@ -142,21 +189,21 @@ jobs:
       - name: Whale auto-analysis
         run: python3 scripts/detectors/whale_auto_analysis.py || true
 
+      # ============================================================
+      # STAGE 9 · SEND DIGEST (Telegram)
+      # ============================================================
       - name: Send unified digest
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/daily_digest.py || echo "digest send failed"
 
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
 
-      - name: Commit updated seeds + history + liquidity cache + reports
+      # ============================================================
+      # STAGE 10 · PERSISTENCE (commit + upload)
+      # ============================================================
+      - name: Commit updated state files
         run: |
           mkdir -p data/history data/cache data/reports
-          # state files ДОЛЖНЫ быть в git — GitHub Actions cache ненадёжен для delta-24h.
-          # HTML отчёты тоже коммитим (иначе data/reports/ теряется с эфемерным раннером).
-          # alerts.jsonl + shadow_votes.jsonl + all_history.jsonl — persistence для калибровки.
           if git diff --quiet \
               data/seeds/flow_seeds.json \
               data/history/cohort_snapshots.jsonl \
@@ -171,7 +218,11 @@ jobs:
               data/cache/endur_lst_flow.json \
               data/cache/native_staking_flow.json \
               data/cache/covert_flow_signal.json \
-              data/cache/shadow_calibration.json 2>/dev/null && \
+              data/cache/shadow_calibration.json \
+              data/cache/whale_monitor_state.json \
+              data/cache/discord_monitor_state.json \
+              data/cache/starknet_discord.json \
+              data/cache/starknet_discord_state.json 2>/dev/null && \
              [ -z "$(git status --porcelain data/reports/)" ]; then
             echo "No changes"
           else
@@ -191,8 +242,12 @@ jobs:
                     data/cache/native_staking_flow.json \
                     data/cache/covert_flow_signal.json \
                     data/cache/shadow_calibration.json \
+                    data/cache/whale_monitor_state.json \
+                    data/cache/discord_monitor_state.json \
+                    data/cache/starknet_discord.json \
+                    data/cache/starknet_discord_state.json \
                     data/reports/ 2>/dev/null || true
-            git commit -m "chore: history + liquidity + reports + alerts [skip ci]" || echo "Nothing to commit"
+            git commit -m "chore: state update [skip ci]" || echo "Nothing to commit"
             git push || echo "Push failed"
           fi
 
@@ -222,6 +277,9 @@ jobs:
             data/cache/native_staking_flow.json
             data/cache/covert_flow_signal.json
             data/cache/shadow_calibration.json
+            data/cache/discord_monitor_state.json
+            data/cache/starknet_discord.json
+            data/cache/whale_monitor_state.json
             data/history/shadow_votes.jsonl
             data/history/all_history.jsonl
             data/history/alerts.jsonl
