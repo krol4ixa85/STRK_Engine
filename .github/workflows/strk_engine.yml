@@ -186,14 +186,29 @@ jobs:
       
       - name: Write new shadow votes (72h & 7d)
         run: python3 scripts/detectors/shadow_voter.py || true
+
+      # ─── COVERT FLOW + HISTORY LAYER (v1) ───
+      - name: Covert flow detector (shadow, reads edges CSV from orchestrator)
+        env:
+          STRICT_NO_TRADING: 'true'
+        run: python3 scripts/detectors/covert_flow_detector.py || true
       
+      - name: History postmortem — close PENDING all_history records
+        run: python3 scripts/history_postmortem.py || true
+      
+      - name: History accumulator — write compact snapshot for this RUN
+        env:
+          STRK_RUN_ID: hist_${{ github.run_id }}_${{ github.run_number }}
+        run: python3 scripts/history_accumulator.py || true
+      # ─── END COVERT FLOW + HISTORY LAYER ───
+
       - name: Send unified digest
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/daily_digest.py
       
-      - name: Commit updated seeds + history logs + liquidity shift cache + shadow votes
+      - name: Commit updated seeds + history logs + liquidity shift cache + shadow votes + history snapshots
         run: |
           mkdir -p data/history data/cache
           if git diff --quiet \
@@ -202,11 +217,13 @@ jobs:
               data/history/forecasts.jsonl \
               data/history/postmortems.jsonl \
               data/history/shadow_votes.jsonl \
+              data/history/all_history.jsonl \
               data/cache/native_staking_state.json \
               data/cache/liquidity_shift.json \
               data/cache/ekubo_flow.json \
               data/cache/endur_lst_flow.json \
-              data/cache/native_staking_flow.json 2>/dev/null; then
+              data/cache/native_staking_flow.json \
+              data/cache/covert_flow_signal.json 2>/dev/null; then
             echo "No changes"
           else
             git config user.email "bot@github.com"
@@ -216,12 +233,14 @@ jobs:
                     data/history/forecasts.jsonl \
                     data/history/postmortems.jsonl \
                     data/history/shadow_votes.jsonl \
+                    data/history/all_history.jsonl \
                     data/cache/native_staking_state.json \
                     data/cache/liquidity_shift.json \
                     data/cache/ekubo_flow.json \
                     data/cache/endur_lst_flow.json \
-                    data/cache/native_staking_flow.json 2>/dev/null || true
-            git commit -m "chore: history logs + liquidity shift + shadow votes update [skip ci]" || echo "Nothing to commit"
+                    data/cache/native_staking_flow.json \
+                    data/cache/covert_flow_signal.json 2>/dev/null || true
+            git commit -m "chore: history logs + liquidity shift + shadow votes + covert flow + history snapshots update [skip ci]" || echo "Nothing to commit"
             git push || echo "Push failed"
           fi
       
@@ -263,7 +282,9 @@ jobs:
             data/cache/ekubo_flow.json
             data/cache/endur_lst_flow.json
             data/cache/native_staking_flow.json
+            data/cache/covert_flow_signal.json
             data/history/shadow_votes.jsonl
+            data/history/all_history.jsonl
             data/dashboards/
             data/graphs/
             data/reports/
