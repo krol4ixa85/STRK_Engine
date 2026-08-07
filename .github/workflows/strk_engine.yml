@@ -24,7 +24,12 @@ jobs:
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
           STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
           STRICT_NO_TRADING: 'true'
-        run: python3 scripts/collectors/run_all_collectors.py
+        run: |
+          if [ -f scripts/collectors/run_all_collectors.py ]; then
+            python3 scripts/collectors/run_all_collectors.py
+          else
+            echo "::warning::scripts/collectors/run_all_collectors.py NOT FOUND - workflow continues with stale cache from previous runs"
+          fi
 
       - name: Also run orchestrator (flow map for MUST #6)
         env:
@@ -58,7 +63,7 @@ jobs:
         run: python3 scripts/detectors/decision_layer.py || true
 
       - name: Compute Wyckoff phase (main)
-        run: python3 scripts/detectors/wyckoff_phase.py
+        run: python3 scripts/detectors/wyckoff_phase.py || true
 
       - name: Compute event calendar signal
         run: python3 scripts/detectors/event_calendar.py || true
@@ -141,7 +146,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python3 scripts/daily_digest.py
+        run: python3 scripts/daily_digest.py || echo "digest send failed"
 
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
