@@ -21,17 +21,45 @@ CACHE_DIR = SCRIPT_DIR / 'data' / 'cache'
 DECISION_LOG = CACHE_DIR / 'decision_log.json'
 WHALE_EVENTS = CACHE_DIR / 'whale_events_state.json'
 
-# alert_logger for persistent history in data/history/alerts.jsonl
-# Fallback: если alert_logger.py не создан — no-op, digest всё равно отправится
-try:
-    from alert_logger import log_alert as _log_alert
-except ImportError:
+# ============================================================
+# INLINE ALERT LOGGER (no import — гарантированно работает
+# независимо от наличия alert_logger.py или sys.path)
+# Пишет в data/history/alerts.jsonl одну строку JSON после каждого send.
+# Никогда не бросает исключений — не может сломать digest.
+# ============================================================
+def _log_alert(event_type, text='', sent=True, error_msg='', extra=None):
     try:
-        sys.path.insert(0, str(Path(__file__).parent))
-        from alert_logger import log_alert as _log_alert
+        import hashlib
+        history_dir = SCRIPT_DIR / 'data' / 'history'
+        history_dir.mkdir(parents=True, exist_ok=True)
+        alerts_file = history_dir / 'alerts.jsonl'
+        now = datetime.now(timezone.utc)
+        chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
+        token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+        # Determine sent status
+        if isinstance(sent, dict):
+            status = sent.get('status', 'UNKNOWN')
+        elif not token or not chat_id:
+            status = 'DRY_RUN'
+        elif sent:
+            status = 'SENT'
+        else:
+            status = 'FAILED'
+        # Build record
+        record = {
+            'ts': now.isoformat(),
+            'event_type': event_type,
+            'sent_status': status,
+            'error_msg': str(error_msg or ''),
+            'chat_id_hash': ('sha256:' + hashlib.sha256(chat_id.encode()).hexdigest()[:16]) if chat_id else '',
+            'text_length_chars': len(text or ''),
+            'text_sha256': 'sha256:' + hashlib.sha256((text or '').encode('utf-8')).hexdigest()[:16],
+            'extra': extra or {},
+        }
+        with open(alerts_file, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(record, ensure_ascii=False, default=str) + '\n')
     except Exception:
-        def _log_alert(*a, **kw):
-            return {}
+        pass  # never raise from log function
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger('digest')
@@ -79,12 +107,46 @@ def get_whale_events_24h():
 
 
 def count_wallets():
-    from wallet_registry import load_registry
-    wallets = load_registry()
+    """Safe wallet count — не падает если wallet_registry недоступен."""
+    try:
+        from wallet_registry import load_registry
+        wallets = load_registry()
+    except (ImportError, Exception):
+        # Fallback 1: try load_seeds
+        try:
+            from wallet_registry import load_seeds
+            seeds = load_seeds()
+            wallets = {}
+            for cat, entries in seeds.items():
+                if cat.startswith('_'):
+                    continue
+                if isinstance(entries, dict):
+                    for name, info in entries.items():
+                        if isinstance(info, dict):
+                            wallets[name] = {'category': cat}
+        except Exception:
+            # Fallback 2: read flow_seeds.json напрямую
+            try:
+                seeds_file = SCRIPT_DIR / 'data' / 'seeds' / 'flow_seeds.json'
+                if seeds_file.exists():
+                    import json as _json
+                    data = _json.loads(seeds_file.read_text(encoding='utf-8'))
+                    wallets = {}
+                    for cat, entries in data.items():
+                        if cat.startswith('_'):
+                            continue
+                        if isinstance(entries, dict):
+                            for name, info in entries.items():
+                                if isinstance(info, dict):
+                                    wallets[name] = {'category': cat}
+                else:
+                    wallets = {}
+            except Exception:
+                wallets = {}
     total = len(wallets)
     by_cat = {}
     for w in wallets.values():
-        cat = w.get('category', 'unknown')
+        cat = w.get('category', 'unknown') if isinstance(w, dict) else 'unknown'
         by_cat[cat] = by_cat.get(cat, 0) + 1
     return total, by_cat
 
