@@ -495,6 +495,50 @@ def handle_command(chat_id, text, from_user_id):
             except Exception as e:
                 send_message(chat_id, f"❌ Error: {e}")
 
+        elif cmd == '/history':
+            try:
+                hist_file = SCRIPT_DIR / 'data' / 'history' / 'all_history.jsonl'
+                if not hist_file.exists():
+                    send_message(chat_id, "📚 No history entries yet.\n\nHistory accumulates each RUN. Wait ~6h for first entry.")
+                    return
+                with open(hist_file, 'r', encoding='utf-8') as f:
+                    lines = [l.strip() for l in f if l.strip()]
+                if not lines:
+                    send_message(chat_id, "📚 No history entries yet.")
+                    return
+                last_5 = lines[-5:]
+                msg = f"<b>📚 Last {len(last_5)} history entries</b>\n<i>Всего: {len(lines)} записей</i>\n\n"
+                for line in reversed(last_5):
+                    try:
+                        r = json.loads(line)
+                    except Exception:
+                        continue
+                    run_id = r.get('run_id', '?')
+                    ts = (r.get('timestamp') or '')[:16].replace('T', ' ')
+                    price = r.get('price_usd')
+                    price_str = f"${price:.4f}" if price else "—"
+                    live = r.get('live_signals') or {}
+                    conf = (live.get('confluence_gate') or {}).get('signal') or '—'
+                    comp = (live.get('composite_v2') or {}).get('direction') or '—'
+                    shadow = (r.get('shadow_ref') or {}).get('shadow_signal') or '—'
+                    o72 = (r.get('outcome_72h') or {}).get('signal') or 'PENDING'
+                    o7d = (r.get('outcome_7d') or {}).get('signal') or 'PENDING'
+                    status = r.get('status', 'PENDING')
+
+                    msg += f"<b>{run_id}</b> · {ts} · {price_str}\n"
+                    msg += f"  Confluence: <code>{conf}</code>  Composite: <code>{comp}</code>\n"
+                    msg += f"  Shadow: <code>{shadow}</code>  Status: <b>{status}</b>\n"
+                    if status != 'PENDING':
+                        o72_str = o72 if 'signal' in str(r.get('outcome_72h', {})) else 'PENDING'
+                        o7d_str = o7d if 'signal' in str(r.get('outcome_7d', {})) else 'PENDING'
+                        msg += f"  72h: {o72}  · 7d: {o7d}\n"
+                    msg += "\n"
+
+                msg += f"<i>Полная история: data/history/all_history.jsonl</i>"
+                send_message(chat_id, msg)
+            except Exception as e:
+                send_message(chat_id, f"❌ Error: {e}")
+
         else:
             send_message(chat_id, f"Unknown command: {cmd}\nSend /help for list.")
     
