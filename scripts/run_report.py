@@ -17,6 +17,11 @@ Canonical structure (v5.4):
   11. FORECAST для FORWARDTEST_LOG
 
 Output: /mnt/user-data/outputs/STRK_RUN_[timestamp].html
+
+single_brain_v1 changes:
+  · BLOCK 4 renamed: CONFLUENCE GATE -> DECISION · single source of truth
+  · Hero disclaimer: HIGH signal -> open LIQ before action
+  · Layman verdict: 4 variants get "action = DECISION block below" footer
 """
 
 import os
@@ -310,9 +315,13 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
   {_build_layman(phase, sub_phase, conf_signal, ev_signal, price_now, high_14d, low_14d, cross_token, calendar, short_crowded, funding_apr)}
 </div>
 
-<!-- ============ BLOCK 4: CONFLUENCE GATE ============ -->
+<!-- ============ BLOCK 4: DECISION (single source of truth) ============ -->
 <div class="sec" id="run">
-  <div class="sec-title">⚡ CONFLUENCE GATE · 6 checks across 3 layers</div>
+  <div class="sec-title">🎯 DECISION · single source of truth (6 checks across 3 layers)</div>
+  <div style="margin-bottom:8px;padding:8px;background:#2a1f0f;border-left:3px solid var(--yellow);font-size:11px;color:var(--yellow)">
+    ⚠ Любой HIGH signal → сначала открой полный LIQ отчёт, не мгновенное buy/sell.<br>
+    Все другие блоки в этом отчёте — evidence base, не независимые вердикты.
+  </div>
   <div style="margin-bottom:10px;color:var(--dim);font-size:11.5px">{conf_summary}</div>
   
   <div style="margin-top:12px">
@@ -525,15 +534,15 @@ def _build_layman(phase, sub_phase, conf_signal, ev_signal, price, high_14d, low
     else:
         sentences.append(f"<b>Технически:</b> Funding rate {funding_apr:+.1f}% ann — нормальные условия.")
     
-    # 5. Verdict
+    # 5. Verdict (single_brain: все варианты ссылаются на DECISION блок)
     if 'HIGH' in conf_signal and 'RALLY' in conf_signal:
-        sentences.append(f"<b>Вердикт:</b> <b class='g'>СИГНАЛ НА LONG</b> — {sum([1 for s in sentences if s])} независимых checks согласны.")
+        sentences.append(f"<b>Вердикт:</b> <b class='g'>СИГНАЛ НА LONG</b> — {sum([1 for s in sentences if s])} независимых checks согласны. <i>Финальное действие — блок DECISION ниже.</i>")
     elif 'HIGH' in conf_signal and 'CRASH' in conf_signal:
-        sentences.append(f"<b>Вердикт:</b> <b class='r'>СИГНАЛ НА SHORT/REDUCE</b> — множественное подтверждение.")
+        sentences.append(f"<b>Вердикт:</b> <b class='r'>СИГНАЛ НА SHORT/REDUCE</b> — множественное подтверждение. <i>Финальное действие — блок DECISION ниже.</i>")
     elif 'MEDIUM' in conf_signal:
-        sentences.append(f"<b>Вердикт:</b> <b class='y'>ЖДЁМ CONFLUENCE</b> — частичные сигналы, но не хватает подтверждений. <b>Ничего не делаем.</b>")
+        sentences.append(f"<b>Вердикт:</b> <b class='y'>ЖДЁМ CONFLUENCE</b> — частичные сигналы, но не хватает подтверждений. <b>Ничего не делаем.</b> <i>См. блок DECISION.</i>")
     else:
-        sentences.append(f"<b>Вердикт:</b> <b class='dim'>FLAT</b> — нет чёткой картины. Ждём.")
+        sentences.append(f"<b>Вердикт:</b> <b class='dim'>FLAT</b> — нет чёткой картины. Ждём. <i>См. блок DECISION.</i>")
     
     return ''.join(f'<div class="layman-item">{i+1}. {s}</div>' for i, s in enumerate(sentences))
 
