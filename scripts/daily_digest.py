@@ -367,31 +367,35 @@ def format_digest():
         
         text += "\n"
     
-    # === COHORT BEHAVIOR === (no fake +0 STRK — same rule as RUN)
+    # === COHORT BEHAVIOR === (CORRECT keys: net_flow_strk / address_count / behavior)
     cohorts = load_json('cohort_tracker.json') or {}
     if cohorts.get('cohorts'):
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>👥 COHORT BEHAVIOR</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
         cohort_data = cohorts.get('cohorts', {}) or {}
-        aggregate = cohorts.get('aggregate', {}) or {}
-        agg_signal = aggregate.get('signal', NOT_CHECKED)
+        # cohort_tracker пишет aggregate_signal на top-level, не в 'aggregate'
+        agg_signal = cohorts.get('aggregate_signal') or (cohorts.get('aggregate') or {}).get('signal') or NOT_CHECKED
         text += f"<b>Aggregate:</b> {agg_signal}\n\n"
-        # Show cohorts — skip fake zeros
         lines = []
         all_zero = True
         for cohort_name, cohort_info in cohort_data.items():
-            if not isinstance(cohort_info, dict) or cohort_info.get('status') == 'no_data':
+            if not isinstance(cohort_info, dict):
                 continue
-            n_wallets = cohort_info.get('n_wallets', 0)
-            net_24h = cohort_info.get('net_24h_strk', 0)
-            direction = cohort_info.get('direction', 'STABLE')
+            # Правильные ключи (cohort_tracker.py schema)
+            n_wallets = cohort_info.get('address_count') or cohort_info.get('n_wallets') or 0
+            net_flow = cohort_info.get('net_flow_strk')
+            if net_flow is None:
+                net_flow = cohort_info.get('net_24h_strk')  # fallback на старую схему
+            behavior = cohort_info.get('behavior') or cohort_info.get('direction') or 'STABLE'
             display_name = cohort_name.replace('_', ' ').title()
-            arrow = '↗' if 'INFLOW' in direction else ('↘' if 'OUTFLOW' in direction else '→')
-            if net_24h == 0 and n_wallets > 0:
+            arrow = '↗' if 'ACCUM' in behavior or 'INFLOW' in behavior else ('↘' if 'DISTRIB' in behavior or 'OUTFLOW' in behavior else '→')
+            if net_flow is None:
+                continue
+            if net_flow == 0 and n_wallets > 0:
                 lines.append(f"<b>{display_name}</b> ({n_wallets}w): no flow (last 24h)")
-            elif net_24h != 0:
-                lines.append(f"<b>{display_name}</b> ({n_wallets}w): {arrow} {net_24h:+,.0f} STRK")
+            elif net_flow != 0:
+                lines.append(f"<b>{display_name}</b> ({n_wallets}w): {arrow} {net_flow:+,.0f} STRK · <i>{behavior}</i>")
                 all_zero = False
         if not lines:
             text += f"{NOT_CHECKED}\n\n"
@@ -663,8 +667,8 @@ def format_digest():
     _high_14 = _tech_feat.get('high_14d')
     _low_14 = _tech_feat.get('low_14d')
     if _low_14 and _high_14:
-        _watch_lines.append(f"Break < ${_low_14:.4f} → invalidates rally")
-        _watch_lines.append(f"Break > ${_high_14:.4f} → invalidates crash")
+        _watch_lines.append(f"Break below ${_low_14:.4f} → invalidates rally")
+        _watch_lines.append(f"Break above ${_high_14:.4f} → invalidates crash")
     # 3. Unlock
     _unlock_data = load_json('unlock_signal.json') or {}
     _next_cliff = _unlock_data.get('next_cliff') or {}
@@ -844,9 +848,11 @@ def format_fallback_digest(composite, accepted, rejected, whale_count, wallet_to
 
 
 def send_telegram(text):
-    """Send digest to Telegram, or print if not configured"""
+    """Send text to Telegram. Logs full response so root causes are visible in Actions."""
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
+    
+    logger.info(f"send_telegram: text_length={len(text)} chars")
     
     if not token or not chat_id:
         logger.warning("Telegram not configured. Would send:")
@@ -866,14 +872,25 @@ def send_telegram(text):
     
     try:
         req = urllib.request.Request(url, data=data)
-        with urllib.request.urlopen(req, timeout=10) as response:
+        with urllib.request.urlopen(req, timeout=15) as response:
             result = json.loads(response.read())
             if result.get('ok'):
-                logger.info("Digest sent to Telegram")
+                logger.info(f"Sent OK · msg_length={len(text)} · message_id={result.get('result', {}).get('message_id')}")
                 return True
             else:
-                logger.error(f"Telegram error: {result}")
+                # Telegram error — вывести полный ответ и первые 300 chars текста
+                logger.error(f"Telegram REJECTED: {result}")
+                logger.error(f"Text preview (first 300 chars): {text[:300]}")
                 return False
+    except urllib.request.HTTPError as e:
+        # 400 Bad Request → тело ответа расскажет что не так с HTML
+        try:
+            err_body = e.read().decode('utf-8')
+            logger.error(f"HTTP {e.code}: {err_body}")
+            logger.error(f"Text preview (first 300 chars): {text[:300]}")
+        except Exception:
+            logger.error(f"HTTP {e.code} (body unavailable)")
+        return False
     except Exception as e:
         logger.error(f"Failed to send Telegram: {e}")
         return False
@@ -998,11 +1015,13 @@ def _extract_swing_line(cex, ct, eff, cvd, cohorts, whale, circ_supply=None):
             parts.append(f"Whales→CEX {p2c:.0f}%")
         elif pct is not None and pct > 0:
             parts.append(f"CEX→private {pct:.0f}%")
-    # SMART cohort 24h — только если есть реальный flow (не 0)
+    # SMART cohort 24h — правильные ключи cohort_tracker.py
     coh = cohorts.get('cohorts') or {}
-    smart = coh.get('smart') or coh.get('SMART') or coh.get('smart_money') or {}
-    smart_net = smart.get('net_24h_strk')
-    if smart_net is not None and smart_net != 0 and smart.get('status') != 'no_data':
+    smart = coh.get('SMART') or coh.get('smart') or coh.get('smart_money') or {}
+    smart_net = smart.get('net_flow_strk')
+    if smart_net is None:
+        smart_net = smart.get('net_24h_strk')  # fallback
+    if smart_net is not None and smart_net != 0:
         parts.append(f"SMART24h {smart_net:+,.0f} STRK")
     return ' · '.join(parts) if parts else NOT_CHECKED
 
@@ -1273,8 +1292,8 @@ def format_run_telegram():
     low_14d = tech.get('low_14d')
     price = tech.get('price') or tech.get('price_now')
     if high_14d and low_14d and price:
-        m1 += f"· Break < ${low_14d:.4f} → invalidates rally\n"
-        m1 += f"· Break > ${high_14d:.4f} → invalidates crash\n"
+        m1 += f"· Break below ${low_14d:.4f} → invalidates rally\n"
+        m1 += f"· Break above ${high_14d:.4f} → invalidates crash\n"
     else:
         m1 += f"· Price levels {NOT_CHECKED}\n"
     nc = unlock.get('next_cliff', {})
@@ -1341,17 +1360,21 @@ def format_run_telegram():
     coh_lines = []
     all_zero = True
     for name, info in list(coh_data.items())[:5]:
-        if not isinstance(info, dict) or info.get('status') == 'no_data':
+        if not isinstance(info, dict):
             continue
-        net = info.get('net_24h_strk', 0)
-        n_w = info.get('n_wallets', 0)
-        dirn = info.get('direction', '—')
-        arrow = '↗' if 'INFLOW' in dirn else ('↘' if 'OUTFLOW' in dirn else '→')
-        # Если net = 0 и есть кошельки — пропустим/пометим no flow
+        # Правильные ключи cohort_tracker.py
+        n_w = info.get('address_count') or info.get('n_wallets') or 0
+        net = info.get('net_flow_strk')
+        if net is None:
+            net = info.get('net_24h_strk')
+        if net is None:
+            continue
+        behavior = info.get('behavior') or info.get('direction') or 'STABLE'
+        arrow = '↗' if 'ACCUM' in behavior or 'INFLOW' in behavior else ('↘' if 'DISTRIB' in behavior or 'OUTFLOW' in behavior else '→')
         if net == 0 and n_w > 0:
             coh_lines.append(f"{name.replace('_', ' ').title()}: no flow (last 24h)")
         elif net != 0:
-            coh_lines.append(f"{name.replace('_', ' ').title()}: {arrow} {net:+,.0f} STRK")
+            coh_lines.append(f"{name.replace('_', ' ').title()}: {arrow} {net:+,.0f} STRK · {behavior}")
             all_zero = False
     if not coh_lines:
         m2 += NOT_CHECKED + "\n"
