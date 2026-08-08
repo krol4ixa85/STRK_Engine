@@ -332,17 +332,9 @@ def format_digest():
             sec_prob = secondary.get('probability', 0)
             text += f"<b>Alt:</b> {sec_name} ({sec_prob*100:.0f}%)\n\n"
         
-        # Position hint (narrative context — not action)
-        position_hint = interp.get('position_hint', {})
-        # position_hint может быть dict {'signal': 'FLAT', 'reason': '...'} или string "Position: ..."
-        if isinstance(position_hint, dict) and position_hint.get('signal'):
-            text += f"<b>Position hint (narrative):</b> {position_hint.get('signal', 'FLAT')}\n"
-            if position_hint.get('reason'):
-                text += f"<i>{position_hint.get('reason', '')[:200]}</i>\n"
-        elif isinstance(position_hint, str) and position_hint.strip():
-            text += f"<b>Position hint (narrative):</b>\n"
-            text += f"<i>{position_hint[:300]}</i>\n" 
-        
+        # Position hint removed — все action-указания только в DECISION блоке.
+        # (interpretation.position_hint часто содержит "не лонгуй / trail stop" —
+        # это action, а Xenia хочет single source of truth = confluence_gate.action)
         text += "\n"
     
     # === WHALE INTERPRETATION ===
