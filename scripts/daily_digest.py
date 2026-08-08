@@ -111,6 +111,42 @@ CHECK_TRIGGERS = {
 }
 
 
+# ============================================================
+# LAYMAN VERDICT · signal + confidence → человеческая фраза
+# Используется в digest, LIQ, RUN — единый tone of voice
+# ============================================================
+LAYMAN_VERDICTS = {
+    ('RALLY_HIGH', 'HIGH'):
+        'Setup для LONG — 6+ независимых сигналов согласны. Проверь LIQ перед входом.',
+    ('CRASH_HIGH', 'HIGH'):
+        'Setup для SHORT/REDUCE — 6+ независимых сигналов согласны. Проверь LIQ перед действием.',
+    ('RALLY_MEDIUM', 'MEDIUM'):
+        'Картина не худшая, но входить нельзя — не хватает силы (цена/объём/импульс).',
+    ('CRASH_MEDIUM', 'MEDIUM'):
+        'Есть тревожные сигналы, но не сетап для SHORT — недостаточно подтверждений.',
+    ('NO_SIGNAL', 'LOW'):
+        'Нет чёткой картины. Активность рынка низкая, направление размыто.',
+    ('NO_SIGNAL', 'MEDIUM'):
+        'Смешанные сигналы. Некоторые модули видят движение, но конфликтуют.',
+}
+
+def _get_layman_verdict(signal, confidence):
+    """Return human-readable verdict for DECISION signal + confidence.
+    Fallback — generic based on confidence level."""
+    key = (str(signal), str(confidence))
+    if key in LAYMAN_VERDICTS:
+        return LAYMAN_VERDICTS[key]
+    # Fallback by confidence
+    conf = str(confidence).upper()
+    if conf == 'HIGH' and 'RALLY' in str(signal):
+        return 'Сильный rally сигнал, но требует проверки LIQ.'
+    if conf == 'HIGH' and 'CRASH' in str(signal):
+        return 'Сильный crash сигнал, но требует проверки LIQ.'
+    if conf == 'MEDIUM':
+        return 'Партиальные сигналы, ждём подтверждения одной из сторон.'
+    return 'Недостаточно данных для чёткого вердикта — мониторим.'
+
+
 def nv(value, default=NOT_CHECKED, formatter=None):
     """Safe value or NOT_CHECKED. Never returns fake 0 for missing data."""
     if value is None:
@@ -759,7 +795,9 @@ def format_digest():
             text += f"🟡 <b>{_conf_sig}</b> · confidence <b>MEDIUM</b> · <b>{_action}</b>\n"
         else:
             text += f"⚪ <b>{_conf_sig}</b> · confidence <b>{_conf_lvl}</b> · <b>{_action}</b>\n"
-        text += f"→ RALLY {_r_score}/9 · CRASH {_c_score}/9\n\n"
+        text += f"→ RALLY {_r_score}/9 · CRASH {_c_score}/9\n"
+        # Layman-friendly объяснение — та же фраза во всех режимах
+        text += f"<i>{_get_layman_verdict(_conf_sig, _conf_lvl)}</i>\n\n"
         
         # Разделить checks на rally/crash intent
         _rally_intent = {'on_chain_ok', 'price_up_3d', 'accelerating', 'vol_expanding',
@@ -808,7 +846,51 @@ def format_digest():
         text += "⚪ <b>DECISION: CONFLUENCE_GATE недоступен</b>\n"
         text += "→ STAY FLAT до восстановления пайплайна.\n\n"
     
-    # === DISCOVERY (last 6h) - HIGH-QUALITY only ===
+    # === WHALE 6h === (агрегат whale событий вместо потока alerts)
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+    text += "<b>🐋 WHALE 6h</b>\n"
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+    _whale_events_log = SCRIPT_DIR / 'data' / 'history' / 'whale_events.jsonl'
+    _whale_6h_events = []
+    if _whale_events_log.exists():
+        _cutoff = datetime.now(timezone.utc) - timedelta(hours=6)
+        try:
+            with open(_whale_events_log, 'r', encoding='utf-8') as f:
+                for line in f:
+                    try:
+                        e = json.loads(line)
+                        _ts = datetime.fromisoformat(e['ts'])
+                        if _ts > _cutoff:
+                            _whale_6h_events.append(e)
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+    if _whale_6h_events:
+        _total = len(_whale_6h_events)
+        _both_known = sum(1 for e in _whale_6h_events if e.get('both_known'))
+        _candidates = sum(1 for e in _whale_6h_events if not e.get('both_known') and not e.get('watchlist_hit'))
+        _total_amt = sum(e.get('amount_strk', 0) for e in _whale_6h_events)
+        text += f"{_total} events · {_both_known} already watched · {_candidates} candidate ADD\n"
+        text += f"Total volume: {_total_amt/1e6:.1f}M STRK\n\n"
+        # Show top 3 candidate addresses (не в seeds)
+        _cands = sorted(
+            (e for e in _whale_6h_events if not e.get('both_known') and not e.get('watchlist_hit')),
+            key=lambda x: x.get('amount_strk', 0),
+            reverse=True
+        )[:3]
+        if _cands:
+            text += "<b>Top candidates (ADD?):</b>\n"
+            for e in _cands:
+                # Which side is unknown?
+                _unk = e.get('to_addr') if not e.get('to_cohort') else e.get('from_addr')
+                _amt = e.get('amount_strk', 0) / 1e6
+                text += f"<code>{_unk}</code>\n  · {_amt:.2f}M STRK\n"
+    else:
+        text += f"{NOT_CHECKED} · нет whale событий за 6h\n"
+    text += "\n"
+    
+        # === DISCOVERY (last 6h) - HIGH-QUALITY only ===
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>👁 DISCOVERY (6h)</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
@@ -1280,6 +1362,7 @@ def format_liq():
     if conf.get('summary'):
         t += f"<i>{conf['summary']}</i>\n"
     t += f"\n<b>Action:</b> {action}\n"
+    t += f"<i>{_get_layman_verdict(sig, cfd)}</i>\n"
     # Primary scenario range if available
     raw_scen = scen.get('scenarios', [])
     primary_str = str(scen.get('primary', '')).upper()
@@ -1369,7 +1452,8 @@ def format_run_telegram():
     m1 += f"Confidence: <b>{conf.get('confidence', NOT_CHECKED)}</b>\n"
     if conf.get('summary'):
         m1 += f"<i>{conf['summary']}</i>\n"
-    m1 += f"\n<b>Action:</b> {conf.get('action', 'STAY FLAT')}\n\n"
+    m1 += f"\n<b>Action:</b> {conf.get('action', 'STAY FLAT')}\n"
+    m1 += f"<i>{_get_layman_verdict(conf.get('signal', ''), conf.get('confidence', ''))}</i>\n\n"
 
     # GATES (rally + crash breakdown by individual check)
     m1 += "━━━━━━━━━━━━━━━━━━━\n"
