@@ -42,8 +42,16 @@ JOBS = [
 ]
 
 # starknet_discord — только если channel_id настроен
+# Try both paths (collectors/ or detectors/) — file location varies across refactors
 if os.environ.get('STARKNET_ANNOUNCEMENTS_CHANNEL_ID'):
-    JOBS.append(('detectors/starknet_discord.py', [], 60, 'Starknet Discord announcements'))
+    _sd_collectors = REPO_ROOT / 'scripts' / 'collectors' / 'starknet_discord.py'
+    _sd_detectors = REPO_ROOT / 'scripts' / 'detectors' / 'starknet_discord.py'
+    if _sd_collectors.exists():
+        JOBS.append(('collectors/starknet_discord.py', [], 60, 'Starknet Discord announcements'))
+    elif _sd_detectors.exists():
+        JOBS.append(('detectors/starknet_discord.py', [], 60, 'Starknet Discord announcements'))
+    else:
+        print("[skip] starknet_discord — file not found in collectors/ or detectors/")
 else:
     print("[skip] starknet_discord — STARKNET_ANNOUNCEMENTS_CHANNEL_ID not set")
 
