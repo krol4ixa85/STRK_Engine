@@ -907,20 +907,20 @@ def _extract_swing_line(cex, ct, eff, cvd, cohorts, whale, circ_supply=None):
         if isinstance(r, dict) and r.get('signal') and r['signal'] != 'NEUTRAL':
             parts.append(f"Effort {tf}={r['signal']}")
             break
-    # Whale-to-CEX
+    # Whale-to-CEX — только если non-zero
     if isinstance(whale, dict):
         stats = whale.get('stats') or {}
         pct = stats.get('cex_to_private_pct')
         p2c = stats.get('private_to_cex_pct')
         if p2c is not None and p2c > 0:
             parts.append(f"Whales→CEX {p2c:.0f}%")
-        elif pct is not None:
+        elif pct is not None and pct > 0:
             parts.append(f"CEX→private {pct:.0f}%")
-    # SMART cohort 24h
+    # SMART cohort 24h — только если есть реальный flow (не 0)
     coh = cohorts.get('cohorts') or {}
     smart = coh.get('smart') or coh.get('SMART') or coh.get('smart_money') or {}
     smart_net = smart.get('net_24h_strk')
-    if smart_net is not None and smart.get('status') != 'no_data':
+    if smart_net is not None and smart_net != 0 and smart.get('status') != 'no_data':
         parts.append(f"SMART24h {smart_net:+,.0f} STRK")
     return ' · '.join(parts) if parts else NOT_CHECKED
 
@@ -958,7 +958,40 @@ def _extract_fund_line(unlock, stak, bridge, news):
     return ' · '.join(parts) if parts else NOT_CHECKED
 
 
-def _extract_structure_line(wyk, tech):
+def _get_btc_context(composite, macro):
+    """BTC context из composite_signal_v2 → inputs.btc_context (авторитетный источник),
+    fallback на agent_input.btc."""
+    btc_ctx = ((composite.get('inputs') or {}).get('btc_context') or {})
+    macro_btc = macro.get('btc') or {}
+    return {
+        'cycle': btc_ctx.get('cycle') or macro_btc.get('cycle'),
+        'price': btc_ctx.get('btc_price') or macro_btc.get('price'),
+        'dist200_pct': btc_ctx.get('dist200_pct') or macro_btc.get('dist200_pct'),
+    }
+
+
+def _compute_regime(tech):
+    """Вычислить regime из tech features (никто в JSON не пишет regime явно).
+    Правила:
+      · slope 3d > +3% AND vol expanding → TRENDING_UP
+      · slope 3d < -3% AND vol expanding → TRENDING_DOWN
+      · abs(slope 3d) < 2 → RANGING
+      · иначе → DRIFT
+    """
+    slope = tech.get('slope_3d_pct')
+    vol = tech.get('vol_ratio_3d_vs_30d', 1.0)
+    if slope is None:
+        return None
+    if slope > 3 and vol > 1.2:
+        return 'TRENDING_UP'
+    if slope < -3 and vol > 1.2:
+        return 'TRENDING_DOWN'
+    if abs(slope) < 2:
+        return 'RANGING'
+    return 'DRIFT'
+
+
+def _extract_structure_line(wyk, tech, btc_cycle=None, regime=None):
     """Structure: phase.subphase, wyckoff_conf, regime, btc_cycle, price."""
     parts = []
     phase = wyk.get('phase')
@@ -970,10 +1003,14 @@ def _extract_structure_line(wyk, tech):
         parts.append(f"Phase {p_str}")
     if wyk.get('confidence'):
         parts.append(f"wyk={wyk['confidence']}")
-    if wyk.get('regime'):
-        parts.append(f"regime={wyk['regime']}")
-    if wyk.get('btc_cycle'):
-        parts.append(f"BTC={wyk['btc_cycle']}")
+    # regime: сначала из wyk, потом computed
+    r = wyk.get('regime') or regime
+    if r:
+        parts.append(f"regime={r}")
+    # BTC cycle: параметр (из composite) или из wyk
+    bc = btc_cycle or wyk.get('btc_cycle')
+    if bc:
+        parts.append(f"BTC={bc}")
     price = tech.get('price') or tech.get('price_now')
     if price:
         parts.append(f"px=${price:.4f}")
@@ -1055,11 +1092,15 @@ def format_liq():
                 break
     t += "\n"
 
-    # STRUCTURE line
+    # STRUCTURE line — с BTC context из composite и computed regime
+    composite = load_json('composite_signal_v2.json') or {}
+    macro = load_json('agent_input.json') or {}
+    btc_ctx = _get_btc_context(composite, macro)
+    regime = _compute_regime(tech)
     t += "━━━━━━━━━━━━━━━━━━━\n"
     t += "<b>📍 STRUCTURE</b>\n"
     t += "━━━━━━━━━━━━━━━━━━━\n"
-    t += _extract_structure_line(wyk, tech) + "\n\n"
+    t += _extract_structure_line(wyk, tech, btc_cycle=btc_ctx.get('cycle'), regime=regime) + "\n\n"
 
     # MICRO
     t += "━━━━━━━━━━━━━━━━━━━\n"
@@ -1174,13 +1215,21 @@ def format_run_telegram():
     # =========================
     m2 = f"<b>📊 RUN · 2/3</b> · <i>{ts}</i>\n\n"
 
+    # STRUCTURE — берём BTC из composite (авторитетно), regime из tech (computed)
+    btc_ctx = _get_btc_context(composite, macro)
+    regime = _compute_regime(tech)
     m2 += "━━━━━━━━━━━━━━━━━━━\n"
     m2 += "<b>📍 STRUCTURE / MESTO</b>\n"
     m2 += "━━━━━━━━━━━━━━━━━━━\n"
     m2 += f"Phase: {wyk.get('phase', NOT_CHECKED)} · {wyk.get('sub_phase', '—')}\n"
     m2 += f"Wyckoff conf: {wyk.get('confidence', NOT_CHECKED)}\n"
-    m2 += f"Regime: {wyk.get('regime', NOT_CHECKED)}\n"
-    m2 += f"BTC cycle: {wyk.get('btc_cycle', NOT_CHECKED)}\n"
+    m2 += f"Regime: {wyk.get('regime') or regime or NOT_CHECKED}\n"
+    m2 += f"BTC cycle: {btc_ctx.get('cycle') or wyk.get('btc_cycle') or NOT_CHECKED}\n"
+    if btc_ctx.get('price'):
+        m2 += f"BTC price: ${btc_ctx['price']:,.0f}"
+        if btc_ctx.get('dist200_pct') is not None:
+            m2 += f" (dist200 {btc_ctx['dist200_pct']:+.1f}%)"
+        m2 += "\n"
     if price:
         m2 += f"Price: <b>${price:.4f}</b>\n"
     if tech.get('rsi') is not None:
@@ -1207,17 +1256,28 @@ def format_run_telegram():
     m2 += "<b>👥 COHORT (24h)</b>\n"
     m2 += "━━━━━━━━━━━━━━━━━━━\n"
     coh_data = cohorts.get('cohorts', {}) or {}
-    coh_any = False
+    coh_lines = []
+    all_zero = True
     for name, info in list(coh_data.items())[:5]:
         if not isinstance(info, dict) or info.get('status') == 'no_data':
             continue
         net = info.get('net_24h_strk', 0)
+        n_w = info.get('n_wallets', 0)
         dirn = info.get('direction', '—')
         arrow = '↗' if 'INFLOW' in dirn else ('↘' if 'OUTFLOW' in dirn else '→')
-        m2 += f"{name.replace('_', ' ').title()}: {arrow} {net:+,.0f} STRK\n"
-        coh_any = True
-    if not coh_any:
+        # Если net = 0 и есть кошельки — пропустим/пометим no flow
+        if net == 0 and n_w > 0:
+            coh_lines.append(f"{name.replace('_', ' ').title()}: no flow (last 24h)")
+        elif net != 0:
+            coh_lines.append(f"{name.replace('_', ' ').title()}: {arrow} {net:+,.0f} STRK")
+            all_zero = False
+    if not coh_lines:
         m2 += NOT_CHECKED + "\n"
+    elif all_zero:
+        m2 += "\n".join(coh_lines) + "\n"
+        m2 += "<i>All cohorts flat — no meaningful 24h flow yet.</i>\n"
+    else:
+        m2 += "\n".join(coh_lines) + "\n"
 
     # CONCENTRATION
     if conc.get('hhi'):
