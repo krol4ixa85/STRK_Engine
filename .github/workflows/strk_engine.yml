@@ -76,6 +76,10 @@ jobs:
       - name: Auto-discovery
         run: python3 scripts/detectors/auto_discovery.py || true
 
+      # NEW: Send WATCHLIST_CANDIDATE alerts for high-priority discoveries
+      - name: Watchlist notifier (auto_discovery → Telegram)
+        run: python3 scripts/detectors/watchlist_notifier.py || true
+
       - name: Cross-window pattern
         run: python3 scripts/detectors/cross_window_pattern.py || true
 
