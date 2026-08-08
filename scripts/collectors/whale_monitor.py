@@ -310,50 +310,65 @@ def _get_address_7d_net(address):
 
 
 def format_alert(tx, flow_class, route, interpretation, severity):
-    """Enriched Telegram alert: cohort labels + 7d net + explorer links."""
-    emoji = {'monster': '🐋🐋🐋', 'mega': '🐋🐋', 'large': '🐋'}[severity]
-    ts_iso = datetime.fromtimestamp(tx['ts'], timezone.utc).isoformat()
+    """Short-format whale alert per Xenia's spec:
+    · WATCH? header
+    · Full 42-char address (не сокращение)
+    · One-line route
+    · ADD verdict: NEW / ALREADY / KNOWN
+    · Explorer link one line
+    """
+    from_addr = tx.get('from', '').lower()
+    to_addr = tx.get('to', '').lower()
+    amount_m = tx['amount'] / 1e6
     
-    text = f"{emoji} <b>STRK Whale Alert</b>\n\n"
-    text += f"<b>Amount:</b> {tx['amount']/1e6:.2f}M STRK\n"
-    text += f"<b>Class:</b> {flow_class}\n"
-    text += f"<b>Time:</b> {ts_iso}\n\n"
-    
-    # ENRICHMENT: FROM address
-    from_addr = tx.get('from', '')
+    # Determine which side is "watch candidate" — новый EOA получает
     from_cohort, from_name = _get_address_cohort(from_addr)
-    text += f"<b>From:</b> "
-    if from_name:
-        text += f"{from_name}"
-        if from_cohort:
-            text += f" · <i>{from_cohort} cohort</i>"
-    else:
-        text += f"<code>{from_addr[:8]}...{from_addr[-6:]}</code> · <i>⚠ new address</i>"
-    text += "\n"
-    
-    # ENRICHMENT: TO address
-    to_addr = tx.get('to', '')
     to_cohort, to_name = _get_address_cohort(to_addr)
-    text += f"<b>To:</b> "
-    if to_name:
-        text += f"{to_name}"
-        if to_cohort:
-            text += f" · <i>{to_cohort} cohort</i>"
+    
+    # Priority: unknown → CEX (distribution) или SMART → unknown (accumulation)
+    if from_cohort and not to_cohort:
+        # Known → unknown = watch RECEIVER
+        watch_addr = to_addr
+        source_label = from_name if from_name else from_cohort
+        arrow_route = f"{source_label} → new EOA"
+        add_verdict = "NEW"
+    elif to_cohort and not from_cohort:
+        # Unknown → known = watch SENDER (что-то передал в CEX/SMART)
+        watch_addr = from_addr
+        target_label = to_name if to_name else to_cohort
+        arrow_route = f"new EOA → {target_label}"
+        add_verdict = "NEW"
+    elif from_cohort and to_cohort:
+        # Both known — уточнение к flow, не нужно watch
+        watch_addr = None
+        arrow_route = f"{from_name or from_cohort} → {to_name or to_cohort}"
+        add_verdict = "ALREADY (both known)"
     else:
-        text += f"<code>{to_addr[:8]}...{to_addr[-6:]}</code> · <i>⚠ new address</i>"
-    text += "\n\n"
+        # Both unknown — оба candidate
+        watch_addr = to_addr
+        arrow_route = f"new EOA → new EOA"
+        add_verdict = "NEW"
     
-    text += f"<b>Route:</b> {route}\n"
-    text += f"<b>Interpretation:</b>\n{interpretation}\n\n"
+    # Reason one-liner
+    _reason_map = {
+        'SMART_DISTRIBUTION': 'SMART отправляет в CEX/EOA',
+        'SMART_ACCUMULATION': 'SMART получает от неизвестного',
+        'CEX_INFLOW': 'Крупный перевод в CEX',
+        'CEX_OUTFLOW': 'Вывод из CEX (potential accumulation)',
+        'WATCHLIST_OUTFLOW': 'Watched wallet отправляет',
+        'WATCHLIST_INFLOW': 'Watched wallet получает',
+    }
+    reason = _reason_map.get(flow_class, flow_class)
     
-    # ENRICHMENT: explorer links (both from/to)
-    text += f"<b>Tx:</b> <a href='https://etherscan.io/tx/{tx['tx_hash']}'>Etherscan</a>\n"
-    if from_addr and not from_name:
-        text += f"<b>From address:</b> <a href='https://etherscan.io/address/{from_addr}'>Etherscan</a>\n"
-    if to_addr and not to_name:
-        text += f"<b>To address:</b> <a href='https://etherscan.io/address/{to_addr}'>Etherscan</a>\n"
-    
-    text += "\n<i>💡 Whale alert = уточнение к SMART/CEX flow, не отдельный DECISION.</i>"
+    # Short format per Xenia's spec
+    text = f"<b>WATCH?</b>\n"
+    if watch_addr:
+        text += f"<code>{watch_addr}</code>\n"
+    text += f"{arrow_route} · <b>{amount_m:.2f}M</b>\n"
+    text += f"<b>ADD:</b> {add_verdict}\n"
+    text += f"<i>{reason}</i>\n"
+    _tx_hash = tx.get("tx_hash", "")
+    text += f"<a href=\"https://etherscan.io/tx/{_tx_hash}\">tx</a>"
     
     return text
 
@@ -368,14 +383,58 @@ def check_and_alert(minutes_back=30):
     logger.info(f"Found {len(transfers)} transfers in window")
     
     new_alerts = 0
+    # Load history log for de-duplication
+    history_dir = SCRIPT_DIR / 'data' / 'history' if 'SCRIPT_DIR' in globals() else Path(__file__).parent.parent.parent / 'data' / 'history'
+    history_dir.mkdir(parents=True, exist_ok=True)
+    whale_events_log = history_dir / 'whale_events.jsonl'
+    
     for tx in transfers:
         if tx['tx_hash'] in seen_hashes:
             continue
         
-        # Watchlist gets lower threshold (500k vs 5M)
+        # Determine involvement
+        from_addr = tx.get('from', '').lower()
+        to_addr = tx.get('to', '').lower()
+        from_cohort, _ = _get_address_cohort(from_addr)
+        to_cohort, _ = _get_address_cohort(to_addr)
+        both_known = from_cohort and to_cohort
         watchlist_hit = is_watchlist_involved(tx)
-        min_amt = 500_000 if watchlist_hit else THRESHOLDS['large']
+        
+        # ==== RULE 1: FILTER ====
+        # Threshold rules:
+        # · both parties known → only if > 5M (crypto whales talking to each other)
+        # · at least one unknown → > 500k (potential new watch candidate)
+        # · watchlist involved → > 500k (already tracked activity)
+        if both_known:
+            min_amt = 5_000_000  # уже видим оба, нужно что-то реально крупное чтобы alert
+        elif watchlist_hit:
+            min_amt = 500_000
+        else:
+            min_amt = 500_000  # unknown side → candidate for watch, low threshold
+        
+        # ==== RULE 3: LOG ALL SIGNIFICANT EVENTS (даже skipped for Telegram) ====
+        # Только > 100k STRK в whale_events.jsonl, чтобы был материал для 6h digest
+        if tx['amount'] >= 100_000:
+            try:
+                event_record = {
+                    'ts': datetime.fromtimestamp(tx['ts'], timezone.utc).isoformat(),
+                    'tx_hash': tx['tx_hash'],
+                    'amount_strk': tx['amount'],
+                    'from_addr': from_addr,
+                    'to_addr': to_addr,
+                    'from_cohort': from_cohort,
+                    'to_cohort': to_cohort,
+                    'both_known': bool(both_known),
+                    'watchlist_hit': watchlist_hit,
+                    'alerted_to_telegram': tx['amount'] >= min_amt,
+                }
+                with open(whale_events_log, 'a', encoding='utf-8') as f:
+                    f.write(json.dumps(event_record, ensure_ascii=False, default=str) + '\n')
+            except Exception as _e:
+                logger.warning(f"Failed to log whale event: {_e}")
+        
         if tx['amount'] < min_amt:
+            # Not alerted to Telegram — но уже логировано выше
             continue
         
         # Determine severity
