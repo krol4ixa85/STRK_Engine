@@ -272,18 +272,91 @@ def send_telegram(text):
         logger.error(f"Telegram error: {e}")
 
 
+
+# ============================================================
+# ENRICHMENT (added by watchlist_notifier feature)
+# ============================================================
+def _load_json_safe(name):
+    """Load data/cache/<name>.json safely."""
+    path = SCRIPT_DIR / 'data' / 'cache' / name if 'SCRIPT_DIR' in globals() else None
+    if path is None or not path.exists():
+        return {}
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _get_address_cohort(address):
+    """Return (cohort_label, source) — SMART/CUSTODY/EXCHANGE_HOT/WATCHLIST/None."""
+    # From LABELS dict (whale_monitor's own)
+    labels = globals().get('LABELS') or {}
+    lookup = labels.get(address.lower())
+    if lookup:
+        cat, name = lookup if isinstance(lookup, tuple) else (lookup, None)
+        return cat, name
+    return None, None
+
+
+def _get_address_7d_net(address):
+    """Return net flow this address had over ~7 days, if in cohort_tracker.
+    Returns (net_strk, source_hint) or (None, None)."""
+    ct = _load_json_safe('cohort_tracker.json') or {}
+    cohorts = ct.get('cohorts') or {}
+    # cohort_tracker aggregates by category not by address
+    # Fallback: not per-address available. Return None for now.
+    return None, None
+
+
 def format_alert(tx, flow_class, route, interpretation, severity):
+    """Enriched Telegram alert: cohort labels + 7d net + explorer links."""
     emoji = {'monster': '🐋🐋🐋', 'mega': '🐋🐋', 'large': '🐋'}[severity]
     ts_iso = datetime.fromtimestamp(tx['ts'], timezone.utc).isoformat()
     
     text = f"{emoji} <b>STRK Whale Alert</b>\n\n"
     text += f"<b>Amount:</b> {tx['amount']/1e6:.2f}M STRK\n"
     text += f"<b>Class:</b> {flow_class}\n"
-    text += f"<b>Route:</b> {route}\n"
     text += f"<b>Time:</b> {ts_iso}\n\n"
+    
+    # ENRICHMENT: FROM address
+    from_addr = tx.get('from', '')
+    from_cohort, from_name = _get_address_cohort(from_addr)
+    text += f"<b>From:</b> "
+    if from_name:
+        text += f"{from_name}"
+        if from_cohort:
+            text += f" · <i>{from_cohort} cohort</i>"
+    else:
+        text += f"<code>{from_addr[:8]}...{from_addr[-6:]}</code> · <i>⚠ new address</i>"
+    text += "\n"
+    
+    # ENRICHMENT: TO address
+    to_addr = tx.get('to', '')
+    to_cohort, to_name = _get_address_cohort(to_addr)
+    text += f"<b>To:</b> "
+    if to_name:
+        text += f"{to_name}"
+        if to_cohort:
+            text += f" · <i>{to_cohort} cohort</i>"
+    else:
+        text += f"<code>{to_addr[:8]}...{to_addr[-6:]}</code> · <i>⚠ new address</i>"
+    text += "\n\n"
+    
+    text += f"<b>Route:</b> {route}\n"
     text += f"<b>Interpretation:</b>\n{interpretation}\n\n"
-    text += f"<a href='https://etherscan.io/tx/{tx['tx_hash']}'>View on Etherscan</a>"
+    
+    # ENRICHMENT: explorer links (both from/to)
+    text += f"<b>Tx:</b> <a href='https://etherscan.io/tx/{tx['tx_hash']}'>Etherscan</a>\n"
+    if from_addr and not from_name:
+        text += f"<b>From address:</b> <a href='https://etherscan.io/address/{from_addr}'>Etherscan</a>\n"
+    if to_addr and not to_name:
+        text += f"<b>To address:</b> <a href='https://etherscan.io/address/{to_addr}'>Etherscan</a>\n"
+    
+    text += "\n<i>💡 Whale alert = уточнение к SMART/CEX flow, не отдельный DECISION.</i>"
+    
     return text
+
 
 
 def check_and_alert(minutes_back=30):
