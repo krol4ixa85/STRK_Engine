@@ -80,6 +80,7 @@ def build_html():
     cvd = load_json('cvd_analysis.json') or {}
     event_layer = load_json('event_layer.json') or {}
     calendar = load_json('event_calendar.json') or {}
+    unlock_signal = load_json('unlock_signal.json') or {}
     bridge = load_json('bridge_activity.json') or {}
     cross_token = load_json('cross_token_correlation.json') or {}
     confluence = load_json('confluence_gate.json') or {}
@@ -95,7 +96,8 @@ def build_html():
     wyckoff_conf = wyckoff.get('confidence', 'UNKNOWN')
     
     tech_features = tech.get('features', {})
-    price_now = tech_features.get('price', 0)
+    # Price — из technical.features.price (тот же источник что RUN msg2)
+    price_now = tech_features.get('price') or tech_features.get('price_now') or 0
     slope_3d = tech_features.get('slope_3d_pct', 0)
     vol_ratio = tech_features.get('vol_ratio_3d_vs_30d', 1)
     rsi = tech_features.get('rsi', 50)
@@ -147,13 +149,31 @@ def build_html():
     if btc_dist200 is None:
         btc_dist200 = btc_data.get('dist200_pct', 0)
     
+    # CEX stats prep — если volumes отсутствуют, показываем NOT_CHECKED (не 0.0M)
+    _cex_class = cex_flow.get('classification') or {}
+    _cex_stats_raw = _cex_class.get('stats') or {}
+    _cex_stats = {}
+    _net = _cex_stats_raw.get('total_net_strk')
+    _in = _cex_stats_raw.get('total_inflow_strk')
+    _out = _cex_stats_raw.get('total_outflow_strk')
+    _bear = _cex_stats_raw.get('consecutive_bearish')
+    _cex_stats['total_net_strk_display'] = f'{_net/1e6:+.1f}M STRK' if _net is not None else 'NOT_CHECKED'
+    _cex_stats['inflow_display'] = f'{_in/1e6:.1f}M STRK' if _in is not None else 'NOT_CHECKED'
+    _cex_stats['outflow_display'] = f'{_out/1e6:.1f}M STRK' if _out is not None else 'NOT_CHECKED'
+    _cex_stats['consecutive_bearish_display'] = str(_bear) if _bear is not None else 'NOT_CHECKED'
+    
     # Scenarios
     scenarios = scenarios_data.get('scenarios', [])
     
-    # Funding
+    # Funding — реальный ключ current_annualized_pct (не funding_apr_pct)
     fm = funding.get('funding_metrics', {})
-    funding_apr = fm.get('funding_apr_pct', 0)
+    funding_apr = fm.get('current_annualized_pct')
+    if funding_apr is None:
+        funding_apr = fm.get('funding_apr_pct')  # fallback на старый ключ
+    if funding_apr is None:
+        funding_apr = 0
     short_crowded = fm.get('short_crowded', False)
+    funding_trend = fm.get('trend', '')
     
     # === HTML START ===
     html = f'''<!DOCTYPE html>
@@ -360,7 +380,7 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
   
   {_build_sector_table(cross_token)}
   
-  {_build_calendar(calendar)}
+  {_build_calendar(calendar, unlock_signal)}
 </div>
 
 <!-- ============ BLOCK 7: SCENARIOS (Base/Bull/Bear) ============ -->
@@ -416,10 +436,10 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
     <summary>🏦 CEX FLOW evidence · 7d directional</summary>
     <div class="ev-grid">
       <div class="ev-k">Signal</div><div class="r"><b>{safe_get(cex_flow, "classification.signal")}</b></div>
-      <div class="ev-k">Net 7d</div><div>{cex_flow.get('net_flow_strk', 0)/1e6:+.1f}M STRK</div>
-      <div class="ev-k">Inflow 7d</div><div>{cex_flow.get('total_inflow_strk', 0)/1e6:.1f}M STRK</div>
-      <div class="ev-k">Outflow 7d</div><div>{cex_flow.get('total_outflow_strk', 0)/1e6:.1f}M STRK</div>
-      <div class="ev-k">Consecutive days</div><div>{cex_flow.get('consecutive_inflow_days', 0)} inflow</div>
+      <div class="ev-k">Net 7d</div><div>{_cex_stats.get("total_net_strk_display", "NOT_CHECKED")}</div>
+      <div class="ev-k">Inflow 7d</div><div>{_cex_stats.get("inflow_display", "NOT_CHECKED")}</div>
+      <div class="ev-k">Outflow 7d</div><div>{_cex_stats.get("outflow_display", "NOT_CHECKED")}</div>
+      <div class="ev-k">Bearish streak</div><div>{_cex_stats.get("consecutive_bearish_display", "NOT_CHECKED")} days</div>
     </div>
   </details>
   
@@ -532,10 +552,12 @@ def _build_layman(phase, sub_phase, conf_signal, ev_signal, price, high_14d, low
         sentences.append(f"<b>Off-chain:</b> Смешанные сигналы. Ближайший unlock — через {days_to_unlock} дней.")
     
     # 4. Technical
-    if short_crowded:
-        sentences.append(f"<b>Технически:</b> Много шортов в системе (funding {funding_apr:+.1f}% ann) — есть <b class='y'>топливо для short squeeze +5-15%</b>, но это НЕ разворот тренда.")
+    if funding_apr is None or funding_apr == 0:
+        sentences.append(f"<b>Технически:</b> Funding rate NOT_CHECKED — источник недоступен.")
+    elif short_crowded:
+        sentences.append(f"<b>Технически:</b> Много шортов в системе (funding {funding_apr:+.2f}% ann) — есть <b class='y'>топливо для short squeeze +5-15%</b>, но это НЕ разворот тренда.")
     else:
-        sentences.append(f"<b>Технически:</b> Funding rate {funding_apr:+.1f}% ann — нормальные условия.")
+        sentences.append(f"<b>Технически:</b> Funding rate {funding_apr:+.2f}% ann — нормальные условия.")
     
     # 5. Verdict (single_brain: все варианты ссылаются на DECISION блок)
     if 'HIGH' in conf_signal and 'RALLY' in conf_signal:
@@ -603,24 +625,33 @@ def _build_sector_table(cross_token):
     return html
 
 
-def _build_calendar(calendar):
-    """Build calendar upcoming events."""
-    if not calendar:
-        return ''
-    upcoming = calendar.get('upcoming_unlocks', [])[:2]
-    milestones = calendar.get('upcoming_milestones', [])[:2]
-    
+def _build_calendar(calendar, unlock_signal=None):
+    """Build unlock/milestones — canonical unlock from unlock_signal.next_cliff (same as msg3)."""
     html = '<div style="margin-top:14px">'
-    if upcoming:
-        html += '<b style="font-size:12px">Next unlocks:</b><div style="font-size:11.5px;margin-top:4px">'
-        for u in upcoming:
-            html += f'· {u["date"]} ({u["days_until"]}d) · <b>{u["amount"]/1e6:.0f}M STRK</b><br>'
-        html += '</div>'
-    if milestones:
-        html += '<b style="font-size:12px;margin-top:8px;display:block">Next milestones:</b><div style="font-size:11.5px;margin-top:4px">'
-        for m in milestones:
-            html += f'· {m["date"]} ({m["days_until"]}d) · <b class="c">{m["event"]}</b><br>'
-        html += '</div>'
+    # Canonical unlock: из unlock_signal.next_cliff (тот же источник что Telegram FUND)
+    if unlock_signal:
+        nc = unlock_signal.get('next_cliff') or {}
+        if nc.get('days_until') is not None:
+            html += '<b style="font-size:12px">Next unlock (canonical):</b><div style="font-size:11.5px;margin-top:4px">'
+            days = nc['days_until']
+            amt = nc.get('amount_strk', 0)
+            pct = nc.get('pct_of_current_circ')
+            line = f'· in {days} days'
+            if amt:
+                line += f' · <b>{amt/1e6:.0f}M STRK</b>'
+            if pct is not None:
+                line += f' ({pct:.1f}% supply)'
+            if unlock_signal.get('pressure'):
+                line += f' · pressure: {unlock_signal["pressure"]}'
+            html += line + '<br></div>'
+    # Milestones — оставляем из event_calendar если есть
+    if calendar:
+        milestones = calendar.get('upcoming_milestones', [])[:2]
+        if milestones:
+            html += '<b style="font-size:12px;margin-top:8px;display:block">Next milestones:</b><div style="font-size:11.5px;margin-top:4px">'
+            for m in milestones:
+                html += f'· {m["date"]} ({m["days_until"]}d) · <b class="c">{m["event"]}</b><br>'
+            html += '</div>'
     html += '</div>'
     return html
 
