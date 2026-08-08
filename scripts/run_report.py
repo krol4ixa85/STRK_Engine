@@ -3,25 +3,26 @@
 """
 run_report.py — Full HTML RUN report generator
 
-Canonical structure (v5.4):
+Canonical structure (v6 · single DECISION):
   1. HERO (title + date + version)
-  2. DECISION (главное вверху)
-  3. LAYMAN «Что происходит» (5 предложений простым языком)
-  4. CONFLUENCE GATE (multi-signal decision layer)
+  2. DECISION LAYER (ЕДИНСТВЕННЫЙ Action + Signal + Confidence + scores)
+  3. LAYMAN «Что происходит» (5 предложений простым языком, без buy/sell)
+  4. CONFLUENCE CHECKS (input evidence, БЕЗ Action — детали для §2)
   5. МЕСТО / STRUCTURE
-  6. WATCHERS
-  7. CONFLICT / OFF-CHAIN EVENT LAYER
-  8. TRADING MAP (4 сценария: Base/Bull/Bear/Squeeze)
-  9. TECHNICAL / ON-CHAIN evidence (evidence под капотом)
-  10. PROBABILITY MODULE
-  11. FORECAST для FORWARDTEST_LOG
+  6. WATCHERS (unlock из unlock_signal.next_cliff canonical)
+  7. OFF-CHAIN EVENT LAYER
+  8. SCENARIOS (Base / Bull / Bear — ровно 3, без Squeeze)
+  9. TECHNICAL / ON-CHAIN evidence (под капотом)
+  10. FORECAST для FORWARDTEST_LOG (последний блок)
 
-Output: /mnt/user-data/outputs/STRK_RUN_[timestamp].html
+Output: data/reports/STRK_RUN_[timestamp].html + STRK_RUN_latest.html
 
-single_brain_v1 changes:
-  · BLOCK 4 renamed: CONFLUENCE GATE -> DECISION · single source of truth
-  · Hero disclaimer: HIGH signal -> open LIQ before action
-  · Layman verdict: 4 variants get "action = DECISION block below" footer
+Rules:
+  · Один Action во всём отчёте — в BLOCK 2 (DECISION LAYER)
+  · BLOCK 4 = evidence-only, Action удалён
+  · Layman «Вердикт» — «см. DECISION», без buy/sell verdict
+  · Watchers unlock — canonical из unlock_signal.next_cliff (не hardcode)
+  · Model honesty (baseline 66.7% на 9 events) — одна строка в BLOCK 2, отдельного PROBABILITY MODULE блока нет
 """
 
 import os
@@ -81,6 +82,15 @@ def build_html():
     event_layer = load_json('event_layer.json') or {}
     calendar = load_json('event_calendar.json') or {}
     unlock_signal = load_json('unlock_signal.json') or {}
+    # Watchers: SHORT unlock trigger — из canonical unlock_signal.next_cliff (не hardcode)
+    _nc = unlock_signal.get('next_cliff') or {}
+    if _nc.get('days_until') is not None:
+        _unlock_amt = _nc.get('amount_strk', 0)
+        _unlock_watcher_line = f"Unlock event at day {_nc['days_until']}"
+        if _unlock_amt:
+            _unlock_watcher_line += f" ({_unlock_amt/1e6:.0f}M STRK)"
+    else:
+        _unlock_watcher_line = "Unlock event — NOT_CHECKED (unlock_signal missing)"
     bridge = load_json('bridge_activity.json') or {}
     cross_token = load_json('cross_token_correlation.json') or {}
     confluence = load_json('confluence_gate.json') or {}
@@ -338,19 +348,20 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
   {_build_layman(phase, sub_phase, conf_signal, ev_signal, price_now, high_14d, low_14d, cross_token, calendar, short_crowded, funding_apr)}
 </div>
 
-<!-- ============ BLOCK 4: DECISION (single source of truth) ============ -->
-<div class="sec" id="run">
-  <div class="sec-title">🎯 DECISION · single source of truth (6 checks across 3 layers)</div>
-  <div style="margin-bottom:8px;padding:8px;background:#2a1f0f;border-left:3px solid var(--yellow);font-size:11px;color:var(--yellow)">
-    ⚠ Любой HIGH signal → сначала открой полный LIQ отчёт, не мгновенное buy/sell.<br>
-    Все другие блоки в этом отчёте — evidence base, не независимые вердикты.
+<!-- ============ BLOCK 4: CONFLUENCE CHECKS · input evidence (Action см. §2) ============ -->
+<div class="sec" id="checks">
+  <div class="sec-title">🔬 CONFLUENCE CHECKS · input evidence</div>
+  <div style="margin-bottom:10px;color:var(--dim);font-size:11.5px">
+    Это входные проверки для DECISION LAYER (§2). Сам вердикт и Action — там.
   </div>
   <div style="margin-bottom:10px;color:var(--dim);font-size:11.5px">{conf_summary}</div>
   
-  <div style="margin-top:12px">
-    <b style="font-size:12px">Rally checks ({rally_score}/6):</b>
-    {_build_checks(checks, 'rally')}
-  </div>
+  <details>
+    <summary style="cursor:pointer;font-size:12px;font-weight:bold">Как посчитано ({rally_score}/9 rally · {crash_score}/9 crash)</summary>
+    <div style="margin-top:8px">
+      {_build_checks(checks, 'rally')}
+    </div>
+  </details>
 </div>
 
 <!-- ============ BLOCK 5: МЕСТО / STRUCTURE ============ -->
@@ -410,7 +421,7 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
     <br>
     <b>SHORT triggers</b> (unlock scenario):<br>
     · Break BELOW ${low_14d:.4f} on volume<br>
-    · Unlock event at day 9 (2026-08-15)<br>
+    · {_unlock_watcher_line}<br>
     · L2 sector rotation continues OUT<br>
     · Distribution accelerates (top 5 &gt; 45%)
   </div>
@@ -460,7 +471,7 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
       <div class="ev-k">Short crowded</div><div>{"🔴 YES" if short_crowded else "no"}</div>
       <div class="ev-k">3d neg funding</div><div>{fm.get('neg_funding_pct_3d', 0):.0f}%</div>
       <div class="ev-k">7d min funding</div><div>{fm.get('funding_min_7d_pct', 0):+.1f}%</div>
-      <div class="ev-k">Squeeze fuel</div><div class="y">Present (+5-15% possible)</div>
+      <!-- Squeeze scenario removed from canon (see docstring) -->
     </div>
   </details>
   
@@ -559,15 +570,11 @@ def _build_layman(phase, sub_phase, conf_signal, ev_signal, price, high_14d, low
     else:
         sentences.append(f"<b>Технически:</b> Funding rate {funding_apr:+.2f}% ann — нормальные условия.")
     
-    # 5. Verdict (single_brain: все варианты ссылаются на DECISION блок)
-    if 'HIGH' in conf_signal and 'RALLY' in conf_signal:
-        sentences.append(f"<b>Вердикт:</b> <b class='g'>СИГНАЛ НА LONG</b> — {sum([1 for s in sentences if s])} независимых checks согласны. <i>Финальное действие — блок DECISION ниже.</i>")
-    elif 'HIGH' in conf_signal and 'CRASH' in conf_signal:
-        sentences.append(f"<b>Вердикт:</b> <b class='r'>СИГНАЛ НА SHORT/REDUCE</b> — множественное подтверждение. <i>Финальное действие — блок DECISION ниже.</i>")
-    elif 'MEDIUM' in conf_signal:
-        sentences.append(f"<b>Вердикт:</b> <b class='y'>ЖДЁМ CONFLUENCE</b> — частичные сигналы, но не хватает подтверждений. <b>Ничего не делаем.</b> <i>См. блок DECISION.</i>")
-    else:
-        sentences.append(f"<b>Вердикт:</b> <b class='dim'>FLAT</b> — нет чёткой картины. Ждём. <i>См. блок DECISION.</i>")
+    # 5. Verdict — без buy/sell в тексте. Signal + confidence одной строкой, Action только в DECISION LAYER (§2)
+    _sig_class = 'g' if 'RALLY' in conf_signal and 'HIGH' in conf_signal else \
+                 'r' if 'CRASH' in conf_signal and 'HIGH' in conf_signal else \
+                 'y' if 'MEDIUM' in conf_signal else 'dim'
+    sentences.append(f"<b>Вердикт:</b> <b class='{_sig_class}'>{conf_signal}</b> · confidence <b>{conf_conf}</b>. <i>Полный Action см. в блоке DECISION LAYER выше.</i>")
     
     return ''.join(f'<div class="layman-item">{i+1}. {s}</div>' for i, s in enumerate(sentences))
 
