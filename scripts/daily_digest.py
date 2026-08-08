@@ -851,130 +851,244 @@ def send_telegram_document(file_path, caption=''):
 
 
 # ============================================================
+# HORIZON EXTRACTORS — единая vocabulary для LIQ/RUN
+# Все возвращают строки. Если данных нет — "NOT_CHECKED".
+# ============================================================
+def _extract_micro_line(eff, cvd, tech):
+    """MICRO (4-24h): Effort 1H + CVD 1H + RSI + slope3d.
+    Возвращает один-два fact-string'а или NOT_CHECKED."""
+    parts = []
+    # Effort 1H (или 15m/30m если 1h NEUTRAL)
+    for tf in ['1h', '1H', '15m', '30m']:
+        r = (eff.get('timeframes') or {}).get(tf)
+        if isinstance(r, dict) and r.get('signal') and r['signal'] != 'NEUTRAL':
+            parts.append(f"Effort {tf}={r['signal']}")
+            break
+    # CVD 1H
+    for tf in ['1h', '1H', '15m', '30m']:
+        r = (cvd.get('timeframes') or {}).get(tf)
+        if isinstance(r, dict) and r.get('signal') and r['signal'] != 'NEUTRAL':
+            parts.append(f"CVD {tf}={r['signal']}")
+            break
+    # RSI
+    rsi = tech.get('rsi')
+    if rsi is not None:
+        parts.append(f"RSI {rsi:.0f}")
+    # slope 3d
+    slope = tech.get('slope_3d_pct')
+    if slope is not None:
+        parts.append(f"slope3d {slope:+.1f}%")
+    return ' · '.join(parts) if parts else NOT_CHECKED
+
+
+def _extract_swing_line(cex, ct, eff, cvd, cohorts, whale, circ_supply=None):
+    """SWING (3-14d): CEX 7d % supply + alpha7d + Effort 4h/1d + whales→CEX + SMART 24h."""
+    parts = []
+    # CEX 7d
+    cex_class = cex.get('classification') or {}
+    cex_sig = cex_class.get('signal')
+    if cex_sig and cex_sig not in ('INSUFFICIENT_DATA', 'UNKNOWN'):
+        stats = cex_class.get('stats') or {}
+        net = stats.get('total_net_strk')
+        if net is not None and circ_supply:
+            pct = (net / circ_supply) * 100
+            parts.append(f"CEX7d={cex_sig} ({pct:+.2f}% supply)")
+        elif net is not None:
+            parts.append(f"CEX7d={cex_sig} ({net/1e6:+.1f}M STRK)")
+        else:
+            parts.append(f"CEX7d={cex_sig}")
+    # Alpha 7d
+    alpha = ((ct.get('strk_alpha') or {}).get('alpha_7d_pct'))
+    if alpha is not None:
+        parts.append(f"alpha7d {alpha:+.1f}%")
+    # Effort 4h/1d
+    for tf in ['4h', '4H', '1d', '1D']:
+        r = (eff.get('timeframes') or {}).get(tf)
+        if isinstance(r, dict) and r.get('signal') and r['signal'] != 'NEUTRAL':
+            parts.append(f"Effort {tf}={r['signal']}")
+            break
+    # Whale-to-CEX
+    if isinstance(whale, dict):
+        stats = whale.get('stats') or {}
+        pct = stats.get('cex_to_private_pct')
+        p2c = stats.get('private_to_cex_pct')
+        if p2c is not None and p2c > 0:
+            parts.append(f"Whales→CEX {p2c:.0f}%")
+        elif pct is not None:
+            parts.append(f"CEX→private {pct:.0f}%")
+    # SMART cohort 24h
+    coh = cohorts.get('cohorts') or {}
+    smart = coh.get('smart') or coh.get('SMART') or coh.get('smart_money') or {}
+    smart_net = smart.get('net_24h_strk')
+    if smart_net is not None and smart.get('status') != 'no_data':
+        parts.append(f"SMART24h {smart_net:+,.0f} STRK")
+    return ' · '.join(parts) if parts else NOT_CHECKED
+
+
+def _extract_fund_line(unlock, stak, bridge, news):
+    """FUNDAMENTAL (30-90d): unlock days + %supply + staking dir + bridge + news."""
+    parts = []
+    # Unlock next cliff
+    nc = unlock.get('next_cliff') or {}
+    if nc:
+        days = nc.get('days_until')
+        pct = nc.get('pct_of_current_circ')
+        if days is not None:
+            u = f"unlock {days}d"
+            if pct is not None:
+                u += f" ({pct:.1f}% supply)"
+            parts.append(u)
+    # Staking direction
+    stak_sig = stak.get('signal')
+    stak_deltas = stak.get('deltas') or {}
+    d7 = stak_deltas.get('delta_7d')
+    if d7 is not None:
+        arrow = '↗' if d7 > 0 else ('↘' if d7 < 0 else '→')
+        parts.append(f"staking7d {arrow} {d7/1e6:+.1f}M")
+    elif stak_sig and stak.get('status') != 'NOT_CHECKED':
+        parts.append(f"staking={stak_sig}")
+    # Bridge activity
+    b_sig = (bridge.get('classification') or {}).get('signal') or bridge.get('signal')
+    if b_sig and b_sig != 'UNKNOWN':
+        parts.append(f"bridge={b_sig}")
+    # News overall signal
+    n_sig = news.get('overall_signal')
+    if n_sig and n_sig not in ('UNKNOWN', 'INSUFFICIENT_DATA'):
+        parts.append(f"news={n_sig}")
+    return ' · '.join(parts) if parts else NOT_CHECKED
+
+
+def _extract_structure_line(wyk, tech):
+    """Structure: phase.subphase, wyckoff_conf, regime, btc_cycle, price."""
+    parts = []
+    phase = wyk.get('phase')
+    sub = wyk.get('sub_phase')
+    if phase:
+        p_str = phase
+        if sub and sub != '—':
+            p_str += f'.{sub}'
+        parts.append(f"Phase {p_str}")
+    if wyk.get('confidence'):
+        parts.append(f"wyk={wyk['confidence']}")
+    if wyk.get('regime'):
+        parts.append(f"regime={wyk['regime']}")
+    if wyk.get('btc_cycle'):
+        parts.append(f"BTC={wyk['btc_cycle']}")
+    price = tech.get('price') or tech.get('price_now')
+    if price:
+        parts.append(f"px=${price:.4f}")
+    return ' · '.join(parts) if parts else NOT_CHECKED
+
+
+# ============================================================
+# SOFT SPLIT — truncate или split на 4096 boundary
+# ============================================================
+def _soft_split_4096(text, max_len=TELEGRAM_MAX):
+    """Если текст > max_len, режем по последней '━━━' до границы, возвращаем [part1, part2]."""
+    if len(text) <= max_len:
+        return [text]
+    # Найдём последний ━━━ до max_len
+    boundary_marker = '━━━━━━━━━━━━━━━━━━━'
+    split_at = text.rfind(boundary_marker, 0, max_len - 200)
+    if split_at <= 0 or split_at < max_len // 2:
+        # Fallback: жёсткая обрезка
+        return [text[:max_len - 60] + '\n\n<i>...truncated (limit 4096)</i>']
+    part1 = text[:split_at].rstrip() + '\n\n<i>→ продолжение ниже</i>'
+    part2 = '<i>...continued</i>\n\n' + text[split_at:]
+    # Убедимся что part2 тоже < max_len
+    if len(part2) > max_len:
+        part2 = part2[:max_len - 60] + '\n\n<i>...truncated</i>'
+    return [part1, part2]
+
+
+# ============================================================
 # LIQ MODE — 1 сообщение (max 2 если overflow)
 # ============================================================
 def format_liq():
-    """LIQ формат: DECISION + action + stop/targets + MICRO/SWING/FUND context."""
+    """LIQ format: DECISION canonical + MICRO + SWING + FUND + STRUCTURE + CTA."""
     now = datetime.now(timezone.utc)
     conf = load_json('confluence_gate.json') or {}
     wyk = load_json('wyckoff_phase.json') or {}
-    tech = (load_json('technical_momentum.json') or {}).get('features') or {}
+    tech_full = load_json('technical_momentum.json') or {}
+    tech = tech_full.get('features') or {}
     cex = load_json('cex_flow.json') or {}
     eff = load_json('effort_result.json') or {}
     cvd = load_json('cvd_analysis.json') or {}
     ct = load_json('cross_token_correlation.json') or {}
-    cal = load_json('event_calendar.json') or {}
     stak = load_json('native_staking_flow.json') or {}
     scen = load_json('scenario_analysis.json') or {}
-    interp = (load_json('interpretation.json') or {}).get('interpretation') or {}
+    unlock = load_json('unlock_signal.json') or {}
+    bridge = load_json('bridge_activity.json') or {}
+    news = load_json('news_aggregator.json') or {}
+    whale = load_json('whale_analysis.json') or {}
+    cohorts = load_json('cohort_tracker.json') or {}
+    circ_supply = unlock.get('circulating_supply_est')
 
-    # Header
     t = f"<b>⚡ LIQ · STRK</b>\n"
     t += f"<i>{now.strftime('%Y-%m-%d %H:%M UTC')}</i>\n\n"
 
-    # DECISION (canonical action)
+    # DECISION (canonical)
     sig = conf.get('signal', NOT_CHECKED)
     cfd = conf.get('confidence', NOT_CHECKED)
     action = conf.get('action', 'STAY FLAT')
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    t += f"<b>🎯 DECISION</b>\n"
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>🎯 DECISION</b>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
     t += f"Signal: <b>{sig}</b>\n"
     t += f"Confidence: <b>{cfd}</b>\n"
-    t += f"Rally: {conf.get('rally_score', '?')}/9 | Crash: {conf.get('crash_score', '?')}/9\n\n"
-    t += f"<b>Action:</b> {action}\n"
-
-    # Stop/targets from primary scenario if available
-    primary_name = str(scen.get('primary', '')).lower()
+    t += f"Rally: {conf.get('rally_score', '?')}/9 | Crash: {conf.get('crash_score', '?')}/9\n"
+    if conf.get('summary'):
+        t += f"<i>{conf['summary']}</i>\n"
+    t += f"\n<b>Action:</b> {action}\n"
+    # Primary scenario range if available
     raw_scen = scen.get('scenarios', [])
+    primary_str = str(scen.get('primary', '')).upper()
     if isinstance(raw_scen, list):
         for s in raw_scen:
             if not isinstance(s, dict):
                 continue
-            if primary_name and primary_name in str(s.get('type', '')).lower():
+            n = str(s.get('type') or s.get('name') or '').upper()
+            if primary_str and primary_str in n:
                 pr = s.get('price_range', [])
                 if isinstance(pr, list) and len(pr) >= 2:
                     t += f"<b>Primary range:</b> ${pr[0]:.4f} - ${pr[1]:.4f}\n"
                 break
     t += "\n"
 
-    # MICRO (4-24h)
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    t += f"<b>⚡ MICRO (4-24h)</b> <i>· noise, not decision</i>\n"
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    # 1h effort/CVD
-    _micro_added = False
-    for tf, r in (eff.get('timeframes') or {}).items():
-        if str(tf).lower() in ('1h', '15m', '30m') and r.get('signal') != 'NEUTRAL':
-            t += f"Effort {tf}: {r.get('signal', NOT_CHECKED)}\n"
-            _micro_added = True
-            break
-    for tf, r in (cvd.get('timeframes') or {}).items():
-        if str(tf).lower() in ('1h', '15m', '30m') and r.get('signal') != 'NEUTRAL':
-            t += f"CVD {tf}: {r.get('signal', NOT_CHECKED)}\n"
-            _micro_added = True
-            break
-    rsi = tech.get('rsi')
-    if rsi is not None:
-        t += f"RSI: {rsi:.0f}\n"
-        _micro_added = True
-    if not _micro_added:
-        t += f"{NOT_CHECKED}\n"
-    t += "\n"
+    # STRUCTURE line
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>📍 STRUCTURE</b>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += _extract_structure_line(wyk, tech) + "\n\n"
 
-    # SWING (3-14d)
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    t += f"<b>⚖ SWING (3-14d)</b> <i>· tactical</i>\n"
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    _swing_added = False
-    if cex.get('signal'):
-        m = cex.get('metrics', {})
-        net = m.get('net_flow_pct_supply_7d')
-        if net is not None:
-            t += f"CEX 7d: {cex.get('signal')} ({net:+.2f}% supply)\n"
-        else:
-            t += f"CEX 7d: {cex.get('signal')}\n"
-        _swing_added = True
-    alpha = ((ct.get('strk_alpha') or {}).get('alpha_7d_pct'))
-    if alpha is not None:
-        t += f"STRK alpha vs L2 (7d): {alpha:+.1f}%\n"
-        _swing_added = True
-    for tf, r in (eff.get('timeframes') or {}).items():
-        if str(tf).lower() in ('4h', '1d') and r.get('signal') != 'NEUTRAL':
-            t += f"Effort {tf}: {r.get('signal', NOT_CHECKED)}\n"
-            _swing_added = True
-            break
-    if not _swing_added:
-        t += f"{NOT_CHECKED}\n"
-    t += "\n"
+    # MICRO
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>⚡ MICRO (4-24h)</b> <i>· noise, not decision</i>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += _extract_micro_line(eff, cvd, tech) + "\n\n"
 
-    # FUNDAMENTAL 1 line
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    t += f"<b>🌐 FUNDAMENTAL</b> <i>· 30-90d thesis</i>\n"
-    t += f"━━━━━━━━━━━━━━━━━━━\n"
-    days_u = cal.get('days_to_next_unlock')
-    amt_u = ((cal.get('upcoming_unlocks') or [{}])[0]).get('amount', 0) if cal.get('upcoming_unlocks') else 0
-    if days_u is not None:
-        u_str = f"Unlock: {days_u}d"
-        if amt_u:
-            u_str += f" ({amt_u/1e6:.0f}M STRK)"
-        t += u_str + "\n"
-    else:
-        t += f"Unlock: {NOT_CHECKED}\n"
-    if stak.get('net_flow_7d_strk') is not None:
-        t += f"Staking 7d: {stak['net_flow_7d_strk']/1e6:+.1f}M STRK\n"
-    t += "\n"
+    # SWING
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>⚖ SWING (3-14d)</b> <i>· tactical</i>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += _extract_swing_line(cex, ct, eff, cvd, cohorts, whale, circ_supply) + "\n\n"
 
-    t += "<i>→ workflow_dispatch mode=run для полного контекста (3 сообщения + HTML)</i>"
+    # FUNDAMENTAL
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>🌐 FUNDAMENTAL (30-90d)</b>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += _extract_fund_line(unlock, stak, bridge, news) + "\n\n"
 
-    return truncate(t)
+    t += "<i>→ workflow_dispatch mode=run для полного контекста (3 msgs + HTML)</i>"
+
+    return _soft_split_4096(t)
 
 
 # ============================================================
-# RUN MODE — 3 сообщения
+# RUN MODE — ровно 3 сообщения
 # ============================================================
 def format_run_telegram():
-    """Возвращает list of 3 strings — три RUN-сообщения."""
+    """Returns list[str] of 3 messages, each ≤ 4096 chars."""
     now = datetime.now(timezone.utc)
     ts = now.strftime('%Y-%m-%d %H:%M UTC')
     conf = load_json('confluence_gate.json') or {}
@@ -985,7 +1099,7 @@ def format_run_telegram():
     eff = load_json('effort_result.json') or {}
     cvd = load_json('cvd_analysis.json') or {}
     ct = load_json('cross_token_correlation.json') or {}
-    cal = load_json('event_calendar.json') or {}
+    unlock = load_json('unlock_signal.json') or {}
     stak = load_json('native_staking_flow.json') or {}
     scen = load_json('scenario_analysis.json') or {}
     interp = (load_json('interpretation.json') or {}).get('interpretation') or {}
@@ -995,67 +1109,78 @@ def format_run_telegram():
     event_l = load_json('event_layer.json') or {}
     composite = load_json('composite_signal_v2.json') or {}
     news = load_json('news_aggregator.json') or {}
-    liq_shift = load_json('liquidity_shift.json') or {}
     bridge = load_json('bridge_activity.json') or {}
+    whale = load_json('whale_analysis.json') or {}
+    fund = load_json('funding_signal.json') or {}
+    circ_supply = unlock.get('circulating_supply_est')
 
     # =========================
     # MSG 1/3: DECISION + gates + invalidation + watch 72h
     # =========================
-    m1 = f"<b>📊 RUN · 1/3</b> <i>{ts}</i>\n\n"
-    m1 += f"━━━━━━━━━━━━━━━━━━━\n"
-    m1 += f"<b>🎯 DECISION</b>\n"
-    m1 += f"━━━━━━━━━━━━━━━━━━━\n"
+    m1 = f"<b>📊 RUN · 1/3</b> · <i>{ts}</i>\n\n"
+    m1 += "━━━━━━━━━━━━━━━━━━━\n"
+    m1 += "<b>🎯 DECISION</b>\n"
+    m1 += "━━━━━━━━━━━━━━━━━━━\n"
     m1 += f"Signal: <b>{conf.get('signal', NOT_CHECKED)}</b>\n"
     m1 += f"Confidence: <b>{conf.get('confidence', NOT_CHECKED)}</b>\n"
-    m1 += f"<i>{conf.get('summary', '')}</i>\n\n"
-    m1 += f"<b>Action:</b> {conf.get('action', 'STAY FLAT')}\n\n"
+    if conf.get('summary'):
+        m1 += f"<i>{conf['summary']}</i>\n"
+    m1 += f"\n<b>Action:</b> {conf.get('action', 'STAY FLAT')}\n\n"
 
-    m1 += f"<b>Rally checks:</b> {conf.get('rally_score', '?')}/9\n"
+    # GATES (rally + crash breakdown by individual check)
+    m1 += "━━━━━━━━━━━━━━━━━━━\n"
+    m1 += "<b>✅ GATES BREAKDOWN</b>\n"
+    m1 += "━━━━━━━━━━━━━━━━━━━\n"
+    m1 += f"Rally checks: <b>{conf.get('rally_score', '?')}/9</b>\n"
     checks = conf.get('checks', {})
-    if isinstance(checks, dict):
+    if isinstance(checks, dict) and checks:
         passed = [k for k, v in checks.items() if v]
-        if passed:
-            m1 += "  ✓ " + "\n  ✓ ".join(passed[:6]) + "\n"
-    m1 += f"\n<b>Crash checks:</b> {conf.get('crash_score', '?')}/9\n"
+        failed = [k for k, v in checks.items() if not v]
+        for k in passed[:6]:
+            m1 += f"  ✓ {k}\n"
+        for k in failed[:4]:
+            m1 += f"  ✗ {k}\n"
+    m1 += f"\nCrash checks: <b>{conf.get('crash_score', '?')}/9</b>\n"
 
-    m1 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m1 += f"<b>⚠ INVALIDATION</b>\n"
-    m1 += f"━━━━━━━━━━━━━━━━━━━\n"
-    high_14d = tech.get('high_14d', 0)
-    low_14d = tech.get('low_14d', 0)
-    if high_14d and low_14d:
+    # INVALIDATION
+    m1 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m1 += "<b>⚠ INVALIDATION</b>\n"
+    m1 += "━━━━━━━━━━━━━━━━━━━\n"
+    high_14d = tech.get('high_14d')
+    low_14d = tech.get('low_14d')
+    price = tech.get('price') or tech.get('price_now')
+    if high_14d and low_14d and price:
         m1 += f"· Break < ${low_14d:.4f} → invalidates rally\n"
         m1 += f"· Break > ${high_14d:.4f} → invalidates crash\n"
     else:
         m1 += f"· Price levels {NOT_CHECKED}\n"
-    days_u = cal.get('days_to_next_unlock')
-    if days_u is not None:
-        m1 += f"· Unlock day (day {days_u}) — reset context\n"
+    nc = unlock.get('next_cliff', {})
+    if nc.get('days_until') is not None:
+        m1 += f"· Unlock day (day {nc['days_until']}) — reset context\n"
 
-    m1 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m1 += f"<b>👁 WATCH 72h</b>\n"
-    m1 += f"━━━━━━━━━━━━━━━━━━━\n"
+    # WATCH 72h
+    m1 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m1 += "<b>👁 WATCH 72h</b>\n"
+    m1 += "━━━━━━━━━━━━━━━━━━━\n"
     watch = wyk.get('watch_events', []) or []
     if watch:
-        for e in watch[:5]:
+        for e in watch[:6]:
             m1 += f"· {e}\n"
     else:
         m1 += f"· {NOT_CHECKED}\n"
 
     # =========================
-    # MSG 2/3: structure + TA + MICRO + SWING + flow/cohort facts
+    # MSG 2/3: STRUCTURE + MICRO + SWING + fact grid
     # =========================
-    m2 = f"<b>📊 RUN · 2/3</b> <i>{ts}</i>\n\n"
+    m2 = f"<b>📊 RUN · 2/3</b> · <i>{ts}</i>\n\n"
 
-    # STRUCTURE
-    m2 += f"━━━━━━━━━━━━━━━━━━━\n"
-    m2 += f"<b>📍 STRUCTURE</b>\n"
-    m2 += f"━━━━━━━━━━━━━━━━━━━\n"
+    m2 += "━━━━━━━━━━━━━━━━━━━\n"
+    m2 += "<b>📍 STRUCTURE / MESTO</b>\n"
+    m2 += "━━━━━━━━━━━━━━━━━━━\n"
     m2 += f"Phase: {wyk.get('phase', NOT_CHECKED)} · {wyk.get('sub_phase', '—')}\n"
     m2 += f"Wyckoff conf: {wyk.get('confidence', NOT_CHECKED)}\n"
     m2 += f"Regime: {wyk.get('regime', NOT_CHECKED)}\n"
     m2 += f"BTC cycle: {wyk.get('btc_cycle', NOT_CHECKED)}\n"
-    price = tech.get('price') or tech.get('price_now')
     if price:
         m2 += f"Price: <b>${price:.4f}</b>\n"
     if tech.get('rsi') is not None:
@@ -1063,107 +1188,104 @@ def format_run_telegram():
     if tech.get('slope_3d_pct') is not None:
         m2 += f"Slope 3d: {tech['slope_3d_pct']:+.2f}%\n"
     if tech.get('vol_ratio_3d_vs_30d') is not None:
-        m2 += f"Volume: {tech['vol_ratio_3d_vs_30d']:.2f}× avg\n"
+        m2 += f"Vol 3d: {tech['vol_ratio_3d_vs_30d']:.2f}× avg\n"
 
-    # MICRO
-    m2 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m2 += f"<b>⚡ MICRO (4-24h)</b> <i>· noise, not decision</i>\n"
-    m2 += f"━━━━━━━━━━━━━━━━━━━\n"
-    _micro = []
-    for tf, r in (eff.get('timeframes') or {}).items():
-        if str(tf).lower() in ('1h', '15m', '30m') and r.get('signal') != 'NEUTRAL':
-            _micro.append(f"Effort {tf}: {r.get('signal')}")
-    for tf, r in (cvd.get('timeframes') or {}).items():
-        if str(tf).lower() in ('1h', '15m', '30m') and r.get('signal') != 'NEUTRAL':
-            _micro.append(f"CVD {tf}: {r.get('signal')}")
-    if _micro:
-        m2 += "\n".join(_micro[:4]) + "\n"
-    else:
-        m2 += f"{NOT_CHECKED}\n"
+    m2 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m2 += "<b>⚡ MICRO (4-24h)</b> <i>· noise, not decision</i>\n"
+    m2 += "━━━━━━━━━━━━━━━━━━━\n"
+    micro_line = _extract_micro_line(eff, cvd, tech)
+    m2 += micro_line + "\n"
 
-    # SWING
-    m2 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m2 += f"<b>⚖ SWING (3-14d)</b> <i>· tactical context</i>\n"
-    m2 += f"━━━━━━━━━━━━━━━━━━━\n"
-    _swing = []
-    for tf, r in (eff.get('timeframes') or {}).items():
-        if str(tf).lower() in ('4h', '1d') and r.get('signal') != 'NEUTRAL':
-            _swing.append(f"Effort {tf}: {r.get('signal')}")
-    for tf, r in (cvd.get('timeframes') or {}).items():
-        if str(tf).lower() in ('4h', '1d') and r.get('signal') != 'NEUTRAL':
-            _swing.append(f"CVD {tf}: {r.get('signal')}")
-    if cex.get('signal') and cex.get('signal') != 'NEUTRAL':
-        cex_m = cex.get('metrics', {})
-        net_p = cex_m.get('net_flow_pct_supply_7d')
-        if net_p is not None:
-            _swing.append(f"CEX 7d: {cex.get('signal')} ({net_p:+.2f}% supply)")
-        else:
-            _swing.append(f"CEX 7d: {cex.get('signal')}")
-    alpha = ((ct.get('strk_alpha') or {}).get('alpha_7d_pct'))
-    if alpha is not None:
-        _swing.append(f"STRK alpha 7d: {alpha:+.1f}% vs L2 sector")
-    if bridge.get('signal') or (bridge.get('classification') or {}).get('signal'):
-        b_sig = (bridge.get('classification') or {}).get('signal') or bridge.get('signal')
-        _swing.append(f"Bridge: {b_sig}")
-    if _swing:
-        m2 += "\n".join(_swing[:6]) + "\n"
-    else:
-        m2 += f"{NOT_CHECKED}\n"
+    m2 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m2 += "<b>⚖ SWING (3-14d)</b> <i>· tactical context</i>\n"
+    m2 += "━━━━━━━━━━━━━━━━━━━\n"
+    swing_line = _extract_swing_line(cex, ct, eff, cvd, cohorts, whale, circ_supply)
+    m2 += swing_line + "\n"
 
-    # COHORT
-    m2 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m2 += f"<b>👥 COHORT (24h)</b>\n"
-    m2 += f"━━━━━━━━━━━━━━━━━━━\n"
-    coh_data = cohorts.get('cohorts', {})
-    if coh_data:
-        for name, info in list(coh_data.items())[:4]:
-            if info.get('status') == 'no_data':
-                continue
-            net = info.get('net_24h_strk', 0)
-            dirn = info.get('direction', '—')
-            arrow = '↗' if 'INFLOW' in dirn else ('↘' if 'OUTFLOW' in dirn else '→')
-            m2 += f"{name.replace('_', ' ').title()}: {arrow} {net:+,.0f} STRK\n"
-    else:
-        m2 += f"{NOT_CHECKED}\n"
+    # COHORT detail
+    m2 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m2 += "<b>👥 COHORT (24h)</b>\n"
+    m2 += "━━━━━━━━━━━━━━━━━━━\n"
+    coh_data = cohorts.get('cohorts', {}) or {}
+    coh_any = False
+    for name, info in list(coh_data.items())[:5]:
+        if not isinstance(info, dict) or info.get('status') == 'no_data':
+            continue
+        net = info.get('net_24h_strk', 0)
+        dirn = info.get('direction', '—')
+        arrow = '↗' if 'INFLOW' in dirn else ('↘' if 'OUTFLOW' in dirn else '→')
+        m2 += f"{name.replace('_', ' ').title()}: {arrow} {net:+,.0f} STRK\n"
+        coh_any = True
+    if not coh_any:
+        m2 += NOT_CHECKED + "\n"
+
+    # CONCENTRATION
+    if conc.get('hhi'):
+        m2 += "\n━━━━━━━━━━━━━━━━━━━\n"
+        m2 += "<b>🔗 ON-CHAIN</b>\n"
+        m2 += "━━━━━━━━━━━━━━━━━━━\n"
+        m2 += f"HHI: {conc.get('hhi', 0):.4f}\n"
+        if conc.get('top_1_share_pct') is not None:
+            m2 += f"Top1: {conc['top_1_share_pct']:.2f}%\n"
+        elif conc.get('top1_share_pct') is not None:
+            m2 += f"Top1: {conc['top1_share_pct']:.2f}%\n"
+        if conc.get('top_10_share_pct') is not None:
+            m2 += f"Top10: {conc['top_10_share_pct']:.2f}%\n"
+        elif conc.get('top10_share_pct') is not None:
+            m2 += f"Top10: {conc['top10_share_pct']:.2f}%\n"
 
     # =========================
-    # MSG 3/3: FUNDAMENTAL + SCENARIOS + MODEL HONESTY
+    # MSG 3/3: FUND + SCENARIOS + MODEL HONESTY
     # =========================
-    m3 = f"<b>📊 RUN · 3/3</b> <i>{ts}</i>\n\n"
+    m3 = f"<b>📊 RUN · 3/3</b> · <i>{ts}</i>\n\n"
 
-    # FUNDAMENTAL
-    m3 += f"━━━━━━━━━━━━━━━━━━━\n"
-    m3 += f"<b>🌐 FUNDAMENTAL</b> <i>· 30-90d thesis health</i>\n"
-    m3 += f"━━━━━━━━━━━━━━━━━━━\n"
-    # Unlock
-    if days_u is not None:
-        u_line = f"Unlock: {days_u} days"
-        if cal.get('upcoming_unlocks'):
-            amt = cal['upcoming_unlocks'][0].get('amount', 0)
-            if amt:
-                u_line += f" ({amt/1e6:.0f}M STRK)"
+    m3 += "━━━━━━━━━━━━━━━━━━━\n"
+    m3 += "<b>🌐 FUNDAMENTAL (30-90d thesis health)</b>\n"
+    m3 += "━━━━━━━━━━━━━━━━━━━\n"
+    # Unlock full block
+    nc = unlock.get('next_cliff', {})
+    if nc.get('days_until') is not None:
+        u_line = f"Unlock: {nc['days_until']} days"
+        if nc.get('amount_strk'):
+            u_line += f" ({nc['amount_strk']/1e6:.0f}M STRK"
+            if nc.get('pct_of_current_circ') is not None:
+                u_line += f", {nc['pct_of_current_circ']:.1f}% supply)"
+            else:
+                u_line += ")"
         m3 += u_line + "\n"
+        if unlock.get('pressure'):
+            m3 += f"Pressure: {unlock['pressure']}\n"
+        if unlock.get('weekly_dilution_pct') is not None:
+            m3 += f"Weekly dilution: {unlock['weekly_dilution_pct']:.2f}%\n"
     else:
         m3 += f"Unlock: {NOT_CHECKED}\n"
-    # Staking
-    if stak.get('net_flow_7d_strk') is not None:
-        m3 += f"Staking flow 7d: {stak['net_flow_7d_strk']/1e6:+.1f}M STRK\n"
-    else:
-        m3 += f"Staking: {NOT_CHECKED}\n"
-    # Concentration
-    if conc.get('hhi'):
-        m3 += f"Concentration HHI: {conc['hhi']:.4f}\n"
-    # Bridge activity
-    b_sig = (bridge.get('classification') or {}).get('signal') or bridge.get('signal', NOT_CHECKED)
-    m3 += f"Bridge activity: {b_sig}\n"
-    # News/thesis
+    # Staking full
+    stak_deltas = stak.get('deltas', {}) or {}
+    if stak_deltas.get('delta_7d') is not None:
+        m3 += f"Staking Δ7d: {stak_deltas['delta_7d']/1e6:+.1f}M STRK\n"
+    if stak.get('total_stake_strk_now'):
+        m3 += f"Total staked: {stak['total_stake_strk_now']/1e6:.1f}M STRK\n"
+    if stak.get('signal') and stak.get('status') != 'NOT_CHECKED':
+        m3 += f"Staking signal: {stak['signal']}\n"
+    # Bridge
+    b_sig = (bridge.get('classification') or {}).get('signal') or bridge.get('signal')
+    if b_sig and b_sig != 'UNKNOWN':
+        m3 += f"Bridge activity: {b_sig}\n"
+    # News
     if news.get('overall_signal'):
         m3 += f"News sentiment: {news['overall_signal']}\n"
+    # Funding fundamental view
+    fm = fund.get('funding_metrics') or {}
+    if fm.get('current_annualized_pct') is not None:
+        m3 += f"Funding APR: {fm['current_annualized_pct']:+.2f}%"
+        if fm.get('trend'):
+            m3 += f" ({fm['trend']})"
+        m3 += "\n"
 
     # SCENARIOS
-    m3 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m3 += f"<b>🎯 SCENARIOS (7-14d)</b>\n"
-    m3 += f"━━━━━━━━━━━━━━━━━━━\n"
+    m3 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m3 += "<b>🎯 SCENARIOS (7-14d)</b>\n"
+    m3 += "━━━━━━━━━━━━━━━━━━━\n"
     try:
         raw_scen = scen.get('scenarios', [])
         primary_str = str(scen.get('primary', '')).upper()
@@ -1197,17 +1319,20 @@ def format_run_telegram():
                 range_str = f' → ${pr.get("low", 0):.4f}-${pr.get("high", 0):.4f}'
             is_p = ' ⭐ PRIMARY' if n in primary_str else ''
             m3 += f"{emoji} <b>{n}</b> ({prob:.0f}%){is_p}{range_str}\n"
+            if s.get('narrative'):
+                m3 += f"   <i>{s['narrative'][:120]}</i>\n"
     except Exception as e:
         m3 += f"{NOT_CHECKED} ({e})\n"
 
     # MODEL HONESTY
-    m3 += f"\n━━━━━━━━━━━━━━━━━━━\n"
-    m3 += f"<b>📋 MODEL HONESTY</b>\n"
-    m3 += f"━━━━━━━━━━━━━━━━━━━\n"
-    m3 += f"Baseline composite v2: 66.7% on 9 events\n"
-    m3 += f"Shadow voters: awaiting N=15 for calibration\n"
-    m3 += f"Sub-phases: {NOT_CHECKED} (not calibrated)\n"
-    m3 += f"\n<i>Full HTML report attached below.</i>"
+    m3 += "\n━━━━━━━━━━━━━━━━━━━\n"
+    m3 += "<b>📋 MODEL HONESTY</b>\n"
+    m3 += "━━━━━━━━━━━━━━━━━━━\n"
+    m3 += "Baseline composite v2: 66.7% on 9 events\n"
+    m3 += "Shadow voters: awaiting N=15 for calibration\n"
+    m3 += "Sub-phases: not calibrated\n"
+
+    m3 += "\n<i>Full HTML report attached below.</i>"
 
     # Truncate each to Telegram limit
     return [truncate(m1), truncate(m2), truncate(m3)]
@@ -1221,14 +1346,23 @@ def main():
     logger.info("=" * 60)
 
     if mode == 'liq':
-        # LIQ: 1 сообщение (при overflow — обрезка до 4096)
-        text = format_liq()
-        logger.info(f"LIQ built (length {len(text)})")
-        sent = send_telegram(text)
-        _log_alert(event_type="liq", text=text, sent=sent)
-        if sent:
-            logger.info("LIQ sent to Telegram")
-        return 0 if sent else 1
+        # LIQ: 1-2 сообщения (soft split на 4096 boundary)
+        messages = format_liq()
+        logger.info(f"LIQ built: {len(messages)} message(s), sizes: {[len(m) for m in messages]}")
+        all_sent = True
+        import time
+        for i, m in enumerate(messages, 1):
+            sent = send_telegram(m)
+            _log_alert(event_type=f"liq" if len(messages) == 1 else f"liq_msg_{i}_of_{len(messages)}",
+                       text=m, sent=sent)
+            if sent:
+                logger.info(f"LIQ {i}/{len(messages)} sent")
+            else:
+                logger.error(f"LIQ {i}/{len(messages)} FAILED")
+                all_sent = False
+            if i < len(messages):
+                time.sleep(1)
+        return 0 if all_sent else 1
 
     if mode == 'run':
         # RUN: 3 сообщения + HTML документ
