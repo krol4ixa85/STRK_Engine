@@ -81,6 +81,36 @@ def _log_alert(event_type, text='', sent=True, error_msg='', extra=None):
 TELEGRAM_MAX = 4096
 NOT_CHECKED = 'NOT_CHECKED'
 
+# ============================================================
+# CHECK TRIGGERS · human-readable trigger conditions per check
+# Used in WHAT TO DO NOW block — тебе понятно что должно случиться
+# ============================================================
+CHECK_TRIGGERS = {
+    # RALLY checks (что должно быть true для LONG signal)
+    'on_chain_ok':                    'Wyckoff phase не в DISTRIBUTION',
+    'price_up_3d':                    'Цена выросла ≥ +3% за 3 дня',
+    'accelerating':                   'Momentum ускоряется (slope 7d > slope 30d)',
+    'vol_expanding':                  'Объём ≥ 1.5× среднего за 30d',
+    'not_distributing_cex':           'CEX flow не MILD_DISTRIBUTION/STRONG_DISTRIBUTION',
+    'events_supportive':              'Event layer SLIGHT_BULLISH или POSITIVE_CATALYST',
+    'liquidity_shift_bullish':        'LP inflow — Ekubo/Endur staking accumulation',
+    'bridge_inflow_bullish':          'Bridge net INFLOW к Starknet',
+    'strk_outperforming_l2_sector':   'STRK alpha vs L2 (ARB/OP/MATIC) ≥ +5% за 7d',
+    'post_capitulation_squeeze':      'Setup: price -20% от high + shorts crowded',
+    'strong_off_chain_bull':          'Event layer = POSITIVE_CATALYST (не просто supportive)',
+    'not_extreme_short':              'Funding не в extreme short crowded (< -20%)',
+    'not_bouncing':                   'Не в fake bounce после selloff',
+    # CRASH checks (что должно быть true для SHORT signal)
+    'liquidity_shift_bearish':        'LP outflow — Ekubo/Endur staking distribution',
+    'bridge_outflow_bearish':         'Bridge net OUTFLOW от Starknet',
+    'strk_underperforming_l2_sector': 'STRK alpha vs L2 (ARB/OP/MATIC) ≤ -5% за 7d',
+    'strong_off_chain_bear':          'Event layer = NEGATIVE_CATALYST',
+    'events_bearish':                 'Event layer BEARISH или NEGATIVE_CATALYST',
+    'event_bearish':                  'Event layer BEARISH',
+    'event_bullish':                  'Event layer BULLISH',
+}
+
+
 def nv(value, default=NOT_CHECKED, formatter=None):
     """Safe value or NOT_CHECKED. Never returns fake 0 for missing data."""
     if value is None:
@@ -397,15 +427,22 @@ def format_digest():
         else:
             text += "\n".join(lines) + "\n\n"
     
-    # === STRUCTURE / МЕСТО ===
+    # === STRUCTURE / МЕСТО === (use same helpers as LIQ/RUN — no more UNKNOWN)
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += f"<b>📍 STRUCTURE / МЕСТО</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
     
-    regime = wyckoff.get('regime', 'UNKNOWN')
+    _composite_for_struct = load_json('composite_signal_v2.json') or {}
+    _macro_for_struct = load_json('agent_input.json') or {}
+    _btc_ctx = _get_btc_context(_composite_for_struct, _macro_for_struct)
+    _tech_feat = (technical or {}).get('features') or {}
+    
+    # Regime: wyk.regime → computed из tech.slope+vol → UNKNOWN
+    regime = wyckoff.get('regime') or _compute_regime(_tech_feat) or 'UNKNOWN'
     text += f"<b>Regime:</b> {regime}\n"
     
-    btc_cycle = wyckoff.get('btc_cycle', 'UNKNOWN')
+    # BTC cycle: composite.inputs.btc_context.cycle (авторитетно) → wyk.btc_cycle → UNKNOWN
+    btc_cycle = _btc_ctx.get('cycle') or wyckoff.get('btc_cycle') or 'UNKNOWN'
     text += f"<b>Cycle (BTC):</b> {btc_cycle}\n"
     
     text += f"<b>Phase (Wyckoff):</b> {phase} {PHASE_EMOJI.get(phase, '')}\n"
@@ -424,10 +461,28 @@ def format_digest():
         text += "━━━━━━━━━━━━━━━━━━━\n"
         
         feat = technical['features']
-        signal = technical.get('signal', NOT_CHECKED)
-        conf_val = technical.get('confidence', NOT_CHECKED)
-        
-        text += f"<b>Signal:</b> {signal} ({conf_val})\n"
+        # technical_momentum.py не пишет top-level signal/confidence — только features.
+        # Вычисляем описание из features (без выдумывания "NOT_CHECKED")
+        _feat = technical.get('features') or {}
+        _slope = _feat.get('slope_3d_pct')
+        _rsi = _feat.get('rsi')
+        _vol = _feat.get('vol_ratio_3d_vs_30d')
+        _computed_signal = 'NEUTRAL'
+        if _slope is not None and _vol is not None:
+            if _slope > 3 and _vol > 1.2:
+                _computed_signal = 'HEALTHY_MARKUP'
+            elif _slope < -3 and _vol > 1.2:
+                _computed_signal = 'HEALTHY_MARKDOWN'
+            elif abs(_slope) < 2:
+                _computed_signal = 'CONSOLIDATION'
+            else:
+                _computed_signal = 'DRIFT'
+        if _rsi is not None:
+            if _rsi < 30:
+                _computed_signal += ' (oversold)'
+            elif _rsi > 70:
+                _computed_signal += ' (overbought)'
+        text += f"<b>Signal (derived):</b> {_computed_signal}\n"
         # Slope 3d — no fake 0
         slope = feat.get('slope_3d_pct')
         if slope is not None:
@@ -615,7 +670,7 @@ def format_digest():
         m = funding.get('funding_metrics', {})
         text += f"<b>Signal:</b> {funding.get('signal', 'NEUTRAL')}\n"
         text += f"<b>Funding (annualized):</b> {m.get('current_annualized_pct', 0):+.2f}%\n"
-        text += f"<b>Regime:</b> {m.get('regime', 'UNKNOWN')}\n"
+        # Regime in funding_signal not written — skip line (was always UNKNOWN)
         
         if m.get('short_crowded'):
             text += f"⚠️ <b>Short crowded</b> — squeeze potential\n"
@@ -682,7 +737,7 @@ def format_digest():
         text += f"· {NOT_CHECKED}\n"
     text += "\n"
     
-    # === WHAT TO DO NOW === single source of truth: только confluence
+    # === WHAT TO DO NOW === (enriched: passed/failed checks + human triggers)
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>💡 WHAT TO DO NOW</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
@@ -690,19 +745,65 @@ def format_digest():
     if confluence:
         _conf_sig = confluence.get('signal', 'NO_SIGNAL')
         _conf_lvl = confluence.get('confidence', 'LOW')
+        _r_score = confluence.get('rally_score', 0)
+        _c_score = confluence.get('crash_score', 0)
+        _checks = confluence.get('checks') or {}
+        _action = confluence.get('action', 'STAY FLAT')
+        
+        # Signal + Action одной строкой
         if _conf_lvl == 'HIGH' and 'RALLY' in _conf_sig:
-            text += "🟢🟢 <b>DECISION: RALLY signal, HIGH confidence</b>\n"
-            text += "→ Открой /liq для evidence review. Финальное действие после LIQ.\n"
+            text += f"🟢🟢 <b>{_conf_sig}</b> · confidence <b>HIGH</b> · <b>{_action}</b>\n"
         elif _conf_lvl == 'HIGH' and 'CRASH' in _conf_sig:
-            text += "🔴🔴 <b>DECISION: CRASH signal, HIGH confidence</b>\n"
-            text += "→ Открой /liq для evidence review. Финальное действие после LIQ.\n"
+            text += f"🔴🔴 <b>{_conf_sig}</b> · confidence <b>HIGH</b> · <b>{_action}</b>\n"
         elif _conf_lvl == 'MEDIUM':
-            text += "🟡 <b>DECISION: MEDIUM confidence — STAY FLAT</b>\n"
-            text += "→ Не входить и не выходить. Ждать HIGH confluence или явное invalidation.\n"
+            text += f"🟡 <b>{_conf_sig}</b> · confidence <b>MEDIUM</b> · <b>{_action}</b>\n"
         else:
-            text += "⚪ <b>DECISION: LOW confidence / no signal — STAY FLAT</b>\n"
-            text += "→ Нет достаточного основания для action. Мониторим MONITOR_72h.\n"
-        text += "\n<i>💡 Все action-предложения в других блоках digest — narrative, не вердикт.</i>\n\n"
+            text += f"⚪ <b>{_conf_sig}</b> · confidence <b>{_conf_lvl}</b> · <b>{_action}</b>\n"
+        text += f"→ RALLY {_r_score}/9 · CRASH {_c_score}/9\n\n"
+        
+        # Разделить checks на rally/crash intent
+        _rally_intent = {'on_chain_ok', 'price_up_3d', 'accelerating', 'vol_expanding',
+                         'not_distributing_cex', 'events_supportive', 'liquidity_shift_bullish',
+                         'bridge_inflow_bullish', 'strk_outperforming_l2_sector',
+                         'post_capitulation_squeeze', 'strong_off_chain_bull',
+                         'not_extreme_short', 'not_bouncing', 'event_bullish'}
+        _crash_intent = {'liquidity_shift_bearish', 'bridge_outflow_bearish',
+                         'strk_underperforming_l2_sector', 'strong_off_chain_bear',
+                         'events_bearish', 'event_bearish'}
+        
+        rally_passed, rally_failed, crash_passed, crash_failed = [], [], [], []
+        for name, ok in _checks.items():
+            trig = CHECK_TRIGGERS.get(name, name)
+            if name in _rally_intent:
+                (rally_passed if ok else rally_failed).append(trig)
+            elif name in _crash_intent:
+                (crash_passed if ok else crash_failed).append(trig)
+        
+        # Активные checks
+        if rally_passed:
+            text += "<b>✓ Rally checks passed:</b>\n"
+            for t in rally_passed[:5]:
+                text += f"  · {t}\n"
+            text += "\n"
+        if crash_passed:
+            text += "<b>✓ Crash checks passed:</b>\n"
+            for t in crash_passed[:5]:
+                text += f"  · {t}\n"
+            text += "\n"
+        
+        # Триггеры для смены DECISION
+        if rally_failed:
+            text += "<b>Что перевернёт в LONG</b> <i>(rally checks failing)</i>:\n"
+            for t in rally_failed[:4]:
+                text += f"  · {t}\n"
+            text += "\n"
+        if crash_failed:
+            text += "<b>Что перевернёт в SHORT</b> <i>(crash checks failing)</i>:\n"
+            for t in crash_failed[:4]:
+                text += f"  · {t}\n"
+            text += "\n"
+        
+        text += "<i>💡 Action = только из DECISION. Triggers = что мониторить для смены.</i>\n\n"
     else:
         text += "⚪ <b>DECISION: CONFLUENCE_GATE недоступен</b>\n"
         text += "→ STAY FLAT до восстановления пайплайна.\n\n"
@@ -747,6 +848,8 @@ def format_digest():
             
             raw_scenarios = scenario_data.get('scenarios', {})
             primary = scenario_data.get('primary', 'BASE')
+            # Current price for computing price_change_pct if scenario_engine doesn't provide
+            _current_price = (technical or {}).get('features', {}).get('price') if technical else None
             
             # Normalize: scenario_engine пишет list, digest ждёт dict.
             # Принимаем оба формата.
@@ -793,7 +896,14 @@ def format_digest():
                         target = (pr.get('low', 0) + pr.get('high', 0)) / 2
                 
                 # price change
-                change = scen.get('price_change_pct', scen.get('change_pct', 0))
+                # Если price_change_pct = 0 или отсутствует — вычислить из target vs current
+                change = scen.get('price_change_pct', scen.get('change_pct'))
+                if not change:
+                    _target = scen.get('target_price')
+                    if _target and _current_price:
+                        change = ((_target - _current_price) / _current_price) * 100
+                    else:
+                        change = 0
                 
                 emoji = '🟢' if scen_name == 'bull' else ('⚪' if scen_name == 'base' else '🔴')
                 is_primary = ' ⭐ PRIMARY' if scen_name.upper() == str(primary).upper() else ''
