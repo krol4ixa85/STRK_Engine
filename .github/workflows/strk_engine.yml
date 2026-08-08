@@ -5,7 +5,7 @@ on:
     - cron: '0 */6 * * *'
   workflow_dispatch:
 
-# Global env для job — все шаги получают доступ к secrets
+# Global env — все шаги видят все секреты
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
@@ -29,8 +29,11 @@ jobs:
       - name: Install dependencies
         run: pip install requests urllib3
 
+      - name: Prepare directories
+        run: mkdir -p data/history data/cache data/reports data/validation data/dashboards data/graphs
+
       # ============================================================
-      # STAGE 1 · COLLECTORS (внешние данные)
+      # STAGE 1 · COLLECTORS
       # ============================================================
       - name: Collect flow_eth (L1 STRK flow)
         run: python3 scripts/collectors/flow_eth.py || true
@@ -54,30 +57,28 @@ jobs:
         run: python3 scripts/collectors/native_staking_flow.py || true
 
       # ============================================================
-      # STAGE 2 · DISCORD MONITORS (читают алерты)
+      # STAGE 2 · DISCORD MONITORS
       # ============================================================
       - name: Discord monitor (Nansen whale alerts)
         run: python3 scripts/collectors/discord_monitor.py --once || true
 
       - name: Starknet Discord announcements
-        env:
-          STARKNET_ANNOUNCEMENTS_CHANNEL_ID: ${{ secrets.STARKNET_ANNOUNCEMENTS_CHANNEL_ID }}
         run: python3 scripts/detectors/starknet_discord.py || true
 
       # ============================================================
-      # STAGE 3 · WHALE MONITOR (шлёт свои алерты в Telegram)
+      # STAGE 3 · WHALE MONITOR
       # ============================================================
-      - name: Whale monitor (single check, sends alerts if triggered)
+      - name: Whale monitor
         run: python3 scripts/collectors/whale_monitor.py --once || true
 
       # ============================================================
-      # STAGE 4 · ORCHESTRATOR (flow map)
+      # STAGE 4 · ORCHESTRATOR
       # ============================================================
-      - name: Orchestrator (flow map for MUST #6)
+      - name: Orchestrator (flow map)
         run: python3 scripts/orchestrator.py || true
 
       # ============================================================
-      # STAGE 5 · CORE DETECTORS (пишут signals)
+      # STAGE 5 · CORE DETECTORS
       # ============================================================
       - name: Auto-discovery scan
         run: python3 scripts/detectors/auto_discovery.py || true
@@ -88,7 +89,6 @@ jobs:
       - name: Auto-decision layer
         run: python3 scripts/detectors/decision_layer.py || true
 
-      # composite_detector_v2 — ГЛАВНЫЙ mozg, теперь запускается явно
       - name: Composite detector v2 (main brain)
         env:
           COMPOSITE_SILENT: 'true'
@@ -99,12 +99,6 @@ jobs:
 
       - name: Event calendar signal
         run: python3 scripts/detectors/event_calendar.py || true
-
-      - name: Funding regime signal
-        run: python3 scripts/detectors/funding_signal.py || true
-
-      - name: Unlock signal
-        run: python3 scripts/detectors/unlock_signal.py || true
 
       - name: Concentration metrics
         run: python3 scripts/detectors/concentration_metrics.py || true
@@ -126,9 +120,6 @@ jobs:
 
       - name: Cross-token correlation
         run: python3 scripts/detectors/cross_token_correlation.py || true
-
-      - name: GitHub activity
-        run: python3 scripts/detectors/github_activity.py || true
 
       - name: News aggregator
         run: python3 scripts/detectors/news_aggregator.py || true
@@ -168,20 +159,13 @@ jobs:
         run: python3 scripts/history_accumulator.py || true
 
       # ============================================================
-      # STAGE 8 · SYNTHESIS (interpretation + scenarios)
+      # STAGE 8 · SYNTHESIS
       # ============================================================
       - name: Interpretation layer
         run: python3 scripts/detectors/interpretation_layer.py || true
 
       - name: Scenario engine (Bull/Base/Bear)
-        run: python3 scripts/detectors/scenario_engine.py || true
-
-      - name: Auto post-mortem (real forecasts)
-        run: python3 scripts/detectors/auto_postmortem.py || true
-
-      - name: Weekly cohort analysis (Sunday only)
-        if: github.event.schedule == '0 12 * * 0' || github.event_name == 'workflow_dispatch'
-        run: python3 scripts/detectors/weekly_cohort_analysis.py || true
+        run: python3 scripts/scenario_engine.py || true
 
       - name: Cohort tracker snapshot
         run: python3 scripts/detectors/cohort_tracker.py || true
@@ -199,11 +183,10 @@ jobs:
         run: python3 scripts/run_report.py || true
 
       # ============================================================
-      # STAGE 10 · PERSISTENCE (commit + upload)
+      # STAGE 10 · PERSISTENCE
       # ============================================================
       - name: Commit updated state files
         run: |
-          mkdir -p data/history data/cache data/reports
           if git diff --quiet \
               data/seeds/flow_seeds.json \
               data/history/cohort_snapshots.jsonl \
