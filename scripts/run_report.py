@@ -570,11 +570,21 @@ def _build_layman(phase, sub_phase, conf_signal, ev_signal, price, high_14d, low
     else:
         sentences.append(f"<b>Технически:</b> Funding rate {funding_apr:+.2f}% ann — нормальные условия.")
     
-    # 5. Verdict — без buy/sell в тексте. Signal + confidence одной строкой, Action только в DECISION LAYER (§2)
+    # 5. Verdict — без buy/sell. Signal одной строкой + layman explanation. Action только в DECISION LAYER (§2).
     _sig_class = 'g' if 'RALLY' in conf_signal and 'HIGH' in conf_signal else \
                  'r' if 'CRASH' in conf_signal and 'HIGH' in conf_signal else \
                  'y' if 'MEDIUM' in conf_signal else 'dim'
-    sentences.append(f"<b>Вердикт:</b> <b class='{_sig_class}'>{conf_signal}</b> · confidence <b>{conf_conf}</b>. <i>Полный Action см. в блоке DECISION LAYER выше.</i>")
+    # Layman-friendly объяснение из mapping (matches digest/LIQ/RUN)
+    _layman_map = {
+        ('RALLY_HIGH', 'HIGH'):     'Setup для LONG — 6+ независимых сигналов согласны. Проверь LIQ перед входом.',
+        ('CRASH_HIGH', 'HIGH'):     'Setup для SHORT/REDUCE — 6+ независимых сигналов согласны. Проверь LIQ перед действием.',
+        ('RALLY_MEDIUM', 'MEDIUM'): 'Картина не худшая, но входить нельзя — не хватает силы (цена/объём/импульс).',
+        ('CRASH_MEDIUM', 'MEDIUM'): 'Есть тревожные сигналы, но не сетап для SHORT — недостаточно подтверждений.',
+        ('NO_SIGNAL', 'LOW'):       'Нет чёткой картины. Активность рынка низкая, направление размыто.',
+    }
+    _key = (conf_signal, 'HIGH' if 'HIGH' in conf_signal else ('MEDIUM' if 'MEDIUM' in conf_signal else 'LOW'))
+    _layman = _layman_map.get(_key, 'Смешанные сигналы — недостаточно данных для чёткого вердикта.')
+    sentences.append(f"<b>Вердикт:</b> <b class='{_sig_class}'>{conf_signal}</b> — {_layman} <i>Финальное действие — блок DECISION ниже.</i>")
     
     return ''.join(f'<div class="layman-item">{i+1}. {s}</div>' for i, s in enumerate(sentences))
 
