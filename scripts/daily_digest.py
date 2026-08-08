@@ -247,7 +247,7 @@ def format_digest():
     text += f"<i>{now.strftime('%Y-%m-%d %H:%M UTC')}</i>\n\n"
     text += "<i>⚠ Любой HIGH signal → открой /liq для полного контекста, а не мгновенное buy/sell.</i>\n\n"
     
-    # === DECISION (single source of truth) ===
+    # === DECISION (single source of truth) — signal + action одной секцией ===
     if confluence:
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>🎯 DECISION</b> <i>(single source of truth)</i>\n"
@@ -256,6 +256,10 @@ def format_digest():
         signal = confluence.get('signal', 'NO_SIGNAL')
         conf = confluence.get('confidence', 'LOW')
         summary = confluence.get('summary', '')
+        action = confluence.get('action', 'STAY FLAT')
+        
+        # Одна строка — signal + action (чтобы не спорить с INTERPRETATION ниже)
+        text += f"<b>{signal}</b> · <b>{action}</b> · <i>{conf}</i>\n\n"
         
         # Signal emoji
         if 'RALLY' in signal and 'HIGH' in conf:
@@ -363,36 +367,39 @@ def format_digest():
         
         text += "\n"
     
-    # === COHORT BEHAVIOR ===
-    cohorts = load_json('cohort_tracker.json')
-    if cohorts and cohorts.get('cohorts'):
+    # === COHORT BEHAVIOR === (no fake +0 STRK — same rule as RUN)
+    cohorts = load_json('cohort_tracker.json') or {}
+    if cohorts.get('cohorts'):
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>👥 COHORT BEHAVIOR</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
-        
-        cohort_data = cohorts.get('cohorts', {})
-        aggregate = cohorts.get('aggregate', {})
-        
-        # Aggregate signal
-        agg_signal = aggregate.get('signal', 'UNKNOWN')
+        cohort_data = cohorts.get('cohorts', {}) or {}
+        aggregate = cohorts.get('aggregate', {}) or {}
+        agg_signal = aggregate.get('signal', NOT_CHECKED)
         text += f"<b>Aggregate:</b> {agg_signal}\n\n"
-        
-        # Show each cohort
+        # Show cohorts — skip fake zeros
+        lines = []
+        all_zero = True
         for cohort_name, cohort_info in cohort_data.items():
-            if cohort_info.get('status') == 'no_data':
+            if not isinstance(cohort_info, dict) or cohort_info.get('status') == 'no_data':
                 continue
-            
             n_wallets = cohort_info.get('n_wallets', 0)
             net_24h = cohort_info.get('net_24h_strk', 0)
             direction = cohort_info.get('direction', 'STABLE')
-            
             display_name = cohort_name.replace('_', ' ').title()
             arrow = '↗' if 'INFLOW' in direction else ('↘' if 'OUTFLOW' in direction else '→')
-            
-            text += f"<b>{display_name}</b> ({n_wallets} wallets)\n"
-            text += f"  {arrow} 24h: {net_24h:+,.0f} STRK\n"
-        
-        text += "\n"
+            if net_24h == 0 and n_wallets > 0:
+                lines.append(f"<b>{display_name}</b> ({n_wallets}w): no flow (last 24h)")
+            elif net_24h != 0:
+                lines.append(f"<b>{display_name}</b> ({n_wallets}w): {arrow} {net_24h:+,.0f} STRK")
+                all_zero = False
+        if not lines:
+            text += f"{NOT_CHECKED}\n\n"
+        elif all_zero:
+            text += "\n".join(lines) + "\n"
+            text += "<i>All cohorts flat — no meaningful 24h flow yet.</i>\n\n"
+        else:
+            text += "\n".join(lines) + "\n\n"
     
     # === STRUCTURE / МЕСТО ===
     text += "━━━━━━━━━━━━━━━━━━━\n"
@@ -414,23 +421,50 @@ def format_digest():
     text += f"<i>{layman}</i>\n"
     text += f"<i>⓵ Composite phase/BTC cycle — контекст, не вердикт. Action = DECISION выше.</i>\n\n"
     
-    # === TECHNICAL MOMENTUM ===
+    # === TECHNICAL MOMENTUM === (aligned keys with LIQ/RUN + NOT_CHECKED for missing)
     if technical and technical.get('features'):
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>📈 TECHNICAL MOMENTUM</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
         
         feat = technical['features']
-        signal = technical.get('signal', 'NEUTRAL')
-        conf_val = technical.get('confidence', 'LOW')
+        signal = technical.get('signal', NOT_CHECKED)
+        conf_val = technical.get('confidence', NOT_CHECKED)
         
         text += f"<b>Signal:</b> {signal} ({conf_val})\n"
-        text += f"<b>Slope 3d:</b> {feat.get('slope_3d_pct', 0):.2f}% "
-        text += f"({'↑' if feat.get('slope_3d_pct', 0) > 0 else '↓'})\n"
-        text += f"<b>Volume 3d/30d:</b> {feat.get('vol_ratio_3d_vs_30d', 1):.2f}x\n"
-        text += f"<b>RSI:</b> {feat.get('rsi', 50):.0f}\n"
-        text += f"<b>From 14d high:</b> {feat.get('pct_from_14d_high', 0):.1f}%\n"
-        text += f"<b>From 14d low:</b> +{feat.get('pct_from_14d_low', 0):.1f}%\n\n"
+        # Slope 3d — no fake 0
+        slope = feat.get('slope_3d_pct')
+        if slope is not None:
+            text += f"<b>Slope 3d:</b> {slope:+.2f}% ({'↑' if slope > 0 else '↓'})\n"
+        else:
+            text += f"<b>Slope 3d:</b> {NOT_CHECKED}\n"
+        # Volume
+        vol = feat.get('vol_ratio_3d_vs_30d')
+        if vol is not None:
+            text += f"<b>Volume 3d/30d:</b> {vol:.2f}x\n"
+        else:
+            text += f"<b>Volume 3d/30d:</b> {NOT_CHECKED}\n"
+        # RSI
+        rsi = feat.get('rsi')
+        if rsi is not None:
+            text += f"<b>RSI:</b> {rsi:.0f}\n"
+        else:
+            text += f"<b>RSI:</b> {NOT_CHECKED}\n"
+        # From 14d high/low — правильные ключи pct_from_high / pct_from_low
+        pfh = feat.get('pct_from_high')
+        if pfh is None:
+            pfh = feat.get('pct_from_14d_high')
+        if pfh is not None:
+            text += f"<b>From 14d high:</b> {pfh:+.1f}%\n"
+        else:
+            text += f"<b>From 14d high:</b> {NOT_CHECKED}\n"
+        pfl = feat.get('pct_from_low')
+        if pfl is None:
+            pfl = feat.get('pct_from_14d_low')
+        if pfl is not None:
+            text += f"<b>From 14d low:</b> {pfl:+.1f}%\n\n"
+        else:
+            text += f"<b>From 14d low:</b> {NOT_CHECKED}\n\n"
     
     # === ON-CHAIN EVIDENCE ===
     conc_data = load_json('concentration_metrics.json')
@@ -514,26 +548,37 @@ def format_digest():
             text += f"<b>CVD:</b> {cvd_data.get('consensus', 'MIXED')}\n"
         text += "<i>Все таймфреймы NEUTRAL.</i>\n\n"
     
-    # === NEW: CEX FLOW ===
-    cex = load_json('cex_flow.json')
-    if cex:
+    # === CEX FLOW === (real classification path, NOT_CHECKED for missing)
+    cex = load_json('cex_flow.json') or {}
+    cex_class = cex.get('classification') or {}
+    if cex_class.get('signal'):
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>🏦 CEX FLOW (7d)</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += f"<b>Signal:</b> {cex.get('signal', 'NEUTRAL')}\n"
-        text += f"<b>Regime:</b> {cex.get('regime', 'UNKNOWN')}\n"
-        text += f"<b>Trend:</b> {cex.get('trend', 'FLAT')}\n\n"
-        
-        m = cex.get('metrics', {})
-        text += f"<b>Net flow 7d:</b> {m.get('net_flow_pct_supply_7d', 0):.2f}%\n"
-        text += f"<b>Inflow:</b> {m.get('inflow_total_strk', 0):,.0f} STRK\n"
-        text += f"<b>Outflow:</b> {m.get('outflow_total_strk', 0):,.0f} STRK\n"
-        
-        # Layman
-        cex_layman = cex.get('layman', '')
-        if cex_layman:
-            text += f"<i>{cex_layman[:250]}</i>\n"
-        
+        text += f"<b>Signal:</b> {cex_class.get('signal', NOT_CHECKED)}\n"
+        text += f"<b>Confidence:</b> {cex_class.get('confidence', NOT_CHECKED)}\n"
+        stats = cex_class.get('stats') or {}
+        net = stats.get('total_net_strk')
+        if net is not None:
+            # % от circulating supply если знаем
+            unlock_for_supply = load_json('unlock_signal.json') or {}
+            circ = unlock_for_supply.get('circulating_supply_est')
+            if circ:
+                pct = (net / circ) * 100
+                text += f"<b>Net 7d:</b> {net:+,.0f} STRK ({pct:+.2f}% supply)\n"
+            else:
+                text += f"<b>Net 7d:</b> {net:+,.0f} STRK\n"
+        else:
+            text += f"<b>Net 7d:</b> {NOT_CHECKED}\n"
+        if stats.get('total_inflow_strk') is not None:
+            text += f"<b>Inflow:</b> {stats['total_inflow_strk']:,.0f} STRK\n"
+        if stats.get('total_outflow_strk') is not None:
+            text += f"<b>Outflow:</b> {stats['total_outflow_strk']:,.0f} STRK\n"
+        if stats.get('consecutive_bearish'):
+            text += f"<b>Bearish streak:</b> {stats['consecutive_bearish']} days\n"
+        interp = cex_class.get('interpretation', '')
+        if interp:
+            text += f"<i>{interp[:200]}</i>\n"
         text += "\n"
     
     # === EVENT LAYER (event calendar impact) ===
@@ -582,26 +627,63 @@ def format_digest():
             text += f"⚠️ <b>Long crowded</b> — flush risk\n"
         text += "\n"
     
-    # === MACRO CONTEXT ===
-    ma = load_json('agent_input.json')
-    if ma:
-        btc_price = ma.get('btc', {}).get('price_usd', 0)
-        btc_change = ma.get('btc', {}).get('change_24h_pct', 0)
-        strk_price = ma.get('strk', {}).get('price_usd', 0)
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += "<b>🌐 MACRO</b>\n"
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += f"<b>BTC:</b> ${btc_price:,.0f} ({btc_change:+.1f}%)\n"
+    # === MACRO CONTEXT === (BTC из composite, STRK из technical)
+    composite = load_json('composite_signal_v2.json') or {}
+    ma = load_json('agent_input.json') or {}
+    btc_ctx = _get_btc_context(composite, ma)
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+    text += "<b>🌐 MACRO</b>\n"
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+    # BTC
+    if btc_ctx.get('price'):
+        btc_line = f"<b>BTC:</b> ${btc_ctx['price']:,.0f}"
+        if btc_ctx.get('dist200_pct') is not None:
+            btc_line += f" (dist200 {btc_ctx['dist200_pct']:+.1f}%)"
+        if btc_ctx.get('cycle'):
+            btc_line += f" · cycle: {btc_ctx['cycle']}"
+        text += btc_line + "\n"
+    else:
+        text += f"<b>BTC:</b> {NOT_CHECKED}\n"
+    # STRK — из technical features (реальный источник)
+    strk_price = (technical or {}).get('features', {}).get('price') if technical else None
+    if strk_price is None and ma.get('strk'):
+        strk_price = ma['strk'].get('price_usd') or ma['strk'].get('price')
+    if strk_price:
         text += f"<b>STRK:</b> ${strk_price:.4f}\n\n"
+    else:
+        text += f"<b>STRK:</b> {NOT_CHECKED}\n\n"
     
-    # === WHAT TO WATCH ===
+    # === WHAT TO WATCH === (2-4 строки: invalidation + unlock + staking)
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>🔄 WHAT TO WATCH</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
-    
-    watch = wyckoff.get('watch_events', [])
-    for event in watch[:5]:
-        text += f"· {event}\n"
+    _watch_lines = []
+    # 1-2. Invalidation levels
+    _tech_feat = (technical or {}).get('features', {}) if technical else {}
+    _high_14 = _tech_feat.get('high_14d')
+    _low_14 = _tech_feat.get('low_14d')
+    if _low_14 and _high_14:
+        _watch_lines.append(f"Break < ${_low_14:.4f} → invalidates rally")
+        _watch_lines.append(f"Break > ${_high_14:.4f} → invalidates crash")
+    # 3. Unlock
+    _unlock_data = load_json('unlock_signal.json') or {}
+    _next_cliff = _unlock_data.get('next_cliff') or {}
+    if _next_cliff.get('days_until') is not None:
+        _u = f"Unlock in {_next_cliff['days_until']}d"
+        if _next_cliff.get('pct_of_current_circ') is not None:
+            _u += f" ({_next_cliff['pct_of_current_circ']:.1f}% supply)"
+        _watch_lines.append(_u)
+    # 4. Staking direction
+    _stak = load_json('native_staking_flow.json') or {}
+    _d7 = (_stak.get('deltas') or {}).get('delta_7d')
+    if _d7 is not None and _d7 != 0:
+        _arrow = '↗' if _d7 > 0 else '↘'
+        _watch_lines.append(f"Staking7d {_arrow} {_d7/1e6:+.1f}M STRK")
+    if _watch_lines:
+        for line in _watch_lines[:4]:
+            text += f"· {line}\n"
+    else:
+        text += f"· {NOT_CHECKED}\n"
     text += "\n"
     
     # === WHAT TO DO NOW === single source of truth: только confluence
