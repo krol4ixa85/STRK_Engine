@@ -458,7 +458,7 @@ body{{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',m
       <div class="ev-k">STRK news 7d</div><div>{news.get('strk_news_count', 0)}</div>
       <div class="ev-k">Discord signal</div><div>{safe_get(sn_discord, "signal", "N/A")}</div>
       <div class="ev-k">Bridge activity</div><div>{safe_get(bridge, "classification.signal", "N/A")}</div>
-      <div class="ev-k">GitHub dev</div><div>{safe_get(load_json("github_activity.json") or {{}}, "classification.signal", "N/A")}</div>
+      <div class="ev-k">GitHub dev</div><div>{safe_get(load_json("github_activity.json"), "classification.signal", "N/A")}</div>
     </div>
   </details>
 </div>
