@@ -138,11 +138,14 @@ def build_html():
     ev_bull = event_layer.get('bullish_score', 0)
     ev_bear = event_layer.get('bearish_score', 0)
     
-    # BTC context
-    btc_data = macro.get('btc', {})
-    btc_price = btc_data.get('price', 0)
-    btc_cycle = btc_data.get('cycle', 'UNKNOWN')
-    btc_dist200 = btc_data.get('dist200_pct', 0)
+    # BTC context — сначала из composite (авторитетно), fallback на agent_input
+    btc_data = macro.get('btc', {}) or {}
+    btc_ctx_composite = ((composite.get('inputs') or {}).get('btc_context') or {})
+    btc_price = btc_ctx_composite.get('btc_price') or btc_data.get('price') or 0
+    btc_cycle = btc_ctx_composite.get('cycle') or btc_data.get('cycle') or 'UNKNOWN'
+    btc_dist200 = btc_ctx_composite.get('dist200_pct')
+    if btc_dist200 is None:
+        btc_dist200 = btc_data.get('dist200_pct', 0)
     
     # Scenarios
     scenarios = scenarios_data.get('scenarios', [])
