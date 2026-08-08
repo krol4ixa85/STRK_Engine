@@ -610,30 +610,74 @@ def format_digest():
         text += f"Baseline v2 (6 signals): 66.7% accuracy on 9 tests.\n"
     text += f"Читать: /probability для деталей.\n\n"
     
-    # === SCENARIOS ===
-    scenario_data = load_json('scenario_analysis.json')
-    if scenario_data and scenario_data.get('scenarios'):
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += "<b>🎯 SCENARIOS (7-14d)</b>\n"
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        
-        scenarios = scenario_data.get('scenarios', {})
-        primary = scenario_data.get('primary', 'BASE')
-        
-        # Show all 3 scenarios with probabilities
-        for scen_name in ['bull', 'base', 'bear']:
-            scen = scenarios.get(scen_name, {})
-            prob = scen.get('probability', 0)
-            target = scen.get('target_price', 0)
-            change = scen.get('price_change_pct', 0)
+    # === SCENARIOS === Обёрнуто в try/except — падение блока НЕ роняет digest
+    try:
+        scenario_data = load_json('scenario_analysis.json')
+        if scenario_data and scenario_data.get('scenarios'):
+            text += "━━━━━━━━━━━━━━━━━━━\n"
+            text += "<b>🎯 SCENARIOS (7-14d)</b>\n"
+            text += "━━━━━━━━━━━━━━━━━━━\n"
             
-            emoji = '🟢' if scen_name == 'bull' else ('⚪' if scen_name == 'base' else '🔴')
-            is_primary = ' ⭐ PRIMARY' if scen_name.upper() == primary else ''
+            raw_scenarios = scenario_data.get('scenarios', {})
+            primary = scenario_data.get('primary', 'BASE')
             
-            text += f"{emoji} <b>{scen_name.upper()}</b> ({prob*100:.0f}%){is_primary}\n"
-            text += f"   → ${target:.4f} ({change:+.1f}%)\n"
-        
-        text += "\n"
+            # Normalize: scenario_engine пишет list, digest ждёт dict.
+            # Принимаем оба формата.
+            scenarios_dict = {}
+            if isinstance(raw_scenarios, dict):
+                # уже dict — используем как есть
+                for key, value in raw_scenarios.items():
+                    if isinstance(value, dict):
+                        scenarios_dict[str(key).lower()] = value
+            elif isinstance(raw_scenarios, list):
+                # list — маппим по name/type/label
+                for item in raw_scenarios:
+                    if not isinstance(item, dict):
+                        continue
+                    # Пробуем разные ключи для имени
+                    name = (item.get('name') or item.get('type') or 
+                            item.get('label') or item.get('scenario') or '').lower()
+                    if 'bull' in name:
+                        scenarios_dict['bull'] = item
+                    elif 'bear' in name:
+                        scenarios_dict['bear'] = item
+                    elif 'base' in name or 'neutral' in name:
+                        scenarios_dict['base'] = item
+            
+            # Show all 3 scenarios with probabilities
+            for scen_name in ['bull', 'base', 'bear']:
+                scen = scenarios_dict.get(scen_name, {})
+                if not isinstance(scen, dict):
+                    continue
+                
+                # Пробуем разные форматы probability
+                prob = scen.get('probability', scen.get('probability_pct', 0))
+                if isinstance(prob, (int, float)) and prob > 1.5:
+                    prob = prob / 100.0  # если это проценты — конвертируем в fraction
+                
+                # target price
+                target = scen.get('target_price', 0)
+                if not target:
+                    # Может быть price_range list или dict
+                    pr = scen.get('price_range', 0)
+                    if isinstance(pr, list) and len(pr) >= 2:
+                        target = (pr[0] + pr[1]) / 2
+                    elif isinstance(pr, dict):
+                        target = (pr.get('low', 0) + pr.get('high', 0)) / 2
+                
+                # price change
+                change = scen.get('price_change_pct', scen.get('change_pct', 0))
+                
+                emoji = '🟢' if scen_name == 'bull' else ('⚪' if scen_name == 'base' else '🔴')
+                is_primary = ' ⭐ PRIMARY' if scen_name.upper() == str(primary).upper() else ''
+                
+                text += f"{emoji} <b>{scen_name.upper()}</b> ({prob*100:.0f}%){is_primary}\n"
+                text += f"   → ${target:.4f} ({change:+.1f}%)\n"
+            
+            text += "\n"
+    except Exception as _scen_err:
+        # SCENARIOS блок сломался — не критично, продолжаем digest
+        logger.warning(f"SCENARIOS block skipped: {_scen_err}")
     
     # === FOOTER ===
     text += f"<b>Coverage:</b> {wallet_total} wallets\n"
