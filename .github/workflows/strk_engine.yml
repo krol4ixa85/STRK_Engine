@@ -24,6 +24,9 @@ env:
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   STARKNET_ANNOUNCEMENTS_CHANNEL_ID: ${{ secrets.STARKNET_ANNOUNCEMENTS_CHANNEL_ID }}
+  # Squeeze bot (@strk_dynamic3_bot) — отдельный стрим
+  SQUEEZE_BOT_TOKEN: ${{ secrets.SQUEEZE_BOT_TOKEN }}
+  SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
   STRICT_NO_TRADING: 'true'
 
 jobs:
@@ -161,6 +164,13 @@ jobs:
         run: python3 scripts/detectors/cohort_tracker.py || true
       - name: Whale auto-analysis
         run: python3 scripts/detectors/whale_auto_analysis.py || true
+
+      # STAGE 7.5 · SQUEEZE DETECTION (отдельный стрим в @strk_dynamic3_bot)
+      - name: Squeeze detector (compute state)
+        run: python3 scripts/detectors/squeeze_detector.py || true
+
+      - name: Squeeze notifier (alert to @strk_dynamic3_bot)
+        run: python3 scripts/detectors/squeeze_notifier.py || true
 
       # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
       - name: Generate RUN report (HTML)
