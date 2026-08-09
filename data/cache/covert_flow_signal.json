@@ -1,0 +1,47 @@
+{
+  "as_of": "2026-08-09T21:46:55.078491+00:00",
+  "status": "OK",
+  "overall_signal": "ACCUMULATION",
+  "layman": "Мягкая аккумуляция: 1 держателей vs 0 раздающих.",
+  "counts": {
+    "accumulation": 1,
+    "distribution": 0,
+    "neutral": 2,
+    "inactive": 0,
+    "total_analyzed": 3
+  },
+  "params_used": {
+    "min_inflow_outflow_ratio_accumulation": 1.5,
+    "min_retention_pct_accumulation": 70.0,
+    "min_unique_counterparties_accumulation": 3,
+    "min_outflow_inflow_ratio_distribution": 1.5,
+    "min_unique_counterparties_distribution": 3,
+    "min_absolute_flow_strk": 100000.0,
+    "aggregate_strong_multiplier": 2.0,
+    "aggregate_strong_min_count": 3
+  },
+  "params_status": "HYPOTHESIS",
+  "top_accumulators": [
+    {
+      "address": "0xa4b9569bf942c3aad23c0c2d322fe4aff8e1bf30",
+      "seed_name": "discovered_a4b9569b",
+      "category": "watchlist",
+      "metrics": {
+        "vol_in": 7150339.93,
+        "vol_out": 0,
+        "net": 7150339.93,
+        "retention_pct": 100.0,
+        "unique_cp_in": 36,
+        "unique_cp_out": 0,
+        "num_tx_in": 48,
+        "num_tx_out": 0,
+        "avg_size_in": 148965.42,
+        "avg_size_out": 0
+      },
+      "classification": "ACCUMULATION"
+    }
+  ],
+  "top_distributors": [],
+  "inactive_addresses": 0,
+  "note": "Shadow signal · NOT decision-relevant. Registered as voter in shadow_voter.py; calibration через ≥15 closed shadow forecasts."
+}
