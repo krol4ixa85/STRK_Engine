@@ -3,6 +3,8 @@ name: STRK Engine Automation
 on:
   schedule:
     - cron: '0 */6 * * *'
+    # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
+    - cron: '0 0 * * 0'
   workflow_dispatch:
     inputs:
       mode:
@@ -14,6 +16,7 @@ on:
           - digest
           - liq
           - run
+          - backtest
 
 # Global env — все шаги видят все секреты
 env:
@@ -172,14 +175,21 @@ jobs:
       - name: Squeeze notifier (alert to @strk_dynamic3_bot)
         run: python3 scripts/detectors/squeeze_notifier.py || true
 
+      # STAGE 7.9 · WEEKLY BACKTEST (только воскресенье 00:00 UTC или mode=backtest)
+      - name: Weekly backtest
+        if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
+        run: python3 scripts/weekly_backtest.py || true
+
       # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
 
       # STAGE 9 · SEND (MODE = digest | liq | run)
-      # По cron всегда MODE=digest
+      # По cron */6 всегда MODE=digest
       # По workflow_dispatch — MODE берётся из inputs.mode
+      # SKIP если это weekly backtest run (не смешиваем)
       - name: Send Telegram delivery
+        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
