@@ -130,6 +130,168 @@ LAYMAN_VERDICTS = {
         'Смешанные сигналы. Некоторые модули видят движение, но конфликтуют.',
 }
 
+# ============================================================
+# 3-HORIZON ACTION VERDICT · FUND / SWING / SQZ
+# Правила из спеки Xenia (LIQ_v1_3horizon):
+#   FUND (30-90d)   — Wyckoff, SMART, News, Unlock, Bridge
+#   SWING (3-14d)   — Range, BTC cycle, CEX 7d, Volume, Alpha
+#   SQZ (4-24h)     — RSI, CVD, Funding, Slope 3d
+# Три независимых вердикта, НЕ смешивать между собой.
+# ============================================================
+def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx, funding, cvd_data):
+    """Return dict {fund, swing, sqz} — each with verdict, data, action."""
+    # === Extract data ===
+    phase = str(wyckoff.get('phase', 'UNKNOWN'))
+    news_signal = str(news.get('overall_signal', 'NEUTRAL')).upper()
+    unlock_days = ((unlock.get('next_cliff') or {}).get('days_until'))
+    btc_cycle = str(btc_ctx.get('cycle', 'UNKNOWN')).upper()
+    rsi = tech.get('rsi')
+    slope_3d = tech.get('slope_3d_pct')
+    vol_ratio = tech.get('vol_ratio_3d_vs_30d')
+    high_14d = tech.get('high_14d')
+    low_14d = tech.get('low_14d')
+    price = tech.get('price') or tech.get('price_now')
+    cex_signal = str((cex.get('classification') or {}).get('signal', 'NEUTRAL')).upper()
+    fund_apr = ((funding.get('funding_metrics') or {}).get('current_annualized_pct'))
+
+    # SMART cohort net flow
+    coh = cohorts.get('cohorts') or {}
+    smart = coh.get('SMART') or coh.get('smart') or {}
+    smart_net = smart.get('net_flow_strk') or smart.get('net_24h_strk') or 0
+
+    # CVD 1h signal
+    cvd_1h = ((cvd_data.get('timeframes') or {}).get('1h') or
+              (cvd_data.get('timeframes') or {}).get('1H') or {})
+    cvd_signal = str(cvd_1h.get('signal', '')).upper()
+    cvd_decelerating = any(k in cvd_signal for k in ['NEUTRAL', 'ACCUMULATION', 'DIVERGENCE_BULL'])
+
+    # === FUND (30-90d) ===
+    fund = {'verdict': '', 'data': '', 'action': '', 'emoji': '⚪'}
+    is_accumulation = 'ACCUMULATION' in phase.upper()
+    is_distribution = 'DISTRIBUTION' in phase.upper()
+    smart_positive = smart_net > 0
+    news_bullish = 'BULLISH' in news_signal
+    unlock_close = unlock_days is not None and unlock_days < 7
+
+    if is_accumulation and smart_positive and news_bullish:
+        fund['emoji'] = '🟢'
+        fund['verdict'] = 'ЗОНА НАБОРА'
+        fund['data'] = f'Phase {phase}, SMART +{smart_net/1e6:.2f}M, news {news_signal}'
+        fund['action'] = 'DCA от текущей цены. Разбить бюджет на 3-5 частей.'
+    elif is_distribution or (smart_net < 0) or unlock_close:
+        fund['emoji'] = '🔴'
+        fund['verdict'] = 'НЕ ТРОГАТЬ'
+        _r = []
+        if is_distribution: _r.append(f'Phase {phase}')
+        if smart_net < 0: _r.append(f'SMART {smart_net/1e6:+.2f}M')
+        if unlock_close: _r.append(f'Unlock через {unlock_days}d')
+        fund['data'] = ', '.join(_r) if _r else 'см. вердикт'
+        fund['action'] = 'Ждать разблокировки или разворота SMART cohort.'
+    else:
+        fund['emoji'] = '🟡'
+        fund['verdict'] = 'НЕЙТРАЛЬНО'
+        fund['data'] = f'Phase {phase}, SMART {smart_net/1e6:+.2f}M, news {news_signal}'
+        fund['action'] = 'Копить кэш. Ждать чёткого phase change или BULLISH news.'
+
+    # === SWING (3-14d) ===
+    swing = {'verdict': '', 'data': '', 'action': '', 'emoji': '⚪'}
+    # Range position
+    range_pos = 'MID'
+    if price and high_14d and low_14d and high_14d > low_14d:
+        pos = (price - low_14d) / (high_14d - low_14d)
+        if pos < 0.25: range_pos = 'LOW'
+        elif pos > 0.75: range_pos = 'HIGH'
+    btc_up = 'UP' in btc_cycle
+    btc_down = 'DOWN' in btc_cycle
+    cex_dist = 'DISTRIBUTION' in cex_signal
+    vol_high = vol_ratio and vol_ratio > 1.0
+    vol_breakout = vol_ratio and vol_ratio > 1.5
+
+    if btc_up and range_pos == 'LOW' and vol_high:
+        swing['emoji'] = '🟢'
+        swing['verdict'] = 'ЛОНГ ОТ ПОДДЕРЖКИ'
+        swing['data'] = f'BTC {btc_cycle}, price near low, Vol {vol_ratio:.2f}x'
+        _stop = low_14d * 0.985 if low_14d else 0
+        _target = (low_14d + (high_14d - low_14d) * 0.5) if (low_14d and high_14d) else 0
+        swing['action'] = f'Long от ${low_14d:.4f}, stop ${_stop:.4f}, target ${_target:.4f}'
+    elif btc_up and range_pos == 'HIGH' and vol_breakout:
+        swing['emoji'] = '🟢'
+        swing['verdict'] = 'ВХОД НА ПРОБОЕ'
+        swing['data'] = f'BTC {btc_cycle}, testing top, Vol {vol_ratio:.2f}x'
+        _stop = high_14d * 0.99 if high_14d else 0
+        swing['action'] = f'Long на break > ${high_14d:.4f}, stop ${_stop:.4f}'
+    elif btc_down or cex_dist:
+        swing['emoji'] = '🟡'
+        swing['verdict'] = 'ФЛЭТ'
+        _r = []
+        if btc_down: _r.append(f'BTC {btc_cycle}')
+        if cex_dist: _r.append(f'CEX {cex_signal}')
+        swing['data'] = ', '.join(_r)
+        _range = f'от ${low_14d:.4f}' if low_14d else '?'
+        _up = f'${high_14d:.4f}' if high_14d else '?'
+        swing['action'] = f'Ждать пробоя {_up} или отскока {_range} с объёмом.'
+    else:
+        swing['emoji'] = '⚪'
+        swing['verdict'] = 'НЕТ СИГНАЛА'
+        swing['data'] = f'BTC {btc_cycle}, range pos {range_pos}, Vol {vol_ratio or "?"}'
+        swing['action'] = 'Смешанные условия — не входить.'
+
+    # === SQZ/MICRO (4-24h) ===
+    sqz = {'verdict': '', 'data': '', 'action': '', 'emoji': '⚪'}
+    rsi_oversold = rsi is not None and rsi < 30
+    rsi_overbought = rsi is not None and rsi > 70
+    fund_normal = fund_apr is not None and fund_apr < 5
+    fund_crowded_long = fund_apr is not None and fund_apr > 20
+
+    if rsi_oversold and cvd_decelerating and fund_normal:
+        sqz['emoji'] = '🟢'
+        sqz['verdict'] = 'ЛОНГ НА ОТСКОКЕ'
+        sqz['data'] = f'RSI {rsi:.0f}, CVD замедляется, funding {fund_apr:.2f}%'
+        _stop = price * 0.98 if price else 0
+        _take = price * 1.05 if price else 0
+        sqz['action'] = f'Long, stop ${_stop:.4f} (-2%), take ${_take:.4f} (+5%)'
+    elif rsi_overbought and fund_crowded_long:
+        sqz['emoji'] = '🔴'
+        sqz['verdict'] = 'КОРОТКИЙ СКВИЗ ВНИЗ'
+        sqz['data'] = f'RSI {rsi:.0f} overbought, funding {fund_apr:.2f}% (crowded long)'
+        _take = price * 0.97 if price else 0
+        sqz['action'] = f'Short, take ${_take:.4f} (-3%), stop над локальным high'
+    else:
+        sqz['emoji'] = '⚪'
+        sqz['verdict'] = 'ШУМ'
+        _rsi_str = f'{rsi:.0f}' if rsi is not None else 'NC'
+        _fund_str = f'{fund_apr:.2f}%' if fund_apr is not None else 'NC'
+        sqz['data'] = f'RSI {_rsi_str}, funding {_fund_str}'
+        sqz['action'] = 'Ждать RSI<30+CVD flip для лонга или RSI>70+funding>20% для шорта.'
+
+    return {'fund': fund, 'swing': swing, 'sqz': sqz}
+
+
+def _format_3horizon_block(horizons):
+    """Format 3-horizon verdict as Telegram-ready block."""
+    t = "\n━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>🎯 ЧТО ДЕЛАТЬ СЕЙЧАС (3 горизонта)</b>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n\n"
+
+    t += "<b>🔵 FUND (30-90d) · Инвестор</b>\n"
+    t += f"<i>Данные:</i> {horizons['fund']['data']}\n"
+    t += f"{horizons['fund']['emoji']} <b>Вердикт:</b> {horizons['fund']['verdict']}\n"
+    t += f"→ {horizons['fund']['action']}\n\n"
+
+    t += "<b>🟢 SWING (3-14d) · Трейдер</b>\n"
+    t += f"<i>Данные:</i> {horizons['swing']['data']}\n"
+    t += f"{horizons['swing']['emoji']} <b>Вердикт:</b> {horizons['swing']['verdict']}\n"
+    t += f"→ {horizons['swing']['action']}\n\n"
+
+    t += "<b>🔴 SQZ/MICRO (4-24h) · Скальпер</b>\n"
+    t += f"<i>Данные:</i> {horizons['sqz']['data']}\n"
+    t += f"{horizons['sqz']['emoji']} <b>Вердикт:</b> {horizons['sqz']['verdict']}\n"
+    t += f"→ {horizons['sqz']['action']}\n\n"
+
+    t += "<i>💡 Три независимых горизонта. НЕ смешивать между собой.</i>\n\n"
+    return t
+
+
 def _get_layman_verdict(signal, confidence):
     """Return human-readable verdict for DECISION signal + confidence.
     Fallback — generic based on confidence level."""
@@ -313,6 +475,22 @@ def format_digest():
     text += f"<i>{now.strftime('%Y-%m-%d %H:%M UTC')}</i>\n\n"
     text += "<i>⚠ Любой HIGH signal → открой /liq для полного контекста, а не мгновенное buy/sell.</i>\n\n"
     
+    # === 3-HORIZON ACTION VERDICT (ПЕРВЫЙ БЛОК — самое главное) ===
+    _wyk_h = wyckoff or {}
+    _tech_h = ((load_json('technical_momentum.json') or {}).get('features') or {})
+    _cex_h = load_json('cex_flow.json') or {}
+    _coh_h = load_json('cohort_tracker.json') or {}
+    _unlock_h = load_json('unlock_signal.json') or {}
+    _news_h = load_json('news_aggregator.json') or {}
+    _cvd_h = load_json('cvd_analysis.json') or {}
+    _fund_h = load_json('funding_signal.json') or {}
+    _comp_h = load_json('composite_signal_v2.json') or {}
+    _macro_h = load_json('agent_input.json') or {}
+    _btc_h = _get_btc_context(_comp_h, _macro_h)
+    _horizons = _compute_action_3horizons(_wyk_h, _tech_h, _cex_h, _coh_h,
+                                           _unlock_h, _news_h, _btc_h, _fund_h, _cvd_h)
+    text += _format_3horizon_block(_horizons)
+
     # === DECISION (single source of truth) — signal + action одной секцией ===
     if confluence:
         text += "━━━━━━━━━━━━━━━━━━━\n"
@@ -1349,6 +1527,20 @@ def format_liq():
     t = f"<b>⚡ LIQ · STRK</b>\n"
     t += f"<i>{now.strftime('%Y-%m-%d %H:%M UTC')}</i>\n\n"
 
+    # === 3-HORIZON ACTION (ПЕРВЫЙ БЛОК) ===
+    _tech_feat = tech_full.get('features') or {}
+    _macro_liq = load_json('agent_input.json') or {}
+    _btc_liq = _get_btc_context(composite, _macro_liq)
+    _horizons_liq = _compute_action_3horizons(wyk, _tech_feat, cex, cohorts,
+                                                unlock, news, _btc_liq, {}, cvd)
+    # LIQ compact — только 3 вердикта одной строкой
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += "<b>🎯 ЧТО ДЕЛАТЬ СЕЙЧАС</b>\n"
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += f"{_horizons_liq['fund']['emoji']} <b>FUND:</b> {_horizons_liq['fund']['verdict']}\n"
+    t += f"{_horizons_liq['swing']['emoji']} <b>SWING:</b> {_horizons_liq['swing']['verdict']}\n"
+    t += f"{_horizons_liq['sqz']['emoji']} <b>SQZ:</b> {_horizons_liq['sqz']['verdict']}\n\n"
+
     # DECISION (canonical)
     sig = conf.get('signal', NOT_CHECKED)
     cfd = conf.get('confidence', NOT_CHECKED)
@@ -1445,6 +1637,13 @@ def format_run_telegram():
     # MSG 1/3: DECISION + gates + invalidation + watch 72h
     # =========================
     m1 = f"<b>📊 RUN · 1/3</b> · <i>{ts}</i>\n\n"
+    # === 3-HORIZON ACTION VERDICT (первый содержательный блок в MSG1) ===
+    _tech_feat_r = tech_full.get('features') or {}
+    _horizons_r = _compute_action_3horizons(wyk, _tech_feat_r, cex, cohorts,
+                                              unlock, news, _get_btc_context(composite, macro),
+                                              fund, cvd)
+    m1 += _format_3horizon_block(_horizons_r)
+
     m1 += "━━━━━━━━━━━━━━━━━━━\n"
     m1 += "<b>🎯 DECISION</b>\n"
     m1 += "━━━━━━━━━━━━━━━━━━━\n"
