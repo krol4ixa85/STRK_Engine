@@ -348,6 +348,67 @@ def truncate(text, max_len=TELEGRAM_MAX):
     return truncated + '\n\n<i>...truncated (limit 4096)</i>'
 
 
+def split_digest_into_parts(text, max_len=TELEGRAM_MAX):
+    """Split digest into multiple Telegram messages at logical block boundaries.
+    Разбивает по '━━━' границам блоков, чтобы каждая часть <= max_len.
+    Возвращает list of strings.
+
+    Стратегия:
+      - Если text <= max_len → вернуть [text] (одно сообщение)
+      - Иначе — разбить по границам блоков (пустые строки \\n\\n)
+      - Добавить индикатор страницы 'Часть N/M' в начало каждой части (кроме одной)
+    """
+    if len(text) <= max_len:
+        return [text]
+
+    # Порог: max_len - 60 (место для индикатора страницы)
+    limit = max_len - 60
+    parts = []
+    current = ''
+
+    # Разбиваем по двойному переводу строки (границы блоков)
+    blocks = text.split('\n\n')
+
+    for block in blocks:
+        block_with_sep = block + '\n\n'
+        # Если этот блок сам по себе больше limit — вынужденная truncate
+        if len(block_with_sep) > limit:
+            # Финализируем предыдущий part
+            if current:
+                parts.append(current.rstrip())
+                current = ''
+            # Truncate этот блок и вынести в отдельный part
+            parts.append(truncate(block_with_sep, limit))
+            continue
+
+        # Если добавление превысит limit — финализируем current
+        if len(current) + len(block_with_sep) > limit:
+            parts.append(current.rstrip())
+            current = block_with_sep
+        else:
+            current += block_with_sep
+
+    if current:
+        parts.append(current.rstrip())
+
+    # Добавить индикатор страницы к каждому part
+    total = len(parts)
+    if total > 1:
+        for i, p in enumerate(parts):
+            if i == 0:
+                # Первое сообщение — footer
+                parts[i] = p + f'\n\n<i>▶ Часть 1/{total} · продолжение ниже</i>'
+            elif i == total - 1:
+                # Последнее — header
+                parts[i] = f'<i>◀ Часть {i+1}/{total} · окончание</i>\n\n' + p
+            else:
+                # Middle
+                parts[i] = f'<i>Часть {i+1}/{total}</i>\n\n' + p
+
+    return parts
+
+
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger('digest')
 
@@ -741,87 +802,72 @@ def format_digest():
         else:
             text += f"<b>From 14d low:</b> {NOT_CHECKED}\n\n"
     
-    # === ON-CHAIN EVIDENCE ===
+    # === ON-CHAIN EVIDENCE === (полный)
     conc_data = load_json('concentration_metrics.json')
     if conc_data and conc_data.get('metrics'):
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>🔗 ON-CHAIN EVIDENCE</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
-        
         m = conc_data['metrics']
         text += f"<b>Signal:</b> {conc_data.get('signal', 'NEUTRAL')}\n"
         text += f"<b>HHI:</b> {m.get('hhi', 0):.4f} ({conc_data.get('hhi_regime', 'UNKNOWN')})\n"
-        text += f"<b>Entropy:</b> {m.get('entropy_norm', 0):.3f}\n"
-        text += f"<b>Top1 share:</b> {m.get('top1_share_pct', 0):.2f}%\n"
         text += f"<b>Top10 share:</b> {m.get('top10_share_pct', 0):.2f}%\n"
-        
-        # Layman
+        text += f"<b>Entropy:</b> {m.get('entropy_norm', 0):.3f}\n"
         conc_layman = conc_data.get('layman', '')
         if conc_layman:
-            text += f"<i>{conc_layman[:250]}</i>\n"
-        
+            text += f"<i>{_safe(conc_layman[:200])}</i>\n"
         text += "\n"
-    
-    # === MICRO + SWING CONTEXT (horizon split) === Effort/CVD
+
+    # === MICRO + SWING CONTEXT === (horizon split) Effort/CVD
     eff = load_json('effort_result.json')
     cvd_data = load_json('cvd_analysis.json')
     _micro_lines = []
     _swing_lines = []
-    
+
     if eff:
         for tf, r in (eff.get('timeframes') or {}).items():
             if r.get('signal') == 'NEUTRAL':
                 continue
             line = f"  · Effort {tf}: {r['signal']}"
             if r.get('interpretation'):
-                line += f"\n    <i>{r['interpretation'][:100]}</i>"
+                line += f"\n    <i>{_safe(r['interpretation'][:100])}</i>"
             if str(tf).lower() in ('1h', '15m', '30m'):
                 _micro_lines.append(line)
             else:
                 _swing_lines.append(line)
-    
+
     if cvd_data:
         for tf, r in (cvd_data.get('timeframes') or {}).items():
             if r.get('signal') == 'NEUTRAL':
                 continue
             line = f"  · CVD {tf}: {r['signal']}"
             if r.get('interpretation'):
-                line += f"\n    <i>{r['interpretation'][:100]}</i>"
+                line += f"\n    <i>{_safe(r['interpretation'][:100])}</i>"
             if str(tf).lower() in ('1h', '15m', '30m'):
                 _micro_lines.append(line)
             else:
                 _swing_lines.append(line)
-    
+
     if _micro_lines:
         text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += "<b>⚡ MICRO CONTEXT</b> <i>(тактика 4-24h · не decision-relevant)</i>\n"
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += "<i>Короткий горизонт: быстро устаревает, шумный. Для интуиции, не для action.</i>\n"
-        if eff:
-            text += f"<b>Effort/Result consensus:</b> {eff.get('consensus', 'MIXED')}\n"
-        if cvd_data:
-            text += f"<b>CVD consensus:</b> {cvd_data.get('consensus', 'MIXED')}\n"
-        for line in _micro_lines[:4]:
-            text += line + "\n"
-        text += "\n"
-    
-    if _swing_lines:
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += "<b>⚖ SWING CONTEXT</b> <i>(свинг 3-14d)</i>\n"
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        for line in _swing_lines[:4]:
-            text += line + "\n"
-        text += "\n"
-    
-    if not _micro_lines and not _swing_lines and (eff or cvd_data):
-        text += "━━━━━━━━━━━━━━━━━━━\n"
-        text += "<b>⚖ EFFORT/RESULT + CVD</b>\n"
+        text += "<b>⚡ MICRO CONTEXT</b> <i>(тактика 4-24h)</i>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
         if eff:
             text += f"<b>Effort/Result:</b> {eff.get('consensus', 'MIXED')}\n"
         if cvd_data:
             text += f"<b>CVD:</b> {cvd_data.get('consensus', 'MIXED')}\n"
-        text += "<i>Все таймфреймы NEUTRAL.</i>\n\n"
+        for line in _micro_lines[:3]:
+            text += line + "\n"
+        text += "\n"
+
+    if _swing_lines:
+        text += "━━━━━━━━━━━━━━━━━━━\n"
+        text += "<b>⚖ SWING CONTEXT</b> <i>(3-14d)</i>\n"
+        text += "━━━━━━━━━━━━━━━━━━━\n"
+        for line in _swing_lines[:3]:
+            text += line + "\n"
+        text += "\n"
+
     
     # === CEX FLOW === (real classification path, NOT_CHECKED for missing)
     cex = load_json('cex_flow.json') or {}
@@ -856,51 +902,39 @@ def format_digest():
             text += f"<i>{_safe(interp[:200])}</i>\n"
         text += "\n"
     
-    # === EVENT LAYER (event calendar impact) ===
+    # === EVENT LAYER ===
     event_layer = load_json('event_layer.json')
     if event_layer and event_layer.get('signal') and event_layer.get('signal') != 'NEUTRAL':
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>📅 EVENT LAYER</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
-        
         text += f"<b>Signal:</b> {event_layer.get('signal', 'NEUTRAL')}\n"
         text += f"<b>Confidence:</b> {event_layer.get('confidence', 'LOW')}\n"
-        
-        # Show top upcoming event
         upcoming = event_layer.get('upcoming_events', [])
         if upcoming:
             top_event = upcoming[0]
-            days = top_event.get('days_until', 0)
-            title = top_event.get('title', 'unknown')[:60]
-            impact = top_event.get('impact', 'unknown')
-            
-            text += f"<b>Next event ({days}d):</b> {title}\n"
-            text += f"<b>Impact:</b> {impact}\n"
-        
-        # Signal reason
+            text += f"<b>Next ({top_event.get('days_until', 0)}d):</b> {_safe(top_event.get('title', '')[:50])}\n"
+            text += f"<b>Impact:</b> {top_event.get('impact', 'unknown')}\n"
         reason = event_layer.get('reason', '')
         if reason:
-            text += f"<i>{reason[:200]}</i>\n"
-        
+            text += f"<i>{_safe(reason[:150])}</i>\n"
         text += "\n"
-    
+
     # === DERIVATIVES ===
     funding = load_json('funding_signal.json')
     if funding:
         text += "━━━━━━━━━━━━━━━━━━━\n"
         text += "<b>📊 DERIVATIVES</b>\n"
         text += "━━━━━━━━━━━━━━━━━━━\n"
-        
         m = funding.get('funding_metrics', {})
         text += f"<b>Signal:</b> {funding.get('signal', 'NEUTRAL')}\n"
         text += f"<b>Funding (annualized):</b> {m.get('current_annualized_pct', 0):+.2f}%\n"
-        # Regime in funding_signal not written — skip line (was always UNKNOWN)
-        
         if m.get('short_crowded'):
             text += f"⚠️ <b>Short crowded</b> — squeeze potential\n"
         if m.get('long_crowded'):
             text += f"⚠️ <b>Long crowded</b> — flush risk\n"
         text += "\n"
+
     
     # === MACRO CONTEXT === (BTC из composite, STRK из technical)
     composite = load_json('composite_signal_v2.json') or {}
@@ -1078,35 +1112,32 @@ def format_digest():
         text += f"{NOT_CHECKED} · нет whale событий за 6h\n"
     text += "\n"
     
-        # === DISCOVERY (last 6h) - HIGH-QUALITY only ===
+    # === DISCOVERY (6h) ===
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>👁 DISCOVERY (6h)</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
-    
     if accepted:
         text += f"<b>New wallets:</b> {len(accepted)}\n"
         for d in accepted[:3]:
-            text += f"  ✓ {d.get('name', 'unnamed')[:20]} → {d.get('assigned_category', 'watchlist')}\n"
+            text += f"  ✓ {_safe(d.get('name', 'unnamed')[:20])} → {d.get('assigned_category', 'watchlist')}\n"
     else:
         text += "<b>New wallets:</b> 0\n"
-    
-    text += f"<b>Rejected:</b> {len(rejected)}\n"
-    text += f"<b>In queue:</b> {len(queued)}\n"
+    text += f"<b>Rejected:</b> {len(rejected)} · <b>In queue:</b> {len(queued)}\n"
     text += f"<b>Whale events 24h:</b> {whale_count} ({whale_amt:,.0f} STRK)\n\n"
-    
+
     # === MODEL HONESTY ===
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>📋 MODEL HONESTY</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
-    
     if wyckoff.get('confidence') == 'HIGH':
-        text += f"⚠️ HIGH confidence — но backtest на 9 events дал 33% accuracy.\n"
-        text += f"⚠️ N=9, не статистика. Sub-phases не откалиброваны.\n"
+        text += "⚠️ HIGH confidence — но backtest на 9 events дал 33% accuracy.\n"
+        text += "⚠️ N=9, не статистика. Sub-phases не откалиброваны.\n"
     elif wyckoff.get('confidence') == 'MEDIUM':
-        text += f"Baseline v2: 66.7% (6/9). Все 3 fails — Distribution phase.\n"
+        text += "Baseline v2: 66.7% (6/9). Все 3 fails — Distribution phase.\n"
     else:
-        text += f"Baseline v2 (6 signals): 66.7% accuracy on 9 tests.\n"
-    text += f"Читать: /probability для деталей.\n\n"
+        text += "Baseline v2 (6 signals): 66.7% accuracy on 9 tests.\n"
+    text += "<i>Читать: /probability для деталей.</i>\n\n"
+
     
     # === SCENARIOS === Обёрнуто в try/except — падение блока НЕ роняет digest
     try:
@@ -1964,18 +1995,25 @@ def main():
 
         return 0 if all_sent else 1
 
-    # Default: digest (текущее поведение)
+    # Default: digest — split при необходимости на несколько сообщений
     text = format_digest()
     logger.info(f"Digest built (length {len(text)})")
-    # Обрезка до Telegram-лимита (иначе HTTP 400 message too long)
-    if len(text) > TELEGRAM_MAX:
-        text = truncate(text, TELEGRAM_MAX)
-        logger.info(f"Digest truncated to {len(text)} chars")
-    sent = send_telegram(text)
-    _log_alert(event_type="digest", text=text, sent=sent)
-    if sent:
-        logger.info("Digest sent to Telegram")
-    return 0
+    parts = split_digest_into_parts(text, TELEGRAM_MAX)
+    if len(parts) > 1:
+        logger.info(f"Digest split into {len(parts)} messages")
+    all_sent = True
+    for i, part in enumerate(parts, 1):
+        logger.info(f"Digest {i}/{len(parts)}: {len(part)} chars")
+        ok = send_telegram(part)
+        _log_alert(event_type=f"digest_{i}_{len(parts)}", text=part, sent=ok)
+        if not ok:
+            all_sent = False
+            logger.error(f"Digest {i}/{len(parts)} FAILED")
+        else:
+            logger.info(f"Digest {i}/{len(parts)} sent")
+        if i < len(parts):
+            time.sleep(1)  # rate limit между сообщениями
+    return 0 if all_sent else 1
 
 
 if __name__ == '__main__':
