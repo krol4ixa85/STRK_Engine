@@ -98,7 +98,7 @@ CHECK_TRIGGERS = {
     'strk_outperforming_l2_sector':   'STRK alpha vs L2 (ARB/OP/MATIC) ≥ +5% за 7d',
     'post_capitulation_squeeze':      'Setup: price -20% от high + shorts crowded',
     'strong_off_chain_bull':          'Event layer = POSITIVE_CATALYST (не просто supportive)',
-    'not_extreme_short':              'Funding не в extreme short crowded (< -20%)',
+    'not_extreme_short':              'Funding не в extreme short crowded (ниже -20%)',
     'not_bouncing':                   'Не в fake bounce после selloff',
     # CRASH checks (что должно быть true для SHORT signal)
     'liquidity_shift_bearish':        'LP outflow — Ekubo/Endur staking distribution',
@@ -262,7 +262,7 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
         _rsi_str = f'{rsi:.0f}' if rsi is not None else 'NC'
         _fund_str = f'{fund_apr:.2f}%' if fund_apr is not None else 'NC'
         sqz['data'] = f'RSI {_rsi_str}, funding {_fund_str}'
-        sqz['action'] = 'Ждать RSI<30+CVD flip для лонга или RSI>70+funding>20% для шорта.'
+        sqz['action'] = 'Ждать RSI ниже 30 + CVD flip для лонга, или RSI выше 70 + funding выше 20% для шорта.'
 
     return {'fund': fund, 'swing': swing, 'sqz': sqz}
 
@@ -290,6 +290,16 @@ def _format_3horizon_block(horizons):
 
     t += "<i>💡 Три независимых горизонта. НЕ смешивать между собой.</i>\n\n"
     return t
+
+
+def _safe(s):
+    """Escape < > в user-generated тексте, чтобы не сломать Telegram HTML parser.
+    Использовать ТОЛЬКО для данных из JSON (narrative, story, interpretation).
+    НЕ применять к нашим f-strings с <b> <i> тегами — они уже валидные HTML.
+    """
+    if not isinstance(s, str):
+        return s
+    return s.replace('<', '&lt;').replace('>', '&gt;')
 
 
 def _get_layman_verdict(signal, confidence):
@@ -841,9 +851,9 @@ def format_digest():
             text += f"<b>Outflow:</b> {stats['total_outflow_strk']:,.0f} STRK\n"
         if stats.get('consecutive_bearish'):
             text += f"<b>Bearish streak:</b> {stats['consecutive_bearish']} days\n"
-        interp = cex_class.get('interpretation', '')
+        interp = _safe(cex_class.get('interpretation', ''))
         if interp:
-            text += f"<i>{interp[:200]}</i>\n"
+            text += f"<i>{_safe(interp[:200])}</i>\n"
         text += "\n"
     
     # === EVENT LAYER (event calendar impact) ===
@@ -1530,7 +1540,8 @@ def format_liq():
     # === 3-HORIZON ACTION (ПЕРВЫЙ БЛОК) ===
     _tech_feat = tech_full.get('features') or {}
     _macro_liq = load_json('agent_input.json') or {}
-    _btc_liq = _get_btc_context(composite, _macro_liq)
+    _composite_liq = load_json('composite_signal_v2.json') or {}
+    _btc_liq = _get_btc_context(_composite_liq, _macro_liq)
     _horizons_liq = _compute_action_3horizons(wyk, _tech_feat, cex, cohorts,
                                                 unlock, news, _btc_liq, {}, cvd)
     # LIQ compact — только 3 вердикта одной строкой
@@ -1870,7 +1881,7 @@ def format_run_telegram():
             is_p = ' ⭐ PRIMARY' if n in primary_str else ''
             m3 += f"{emoji} <b>{n}</b> ({prob:.0f}%){is_p}{range_str}\n"
             if s.get('narrative'):
-                m3 += f"   <i>{s['narrative'][:120]}</i>\n"
+                m3 += f"   <i>{_safe(s['narrative'][:120])}</i>\n"
     except Exception as e:
         m3 += f"{NOT_CHECKED} ({e})\n"
 
