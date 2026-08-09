@@ -1967,6 +1967,10 @@ def main():
     # Default: digest (текущее поведение)
     text = format_digest()
     logger.info(f"Digest built (length {len(text)})")
+    # Обрезка до Telegram-лимита (иначе HTTP 400 message too long)
+    if len(text) > TELEGRAM_MAX:
+        text = truncate(text, TELEGRAM_MAX)
+        logger.info(f"Digest truncated to {len(text)} chars")
     sent = send_telegram(text)
     _log_alert(event_type="digest", text=text, sent=sent)
     if sent:
