@@ -1,31 +1,37 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-watchlist_notifier.py — WATCHLIST_CANDIDATE alerts
+watchlist_notifier.py — ЕДИНСТВЕННЫЙ источник "WATCH?" alerts в Telegram.
 
-Читает scripts/detectors/auto_discovery_candidates.json (свежие кандидаты).
-Для каждого:
-  - Проверяет что не уже в flow_seeds.json
-  - Определяет priority по received_strk threshold
-  - Отправляет Telegram alert отдельным стримом (НЕ в digest)
-  - Пишет запись в data/history/discovery_candidates.jsonl (append-only)
+Читает два источника:
+  · data/history/whale_events.jsonl (за последние 48h) — крупные переводы от unknown addresses
+  · data/cache/auto_discovery_candidates.json — auto_discovery findings
 
-Не меняет DECISION. Не входит в confluence_gate. Только новые кошельки на watchlist.
+Combine + dedup by address, apply priority thresholds, apply 7-day dedup.
+Отправляет короткий формат:
+    WATCH?
+    0x<полный 42-char address>
+    SMART → new EOA · 0.92M
+    ADD: LOW/MEDIUM/HIGH
+    почему: <одна строка>
+    tx link
 
-Правила приоритета:
-  received_strk >= 5_000_000  → HIGH (🚨)
-  received_strk >= 2_000_000  → MEDIUM (👀)
-  received_strk >= 500_000    → LOW (📌)
-  ниже — не алерт
+Не влияет на DECISION. Не входит в confluence_gate.
+Persistence: data/history/discovery_candidates.jsonl (append-only, для бэктеста).
 
-De-duplication: state file запоминает уже отправленные адреса.
-Не отправляем один и тот же адрес чаще чем раз в 7 дней.
+Правила:
+  - Скипаем address если он уже в flow_seeds.json
+  - Скипаем если alerted этот address в последние 7 дней (dedup)
+  - Priority по amount:
+      >= 5_000_000 STRK → HIGH
+      >= 2_000_000 STRK → MEDIUM
+      >= 500_000  STRK → LOW
+      < 500k — не alert (но в log есть)
 """
 import os
 import sys
 import json
 import time
-import hashlib
 import logging
 import urllib.request
 import urllib.parse
@@ -39,16 +45,17 @@ SCRIPT_DIR = Path(__file__).parent.parent.parent
 CACHE_DIR = SCRIPT_DIR / 'data' / 'cache'
 HISTORY_DIR = SCRIPT_DIR / 'data' / 'history'
 SEEDS_FILE = SCRIPT_DIR / 'data' / 'seeds' / 'flow_seeds.json'
-CANDIDATES_FILE = CACHE_DIR / 'auto_discovery_candidates.json'
+WHALE_EVENTS_FILE = HISTORY_DIR / 'whale_events.jsonl'
+DISCOVERY_CANDIDATES_FILE = CACHE_DIR / 'auto_discovery_candidates.json'
 STATE_FILE = CACHE_DIR / 'watchlist_notifier_state.json'
 HISTORY_FILE = HISTORY_DIR / 'discovery_candidates.jsonl'
 
-# Priority thresholds (STRK)
 THRESHOLD_HIGH = 5_000_000
 THRESHOLD_MEDIUM = 2_000_000
 THRESHOLD_LOW = 500_000
 
-DEDUP_DAYS = 7  # не спамить один address чаще
+DEDUP_DAYS = 7
+WHALE_WINDOW_HOURS = 48
 
 
 def load_json(path):
@@ -62,7 +69,6 @@ def load_json(path):
 
 
 def load_state():
-    """{'address_last_alert': {addr: iso_ts}, 'alert_count': int}"""
     return load_json(STATE_FILE) or {'address_last_alert': {}, 'alert_count': 0}
 
 
@@ -73,7 +79,6 @@ def save_state(state):
 
 
 def load_seeds_addresses():
-    """Return set of all addresses in flow_seeds.json (any category)."""
     seeds = load_json(SEEDS_FILE)
     addrs = set()
     for cat, entries in seeds.items():
@@ -88,16 +93,15 @@ def load_seeds_addresses():
 
 def determine_priority(received_strk):
     if received_strk >= THRESHOLD_HIGH:
-        return 'HIGH', '🚨', THRESHOLD_HIGH
+        return 'HIGH'
     if received_strk >= THRESHOLD_MEDIUM:
-        return 'MEDIUM', '👀', THRESHOLD_MEDIUM
+        return 'MEDIUM'
     if received_strk >= THRESHOLD_LOW:
-        return 'LOW', '📌', THRESHOLD_LOW
-    return None, None, None
+        return 'LOW'
+    return None
 
 
 def is_recently_alerted(address, state):
-    """Check if this address was alerted in last DEDUP_DAYS."""
     last_alerts = state.get('address_last_alert', {})
     if address not in last_alerts:
         return False
@@ -109,40 +113,100 @@ def is_recently_alerted(address, state):
         return False
 
 
-def format_alert(candidate, priority, emoji, threshold):
-    address = candidate['address']
-    received = candidate.get('received_strk', 0)
-    sent = candidate.get('sent_strk', 0)
-    retention = candidate.get('retention_pct', 0)
-    n_sources = candidate.get('n_sources', 0)
-    pattern = candidate.get('pattern', 'unknown')
-    reason = candidate.get('pattern_reason', '')
-    balance = candidate.get('current_balance_strk', 0)
+def load_whale_candidates():
+    """Read whale_events.jsonl — extract crypto candidates (unknown side of transfer)."""
+    if not WHALE_EVENTS_FILE.exists():
+        return []
+    candidates = []
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=WHALE_WINDOW_HOURS)
+    try:
+        with open(WHALE_EVENTS_FILE, 'r', encoding='utf-8') as f:
+            for line in f:
+                try:
+                    e = json.loads(line)
+                    ts = datetime.fromisoformat(e['ts'])
+                    if ts < cutoff:
+                        continue
+                    if e.get('both_known'):
+                        continue
+                    if e.get('amount_strk', 0) < THRESHOLD_LOW:
+                        continue
+                    from_cohort = e.get('from_cohort')
+                    to_cohort = e.get('to_cohort')
+                    if from_cohort and not to_cohort:
+                        candidate_addr = e.get('to_addr', '').lower()
+                        route = f"{from_cohort} \u2192 new EOA"
+                        reason = f"Received from {from_cohort} cohort"
+                    elif to_cohort and not from_cohort:
+                        candidate_addr = e.get('from_addr', '').lower()
+                        route = f"new EOA \u2192 {to_cohort}"
+                        reason = f"Sending to {to_cohort} cohort"
+                    else:
+                        candidate_addr = e.get('to_addr', '').lower()
+                        route = "new EOA \u2192 new EOA"
+                        reason = "Transfer between unknown addresses"
+                    if candidate_addr:
+                        candidates.append({
+                            'source': 'whale_events',
+                            'address': candidate_addr,
+                            'received_strk': e.get('amount_strk', 0),
+                            'route': route,
+                            'reason': reason,
+                            'tx_hash': e.get('tx_hash'),
+                            'ts': e.get('ts'),
+                        })
+                except Exception:
+                    continue
+    except Exception as ex:
+        logger.warning(f"Failed to read {WHALE_EVENTS_FILE}: {ex}")
+    return candidates
 
-    short_addr = f"{address[:8]}...{address[-6:]}"
 
-    text = f"{emoji} <b>WATCHLIST CANDIDATE · {priority}</b>\n\n"
-    text += f"<b>Address:</b> <code>{short_addr}</code>\n"
-    text += f"<b>Pattern:</b> {pattern}\n"
+def load_discovery_candidates():
+    data = load_json(DISCOVERY_CANDIDATES_FILE)
+    if not data:
+        return []
+    out = []
+    for c in data.get('candidates') or []:
+        addr = c.get('address', '').lower()
+        if not addr:
+            continue
+        pattern = c.get('pattern', 'unknown')
+        if 'SMART' in pattern.upper():
+            route = "SMART \u2192 new EOA"
+        elif 'CEX' in pattern.upper():
+            route = "CEX \u2192 new EOA"
+        else:
+            route = f"discovery: {pattern}"
+        reason = c.get('pattern_reason', pattern)[:120]
+        out.append({
+            'source': 'auto_discovery',
+            'address': addr,
+            'received_strk': c.get('received_strk', 0),
+            'route': route,
+            'reason': reason,
+            'tx_hash': None,
+        })
+    return out
+
+
+def format_alert(candidate, priority):
+    """Short WATCH? format."""
+    addr = candidate['address']
+    amt_m = candidate.get('received_strk', 0) / 1e6
+    route = candidate.get('route', '?')
+    reason = candidate.get('reason', '')
+    tx_hash = candidate.get('tx_hash')
+    text = "<b>WATCH?</b>\n"
+    text += f"<code>{addr}</code>\n"
+    text += f"{route} \u00b7 <b>{amt_m:.2f}M</b>\n"
+    text += f"<b>ADD:</b> {priority}\n"
     if reason:
         text += f"<i>{reason}</i>\n"
-    text += "\n"
-
-    text += f"<b>Received (30d):</b> {received/1e6:.2f}M STRK "
-    text += f"from {n_sources} source{'s' if n_sources != 1 else ''}\n"
-    if sent > 0:
-        text += f"<b>Sent:</b> {sent/1e6:.2f}M STRK (retention {retention:.0f}%)\n"
-    if balance > 0:
-        text += f"<b>Current balance:</b> {balance/1e6:.2f}M STRK\n"
-
-    text += f"\n<b>Suggested threshold:</b> {threshold/1e6:.1f}M STRK (для future whale alerts)\n"
-    text += f"\n<a href='https://etherscan.io/address/{address}'>Etherscan</a>"
-    text += " · "
-    text += f"<a href='https://starkscan.co/contract/{address}'>Starkscan</a>\n"
-
-    text += "\n<i>💡 Действие: если решишь добавить — вручную в flow_seeds.json категорию watchlist. "
-    text += "Не меняет DECISION.</i>"
-
+    if tx_hash:
+        text += f"<a href=\"https://etherscan.io/tx/{tx_hash}\">tx</a>"
+    else:
+        text += f"<a href=\"https://etherscan.io/address/{addr}\">address</a>"
     return text
 
 
@@ -150,7 +214,7 @@ def send_telegram(text):
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
     if not token or not chat_id:
-        logger.warning("Telegram not configured — would send:")
+        logger.warning("Telegram not configured; would send:")
         logger.warning(text[:400])
         return False
     url = f"https://api.telegram.org/bot{token}/sendMessage"
@@ -163,7 +227,7 @@ def send_telegram(text):
         with urllib.request.urlopen(req, timeout=15) as response:
             result = json.loads(response.read())
             if result.get('ok'):
-                logger.info(f"WATCHLIST alert sent · message_id={result.get('result', {}).get('message_id')}")
+                logger.info(f"WATCH? sent \u00b7 message_id={result.get('result', {}).get('message_id')}")
                 return True
             logger.error(f"Telegram error: {result}")
             return False
@@ -173,19 +237,16 @@ def send_telegram(text):
 
 
 def log_history(candidate, priority, sent):
-    """Append record to data/history/discovery_candidates.jsonl."""
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
     record = {
         'ts': datetime.now(timezone.utc).isoformat(),
         'address': candidate['address'],
         'priority': priority,
+        'source': candidate.get('source'),
         'received_strk': candidate.get('received_strk', 0),
-        'sent_strk': candidate.get('sent_strk', 0),
-        'retention_pct': candidate.get('retention_pct', 0),
-        'n_sources': candidate.get('n_sources', 0),
-        'pattern': candidate.get('pattern', 'unknown'),
-        'pattern_reason': candidate.get('pattern_reason', ''),
-        'current_balance_strk': candidate.get('current_balance_strk', 0),
+        'route': candidate.get('route'),
+        'reason': candidate.get('reason'),
+        'tx_hash': candidate.get('tx_hash'),
         'sent_to_telegram': sent,
     }
     try:
@@ -197,23 +258,31 @@ def log_history(candidate, priority, sent):
 
 def main():
     logger.info("=" * 60)
-    logger.info("WATCHLIST NOTIFIER · auto_discovery → Telegram alerts")
+    logger.info("WATCHLIST NOTIFIER \u00b7 WATCH? alerts (only source in chat)")
     logger.info("=" * 60)
 
-    candidates_data = load_json(CANDIDATES_FILE)
-    if not candidates_data:
-        logger.info("No candidates file — auto_discovery has not run or empty. Skipping.")
+    whale_cands = load_whale_candidates()
+    discovery_cands = load_discovery_candidates()
+    all_cands = whale_cands + discovery_cands
+    logger.info(f"Loaded: {len(whale_cands)} from whale_events, {len(discovery_cands)} from auto_discovery")
+
+    if not all_cands:
+        logger.info("No candidates \u2014 nothing to alert")
         return 0
 
-    candidates = candidates_data.get('candidates') or []
-    if not candidates:
-        logger.info("No candidates in file — nothing to alert.")
-        return 0
-
-    logger.info(f"Loaded {len(candidates)} candidates from auto_discovery")
+    # Dedup by address, keep highest received_strk
+    by_addr = {}
+    for c in all_cands:
+        addr = c['address']
+        if not addr:
+            continue
+        if addr not in by_addr or c['received_strk'] > by_addr[addr]['received_strk']:
+            by_addr[addr] = c
+    unique_cands = list(by_addr.values())
+    logger.info(f"Unique candidates (dedup by address): {len(unique_cands)}")
 
     seeds_addrs = load_seeds_addresses()
-    logger.info(f"Loaded {len(seeds_addrs)} addresses from flow_seeds.json")
+    logger.info(f"flow_seeds contains {len(seeds_addrs)} addresses (skip if in seeds)")
 
     state = load_state()
 
@@ -222,44 +291,29 @@ def main():
     skipped_recently_alerted = 0
     skipped_below_threshold = 0
 
-    for c in candidates:
-        addr = c.get('address', '').lower()
-        if not addr:
-            continue
-
-        # Skip if already in seeds
+    for c in unique_cands:
+        addr = c['address']
+        received = c.get('received_strk', 0)
         if addr in seeds_addrs:
             skipped_in_seeds += 1
             continue
-
-        # Determine priority
-        received = c.get('received_strk', 0)
-        priority, emoji, threshold = determine_priority(received)
+        priority = determine_priority(received)
         if priority is None:
             skipped_below_threshold += 1
             continue
-
-        # Dedup: skip if alerted in last DEDUP_DAYS
         if is_recently_alerted(addr, state):
             skipped_recently_alerted += 1
             continue
-
-        # Send alert
-        text = format_alert(c, priority, emoji, threshold)
+        text = format_alert(c, priority)
         sent = send_telegram(text)
-
-        # Log to history (always, even if send failed)
         log_history(c, priority, sent)
-
-        # Update dedup state
         if sent:
             state['address_last_alert'][addr] = datetime.now(timezone.utc).isoformat()
             state['alert_count'] = state.get('alert_count', 0) + 1
             alerts_sent += 1
-            # Rate limit between alerts
             time.sleep(1)
 
-    # Clean up dedup state — remove addresses older than 30 days
+    # Cleanup dedup state older than 30 days
     cutoff = datetime.now(timezone.utc) - timedelta(days=30)
     fresh = {}
     for addr, ts_str in state.get('address_last_alert', {}).items():
@@ -269,16 +323,15 @@ def main():
         except Exception:
             pass
     state['address_last_alert'] = fresh
-
     save_state(state)
 
     logger.info("")
-    logger.info(f"SUMMARY:")
-    logger.info(f"  · Alerts sent: {alerts_sent}")
-    logger.info(f"  · Skipped (already in seeds): {skipped_in_seeds}")
-    logger.info(f"  · Skipped (dedup — alerted recently): {skipped_recently_alerted}")
-    logger.info(f"  · Skipped (below threshold): {skipped_below_threshold}")
-    logger.info(f"  · Total lifetime alerts: {state.get('alert_count', 0)}")
+    logger.info("SUMMARY:")
+    logger.info(f"  \u00b7 WATCH? alerts sent: {alerts_sent}")
+    logger.info(f"  \u00b7 Skipped (already in seeds): {skipped_in_seeds}")
+    logger.info(f"  \u00b7 Skipped (dedup 7d): {skipped_recently_alerted}")
+    logger.info(f"  \u00b7 Skipped (below threshold): {skipped_below_threshold}")
+    logger.info(f"  \u00b7 Total lifetime alerts: {state.get('alert_count', 0)}")
     return 0
 
 
