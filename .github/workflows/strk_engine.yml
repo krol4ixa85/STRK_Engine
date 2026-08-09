@@ -186,54 +186,23 @@ jobs:
           echo "=== Delivery MODE=$MODE ==="
           python3 scripts/daily_digest.py || echo "delivery failed"
 
-      # STAGE 10 · PERSISTENCE
+      # STAGE 10 · PERSISTENCE (bulletproof — commits ALL data/ changes)
       - name: Commit state files
         run: |
-          if git diff --quiet \
-              data/seeds/flow_seeds.json \
-              data/history/cohort_snapshots.jsonl \
-              data/history/forecasts.jsonl \
-              data/history/postmortems.jsonl \
-              data/history/shadow_votes.jsonl \
-              data/history/all_history.jsonl \
-              data/history/alerts.jsonl \
-              data/cache/native_staking_state.json \
-              data/cache/liquidity_shift.json \
-              data/cache/ekubo_flow.json \
-              data/cache/endur_lst_flow.json \
-              data/cache/native_staking_flow.json \
-              data/cache/covert_flow_signal.json \
-              data/cache/shadow_calibration.json \
-              data/cache/whale_monitor_state.json \
-              data/cache/discord_monitor_state.json \
-              data/cache/starknet_discord.json \
-              data/cache/starknet_discord_state.json 2>/dev/null && \
-             [ -z "$(git status --porcelain data/reports/)" ]; then
-            echo "No changes"
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          # git add -A подхватывает и modified и untracked — новые jsonl файлы
+          # (discovery_candidates, whale_events, squeeze_alerts) больше не теряются.
+          git add -A data/
+          # --cached — проверяем что реально в staging area
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
           else
-            git config user.email "bot@github.com"
-            git config user.name "STRK Engine Bot"
-            git add data/seeds/flow_seeds.json \
-                    data/history/cohort_snapshots.jsonl \
-                    data/history/forecasts.jsonl \
-                    data/history/postmortems.jsonl \
-                    data/history/shadow_votes.jsonl \
-                    data/history/all_history.jsonl \
-                    data/history/alerts.jsonl \
-                    data/cache/native_staking_state.json \
-                    data/cache/liquidity_shift.json \
-                    data/cache/ekubo_flow.json \
-                    data/cache/endur_lst_flow.json \
-                    data/cache/native_staking_flow.json \
-                    data/cache/covert_flow_signal.json \
-                    data/cache/shadow_calibration.json \
-                    data/cache/whale_monitor_state.json \
-                    data/cache/discord_monitor_state.json \
-                    data/cache/starknet_discord.json \
-                    data/cache/starknet_discord_state.json \
-                    data/reports/ 2>/dev/null || true
-            git commit -m "chore: state update (mode=${{ github.event.inputs.mode || 'digest' }}) [skip ci]" || echo "Nothing to commit"
-            git push || echo "Push failed"
+            echo "=== Changes to commit: ==="
+            git diff --cached --stat
+            git commit -m "chore: state update (mode=${{ github.event.inputs.mode || 'digest' }}) [skip ci]"
+            # retry push с rebase если удалённое было обновлено параллельным run
+            git push || (git pull --rebase && git push) || echo "Push failed"
           fi
 
       - name: Upload results
