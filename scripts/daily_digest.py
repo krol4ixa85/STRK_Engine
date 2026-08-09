@@ -25,6 +25,7 @@ Telegram limit: 4096 chars per message. Truncation если превышаем.
 import os
 import sys
 import json
+import time
 import logging
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -1942,7 +1943,6 @@ def main():
         messages = format_liq()
         logger.info(f"LIQ built: {len(messages)} message(s), sizes: {[len(m) for m in messages]}")
         all_sent = True
-        import time
         for i, m in enumerate(messages, 1):
             sent = send_telegram(m)
             _log_alert(event_type=f"liq" if len(messages) == 1 else f"liq_msg_{i}_of_{len(messages)}",
@@ -1961,7 +1961,6 @@ def main():
         messages = format_run_telegram()
         logger.info(f"RUN built: 3 messages, sizes: {[len(m) for m in messages]}")
         all_sent = True
-        import time
         for i, m in enumerate(messages, 1):
             sent = send_telegram(m)
             _log_alert(event_type=f"run_msg_{i}_of_3", text=m, sent=sent)
