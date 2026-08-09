@@ -76,8 +76,10 @@ jobs:
       - name: Auto-discovery
         run: python3 scripts/detectors/auto_discovery.py || true
 
-      # NEW: Send WATCHLIST_CANDIDATE alerts for high-priority discoveries
-      - name: Watchlist notifier (auto_discovery → Telegram)
+      # Watchlist notifier — только при mode=digest (не спамить при каждом cron)
+      # Так лента WATCH? синхронизируется с daily heartbeat, не с каждым LIQ/RUN
+      - name: Watchlist notifier (WATCH? candidates)
+        if: github.event.inputs.mode == 'digest' || github.event.schedule == '0 18 * * *' || github.event_name == 'schedule' && github.event.schedule == '0 18 * * *'
         run: python3 scripts/detectors/watchlist_notifier.py || true
 
       - name: Cross-window pattern
