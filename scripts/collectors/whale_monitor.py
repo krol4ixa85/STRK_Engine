@@ -256,6 +256,14 @@ def is_watchlist_involved(tx):
 
 
 def send_telegram(text):
+    """DEPRECATED — whale_monitor больше не отправляет alerts в Telegram напрямую.
+    Оставлено как no-op для совместимости с внешним импортом.
+    Единственный источник WATCH? — scripts/detectors/watchlist_notifier.py"""
+    logger.debug("send_telegram called but disabled — whale_monitor теперь silent")
+    return False
+
+
+def _send_telegram_disabled(text):
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
     if not token or not chat_id:
@@ -453,9 +461,10 @@ def check_and_alert(minutes_back=30):
         
         logger.info(f"  {severity.upper()}: {tx['amount']/1e6:.2f}M STRK · {flow_class} · {route}")
         
-        # Send alert
-        msg = format_alert(tx, flow_class, route, interpretation, severity)
-        send_telegram(msg)
+        # NB: whale_monitor больше НЕ отправляет alerts в Telegram напрямую.
+        # Всё, что нужно — уже в data/history/whale_events.jsonl.
+        # WATCH? алерты формирует watchlist_notifier.py (единственный источник в чат).
+        # Digest формирует WHALE 6h aggregate из log файла.
         
         # Record
         seen_hashes.add(tx['tx_hash'])
