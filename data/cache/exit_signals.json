@@ -1,0 +1,70 @@
+{
+  "ts": "2026-08-10T15:06:31.316867+00:00",
+  "long_exit": {
+    "level": "NEUTRAL",
+    "active_count": 0,
+    "triggers": [
+      {
+        "id": "L1",
+        "name": "CEX flow flip → distribution",
+        "active": false,
+        "evidence": "bearish streak 0 days (was bullish 2)"
+      },
+      {
+        "id": "L2",
+        "name": "SMART cohort distributing",
+        "active": false,
+        "evidence": "SMART 24h net +0.69M STRK (threshold -0.5M)"
+      },
+      {
+        "id": "L3",
+        "name": "Volume divergence (weakness at top)",
+        "active": false,
+        "evidence": "price_up_3d=False, vol_ratio=1.0"
+      },
+      {
+        "id": "L4",
+        "name": "Funding crowded long (flush risk)",
+        "active": false,
+        "evidence": "funding APR 5.475%, long_crowded=False"
+      }
+    ]
+  },
+  "short_exit": {
+    "level": "WARNING",
+    "active_count": 2,
+    "triggers": [
+      {
+        "id": "S1",
+        "name": "CEX flow flip → accumulation",
+        "active": true,
+        "evidence": "bullish streak 2 days (was bearish 0)"
+      },
+      {
+        "id": "S2",
+        "name": "SMART cohort accumulating",
+        "active": true,
+        "evidence": "SMART 24h net +0.69M STRK"
+      },
+      {
+        "id": "S3",
+        "name": "Seller exhaustion (RSI<35 + vol low)",
+        "active": false,
+        "evidence": "RSI 44.17, vol_ratio 1.0"
+      },
+      {
+        "id": "S4",
+        "name": "Funding crowded short (squeeze risk)",
+        "active": false,
+        "evidence": "funding APR 5.475%, short_crowded=False"
+      }
+    ]
+  },
+  "active_squeeze_alert": null,
+  "thresholds": {
+    "smart_dist_threshold_strk": -500000,
+    "cex_streak_min": 3,
+    "funding_crowded_long_pct": 20.0,
+    "funding_crowded_short_pct": -20.0
+  }
+}
