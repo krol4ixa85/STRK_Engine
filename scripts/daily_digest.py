@@ -248,15 +248,18 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
         sqz['emoji'] = '🟢'
         sqz['verdict'] = 'ЛОНГ НА ОТСКОКЕ'
         sqz['data'] = f'RSI {rsi:.0f}, CVD замедляется, funding {fund_apr:.2f}%'
-        _stop = price * 0.98 if price else 0
-        _take = price * 1.05 if price else 0
-        sqz['action'] = f'Long, stop ${_stop:.4f} (-2%), take ${_take:.4f} (+5%)'
+        # Baseline calibration: avg daily range 10.5% → stop 15% (1.5×), take 30% (3×) R/R 2:1
+        _stop = price * 0.85 if price else 0
+        _take = price * 1.30 if price else 0
+        sqz['action'] = f'Long, stop ${_stop:.4f} (-15%), take ${_take:.4f} (+30%)'
     elif rsi_overbought and fund_crowded_long:
         sqz['emoji'] = '🔴'
         sqz['verdict'] = 'КОРОТКИЙ СКВИЗ ВНИЗ'
         sqz['data'] = f'RSI {rsi:.0f} overbought, funding {fund_apr:.2f}% (crowded long)'
-        _take = price * 0.97 if price else 0
-        sqz['action'] = f'Short, take ${_take:.4f} (-3%), stop над локальным high'
+        # Baseline calibration: short take -30% (3× daily range), stop +15% над entry
+        _take = price * 0.70 if price else 0
+        _stop = price * 1.15 if price else 0
+        sqz['action'] = f'Short, take ${_take:.4f} (-30%), stop ${_stop:.4f} (+15%)'
     else:
         sqz['emoji'] = '⚪'
         sqz['verdict'] = 'ШУМ'
