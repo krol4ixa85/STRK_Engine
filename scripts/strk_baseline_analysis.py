@@ -58,7 +58,9 @@ OHLCV_CACHE = CACHE_DIR / 'strk_baseline_ohlcv.parquet'
 # CONFIG
 # ============================================================
 SYMBOL = 'STRK/USDT'
-EXCHANGE_ID = 'binance'
+# Fallback list — US-friendly exchanges FIRST (GH Actions runners US-based)
+# Binance blocks US IP with 451 → пробуем последним для полноты
+EXCHANGES_TO_TRY = ['bybit', 'okx', 'kucoin', 'gate', 'mexc', 'kraken', 'binance']
 TIMEFRAME = '1h'
 HISTORY_DAYS = 365
 
@@ -76,11 +78,63 @@ CACHE_MAX_AGE_HOURS = 12
 # ============================================================
 # DATA FETCH
 # ============================================================
-def fetch_ohlcv(exchange_id=EXCHANGE_ID, symbol=SYMBOL, timeframe=TIMEFRAME, days=HISTORY_DAYS, force_refresh=False):
-    """Download OHLCV via ccxt. Cache to parquet."""
+def _fetch_from_exchange(exchange_id, symbol, timeframe, days):
+    """Single-exchange fetch. Returns df or raises."""
+    ex_class = getattr(ccxt, exchange_id)
+    ex = ex_class({'enableRateLimit': True, 'timeout': 30000})
+
+    # Verify exchange lists this symbol
+    try:
+        ex.load_markets()
+        if symbol not in ex.symbols:
+            # Try alternate formats
+            alt_symbols = [
+                symbol.replace('/', '-'),  # STRK-USDT
+                symbol.replace('/', ''),   # STRKUSDT
+            ]
+            actual = None
+            for alt in alt_symbols:
+                if alt in ex.symbols:
+                    actual = alt
+                    break
+            if actual:
+                symbol = actual
+                logger.info(f"  Using alt symbol: {symbol}")
+            else:
+                raise Exception(f"symbol {symbol} not listed on {exchange_id}")
+    except ccxt.BadSymbol:
+        raise Exception(f"symbol {symbol} not on {exchange_id}")
+
+    ms_per_bar = ex.parse_timeframe(timeframe) * 1000
+    since = ex.milliseconds() - days * 24 * 3600 * 1000
+
+    all_bars = []
+    max_iter = 50
+    while since < ex.milliseconds() and max_iter > 0:
+        max_iter -= 1
+        bars = ex.fetch_ohlcv(symbol, timeframe, since, limit=1000)
+        if not bars:
+            break
+        all_bars.extend(bars)
+        since = bars[-1][0] + ms_per_bar
+        if len(bars) < 1000:
+            break
+        time.sleep(0.3)
+
+    if not all_bars:
+        raise Exception(f"no bars from {exchange_id}")
+
+    df = pd.DataFrame(all_bars, columns=['ts', 'open', 'high', 'low', 'close', 'volume'])
+    df['ts'] = pd.to_datetime(df['ts'], unit='ms', utc=True)
+    df = df.set_index('ts').drop_duplicates().sort_index()
+    return df
+
+
+def fetch_ohlcv(symbol=SYMBOL, timeframe=TIMEFRAME, days=HISTORY_DAYS, force_refresh=False):
+    """Download OHLCV via ccxt with exchange fallback. Cache to parquet."""
     if not HAS_CCXT:
         logger.error("ccxt not installed — pip install ccxt")
-        return None
+        return None, None
 
     # Check cache
     if not force_refresh and OHLCV_CACHE.exists():
@@ -91,53 +145,34 @@ def fetch_ohlcv(exchange_id=EXCHANGE_ID, symbol=SYMBOL, timeframe=TIMEFRAME, day
                 latest = latest.tz_localize('UTC')
             age_h = (datetime.now(timezone.utc) - latest.to_pydatetime()).total_seconds() / 3600
             if age_h < CACHE_MAX_AGE_HOURS and len(df) > 100:
+                # Restore metadata source из cache filename
                 logger.info(f"Using cached OHLCV: {len(df)} bars (age {age_h:.1f}h)")
-                return df
+                return df, 'cache'
         except Exception as e:
             logger.warning(f"Cache read failed: {e}")
 
-    logger.info(f"Fetching {symbol} @ {exchange_id} {timeframe} for {days} days...")
-    ex_class = getattr(ccxt, exchange_id)
-    ex = ex_class({'enableRateLimit': True})
-
-    ms_per_bar = ex.parse_timeframe(timeframe) * 1000
-    since = ex.milliseconds() - days * 24 * 3600 * 1000
-
-    all_bars = []
-    max_iter = 50  # защита от бесконечного цикла
-    while since < ex.milliseconds() and max_iter > 0:
-        max_iter -= 1
+    # Try each exchange in order
+    last_error = None
+    for exchange_id in EXCHANGES_TO_TRY:
+        logger.info(f"Trying {exchange_id}...")
         try:
-            bars = ex.fetch_ohlcv(symbol, timeframe, since, limit=1000)
-            if not bars:
-                break
-            all_bars.extend(bars)
-            since = bars[-1][0] + ms_per_bar
-            if len(bars) < 1000:
-                break
-            time.sleep(0.3)  # rate limit safety
+            df = _fetch_from_exchange(exchange_id, symbol, timeframe, days)
+            if df is not None and len(df) > 100:
+                # Cache
+                CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                try:
+                    df.to_parquet(OHLCV_CACHE)
+                except Exception as e:
+                    logger.warning(f"Cache save failed: {e}")
+                logger.info(f"✓ Fetched {len(df)} bars from {exchange_id}")
+                return df, exchange_id
         except Exception as e:
-            logger.error(f"Fetch error: {e}")
-            break
+            last_error = str(e)[:200]
+            logger.warning(f"  {exchange_id} failed: {last_error}")
+            continue
 
-    if not all_bars:
-        logger.error("No OHLCV data returned")
-        return None
-
-    df = pd.DataFrame(all_bars, columns=['ts', 'open', 'high', 'low', 'close', 'volume'])
-    df['ts'] = pd.to_datetime(df['ts'], unit='ms', utc=True)
-    df = df.set_index('ts')
-    df = df.drop_duplicates()
-    df = df.sort_index()
-
-    # Cache
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    try:
-        df.to_parquet(OHLCV_CACHE)
-    except Exception as e:
-        logger.warning(f"Cache save failed: {e}")
-    logger.info(f"Fetched {len(df)} bars for {symbol}")
-    return df
+    logger.error(f"All exchanges failed. Last error: {last_error}")
+    return None, None
 
 
 # ============================================================
@@ -388,7 +423,7 @@ def analyze_regimes(df):
 # ============================================================
 # HTML REPORT
 # ============================================================
-def build_html_report(df, strategies_results, regime, current_price, buy_hold_return):
+def build_html_report(df, strategies_results, regime, current_price, buy_hold_return, source_exchange='binance'):
     now = datetime.now(timezone.utc)
     now_str = now.strftime('%Y-%m-%d %H:%M UTC')
     date_range = f"{df.index[0].strftime('%Y-%m-%d')} to {df.index[-1].strftime('%Y-%m-%d')}"
@@ -421,7 +456,7 @@ def build_html_report(df, strategies_results, regime, current_price, buy_hold_re
 
 <h1>📊 STRK Baseline Analysis</h1>
 <p><b>Generated:</b> {now_str}<br>
-<b>Source:</b> {SYMBOL} · {EXCHANGE_ID.upper()} · {TIMEFRAME}<br>
+<b>Source:</b> {SYMBOL} · {source_exchange.upper()} · {TIMEFRAME}<br>
 <b>Purpose:</b> reference numbers для сравнения с forward-test через 30-60 дней.</p>
 
 <h2>📅 Data Coverage</h2>
@@ -673,7 +708,7 @@ def main():
         logger.error("ccxt not installed. Add 'ccxt' to requirements.")
         return 1
 
-    df = fetch_ohlcv(force_refresh=force_refresh)
+    df, source_exchange = fetch_ohlcv(force_refresh=force_refresh)
     if df is None or len(df) < 500:
         logger.error(f"Not enough OHLCV data: {len(df) if df is not None else 0} bars")
         return 1
@@ -730,7 +765,7 @@ def main():
         json.dump({
             'ts': datetime.now(timezone.utc).isoformat(),
             'symbol': SYMBOL,
-            'exchange': EXCHANGE_ID,
+            'exchange': source_exchange or 'unknown',
             'timeframe': TIMEFRAME,
             'period_days': (df.index[-1] - df.index[0]).days,
             'current_price': current_price,
@@ -744,7 +779,7 @@ def main():
 
     # Build HTML
     logger.info("Building HTML report...")
-    html = build_html_report(df, results, regime, current_price, buy_hold_return)
+    html = build_html_report(df, results, regime, current_price, buy_hold_return, source_exchange or 'unknown')
     html_path = REPORTS_DIR / f'strk_baseline_{date_str}.html'
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html)
