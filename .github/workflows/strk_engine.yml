@@ -17,6 +17,7 @@ on:
           - liq
           - run
           - backtest
+          - baseline
 
 # Global env — все шаги видят все секреты
 env:
@@ -44,7 +45,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests urllib3
+        run: pip install requests urllib3 pandas numpy ccxt pyarrow
 
       - name: Prepare directories
         run: mkdir -p data/history data/cache data/reports data/validation data/dashboards data/graphs
@@ -180,6 +181,12 @@ jobs:
         if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
         run: python3 scripts/weekly_backtest.py || true
 
+      # STAGE 7.95 · BASELINE ANALYSIS (только при mode=baseline)
+      # Качает 1 год STRK OHLCV + тестирует простые baseline strategies
+      - name: STRK baseline analysis
+        if: github.event.inputs.mode == 'baseline'
+        run: python3 scripts/strk_baseline_analysis.py || true
+
       # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
@@ -187,9 +194,9 @@ jobs:
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # По cron */6 всегда MODE=digest
       # По workflow_dispatch — MODE берётся из inputs.mode
-      # SKIP если это weekly backtest run (не смешиваем)
+      # SKIP если это weekly backtest run или baseline analysis (не смешиваем)
       - name: Send Telegram delivery
-        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest'
+        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
