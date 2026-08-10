@@ -2,7 +2,7 @@ name: STRK Engine Automation
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 * * * *'
     # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
     - cron: '0 0 * * 0'
   workflow_dispatch:
