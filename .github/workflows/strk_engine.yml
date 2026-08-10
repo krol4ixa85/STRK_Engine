@@ -17,7 +17,6 @@ on:
           - liq
           - run
           - backtest
-          - baseline
 
 # Global env — все шаги видят все секреты
 env:
@@ -32,15 +31,6 @@ env:
   SQUEEZE_BOT_TOKEN: ${{ secrets.SQUEEZE_BOT_TOKEN }}
   SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
   STRICT_NO_TRADING: 'true'
-
-permissions:
-  contents: write
-
-# Concurrency: main workflow не должен пересекаться с squeeze fast workflow.
-# Разные groups — параллельно работают, но каждый group serializes своих runs.
-concurrency:
-  group: strk-main
-  cancel-in-progress: false
 
 jobs:
   composite:
@@ -69,6 +59,16 @@ jobs:
           else
             echo "::warning::scripts/collectors/run_all_collectors.py NOT FOUND - fallback: skip collectors"
           fi
+
+      # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
+      # Работает на free tier: cache 20h для daily, cache 6d для weekly.
+      # Тихо skipped если DUNE_API_KEY не установлен.
+      - name: Dune collector · Starknet stats
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_DAILY: ${{ secrets.DUNE_QUERY_ID_DAILY }}
+          DUNE_QUERY_ID_WEEKLY: ${{ secrets.DUNE_QUERY_ID_WEEKLY }}
+        run: python3 scripts/collectors/dune_collector.py || true
 
       # ============================================================
       # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
@@ -178,24 +178,21 @@ jobs:
       - name: Whale auto-analysis
         run: python3 scripts/detectors/whale_auto_analysis.py || true
 
-      # STAGE 7.5-7.6 · SQUEEZE + EXIT SIGNALS
-      # Перенесены в отдельный workflow .github/workflows/strk_squeeze.yml
-      # который бежит каждые 30 минут (быстрее для реагирования на squeeze setups).
+      # STAGE 7.5 · SQUEEZE DETECTION (отдельный стрим в @strk_dynamic3_bot)
+      - name: Squeeze detector (compute state)
+        run: python3 scripts/detectors/squeeze_detector.py || true
+
+      - name: Squeeze notifier (alert to @strk_dynamic3_bot)
+        run: python3 scripts/detectors/squeeze_notifier.py || true
+
+      # STAGE 7.6 · DYNAMIC EXIT SIGNALS (для активных squeeze positions)
+      - name: Dynamic exit signals
+        run: python3 scripts/detectors/dynamic_exit_signals.py || true
 
       # STAGE 7.9 · WEEKLY BACKTEST (только воскресенье 00:00 UTC или mode=backtest)
       - name: Weekly backtest
         if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
         run: python3 scripts/weekly_backtest.py || true
-
-      # STAGE 7.95 · BASELINE ANALYSIS (mode=baseline)
-      # Ставим extra deps только тут (не в install-каждый-run, чтобы не тормозить cron)
-      - name: Install baseline deps
-        if: github.event.inputs.mode == 'baseline'
-        run: pip install pandas numpy ccxt pyarrow
-
-      - name: STRK baseline analysis
-        if: github.event.inputs.mode == 'baseline'
-        run: python3 scripts/strk_baseline_analysis.py || true
 
       # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
       - name: Generate RUN report (HTML)
@@ -204,9 +201,9 @@ jobs:
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # По cron */6 всегда MODE=digest
       # По workflow_dispatch — MODE берётся из inputs.mode
-      # SKIP если это weekly backtest run или baseline (не смешиваем)
+      # SKIP если это weekly backtest run (не смешиваем)
       - name: Send Telegram delivery
-        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline'
+        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
