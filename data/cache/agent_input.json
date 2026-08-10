@@ -1,12 +1,12 @@
 {
   "_meta": {
-    "as_of": "2026-08-10T22:56:44.373103+00:00",
+    "as_of": "2026-08-10T23:38:54.760281+00:00",
     "purpose": "Aggregated data for STRK Engine LIQ/RUN report",
     "philosophy": "Data only. No DECISION. Agent interprets.",
     "strict_no_trading": true
   },
   "flow_map": {
-    "as_of": "2026-08-10T22:56:44.365884+00:00",
+    "as_of": "2026-08-10T23:38:54.753219+00:00",
     "flow_class": "ACCUMULATION_DOMINANT",
     "class_distribution": {
       "BRIDGE_IN": 1,
@@ -31,10 +31,10 @@
         "seed_name": "bridge_starkgate_l1",
         "chain": "ethereum",
         "metrics": {
-          "edges_count": 59,
-          "vol_in_strk": 10013580.9088,
+          "edges_count": 58,
+          "vol_in_strk": 10013580.9086,
           "vol_out_strk": 197061.3722,
-          "net_flow_strk": 9816519.5367,
+          "net_flow_strk": 9816519.5365,
           "cp_in": 25,
           "cp_out": 10
         }
@@ -190,23 +190,23 @@
       },
       {
         "flow_class": "REWARDS",
-        "route": "validators(3) → staking_contract → stakers(190)",
+        "route": "validators(2) → staking_contract → stakers(189)",
         "reasoning": [
-          "retention = -50.9% (in=23,352, out=35,249)",
-          "cp_in=3, cp_out=190",
-          "staking pattern: 3 inflow sources → 190 outflow destinations",
+          "retention = -5.5% (in=16,129, out=17,024)",
+          "cp_in=2, cp_out=189",
+          "staking pattern: 2 inflow sources → 189 outflow destinations",
           "classified as REWARDS distribution (not sell pressure)"
         ],
         "confidence": "high",
         "seed_name": "staking_contract",
         "chain": "starknet",
         "metrics": {
-          "edges_count": 500,
-          "vol_in_strk": 23352.2171,
-          "vol_out_strk": 35249.2171,
-          "net_flow_strk": -11897.0001,
-          "cp_in": 3,
-          "cp_out": 190
+          "edges_count": 499,
+          "vol_in_strk": 16129.3064,
+          "vol_out_strk": 17024.0279,
+          "net_flow_strk": -894.7216,
+          "cp_in": 2,
+          "cp_out": 189
         }
       },
       {
@@ -230,8 +230,8 @@
     ],
     "not_checked": false,
     "source_summaries": {
-      "l1_as_of": "2026-08-10T22:56:40.597875+00:00",
-      "l2_as_of": "2026-08-10T22:56:44.311638+00:00"
+      "l1_as_of": "2026-08-10T23:38:51.094724+00:00",
+      "l2_as_of": "2026-08-10T23:38:54.701263+00:00"
     },
     "caveats": [
       "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
@@ -246,10 +246,10 @@
       "category": "l1_infrastructure",
       "role": "L1 StarkGate bridge to Starknet",
       "importance": "critical",
-      "edges_count": 59,
-      "vol_in_strk": 10013580.9088,
+      "edges_count": 58,
+      "vol_in_strk": 10013580.9086,
       "vol_out_strk": 197061.3722,
-      "net_flow_strk": 9816519.5367,
+      "net_flow_strk": 9816519.5365,
       "unique_counterparties_in": 25,
       "unique_counterparties_out": 10
     },
@@ -353,12 +353,12 @@
       "category": "l2_native",
       "role": "Starknet staking contract",
       "importance": "critical",
-      "edges_count": 500,
-      "vol_in_strk": 23352.2171,
-      "vol_out_strk": 35249.2171,
-      "net_flow_strk": -11897.0001,
-      "unique_counterparties_in": 3,
-      "unique_counterparties_out": 190
+      "edges_count": 499,
+      "vol_in_strk": 16129.3064,
+      "vol_out_strk": 17024.0279,
+      "net_flow_strk": -894.7216,
+      "unique_counterparties_in": 2,
+      "unique_counterparties_out": 189
     },
     {
       "seed_name": "bridge_starknet_l2",
