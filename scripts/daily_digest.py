@@ -626,6 +626,190 @@ def _format_dune_starknet_block():
     return text
 
 
+def _compute_current_phase(wyckoff, technical, dune_data, squeeze_state):
+    """Synthesize current market phase из wyckoff + Dune monthly + squeeze + technical.
+    Returns dict: {phase, emoji, confidence, description, guidance, evidence}"""
+
+    wyckoff_phase = str(wyckoff.get('phase', 'UNKNOWN')).upper()
+    tech_features = technical.get('features') or {}
+    rsi = tech_features.get('rsi')
+
+    # === Parse Dune monthly ===
+    dune_signal = None
+    dune_streak = 0
+    dune_pct_from_peak = 0
+    prev_bearish_streak = 0
+    bearish_days_30d = 0
+
+    monthly = dune_data.get('monthly') if dune_data else None
+    if monthly and len(monthly) > 0:
+        def _v(row, idx):
+            if isinstance(row, list) and len(row) > idx:
+                return row[idx]
+            return None
+
+        latest = monthly[0]
+        dune_signal = _v(latest, 6) or 'UNKNOWN'
+        dune_pct_from_peak = _v(latest, 5) or 0
+
+        # Current streak
+        dune_streak = 1
+        for i in range(1, min(len(monthly), 30)):
+            if _v(monthly[i], 6) == dune_signal:
+                dune_streak += 1
+            else:
+                break
+
+        # Previous streak (immediately before current change)
+        if dune_streak < len(monthly):
+            prev_sig = _v(monthly[dune_streak], 6)
+            if prev_sig and prev_sig != dune_signal:
+                for i in range(dune_streak, min(len(monthly), 30)):
+                    if _v(monthly[i], 6) == prev_sig:
+                        prev_bearish_streak += 1
+                    else:
+                        break
+
+        # Total bearish days in last 30 rows (structural context)
+        for i in range(min(len(monthly), 30)):
+            if _v(monthly[i], 6) == 'BEARISH_BREAKDOWN':
+                bearish_days_30d += 1
+
+    # === Squeeze active? ===
+    squeeze_level = squeeze_state.get('level', 'INACTIVE') if squeeze_state else 'INACTIVE'
+
+    evidence_parts = []
+    if wyckoff_phase != 'UNKNOWN':
+        evidence_parts.append(f'Wyckoff: {wyckoff_phase}')
+    if dune_signal:
+        evidence_parts.append(f'Dune: {dune_signal} ({dune_streak}d)')
+    if bearish_days_30d > 0:
+        evidence_parts.append(f'{bearish_days_30d}/30d bearish')
+    if squeeze_level != 'INACTIVE':
+        evidence_parts.append(f'Squeeze: {squeeze_level}')
+
+    # === Phase classification (в порядке приоритета) ===
+
+    # 1. INFLECTION POINT — structural bear (12+/30d) ослабевает
+    if (dune_signal in ('NEUTRAL_CONSOLIDATION', 'MIXED_SIGNAL') and
+            dune_streak <= 5 and bearish_days_30d >= 12):
+        conf_level = 'MEDIUM' if bearish_days_30d >= 20 else 'LOW'
+        return {
+            'phase': 'INFLECTION_POINT',
+            'emoji': '🟡',
+            'confidence': conf_level,
+            'description': f'Structural bear ({bearish_days_30d}/30d) → {dune_streak}d neutral',
+            'guidance': 'Bear phase может заканчиваться. Ждать 5-7 дней подтверждения. Слишком рано входить.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 2. STRUCTURAL BEAR — активный BEARISH_BREAKDOWN
+    if dune_signal == 'BEARISH_BREAKDOWN' and (dune_streak >= 5 or bearish_days_30d >= 15):
+        return {
+            'phase': 'STRUCTURAL_BEAR',
+            'emoji': '🔴',
+            'confidence': 'HIGH',
+            'description': f'{dune_streak}d bearish streak · {bearish_days_30d}/30d bearish · {dune_pct_from_peak:+.0f}% от peak',
+            'guidance': 'Ecosystem cooling. Не накапливать. Ждать capitulation.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 3. SQUEEZE SETUP — technical bounce, не изменение фазы
+    if squeeze_level in ('ACTIVE', 'STRONG'):
+        rsi_str = f'RSI {rsi:.0f}' if rsi is not None else ''
+        # Если внутри structural bear — предупредить что squeeze temporary
+        bear_context = f' · но {bearish_days_30d}/30d bearish' if bearish_days_30d >= 15 else ''
+        return {
+            'phase': 'SQUEEZE_SETUP',
+            'emoji': '🟢',
+            'confidence': 'MEDIUM' if squeeze_level == 'STRONG' else 'LOW',
+            'description': f'Squeeze {squeeze_level} · {rsi_str}{bear_context}',
+            'guidance': 'Технический setup для 4-24h bounce. НЕ путать с изменением phase.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 4. WYCKOFF DISTRIBUTION
+    if wyckoff_phase in ('DISTRIBUTION', 'DISTRIBUTION_ACTIVE'):
+        return {
+            'phase': 'DISTRIBUTION',
+            'emoji': '🔴',
+            'confidence': 'HIGH',
+            'description': 'Wyckoff distribution phase',
+            'guidance': 'Selling pressure. Не покупать. Scale-out если в лонге.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 5. EARLY ACCUMULATION
+    if (wyckoff_phase in ('ACCUMULATION', 'ACCUMULATION_BASE') and
+            dune_signal in ('NEUTRAL_CONSOLIDATION', 'MIXED_SIGNAL') and
+            bearish_days_30d < 10):
+        return {
+            'phase': 'EARLY_ACCUMULATION',
+            'emoji': '🟢',
+            'confidence': 'MEDIUM',
+            'description': 'Wyckoff acc + Dune neutral · low bear pressure',
+            'guidance': 'Правильная фаза для scaled entries. FUND horizon подходящий.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 6. MARKUP
+    if wyckoff_phase in ('MARKUP', 'MARKUP_TREND'):
+        return {
+            'phase': 'MARKUP',
+            'emoji': '🟢',
+            'confidence': 'HIGH',
+            'description': 'Wyckoff markup uptrend',
+            'guidance': 'Confirmed uptrend. Держать longs.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 7. BEAR CONSOLIDATION — consolidation но structural bear
+    if wyckoff_phase == 'CONSOLIDATION' and bearish_days_30d >= 12:
+        return {
+            'phase': 'BEAR_CONSOLIDATION',
+            'emoji': '🔴',
+            'confidence': 'MEDIUM',
+            'description': f'Wyckoff consolidation, но {bearish_days_30d}/30d bearish · {dune_pct_from_peak:+.0f}% от peak',
+            'guidance': 'Consolidation внутри bear phase, не accumulation. Ждать structural signal.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 8. RANGE CONSOLIDATION
+    if wyckoff_phase == 'CONSOLIDATION':
+        return {
+            'phase': 'RANGE_CONSOLIDATION',
+            'emoji': '🟡',
+            'confidence': 'MEDIUM',
+            'description': f'Wyckoff consolidation · Dune {dune_signal or "unknown"}',
+            'guidance': 'Range trading conditions. Ждать breakout with volume.',
+            'evidence': ' · '.join(evidence_parts),
+        }
+
+    # 9. Fallback
+    return {
+        'phase': 'TRANSITIONAL',
+        'emoji': '⚪',
+        'confidence': 'LOW',
+        'description': f'Wyckoff {wyckoff_phase} · Dune {dune_signal or "unknown"}',
+        'guidance': 'Signals неоднозначны. Wait for clarity.',
+        'evidence': ' · '.join(evidence_parts),
+    }
+
+
+def _format_current_phase_block(wyckoff, technical, dune_data, squeeze_state):
+    """Синтетический CURRENT PHASE block — читается первым после header."""
+    phase_info = _compute_current_phase(wyckoff, technical, dune_data, squeeze_state)
+
+    text = "━━━━━━━━━━━━━━━━━━━\n"
+    text += f"{phase_info['emoji']} <b>CURRENT PHASE · {phase_info['phase']}</b> <i>({phase_info['confidence']})</i>\n"
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+    text += f"<b>State:</b> {_safe(phase_info['description'])}\n"
+    if phase_info.get('evidence'):
+        text += f"<b>Evidence:</b> <code>{_safe(phase_info['evidence'])}</code>\n"
+    text += f"<i>💡 {_safe(phase_info['guidance'])}</i>\n\n"
+    return text
+
+
 def _get_layman_verdict(signal, confidence):
     """Return human-readable verdict for DECISION signal + confidence.
     Fallback — generic based on confidence level."""
@@ -869,7 +1053,14 @@ def format_digest():
     text = f"<b>🤖 STRK-GUARD · Phase Analysis</b>\n"
     text += f"<i>{now.strftime('%Y-%m-%d %H:%M UTC')}</i>\n\n"
     text += "<i>⚠ Любой HIGH signal → открой /liq для полного контекста, а не мгновенное buy/sell.</i>\n\n"
-    
+
+    # === CURRENT PHASE === synthesis: wyckoff + Dune monthly + squeeze
+    # ЧИТАЕТСЯ ПЕРВЫМ — даёт structural context перед всеми actions.
+    _tech_phase = load_json('technical_momentum.json') or {}
+    _squeeze_state = load_json('squeeze_state.json') or {}
+    _dune_phase = _load_dune_starknet()
+    text += _format_current_phase_block(wyckoff or {}, _tech_phase, _dune_phase, _squeeze_state)
+
     # === 3-HORIZON ACTION VERDICT (ПЕРВЫЙ БЛОК — самое главное) ===
     _wyk_h = wyckoff or {}
     _tech_h = ((load_json('technical_momentum.json') or {}).get('features') or {})
@@ -1898,6 +2089,19 @@ def format_liq():
     t = f"<b>⚡ LIQ · STRK</b>\n"
     t += f"<i>{now.strftime('%Y-%m-%d %H:%M UTC')}</i>\n\n"
 
+    # === CURRENT PHASE (compact 1-liner) === читается ПЕРЕД 3-horizon в LIQ
+    _sqz_liq = load_json('squeeze_state.json') or {}
+    _dune_liq = _load_dune_starknet()
+    _phase_liq = _compute_current_phase(wyk, tech_full, _dune_liq, _sqz_liq)
+    t += "━━━━━━━━━━━━━━━━━━━\n"
+    t += f"{_phase_liq['emoji']} <b>PHASE:</b> {_phase_liq['phase']} <i>({_phase_liq['confidence']})</i>\n"
+    t += f"<i>{_safe(_phase_liq['description'])}</i>\n\n"
+
+    # === CURRENT PHASE === synthesis: wyckoff + Dune monthly + squeeze
+    _squeeze_liq = load_json('squeeze_state.json') or {}
+    _dune_liq = _load_dune_starknet()
+    t += _format_current_phase_block(wyk or {}, tech_full, _dune_liq, _squeeze_liq)
+
     # === 3-HORIZON ACTION (ПЕРВЫЙ БЛОК) ===
     _tech_feat = tech_full.get('features') or {}
     _macro_liq = load_json('agent_input.json') or {}
@@ -2012,6 +2216,12 @@ def format_run_telegram():
     # MSG 1/3: DECISION + gates + invalidation + watch 72h
     # =========================
     m1 = f"<b>📊 RUN · 1/3</b> · <i>{ts}</i>\n\n"
+
+    # === CURRENT PHASE === structural synthesis — читается первым в MSG1
+    _sqz_run = load_json('squeeze_state.json') or {}
+    _dune_run = _load_dune_starknet()
+    m1 += _format_current_phase_block(wyk, tech_full, _dune_run, _sqz_run)
+
     # === 3-HORIZON ACTION VERDICT (первый содержательный блок в MSG1) ===
     _tech_feat_r = tech_full.get('features') or {}
     _horizons_r = _compute_action_3horizons(wyk, _tech_feat_r, cex, cohorts,
