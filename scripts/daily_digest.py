@@ -448,13 +448,15 @@ def _format_shadow_voters_block(compact=False):
 
 
 def _load_dune_starknet():
-    """Load daily + weekly + monthly Dune data. Returns dict with parsed rows or empty."""
+    """Load daily + weekly + monthly + cex_flow Dune data."""
     daily_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet.json'
     weekly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_weekly.json'
     monthly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_monthly.json'
-    out = {'daily': None, 'weekly': None, 'monthly': None, 'age_h': None}
+    cex_flow_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_cex_flow.json'
+    out = {'daily': None, 'weekly': None, 'monthly': None, 'cex_flow': None, 'age_h': None}
 
-    for key, path in [('daily', daily_path), ('weekly', weekly_path), ('monthly', monthly_path)]:
+    for key, path in [('daily', daily_path), ('weekly', weekly_path),
+                      ('monthly', monthly_path), ('cex_flow', cex_flow_path)]:
         if not path.exists():
             continue
         try:
@@ -475,12 +477,46 @@ def _load_dune_starknet():
     return out
 
 
-def _format_dune_starknet_block():
-    """STARKNET NETWORK block из Dune. Показывает 7d trends + FUND impact hint."""
+def _format_dune_starknet_block(compact=False):
+    """STARKNET NETWORK block из Dune.
+    compact=True — 3-4 строки для LIQ.
+    compact=False — full детальный для digest / RUN.
+    """
     data = _load_dune_starknet()
-    if not data['daily'] and not data['weekly']:
+    if not data['daily'] and not data['weekly'] and not data.get('monthly'):
         return ""
 
+    def _r(row, idx):
+        if isinstance(row, list) and len(row) > idx:
+            return row[idx]
+        return None
+
+    # === COMPACT === (для LIQ)
+    if compact:
+        text = "<b>🌐 STARKNET (Dune):</b>\n"
+        if data['daily'] and len(data['daily']) >= 7:
+            rows = data['daily']
+            latest_txs = _r(rows[0], 1) or 0
+            wow_txs = _r(rows[6], 1) or 1
+            txs_wow = (latest_txs / wow_txs - 1) * 100 if wow_txs else 0
+            latest_new = _r(rows[0], 6) or 0
+            wow_new = _r(rows[6], 6) or 1
+            new_wow = (latest_new / wow_new - 1) * 100 if wow_new else 0
+            _warn_a = ' ⚠' if txs_wow <= -20 else ''
+            _warn_n = ' ⚠' if new_wow <= -20 else ''
+            text += f"  Activity: <code>{int(latest_txs)/1000:.0f}K</code>/day · WoW <code>{txs_wow:+.0f}%</code>{_warn_a}\n"
+            text += f"  Adoption: <code>{int(latest_new)}</code>/day · WoW <code>{new_wow:+.0f}%</code>{_warn_n}\n"
+        if data.get('monthly') and len(data['monthly']) > 0:
+            latest_m = data['monthly'][0]
+            m_signal = _r(latest_m, 6) or 'UNKNOWN'
+            m_pct = _r(latest_m, 5) or 0
+            bearish_30d = sum(1 for r in data['monthly'][:30]
+                              if _r(r, 6) == 'BEARISH_BREAKDOWN')
+            text += f"  Monthly: <code>{_safe(str(m_signal))}</code> ({bearish_30d}/30d bearish, {m_pct:+.0f}% от peak)\n"
+        text += "\n"
+        return text
+
+    # === FULL === (existing detailed rendering)
     text = "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>🌐 STARKNET NETWORK</b> <i>(7d, Dune)</i>\n"
     text += "━━━━━━━━━━━━━━━━━━━\n"
@@ -600,6 +636,34 @@ def _format_dune_starknet_block():
         except Exception:
             pass
         text += "\n"
+
+    # CEX FLOW ETH-side (Dune) — ERC-20 STRK wrapper
+    if data.get('cex_flow'):
+        def _cex_r(row, idx):
+            if isinstance(row, list) and len(row) > idx:
+                return row[idx]
+            return None
+        rows = data['cex_flow']
+        # Columns: day, inflow_strk, outflow_strk, net_flow_strk
+        recent = rows[:7] if len(rows) >= 7 else rows
+        try:
+            total_in = sum(float(_cex_r(r, 1) or 0) for r in recent)
+            total_out = sum(float(_cex_r(r, 2) or 0) for r in recent)
+            total_net = sum(float(_cex_r(r, 3) or 0) for r in recent)
+
+            text += "<b>CEX flow ETH-side (Dune):</b>\n"
+            text += f"  7d inflow:   <code>{total_in/1e6:+.1f}M</code> STRK\n"
+            text += f"  7d outflow:  <code>{total_out/1e6:+.1f}M</code> STRK\n"
+            text += f"  7d net:      <code>{total_net/1e6:+.2f}M</code> STRK "
+            if total_net < -1_000_000:
+                text += "<i>(accumulation)</i>\n"
+            elif total_net > 1_000_000:
+                text += "<i>(distribution)</i>\n"
+            else:
+                text += "<i>(neutral)</i>\n"
+            text += "\n"
+        except Exception:
+            pass
 
     # Impact hint для FUND horizon
     if data['daily']:
@@ -2102,6 +2166,9 @@ def format_liq():
     _dune_liq = _load_dune_starknet()
     t += _format_current_phase_block(wyk or {}, tech_full, _dune_liq, _squeeze_liq)
 
+    # STARKNET (Dune) compact for LIQ
+    t += _format_dune_starknet_block(compact=True)
+
     # === 3-HORIZON ACTION (ПЕРВЫЙ БЛОК) ===
     _tech_feat = tech_full.get('features') or {}
     _macro_liq = load_json('agent_input.json') or {}
@@ -2288,6 +2355,9 @@ def format_run_telegram():
     # MSG 2/3: STRUCTURE + MICRO + SWING + fact grid
     # =========================
     m2 = f"<b>📊 RUN · 2/3</b> · <i>{ts}</i>\n\n"
+
+    # STARKNET NETWORK (Dune) — full section в MSG2 для context
+    m2 += _format_dune_starknet_block(compact=False)
 
     # STRUCTURE — берём BTC из composite (авторитетно), regime из tech (computed)
     btc_ctx = _get_btc_context(composite, macro)
