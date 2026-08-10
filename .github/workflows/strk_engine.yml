@@ -61,7 +61,7 @@ jobs:
           fi
 
       # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
-      # Работает на free tier: cache 20h для daily, cache 6d для weekly.
+      # Cache 20h daily / 6d weekly — не расходуем executions без нужды.
       # Тихо skipped если DUNE_API_KEY не установлен.
       - name: Dune collector · Starknet stats
         env:
