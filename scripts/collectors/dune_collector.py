@@ -42,13 +42,15 @@ CACHE_DIR = SCRIPT_DIR / 'data' / 'cache'
 DAILY_CACHE = CACHE_DIR / 'dune_starknet.json'
 WEEKLY_CACHE = CACHE_DIR / 'dune_starknet_weekly.json'
 MONTHLY_CACHE = CACHE_DIR / 'dune_starknet_monthly.json'
+CEX_FLOW_CACHE = CACHE_DIR / 'dune_cex_flow.json'
 
 DUNE_API_BASE = 'https://api.dune.com/api/v1'
-CACHE_MAX_AGE_HOURS_DAILY = 20   # обновляем 1 раз/день = 30/мес
-CACHE_MAX_AGE_HOURS_WEEKLY = 24 * 6  # обновляем ~1 раз/неделю = 4/мес
-CACHE_MAX_AGE_HOURS_MONTHLY = 24 * 5  # обновляем ~1 раз/5 дней = 6/мес
+CACHE_MAX_AGE_HOURS_DAILY = 20   # ~30/мес
+CACHE_MAX_AGE_HOURS_WEEKLY = 24 * 6  # ~5/мес
+CACHE_MAX_AGE_HOURS_MONTHLY = 24 * 5  # ~6/мес
+CACHE_MAX_AGE_HOURS_CEX_FLOW = 24  # 1 раз/день = 30/мес
 POLL_INTERVAL_SEC = 3
-POLL_MAX_ATTEMPTS = 100  # 5 минут максимум ожидания
+POLL_MAX_ATTEMPTS = 100
 
 
 def dune_request(path, method='GET', body=None, api_key=''):
@@ -173,8 +175,9 @@ def main():
     query_daily = os.environ.get('DUNE_QUERY_ID_DAILY', '').strip()
     query_weekly = os.environ.get('DUNE_QUERY_ID_WEEKLY', '').strip()
     query_monthly = os.environ.get('DUNE_QUERY_ID_MONTHLY', '').strip()
+    query_cex_flow = os.environ.get('DUNE_QUERY_ID_CEX_FLOW', '').strip()
 
-    if not query_daily and not query_weekly and not query_monthly:
+    if not query_daily and not query_weekly and not query_monthly and not query_cex_flow:
         logger.error("No DUNE_QUERY_ID_* configured — skipping")
         return 0
 
@@ -198,6 +201,13 @@ def main():
             fetch_dune_query(query_monthly, api_key, MONTHLY_CACHE, CACHE_MAX_AGE_HOURS_MONTHLY)
         except Exception as e:
             logger.error(f"Monthly query failed: {e}")
+
+    if query_cex_flow:
+        try:
+            logger.info(f"\n=== CEX flow query {query_cex_flow} ===")
+            fetch_dune_query(query_cex_flow, api_key, CEX_FLOW_CACHE, CACHE_MAX_AGE_HOURS_CEX_FLOW)
+        except Exception as e:
+            logger.error(f"CEX flow query failed: {e}")
 
     logger.info("=" * 60)
     logger.info("Dune collector complete")
