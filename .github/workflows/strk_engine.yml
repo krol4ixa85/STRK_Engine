@@ -68,6 +68,7 @@ jobs:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_DAILY: ${{ secrets.DUNE_QUERY_ID_DAILY }}
           DUNE_QUERY_ID_WEEKLY: ${{ secrets.DUNE_QUERY_ID_WEEKLY }}
+          DUNE_QUERY_ID_MONTHLY: ${{ secrets.DUNE_QUERY_ID_MONTHLY }}
         run: python3 scripts/collectors/dune_collector.py || true
 
       # ============================================================
