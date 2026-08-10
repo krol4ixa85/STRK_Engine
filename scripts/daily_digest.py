@@ -248,18 +248,15 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
         sqz['emoji'] = '🟢'
         sqz['verdict'] = 'ЛОНГ НА ОТСКОКЕ'
         sqz['data'] = f'RSI {rsi:.0f}, CVD замедляется, funding {fund_apr:.2f}%'
-        # Baseline calibration: avg daily range 10.5% → stop 15% (1.5×), take 30% (3×) R/R 2:1
-        _stop = price * 0.85 if price else 0
-        _take = price * 1.30 if price else 0
-        sqz['action'] = f'Long, stop ${_stop:.4f} (-15%), take ${_take:.4f} (+30%)'
+        _stop = price * 0.98 if price else 0
+        _take = price * 1.05 if price else 0
+        sqz['action'] = f'Long, stop ${_stop:.4f} (-2%), take ${_take:.4f} (+5%)'
     elif rsi_overbought and fund_crowded_long:
         sqz['emoji'] = '🔴'
         sqz['verdict'] = 'КОРОТКИЙ СКВИЗ ВНИЗ'
         sqz['data'] = f'RSI {rsi:.0f} overbought, funding {fund_apr:.2f}% (crowded long)'
-        # Baseline calibration: short take -30% (3× daily range), stop +15% над entry
-        _take = price * 0.70 if price else 0
-        _stop = price * 1.15 if price else 0
-        sqz['action'] = f'Short, take ${_take:.4f} (-30%), stop ${_stop:.4f} (+15%)'
+        _take = price * 0.97 if price else 0
+        sqz['action'] = f'Short, take ${_take:.4f} (-3%), stop над локальным high'
     else:
         sqz['emoji'] = '⚪'
         sqz['verdict'] = 'ШУМ'
@@ -447,6 +444,147 @@ def _format_shadow_voters_block(compact=False):
 
     text += f"\n<i>N closed forecasts: {closed} · Wire-in требует N≥15 + precision≥55%</i>\n"
     text += "<i>💡 Voters ТОЛЬКО shadow — не влияют на current DECISION.</i>\n\n"
+    return text
+
+
+def _load_dune_starknet():
+    """Load daily + weekly Dune data. Returns dict with parsed rows or empty."""
+    daily_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet.json'
+    weekly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_weekly.json'
+    out = {'daily': None, 'weekly': None, 'age_h': None}
+
+    for key, path in [('daily', daily_path), ('weekly', weekly_path)]:
+        if not path.exists():
+            continue
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            rows = data.get('rows', [])
+            if not rows:
+                continue
+            out[key] = rows
+            # age только для daily
+            if key == 'daily':
+                try:
+                    ts = datetime.fromisoformat(data.get('collected_at', ''))
+                    out['age_h'] = (datetime.now(timezone.utc) - ts).total_seconds() / 3600
+                except Exception:
+                    pass
+        except Exception:
+            continue
+    return out
+
+
+def _format_dune_starknet_block():
+    """STARKNET NETWORK block из Dune. Показывает 7d trends + FUND impact hint."""
+    data = _load_dune_starknet()
+    if not data['daily'] and not data['weekly']:
+        return ""
+
+    text = "━━━━━━━━━━━━━━━━━━━\n"
+    text += "<b>🌐 STARKNET NETWORK</b> <i>(7d, Dune)</i>\n"
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+
+    # DAILY — network activity
+    if data['daily']:
+        rows = data['daily']
+        # Rows отсортированы DESC (сегодня первый). Берём:
+        latest = rows[0] if rows else {}
+        # Row может быть list (positional) или dict (named)
+        def _row_val(row, key, idx):
+            if isinstance(row, dict):
+                return row.get(key)
+            elif isinstance(row, list) and len(row) > idx:
+                return row[idx]
+            return None
+
+        # Columns: day, total_txs, active_senders, avg_fee_wei, total_fees_wei, invokes, new_accounts, l1_messages
+        latest_txs = _row_val(latest, 'total_txs', 1) or 0
+        latest_users = _row_val(latest, 'active_senders', 2) or 0
+        latest_new = _row_val(latest, 'new_accounts', 6) or 0
+        latest_l1 = _row_val(latest, 'l1_messages', 7) or 0
+        latest_fee = _row_val(latest, 'avg_fee_wei', 3) or 0
+
+        # WoW = latest vs 7 days ago (last row) — если есть 7d
+        if len(rows) >= 7:
+            wow_row = rows[6]
+            wow_txs = _row_val(wow_row, 'total_txs', 1) or 1
+            wow_users = _row_val(wow_row, 'active_senders', 2) or 1
+            wow_new = _row_val(wow_row, 'new_accounts', 6) or 1
+
+            txs_wow_pct = (latest_txs / wow_txs - 1) * 100 if wow_txs else 0
+            users_wow_pct = (latest_users / wow_users - 1) * 100 if wow_users else 0
+            new_wow_pct = (latest_new / wow_new - 1) * 100 if wow_new else 0
+        else:
+            txs_wow_pct = users_wow_pct = new_wow_pct = None
+
+        # avg fee — из wei (fri в v3+) → STRK (10^18 fri = 1 STRK)
+        try:
+            fee_strk = float(latest_fee) / 1e18
+        except Exception:
+            fee_strk = 0
+
+        def _wow_str(pct):
+            if pct is None:
+                return ''
+            arrow = '↑' if pct > 0 else ('↓' if pct < 0 else '=')
+            warn = ' ⚠' if pct <= -20 else ''
+            return f' · WoW {arrow}{pct:+.0f}%{warn}'
+
+        text += f"Activity:      <code>{int(latest_txs)/1000:.0f}K</code> txs/day{_wow_str(txs_wow_pct)}\n"
+        text += f"Active users:  <code>{int(latest_users):,}</code>/day{_wow_str(users_wow_pct)}\n"
+        text += f"New accounts:  <code>{int(latest_new)}</code>/day{_wow_str(new_wow_pct)}\n"
+        text += f"StarkGate L1:  <code>{int(latest_l1)}</code> msg/day\n"
+        text += f"Avg fee:       <code>{fee_strk:.3f}</code> STRK\n\n"
+
+    # WEEKLY — STRK transfers
+    if data['weekly']:
+        rows = data['weekly']
+        latest = rows[0] if rows else {}
+        def _row_val_w(row, key, idx):
+            if isinstance(row, dict):
+                return row.get(key)
+            elif isinstance(row, list) and len(row) > idx:
+                return row[idx]
+            return None
+
+        w_transfers = _row_val_w(latest, 'transfers', 1) or 0
+        w_total_vol = _row_val_w(latest, 'total_volume', 4) or 0
+        w_median = _row_val_w(latest, 'median', 6) or 0
+        w_max = _row_val_w(latest, 'max_amount', 7) or 0
+
+        text += "<b>STRK transfers:</b>\n"
+        try:
+            text += f"  Volume:      <code>{float(w_total_vol)/1e6:.0f}M</code> STRK/day\n"
+            text += f"  Median:      <code>{float(w_median):.2f}</code> STRK <i>(retail)</i>\n"
+            text += f"  Max single:  <code>{float(w_max)/1e6:.1f}M</code> STRK <i>(whale)</i>\n"
+        except Exception:
+            pass
+        text += "\n"
+
+    # Impact hint для FUND horizon
+    if data['daily']:
+        rows = data['daily']
+        if len(rows) >= 7:
+            # signal — если txs/users/new резко падают → bearish
+            def _row_val_s(row, key, idx):
+                if isinstance(row, dict):
+                    return row.get(key)
+                elif isinstance(row, list) and len(row) > idx:
+                    return row[idx]
+                return None
+            latest_new = _row_val_s(rows[0], 'new_accounts', 6) or 1
+            wow_new = _row_val_s(rows[6], 'new_accounts', 6) or 1
+            new_wow = latest_new / wow_new - 1 if wow_new else 0
+
+            if new_wow <= -0.30:
+                text += "<i>⚠ Ecosystem cooling — adoption -30%+ WoW. FUND bearish context.</i>\n"
+            elif new_wow >= 0.15:
+                text += "<i>✓ Ecosystem growing — adoption +15%+ WoW. FUND bullish context.</i>\n"
+            else:
+                text += "<i>Ecosystem neutral — стабильный adoption.</i>\n"
+
+    text += "\n"
     return text
 
 
@@ -1218,7 +1356,10 @@ def format_digest():
     else:
         text += "⚪ <b>DECISION: CONFLUENCE_GATE недоступен</b>\n"
         text += "→ STAY FLAT до восстановления пайплайна.\n\n"
-    
+
+    # === STARKNET NETWORK (Dune) === ecosystem health FUND context
+    text += _format_dune_starknet_block()
+
     # === WHALE 6h === (агрегат whale событий вместо потока alerts)
     text += "━━━━━━━━━━━━━━━━━━━\n"
     text += "<b>🐋 WHALE 6h</b>\n"
