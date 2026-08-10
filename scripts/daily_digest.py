@@ -448,12 +448,13 @@ def _format_shadow_voters_block(compact=False):
 
 
 def _load_dune_starknet():
-    """Load daily + weekly Dune data. Returns dict with parsed rows or empty."""
+    """Load daily + weekly + monthly Dune data. Returns dict with parsed rows or empty."""
     daily_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet.json'
     weekly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_weekly.json'
-    out = {'daily': None, 'weekly': None, 'age_h': None}
+    monthly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_monthly.json'
+    out = {'daily': None, 'weekly': None, 'monthly': None, 'age_h': None}
 
-    for key, path in [('daily', daily_path), ('weekly', weekly_path)]:
+    for key, path in [('daily', daily_path), ('weekly', weekly_path), ('monthly', monthly_path)]:
         if not path.exists():
             continue
         try:
@@ -463,7 +464,6 @@ def _load_dune_starknet():
             if not rows:
                 continue
             out[key] = rows
-            # age только для daily
             if key == 'daily':
                 try:
                     ts = datetime.fromisoformat(data.get('collected_at', ''))
@@ -562,11 +562,49 @@ def _format_dune_starknet_block():
             pass
         text += "\n"
 
+    # MONTHLY view — structural signal (embedded SQL classification)
+    if data['monthly']:
+        rows = data['monthly']
+        latest_m = rows[0] if rows else []
+
+        def _m_val(row, key, idx):
+            if isinstance(row, dict):
+                return row.get(key)
+            elif isinstance(row, list) and len(row) > idx:
+                return row[idx]
+            return None
+
+        # Columns positional: day, current_txs, txs_7d_avg, txs_30d_max,
+        #                    pct_from_7d_avg, pct_from_30d_max, signal, score1, score2, verdict
+        m_current = _m_val(latest_m, 'current_txs', 1) or 0
+        m_30d_max = _m_val(latest_m, 'txs_30d_max', 3) or 1
+        m_pct_from_max = _m_val(latest_m, 'pct_from_30d_max', 5) or 0
+        m_signal = _m_val(latest_m, 'signal', 6) or 'UNKNOWN'
+        m_verdict = _m_val(latest_m, 'verdict', 9) or ''
+
+        # Streak — сколько дней подряд одинаковый signal
+        streak = 1
+        for i in range(1, min(len(rows), 30)):
+            prev_signal = _m_val(rows[i], 'signal', 6)
+            if prev_signal == m_signal:
+                streak += 1
+            else:
+                break
+
+        text += "<b>Monthly view</b> <i>(SQL-classified)</i>:\n"
+        text += f"  Signal:  <code>{_safe(str(m_signal))}</code> ({streak}d streak)\n"
+        if m_verdict:
+            text += f"  Verdict: {_safe(str(m_verdict))}\n"
+        try:
+            text += f"  From 30d peak: <code>{float(m_pct_from_max):+.1f}%</code>\n"
+        except Exception:
+            pass
+        text += "\n"
+
     # Impact hint для FUND horizon
     if data['daily']:
         rows = data['daily']
         if len(rows) >= 7:
-            # signal — если txs/users/new резко падают → bearish
             def _row_val_s(row, key, idx):
                 if isinstance(row, dict):
                     return row.get(key)
