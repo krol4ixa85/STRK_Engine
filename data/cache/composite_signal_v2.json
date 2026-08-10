@@ -1,16 +1,16 @@
 {
-  "as_of": "2026-08-10T18:03:59.015036+00:00",
+  "as_of": "2026-08-10T21:45:46.198467+00:00",
   "signal": "BEARISH_STRONG",
   "confidence": "HIGH (multiple modules aligned)",
   "scoring": {
     "signal": "BEARISH_STRONG",
     "confidence": "HIGH (multiple modules aligned)",
     "votes": {
-      "bullish": 0,
+      "bullish": 1,
       "bearish": 4,
       "neutral": 2
     },
-    "bullish_share": 0.0,
+    "bullish_share": 0.2,
     "breakdown": [
       [
         "cross_window",
@@ -39,8 +39,8 @@
       ],
       [
         "whales_self",
-        "MIXED",
-        "weight 0"
+        "BULLISH_ACTIVITY",
+        "weight 1"
       ],
       [
         "discord_nansen",
@@ -58,40 +58,40 @@
     "distribution": {
       "signal": "NEUTRAL",
       "counts": {
-        "MICRO": 36,
+        "MICRO": 34,
         "SMALL": 1,
         "MEDIUM": 11,
         "LARGE": 2
       },
       "totals": {
-        "MICRO": 7885955.21,
+        "MICRO": 7621050.51,
         "SMALL": 865027.59,
-        "MEDIUM": 31239260.49,
-        "LARGE": 33208083.5
+        "MEDIUM": 31258238.43,
+        "LARGE": 33175353.33
       },
-      "ratio_smallamt_over_largeamt": 0.2635,
-      "total_transfers_analyzed": 5657,
-      "net_receivers_count": 50
+      "ratio_smallamt_over_largeamt": 0.2558,
+      "total_transfers_analyzed": 5684,
+      "net_receivers_count": 48
     },
     "btc_context": {
-      "btc_price": 63957.3,
-      "dist200_pct": -8.57,
-      "slope30_pct": -0.35,
-      "slope7_pct": -0.25,
-      "acceleration": -0.17,
+      "btc_price": 64034.3,
+      "dist200_pct": -8.46,
+      "slope30_pct": -0.23,
+      "slope7_pct": -0.13,
+      "acceleration": -0.08,
       "cycle": "DOWN"
     },
     "funding": {
       "signal": "NEUTRAL",
-      "reason": "current +5.5% ann; 3d neg fundings: 17%; 7d min: -9.7%; funding in normal range",
+      "reason": "current +5.5% ann; 3d neg fundings: 11%; 7d min: -9.7%; funding in normal range",
       "funding_metrics": {
-        "as_of": "2026-08-10T18:03:47.773298+00:00",
+        "as_of": "2026-08-10T21:45:36.905062+00:00",
         "source": "OKX STRK-USDT-SWAP",
         "current_annualized_pct": 5.475,
-        "avg_3d_pct": 3.594,
-        "avg_7d_pct": 1.76,
+        "avg_3d_pct": 3.966,
+        "avg_7d_pct": 1.845,
         "avg_14d_pct": 0.957,
-        "pct_negative_3d": 16.7,
+        "pct_negative_3d": 11.1,
         "pct_negative_7d": 26.2,
         "min_ann_7d": -9.71,
         "max_ann_7d": 5.48,
@@ -132,24 +132,16 @@
         "days_ago": 117
       },
       "days_to_final_unlock": 247,
-      "as_of": "2026-08-10T18:03:48.262379+00:00"
+      "as_of": "2026-08-10T21:45:37.264524+00:00"
     },
     "whales": {
-      "signal": "MIXED_ACTIVITY",
-      "events_24h": 15,
+      "signal": "BULLISH_ACTIVITY",
+      "events_24h": 13,
       "largest_event_strk": 16000000.0,
-      "total_amount_24h": 36502087.08387678,
-      "bearish_amount": 2988207.69820447,
+      "total_amount_24h": 32502087.08387678,
+      "bearish_amount": 988207.69820447,
       "bullish_amount": 2754583.38714831,
       "by_class": {
-        "UNKNOWN_LARGE": {
-          "count": 5,
-          "total": 20276094.1
-        },
-        "CEX_DEPOSIT": {
-          "count": 2,
-          "total": 2988207.69820447
-        },
         "CEX_WITHDRAWAL": {
           "count": 3,
           "total": 2754583.38714831
@@ -157,6 +149,14 @@
         "WATCHLIST_OUTFLOW": {
           "count": 3,
           "total": 2961352.96736595
+        },
+        "CEX_DEPOSIT": {
+          "count": 1,
+          "total": 988207.69820447
+        },
+        "UNKNOWN_LARGE": {
+          "count": 4,
+          "total": 18276094.1
         },
         "WATCHLIST_INFLOW": {
           "count": 2,
