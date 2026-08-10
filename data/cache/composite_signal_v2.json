@@ -1,16 +1,16 @@
 {
-  "as_of": "2026-08-10T21:45:46.198467+00:00",
+  "as_of": "2026-08-10T22:20:04.142504+00:00",
   "signal": "BEARISH_STRONG",
   "confidence": "HIGH (multiple modules aligned)",
   "scoring": {
     "signal": "BEARISH_STRONG",
     "confidence": "HIGH (multiple modules aligned)",
     "votes": {
-      "bullish": 1,
+      "bullish": 0,
       "bearish": 4,
       "neutral": 2
     },
-    "bullish_share": 0.2,
+    "bullish_share": 0.0,
     "breakdown": [
       [
         "cross_window",
@@ -39,8 +39,8 @@
       ],
       [
         "whales_self",
-        "BULLISH_ACTIVITY",
-        "weight 1"
+        "MIXED",
+        "weight 0"
       ],
       [
         "discord_nansen",
@@ -70,22 +70,22 @@
         "LARGE": 33175353.33
       },
       "ratio_smallamt_over_largeamt": 0.2558,
-      "total_transfers_analyzed": 5684,
+      "total_transfers_analyzed": 5685,
       "net_receivers_count": 48
     },
     "btc_context": {
-      "btc_price": 64034.3,
-      "dist200_pct": -8.46,
-      "slope30_pct": -0.23,
-      "slope7_pct": -0.13,
-      "acceleration": -0.08,
+      "btc_price": 64059.4,
+      "dist200_pct": -8.42,
+      "slope30_pct": -0.19,
+      "slope7_pct": -0.1,
+      "acceleration": -0.05,
       "cycle": "DOWN"
     },
     "funding": {
       "signal": "NEUTRAL",
       "reason": "current +5.5% ann; 3d neg fundings: 11%; 7d min: -9.7%; funding in normal range",
       "funding_metrics": {
-        "as_of": "2026-08-10T21:45:36.905062+00:00",
+        "as_of": "2026-08-10T22:19:56.402603+00:00",
         "source": "OKX STRK-USDT-SWAP",
         "current_annualized_pct": 5.475,
         "avg_3d_pct": 3.966,
@@ -132,20 +132,16 @@
         "days_ago": 117
       },
       "days_to_final_unlock": 247,
-      "as_of": "2026-08-10T21:45:37.264524+00:00"
+      "as_of": "2026-08-10T22:19:56.667156+00:00"
     },
     "whales": {
-      "signal": "BULLISH_ACTIVITY",
-      "events_24h": 13,
+      "signal": "MIXED_ACTIVITY",
+      "events_24h": 12,
       "largest_event_strk": 16000000.0,
-      "total_amount_24h": 32502087.08387678,
+      "total_amount_24h": 31502109.08387678,
       "bearish_amount": 988207.69820447,
-      "bullish_amount": 2754583.38714831,
+      "bullish_amount": 1754605.38714831,
       "by_class": {
-        "CEX_WITHDRAWAL": {
-          "count": 3,
-          "total": 2754583.38714831
-        },
         "WATCHLIST_OUTFLOW": {
           "count": 3,
           "total": 2961352.96736595
@@ -153,6 +149,10 @@
         "CEX_DEPOSIT": {
           "count": 1,
           "total": 988207.69820447
+        },
+        "CEX_WITHDRAWAL": {
+          "count": 2,
+          "total": 1754605.38714831
         },
         "UNKNOWN_LARGE": {
           "count": 4,
