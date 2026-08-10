@@ -1,0 +1,73 @@
+{
+  "as_of": "2026-08-10T08:15:36.461341+00:00",
+  "signal": "RALLY_MEDIUM",
+  "confidence": "MEDIUM",
+  "summary": "Partial rally signals (4/9+)",
+  "action": "STAY FLAT",
+  "rally_score": 4,
+  "crash_score": 2,
+  "checks": {
+    "on_chain_ok": true,
+    "price_up_3d": false,
+    "accelerating": false,
+    "vol_expanding": false,
+    "not_distributing_cex": true,
+    "events_supportive": true,
+    "strong_off_chain_bull": true
+  },
+  "inputs_used": {
+    "wyckoff_phase": "ACCUMULATION",
+    "technical_signal": "NEUTRAL",
+    "slope_3d_pct": -1.99,
+    "slope_accel_pct": -3.69,
+    "vol_ratio_3d": 0.96,
+    "rsi": 48.02,
+    "pct_from_high": -22.25,
+    "pct_from_low": 7.68,
+    "short_crowded": false,
+    "long_crowded": false,
+    "cex_signal": "NEUTRAL",
+    "event_signal": "POSITIVE_CATALYST",
+    "event_bullish": 8,
+    "event_bearish": 2,
+    "liquidity_shift_direction": "STABLE",
+    "bridge_activity_signal": "LOW_ACTIVITY",
+    "cross_token_alpha_7d_pct": -1.77
+  },
+  "voter_wire_v1": {
+    "status": "LIVE_BONUS",
+    "note": "Пороги HYPOTHESIS. Параллельно пишутся в shadow_votes.jsonl.",
+    "bonuses_active": {
+      "liquidity_shift": true,
+      "bridge_activity": true,
+      "cross_token": false
+    },
+    "thresholds": {
+      "liquidity_shift_rally_values": [
+        "LOCKING_UP",
+        "ROTATING_TO_STAKE",
+        "STAKE_INFLOW",
+        "LP_ADDING"
+      ],
+      "liquidity_shift_crash_values": [
+        "EXTRACTING",
+        "ROTATING_TO_DEX",
+        "STAKE_OUTFLOW",
+        "LP_REMOVING"
+      ],
+      "bridge_rally_values": [
+        "NET_INFLOW",
+        "STRONG_INFLOW",
+        "HIGH_ACTIVITY_INFLOW"
+      ],
+      "bridge_crash_values": [
+        "NET_OUTFLOW",
+        "STRONG_OUTFLOW",
+        "DISTRIBUTION"
+      ],
+      "cross_token_rally_pct_gte": 5.0,
+      "cross_token_crash_pct_lte": -5.0
+    }
+  },
+  "philosophy": "HIGH signal = 5+ checks pass across ON-CHAIN + TECHNICAL + OFF-CHAIN + LIQUIDITY. Trades recall for precision."
+}

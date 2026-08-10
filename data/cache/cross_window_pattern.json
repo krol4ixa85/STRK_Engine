@@ -1,0 +1,99 @@
+{
+  "as_of": "2026-08-10T08:14:53.439576+00:00",
+  "dist_7d": {
+    "label": "7d",
+    "total_transfers": 2581,
+    "unique_recipients": 693,
+    "counts": {
+      "MICRO": 400,
+      "SMALL": 155,
+      "MEDIUM": 89,
+      "LARGE": 49
+    },
+    "amounts_strk": {
+      "MICRO": 837652.91,
+      "SMALL": 5369183.76,
+      "MEDIUM": 32887830.22,
+      "LARGE": 401456290.55
+    },
+    "ratio_smallamt_over_largeamt": 0.0155,
+    "large_receiver_count": 49,
+    "total_distributed_strk": 440550957.44
+  },
+  "dist_14d": {
+    "label": "14d",
+    "total_transfers": 5520,
+    "unique_recipients": 1230,
+    "counts": {
+      "MICRO": 725,
+      "SMALL": 288,
+      "MEDIUM": 138,
+      "LARGE": 79
+    },
+    "amounts_strk": {
+      "MICRO": 1683890.08,
+      "SMALL": 9679780.89,
+      "MEDIUM": 50868553.71,
+      "LARGE": 1282403237.23
+    },
+    "ratio_smallamt_over_largeamt": 0.0089,
+    "large_receiver_count": 79,
+    "total_distributed_strk": 1344635461.92
+  },
+  "dist_30d": {
+    "label": "30d",
+    "total_transfers": 11073,
+    "unique_recipients": 2399,
+    "counts": {
+      "MICRO": 1435,
+      "SMALL": 538,
+      "MEDIUM": 253,
+      "LARGE": 173
+    },
+    "amounts_strk": {
+      "MICRO": 3107132.94,
+      "SMALL": 18469941.88,
+      "MEDIUM": 86364675.54,
+      "LARGE": 2293068957.06
+    },
+    "ratio_smallamt_over_largeamt": 0.0094,
+    "large_receiver_count": 173,
+    "total_distributed_strk": 2401010707.43
+  },
+  "watchlist_growth": {
+    "accepted_7d": 0,
+    "rejected_7d": 0,
+    "accepted_14d": 0,
+    "accepted_30d": 0
+  },
+  "watchlist_balance": {
+    "watchlist_count": 3,
+    "total_balance_strk": 148072699.12
+  },
+  "patterns_detected": [
+    {
+      "pattern": "DISTRIBUTION_PHASE",
+      "signal": "BEARISH",
+      "confidence": "MEDIUM",
+      "conditions_met": {
+        "many_large_recipients": true,
+        "shape_worsening": true,
+        "long_crowded_or_positive_extreme": false,
+        "btc_down": true
+      },
+      "reason": "79 LARGE recipients 14d, ratio 0.009 declining, funding +1.8% ann. Active distribution."
+    }
+  ],
+  "primary_pattern": {
+    "pattern": "DISTRIBUTION_PHASE",
+    "signal": "BEARISH",
+    "confidence": "MEDIUM",
+    "conditions_met": {
+      "many_large_recipients": true,
+      "shape_worsening": true,
+      "long_crowded_or_positive_extreme": false,
+      "btc_down": true
+    },
+    "reason": "79 LARGE recipients 14d, ratio 0.009 declining, funding +1.8% ann. Active distribution."
+  }
+}

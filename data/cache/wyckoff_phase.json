@@ -1,0 +1,67 @@
+{
+  "as_of": "2026-08-10T08:15:02.486605+00:00",
+  "phase": "ACCUMULATION",
+  "sub_phase": "Phase B · building base",
+  "confidence": "LOW",
+  "score": 2,
+  "all_scores": {
+    "ACCUMULATION": 2,
+    "MARKUP": 0,
+    "DISTRIBUTION": 1,
+    "MARKDOWN": 2
+  },
+  "reasons": [
+    "few LARGE receivers (2)"
+  ],
+  "technical": {
+    "price_now": 0.0246,
+    "high_7d": 0.0265,
+    "low_7d": 0.0229,
+    "high_14d": 0.0317,
+    "low_14d": 0.0229,
+    "resistance_zones": [
+      0.0265,
+      0.0261,
+      0.0259
+    ],
+    "support_zones": [
+      0.0229,
+      0.0245,
+      0.0246
+    ],
+    "avg_vol_30": 130970.43,
+    "last_vol": 49562.25,
+    "vol_ratio_last": 0.38,
+    "vol_trend_10": 1.11,
+    "structure": "DOWNTREND",
+    "compression": 0.54,
+    "pct_from_high_14d": -22.38,
+    "pct_from_low_14d": 7.51
+  },
+  "triggers": {
+    "to_next_phase": [
+      [
+        "Break ABOVE $0.0265 on volume",
+        false
+      ],
+      [
+        "Distribution ratio holds above 0.30",
+        false
+      ],
+      [
+        "BTC breaks up-cycle",
+        false
+      ],
+      [
+        "Volume expansion up 2+ candles",
+        false
+      ]
+    ],
+    "exit_signals": [
+      "If flat: consider LONG on break above $0.0265 with stop at $0.0229",
+      "Position sizing: small (accumulation not confirmed until markup)"
+    ],
+    "next_phase": "MARKUP"
+  },
+  "layman_explanation": "Фаза НАКОПЛЕНИЯ. Крупные игроки тихо покупают токены у розницы. Цена в боковике, объём падает. Это до-стадия роста. Обычно длится 2-8 недель. Ничего покупать пока не время — жди пробоя вверх с объёмом."
+}
