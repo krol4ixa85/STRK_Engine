@@ -114,18 +114,59 @@ def format_alert(state, transition_type):
             text += f"  · {cat['category']} {cat['name']}: {cat['active_count']}/3\n"
         text += "\n"
 
-    # Interpretation footer
+    # Interpretation footer с baseline-calibrated targets
+    # Baseline STRK: avg daily range 10.5% · stop 15% (1.5×) · take 30% (3×) R/R 2:1
+    # Пробуем достать current price для конкретных targets
+    current_price = _get_current_price()
+
     if transition_type == 'STRONG':
         text += "<i>💡 Три условия совпали. Squeeze setup самый сильный.</i>\n"
-        text += "<i>💡 Топливо для +5-15% отскока. Timeframe 12-72h.</i>\n"
+        text += "<i>💡 Baseline STRK: avg daily range 10.5%. Топливо для +15-30% отскока.</i>\n"
+        text += "<i>💡 Timeframe: 12-72h.</i>\n\n"
+        if current_price:
+            # Long setup — большинство squeeze долгих
+            entry = current_price
+            stop = current_price * 0.85   # -15%
+            take = current_price * 1.30   # +30%
+            text += "<b>🎯 Suggested Long (baseline-calibrated):</b>\n"
+            text += f"  Entry: <code>${entry:.4f}</code>\n"
+            text += f"  Stop:  <code>${stop:.4f}</code> (-15%)\n"
+            text += f"  Take:  <code>${take:.4f}</code> (+30%, R/R 2:1)\n\n"
         text += "<i>⚠ Setup — не гарантия. Проверь Action в @STRK_GUARDIAN_BOT перед входом.</i>"
     elif transition_type == 'ACTIVE':
         text += "<i>💡 Squeeze setup формируется. Ждём третьей категории.</i>\n"
+        if current_price:
+            text += f"<i>💡 Текущая цена: ${current_price:.4f}. Baseline stop: 15%, take: 30%.</i>\n"
         text += "<i>⚠ Setup — не сигнал. Не входить пока не STRONG или подтверждение DECISION.</i>"
     elif transition_type == 'COOL_DOWN':
         text += "<i>💡 Условия перестали совпадать. Setup рассыпался.</i>"
 
     return text
+
+
+def _get_current_price():
+    """Get current STRK price from any available source (composite/technical/wyckoff)."""
+    for cache_file in ['composite_signal_v2.json', 'technical_momentum.json', 'wyckoff_phase.json']:
+        try:
+            path = CACHE_DIR / cache_file
+            if path.exists():
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                # Common price fields
+                for key in ['price', 'current_price', 'price_usd']:
+                    if key in data:
+                        val = data[key]
+                        if isinstance(val, (int, float)) and 0.01 < val < 100:
+                            return float(val)
+                # Nested paths
+                inputs = data.get('inputs') or {}
+                if 'strk_context' in inputs:
+                    price = inputs['strk_context'].get('price')
+                    if price and 0.01 < price < 100:
+                        return float(price)
+        except Exception:
+            continue
+    return None
 
 
 def send_telegram(text, token, chat_id):
