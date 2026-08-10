@@ -1,18 +1,18 @@
 {
-  "as_of": "2026-08-10T15:03:51.636455+00:00",
+  "as_of": "2026-08-10T16:06:24.347672+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 11,
-      "total_usd": 2506886.0,
-      "net_usd_delta_24h": -349.0,
-      "net_strk_delta_24h": 449302.0,
+      "total_usd": 2501744.0,
+      "net_usd_delta_24h": -586.0,
+      "net_strk_delta_24h": 1107141.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
       "tvl_strk_now": 126814697.0,
-      "tvl_usd_now": 5632340,
+      "tvl_usd_now": 5630333,
       "apy_pct": 6.76,
       "strk_delta_24h": -43993.0,
       "strk_delta_7d": 203560.0,
@@ -21,7 +21,7 @@
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-10T15:03:51.592806+00:00",
+      "as_of": "2026-08-10T16:06:24.311184+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -36,12 +36,12 @@
   },
   "vectors": {
     "stake_delta_24h_strk": -43993.0,
-    "lp_delta_24h_strk": 449302.0,
+    "lp_delta_24h_strk": 1107141.0,
     "stake_signal": "STABLE",
-    "lp_signal": "STABLE"
+    "lp_signal": "POSITIVE"
   },
-  "overall_direction": "STABLE",
-  "layman": "Ликвидность в экосистеме стабильна за 24ч. Нет сильных движений.",
+  "overall_direction": "LP_ADDING",
+  "layman": "Приток в DEX-пулы, стейкинг без движения. Готовится торговая ликвидность.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5

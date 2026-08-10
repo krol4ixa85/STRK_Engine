@@ -1,17 +1,17 @@
 {
   "_meta": {
-    "as_of": "2026-08-10T15:04:07.558748+00:00",
+    "as_of": "2026-08-10T16:06:40.945066+00:00",
     "purpose": "Aggregated data for STRK Engine LIQ/RUN report",
     "philosophy": "Data only. No DECISION. Agent interprets.",
     "strict_no_trading": true
   },
   "flow_map": {
-    "as_of": "2026-08-10T15:04:07.551480+00:00",
+    "as_of": "2026-08-10T16:06:40.938292+00:00",
     "flow_class": "ACCUMULATION_DOMINANT",
     "class_distribution": {
       "BRIDGE_IN": 1,
-      "NO_ACTIVITY": 6,
-      "UNKNOWN": 2,
+      "NO_ACTIVITY": 7,
+      "UNKNOWN": 1,
       "ACCUMULATION": 1,
       "REWARDS": 1
     },
@@ -171,23 +171,20 @@
         }
       },
       {
-        "flow_class": "UNKNOWN",
-        "route": "unclassified pattern",
+        "flow_class": "NO_ACTIVITY",
+        "route": "no transfers in window",
         "reasoning": [
-          "retention = 100.0% (in=4,052,460, out=0)",
-          "cp_in=1, cp_out=0",
-          "no clear pattern matched",
-          "pattern: cp_in=1, cp_out=0, net=+4,052,460, retention=100.0"
+          "0 edges in lookback window"
         ],
-        "confidence": "low",
+        "confidence": "high",
         "seed_name": "discovered_76ec5a0d",
         "chain": "ethereum",
         "metrics": {
-          "edges_count": 1,
-          "vol_in_strk": 4052459.7784,
+          "edges_count": 0,
+          "vol_in_strk": 0,
           "vol_out_strk": 0,
-          "net_flow_strk": 4052459.7784,
-          "cp_in": 1,
+          "net_flow_strk": 0,
+          "cp_in": 0,
           "cp_out": 0
         }
       },
@@ -195,7 +192,7 @@
         "flow_class": "REWARDS",
         "route": "validators(3) → staking_contract → stakers(211)",
         "reasoning": [
-          "retention = 19.6% (in=26,595, out=21,395)",
+          "retention = -337.4% (in=21,350, out=93,392)",
           "cp_in=3, cp_out=211",
           "staking pattern: 3 inflow sources → 211 outflow destinations",
           "classified as REWARDS distribution (not sell pressure)"
@@ -205,9 +202,9 @@
         "chain": "starknet",
         "metrics": {
           "edges_count": 500,
-          "vol_in_strk": 26594.8505,
-          "vol_out_strk": 21394.9808,
-          "net_flow_strk": 5199.8697,
+          "vol_in_strk": 21350.3272,
+          "vol_out_strk": 93392.1062,
+          "net_flow_strk": -72041.779,
           "cp_in": 3,
           "cp_out": 211
         }
@@ -233,8 +230,8 @@
     ],
     "not_checked": false,
     "source_summaries": {
-      "l1_as_of": "2026-08-10T15:04:03.227849+00:00",
-      "l2_as_of": "2026-08-10T15:04:07.497943+00:00"
+      "l1_as_of": "2026-08-10T16:06:36.329435+00:00",
+      "l2_as_of": "2026-08-10T16:06:40.887966+00:00"
     },
     "caveats": [
       "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
@@ -341,13 +338,11 @@
       "seed_name": "discovered_76ec5a0d",
       "seed_address": "0x76ec5a0d3632b2133d9f1980903305b62678fbd3",
       "category": "watchlist",
-      "role": "Auto-discovered PURE_HOLDER pattern",
-      "importance": "medium",
-      "edges_count": 1,
-      "vol_in_strk": 4052459.7784,
+      "edges_count": 0,
+      "vol_in_strk": 0,
       "vol_out_strk": 0,
-      "net_flow_strk": 4052459.7784,
-      "unique_counterparties_in": 1,
+      "net_flow_strk": 0,
+      "unique_counterparties_in": 0,
       "unique_counterparties_out": 0
     }
   ],
@@ -359,9 +354,9 @@
       "role": "Starknet staking contract",
       "importance": "critical",
       "edges_count": 500,
-      "vol_in_strk": 26594.8505,
-      "vol_out_strk": 21394.9808,
-      "net_flow_strk": 5199.8697,
+      "vol_in_strk": 21350.3272,
+      "vol_out_strk": 93392.1062,
+      "net_flow_strk": -72041.779,
       "unique_counterparties_in": 3,
       "unique_counterparties_out": 211
     },
