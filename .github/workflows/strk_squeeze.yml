@@ -1,0 +1,120 @@
+name: STRK Squeeze Fast Scanner
+
+# Быстрый workflow специально для squeeze module.
+# Каждые 30 минут обновляет critical fast collectors (funding + technical + cvd)
+# и запускает squeeze_detector + squeeze_notifier + dynamic_exit_signals.
+#
+# Медленные модули (cohort_tracker, cex_flow) НЕ запускаются здесь —
+# используют stale data от hourly main workflow (30-min старая версия OK).
+#
+# Alerts идут в @strk_dynamic3_bot (SQUEEZE_BOT_TOKEN).
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # каждые 30 минут (0 и 30 минут каждого часа)
+  workflow_dispatch:
+
+env:
+  # API keys для fast collectors (funding, technical) — публичные API, no auth
+  # Но передаём чтобы если collector fallback на privileged endpoint работал:
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  SQUEEZE_BOT_TOKEN: ${{ secrets.SQUEEZE_BOT_TOKEN }}
+  SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
+  STRICT_NO_TRADING: 'true'
+
+permissions:
+  contents: write
+
+# Предотвращаем перекрытие runs между собой и с main workflow
+concurrency:
+  group: strk-squeeze-fast
+  cancel-in-progress: false
+
+jobs:
+  squeeze-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8  # быстрый workflow, максимум 8 минут
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests urllib3
+
+      - name: Prepare directories
+        run: mkdir -p data/history data/cache
+
+      # ============================================================
+      # STAGE 1 · FAST COLLECTORS (5-8 минут total)
+      # Обновляем только критичные для squeeze feature'ы:
+      # - Funding (для Category A · Positioning)
+      # - Technical momentum (RSI, volume, для Category C)
+      # - CVD analysis (для Category C · bull divergence)
+      # ============================================================
+      - name: Fast collector · Funding signal
+        run: python3 scripts/collectors/funding_history.py || true
+
+      - name: Fast collector · Technical momentum
+        run: python3 scripts/detectors/technical_momentum.py || true
+
+      - name: Fast collector · CVD analysis
+        run: python3 scripts/detectors/cvd_analysis.py || true
+
+      # ============================================================
+      # STAGE 2 · SQUEEZE STACK
+      # cex_flow.json + cohort_tracker.json — stale от main workflow
+      # (обновляются каждый час, для squeeze 30-min stale допустимо)
+      # ============================================================
+      - name: Squeeze detector (compute state)
+        run: python3 scripts/detectors/squeeze_detector.py || true
+
+      - name: Squeeze notifier (alert to @strk_dynamic3_bot)
+        run: python3 scripts/detectors/squeeze_notifier.py || true
+
+      # ============================================================
+      # STAGE 3 · DYNAMIC EXIT SIGNALS
+      # Только если недавний STRONG squeeze < 72h → EXIT alerts
+      # ============================================================
+      - name: Dynamic exit signals
+        run: python3 scripts/detectors/dynamic_exit_signals.py || true
+
+      # ============================================================
+      # STAGE 4 · PERSISTENCE
+      # Коммитим только files которые обновляются этим workflow.
+      # [skip ci] в commit сообщении — не запускать другие workflows на этом commit.
+      # ============================================================
+      - name: Commit squeeze state
+        run: |
+          git config user.email "squeeze-bot@github.com"
+          git config user.name "STRK Squeeze Fast Bot"
+
+          # Добавляем ТОЛЬКО файлы затронутые этим workflow:
+          git add -A data/cache/squeeze_state.json \
+                    data/cache/squeeze_notifier_state.json \
+                    data/cache/exit_signals.json \
+                    data/cache/exit_notifier_state.json \
+                    data/cache/funding_signal.json \
+                    data/cache/technical_momentum.json \
+                    data/cache/cvd_analysis.json \
+                    data/history/squeeze_alerts.jsonl \
+                    data/history/exit_signals.jsonl 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            echo "=== Squeeze fast scan changes: ==="
+            git diff --cached --stat
+            git commit -m "chore: squeeze fast scan (30-min) [skip ci]"
+            # Rebase перед push — конфликт возможен с main hourly workflow
+            git push || (git pull --rebase origin main && git push) || echo "Push failed, will retry next run"
+          fi
