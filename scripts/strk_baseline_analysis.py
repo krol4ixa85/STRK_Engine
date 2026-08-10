@@ -78,8 +78,54 @@ CACHE_MAX_AGE_HOURS = 12
 # ============================================================
 # DATA FETCH
 # ============================================================
+def _fetch_from_coingecko(days):
+    """CoinGecko API — гарантированно правильный Starknet STRK.
+    Free tier, no auth. Returns daily OHLCV for 365+ days, hourly for 90 days.
+    Contract: 0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766 (Starknet).
+    """
+    url = f"https://api.coingecko.com/api/v3/coins/starknet/market_chart?vs_currency=usd&days={days}"
+    logger.info(f"  CoinGecko: fetching {days}d for coin_id='starknet'")
+
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'strk-baseline/1.0'})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.loads(r.read())
+    except Exception as e:
+        raise Exception(f"CoinGecko API: {e}")
+
+    prices = data.get('prices', [])
+    volumes = data.get('total_volumes', [])
+    if not prices:
+        raise Exception("CoinGecko returned no prices")
+
+    # Собираем dataframe. CoinGecko прайсы приходят как [timestamp_ms, price]
+    records = []
+    vol_by_ts = {v[0]: v[1] for v in volumes}
+    for ts_ms, price in prices:
+        records.append({
+            'ts': ts_ms,
+            'close': price,
+            'volume': vol_by_ts.get(ts_ms, 0),
+        })
+
+    df = pd.DataFrame(records)
+    df['ts'] = pd.to_datetime(df['ts'], unit='ms', utc=True)
+    df = df.set_index('ts').sort_index().drop_duplicates()
+
+    # CoinGecko не даёт OHLC для free — приближаем из close-to-close
+    df['open'] = df['close'].shift(1).fillna(df['close'])
+    df['high'] = df[['open', 'close']].max(axis=1) * 1.005  # ~ +0.5% intraday high
+    df['low'] = df[['open', 'close']].min(axis=1) * 0.995   # ~ -0.5% intraday low
+    df = df[['open', 'high', 'low', 'close', 'volume']]
+
+    return df
+
+
 def _fetch_from_exchange(exchange_id, symbol, timeframe, days):
-    """Single-exchange fetch. Returns df or raises."""
+    """Single-exchange fetch. Returns df or raises.
+    ВАЖНО: проверяет что цена < $2 — иначе это НЕ Starknet STRK
+    (KuCoin listed some other STRK token that pumped to $0.20+).
+    """
     ex_class = getattr(ccxt, exchange_id)
     ex = ex_class({'enableRateLimit': True, 'timeout': 30000})
 
@@ -87,10 +133,9 @@ def _fetch_from_exchange(exchange_id, symbol, timeframe, days):
     try:
         ex.load_markets()
         if symbol not in ex.symbols:
-            # Try alternate formats
             alt_symbols = [
-                symbol.replace('/', '-'),  # STRK-USDT
-                symbol.replace('/', ''),   # STRKUSDT
+                symbol.replace('/', '-'),
+                symbol.replace('/', ''),
             ]
             actual = None
             for alt in alt_symbols:
@@ -127,15 +172,20 @@ def _fetch_from_exchange(exchange_id, symbol, timeframe, days):
     df = pd.DataFrame(all_bars, columns=['ts', 'open', 'high', 'low', 'close', 'volume'])
     df['ts'] = pd.to_datetime(df['ts'], unit='ms', utc=True)
     df = df.set_index('ts').drop_duplicates().sort_index()
+
+    # ==== SANITY CHECK: is this really Starknet STRK? ====
+    # Starknet STRK: ATH ~$4.5, current ~$0.02-0.15 range.
+    # Other STRK tokens: Strike Protocol pumped to $0.20+, Strike Finance to $1+.
+    current = float(df['close'].iloc[-1])
+    if current > 2.0:
+        raise Exception(f"price ${current:.4f} > $2 — likely NOT Starknet STRK (wrong token listed on {exchange_id})")
+
     return df
 
 
 def fetch_ohlcv(symbol=SYMBOL, timeframe=TIMEFRAME, days=HISTORY_DAYS, force_refresh=False):
-    """Download OHLCV via ccxt with exchange fallback. Cache to parquet."""
-    if not HAS_CCXT:
-        logger.error("ccxt not installed — pip install ccxt")
-        return None, None
-
+    """Download OHLCV. Primary source: CoinGecko (guaranteed Starknet).
+    Fallback: ccxt exchanges with price verification (< $2)."""
     # Check cache
     if not force_refresh and OHLCV_CACHE.exists():
         try:
@@ -144,34 +194,57 @@ def fetch_ohlcv(symbol=SYMBOL, timeframe=TIMEFRAME, days=HISTORY_DAYS, force_ref
             if latest.tzinfo is None:
                 latest = latest.tz_localize('UTC')
             age_h = (datetime.now(timezone.utc) - latest.to_pydatetime()).total_seconds() / 3600
-            if age_h < CACHE_MAX_AGE_HOURS and len(df) > 100:
-                # Restore metadata source из cache filename
+            # Sanity: cached data должна быть тот же STRK
+            cached_price = float(df['close'].iloc[-1])
+            if age_h < CACHE_MAX_AGE_HOURS and len(df) > 100 and cached_price < 2.0:
                 logger.info(f"Using cached OHLCV: {len(df)} bars (age {age_h:.1f}h)")
                 return df, 'cache'
+            elif cached_price >= 2.0:
+                logger.warning(f"Cached price ${cached_price:.4f} — wrong STRK, discarding cache")
         except Exception as e:
             logger.warning(f"Cache read failed: {e}")
 
-    # Try each exchange in order
+    # === PRIMARY: CoinGecko (guaranteed Starknet) ===
+    logger.info("Trying CoinGecko (primary source for Starknet STRK)...")
+    try:
+        df = _fetch_from_coingecko(days)
+        if df is not None and len(df) > 30:
+            current = float(df['close'].iloc[-1])
+            logger.info(f"✓ CoinGecko: {len(df)} bars · current ${current:.4f}")
+            CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            try:
+                df.to_parquet(OHLCV_CACHE)
+            except Exception as e:
+                logger.warning(f"Cache save failed: {e}")
+            return df, 'coingecko'
+    except Exception as e:
+        logger.warning(f"  CoinGecko failed: {str(e)[:200]}")
+
+    # === FALLBACK: ccxt exchanges (with price sanity check) ===
+    if not HAS_CCXT:
+        logger.error("CoinGecko failed and ccxt not installed")
+        return None, None
+
     last_error = None
     for exchange_id in EXCHANGES_TO_TRY:
         logger.info(f"Trying {exchange_id}...")
         try:
             df = _fetch_from_exchange(exchange_id, symbol, timeframe, days)
             if df is not None and len(df) > 100:
-                # Cache
                 CACHE_DIR.mkdir(parents=True, exist_ok=True)
                 try:
                     df.to_parquet(OHLCV_CACHE)
                 except Exception as e:
                     logger.warning(f"Cache save failed: {e}")
-                logger.info(f"✓ Fetched {len(df)} bars from {exchange_id}")
+                current = float(df['close'].iloc[-1])
+                logger.info(f"✓ Fetched {len(df)} bars from {exchange_id} · current ${current:.4f}")
                 return df, exchange_id
         except Exception as e:
             last_error = str(e)[:200]
             logger.warning(f"  {exchange_id} failed: {last_error}")
             continue
 
-    logger.error(f"All exchanges failed. Last error: {last_error}")
+    logger.error(f"All sources failed. Last error: {last_error}")
     return None, None
 
 
@@ -375,17 +448,34 @@ def strategy_rsi_overbought_short(df, rsi_col='rsi_14', threshold=RSI_OVERBOUGHT
 
 def strategy_dca_weekly(df):
     """DCA каждый понедельник 00:00 UTC."""
-    return (df.index.dayofweek == 0) & (df.index.hour == 0)
+    result = (df.index.dayofweek == 0) & (df.index.hour == 0)
+    return pd.Series(result, index=df.index)
 
 
 # ============================================================
 # REGIME ANALYSIS
 # ============================================================
 def analyze_regimes(df):
-    """Classify days as trending / range / whipsaw / drift."""
+    """Classify days as trending / range / whipsaw / drift.
+    Fixed: не делаем dropna() который делал regime_counts={} на incomplete data."""
+    # Resample to daily; НЕ dropna — используем ffill для гарантии non-empty
     daily = df.resample('1D').agg({
         'close': 'last', 'high': 'max', 'low': 'min', 'volume': 'sum'
-    }).dropna()
+    }).ffill()
+
+    # Убираем только строки где close всё ещё NaN (первые дни)
+    daily = daily[daily['close'].notna()]
+
+    if len(daily) < 14:
+        # Slишком мало данных для regime analysis
+        return {
+            'daily': daily,
+            'regime_counts': {'unknown': len(daily)},
+            'avg_daily_range_pct': 0.0,
+            'avg_daily_vol_pct': 0.0,
+            'total_days': int(len(daily)),
+            'std_daily_range_pct': 0.0,
+        }
 
     daily['slope_3d'] = (daily['close'] / daily['close'].shift(3) - 1) * 100
     daily['slope_7d'] = (daily['close'] / daily['close'].shift(7) - 1) * 100
@@ -396,13 +486,10 @@ def analyze_regimes(df):
     def classify(row):
         if pd.isna(row['slope_7d']):
             return 'unknown'
-        # Trending — clear directional 7d move
         if abs(row['slope_7d']) >= 5:
             return 'trending_up' if row['slope_7d'] > 0 else 'trending_down'
-        # Whipsaw — 3d big move but 14d flat
         if not pd.isna(row['slope_14d']) and abs(row['slope_14d']) < 3 and abs(row['slope_3d']) >= 5:
             return 'whipsaw'
-        # Range — small 7d move
         if abs(row['slope_7d']) < 2:
             return 'range'
         return 'drift'
@@ -410,13 +497,17 @@ def analyze_regimes(df):
     daily['regime'] = daily.apply(classify, axis=1)
     counts = daily['regime'].value_counts().to_dict()
 
+    # Guarantee non-empty (защита от edge case)
+    if not counts:
+        counts = {'unknown': len(daily)}
+
     return {
         'daily': daily,
         'regime_counts': counts,
-        'avg_daily_range_pct': float(daily['range_pct'].mean()),
+        'avg_daily_range_pct': float(daily['range_pct'].mean()) if not daily['range_pct'].isna().all() else 0.0,
         'avg_daily_vol_pct': float(daily['vol_daily'].mean()) if not daily['vol_daily'].isna().all() else 0.0,
         'total_days': int(len(daily)),
-        'std_daily_range_pct': float(daily['range_pct'].std()),
+        'std_daily_range_pct': float(daily['range_pct'].std()) if len(daily) > 1 else 0.0,
     }
 
 
@@ -571,8 +662,24 @@ def build_html_report(df, strategies_results, regime, current_price, buy_hold_re
 <h2>📌 Практические выводы</h2>'''
 
     # Best/worst strategies
-    best_strat = max(strategies_results.items(), key=lambda x: x[1].get('total_return_pct') or -9999)
-    worst_strat = min(strategies_results.items(), key=lambda x: x[1].get('total_return_pct') or 9999)
+    # Filter out strategies with None/NaN — avoid TypeError на max/min
+    def _valid(v):
+        r = v.get('total_return_pct')
+        if r is None:
+            return False
+        try:
+            if pd.isna(r):
+                return False
+        except Exception:
+            pass
+        return True
+    valid_strats = {k: v for k, v in strategies_results.items() if _valid(v)}
+    if valid_strats:
+        best_strat = max(valid_strats.items(), key=lambda x: x[1]['total_return_pct'])
+        worst_strat = min(valid_strats.items(), key=lambda x: x[1]['total_return_pct'])
+    else:
+        best_strat = ('N/A · insufficient data', {'total_return_pct': 0})
+        worst_strat = ('N/A · insufficient data', {'total_return_pct': 0})
 
     # Dominant regime
     dominant_regime = max(regime['regime_counts'].items(), key=lambda x: x[1])[0] if regime['regime_counts'] else 'unknown'
@@ -704,25 +811,39 @@ def main():
 
     force_refresh = os.environ.get('BASELINE_FORCE_REFRESH', '').lower() in ('1', 'true', 'yes')
 
-    if not HAS_CCXT:
-        logger.error("ccxt not installed. Add 'ccxt' to requirements.")
+    df, source_exchange = fetch_ohlcv(force_refresh=force_refresh)
+    if df is None or len(df) < 100:
+        logger.error(f"Not enough OHLCV data: {len(df) if df is not None else 0} bars (need 100+)")
         return 1
 
-    df, source_exchange = fetch_ohlcv(force_refresh=force_refresh)
-    if df is None or len(df) < 500:
-        logger.error(f"Not enough OHLCV data: {len(df) if df is not None else 0} bars")
-        return 1
+    # === Auto-detect resolution ===
+    # Приблизительная длительность 1 бара из data
+    if len(df) > 1:
+        bar_duration_sec = (df.index[1] - df.index[0]).total_seconds()
+    else:
+        bar_duration_sec = 3600
+    bars_per_day = int(round(86400 / bar_duration_sec)) if bar_duration_sec > 0 else 24
+    resolution = 'daily' if bars_per_day <= 2 else ('hourly' if bars_per_day >= 20 else f'{bars_per_day}x/day')
+    logger.info(f"Data resolution: {resolution} (~{bars_per_day} bars/day)")
+
+    # Adjust windows based on resolution
+    breakout_lookback_bars = 14 * bars_per_day
+    vol_avg_bars = 30 * bars_per_day
+    max_hold_bars = 3 * bars_per_day  # 72h = 3 days for hourly, or 3 bars for daily
 
     # Compute indicators
     logger.info("Computing indicators...")
     df['rsi_14'] = calc_rsi(df['close'], 14)
-    df['high_14d'] = calc_rolling_high(df['high'], BREAKOUT_LOOKBACK_HOURS)
-    df['vol_ratio'] = calc_vol_ratio(df['volume'], VOL_AVG_WINDOW_HOURS)
+    df['high_14d'] = calc_rolling_high(df['high'], breakout_lookback_bars)
+    df['vol_ratio'] = calc_vol_ratio(df['volume'], vol_avg_bars)
 
     current_price = float(df['close'].iloc[-1])
     buy_hold_return = (df['close'].iloc[-1] / df['close'].iloc[0] - 1) * 100
     logger.info(f"Current price: ${current_price:.4f}")
     logger.info(f"Buy & Hold return: {buy_hold_return:+.1f}%")
+
+    # Exit-hours для strategies конвертируем в реальные часы
+    max_hold_hours = MAX_HOLD_HOURS if resolution == 'hourly' else 3 * 24  # 3d для daily
 
     # Run strategies
     strategies = [
@@ -740,14 +861,15 @@ def main():
 
     results = {}
     for name, entries, direction in strategies:
-        logger.info(f"Testing: {name}")
-        # For weekly DCA use longer hold and no TP/SL — passive
+        entry_count = int(entries.sum())
+        logger.info(f"Testing: {name} · {entry_count} entry signals")
         if 'DCA' in name:
             trades = backtest_strategy(df, entries, exit_after_hours=24*7,
                                        take_profit_pct=999, stop_loss_pct=-999,
                                        direction=direction)
         else:
-            trades = backtest_strategy(df, entries, direction=direction)
+            trades = backtest_strategy(df, entries, exit_after_hours=max_hold_hours,
+                                       direction=direction)
         stats = compute_stats(trades, buy_hold_return)
         results[name] = stats
         logger.info(f"  → trades={stats['n_trades']} · WR={stats['win_rate_pct']} · Total={stats['total_return_pct']}")
