@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>STRK Baseline Analysis · 2026-08-10 10:10 UTC</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 1000px; margin: 20px auto; padding: 20px; background: #f7f7f9; color: #222; }
+  h1 { color: #1a1a1a; border-bottom: 2px solid #333; padding-bottom: 8px; }
+  h2 { color: #444; margin-top: 32px; border-left: 4px solid #4c9aff; padding-left: 10px; }
+  h3 { color: #555; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f0f0f5; font-weight: 600; }
+  .ok { color: #0a7000; font-weight: bold; }
+  .miss { color: #a00000; font-weight: bold; }
+  .warn { color: #cc8800; }
+  .na { color: #888; }
+  .stat { font-family: 'SF Mono', Monaco, monospace; font-size: 0.95em; }
+  .callout { background: #fff5e6; padding: 14px 18px; border-left: 4px solid #ff9500; margin: 16px 0; border-radius: 4px; }
+  .callout-info { background: #e6f2ff; border-left-color: #4c9aff; }
+  .footer { margin-top: 40px; font-size: 0.85em; color: #888; border-top: 1px solid #ddd; padding-top: 16px; }
+</style></head>
+<body>
+
+<h1>📊 STRK Baseline Analysis</h1>
+<p><b>Generated:</b> 2026-08-10 10:10 UTC<br>
+<b>Source:</b> STRK/USDT · COINGECKO · 1h<br>
+<b>Purpose:</b> reference numbers для сравнения с forward-test через 30-60 дней.</p>
+
+<h2>📅 Data Coverage</h2>
+<table>
+  <tr><th>Period</th><td class="stat">2025-08-11 to 2026-08-10 (364 days)</td></tr>
+  <tr><th>Bars (1h)</th><td class="stat">366</td></tr>
+  <tr><th>Current price</th><td class="stat">$0.0245</td></tr>
+  <tr><th>Period high</th><td class="stat">$0.2492</td></tr>
+  <tr><th>Period low</th><td class="stat">$0.0233</td></tr>
+  <tr><th>Range (peak-to-trough)</th><td class="stat">+968.8%</td></tr>
+  <tr><th>Buy &amp; Hold return</th><td class="stat"><b>-82.1%</b></td></tr>
+</table>
+
+<h2>🎯 Baseline Strategies</h2>
+<p>Простые правила протестированы на РЕАЛЬНОЙ истории STRK. Настройки: TP +5% · SL -3% · max hold 72h.</p>
+
+<table>
+  <tr>
+    <th>Strategy</th>
+    <th>Trades</th>
+    <th>Win %</th>
+    <th>Avg PnL</th>
+    <th>Total</th>
+    <th>Sharpe</th>
+    <th>Max DD</th>
+    <th>Edge vs B&amp;H</th>
+    <th>Avg hold</th>
+  </tr>
+  <tr>
+    <td><b>RSI<30 → +5%/-3% or 72h (long)</b></td>
+    <td class="stat">16</td>
+    <td class="stat">68.8%</td>
+    <td class="stat">+1.99%</td>
+    <td class="stat">+35.7%</td>
+    <td class="stat">2.28</td>
+    <td class="stat miss">-8.7%</td>
+    <td class="stat ok">+117.8%</td>
+    <td class="stat">44h</td>
+  </tr>
+  <tr>
+    <td><b>Breakout 14d high → +5%/-3% or 72h (long)</b></td>
+    <td class="stat">17</td>
+    <td class="stat">23.5%</td>
+    <td class="stat">-1.27%</td>
+    <td class="stat">-20.3%</td>
+    <td class="stat">-1.66</td>
+    <td class="stat miss">-24.5%</td>
+    <td class="stat ok">+61.8%</td>
+    <td class="stat">31h</td>
+  </tr>
+  <tr>
+    <td><b>Vol 2x + RSI<40 → 72h (long capitulation)</b></td>
+    <td class="stat">1</td>
+    <td class="stat">100.0%</td>
+    <td class="stat">+5.00%</td>
+    <td class="stat">+5.0%</td>
+    <td class="stat">0.00</td>
+    <td class="stat miss">0.0%</td>
+    <td class="stat ok">+87.1%</td>
+    <td class="stat">48h</td>
+  </tr>
+  <tr>
+    <td><b>RSI>70 → +5%/-3% or 72h (short)</b></td>
+    <td class="stat">6</td>
+    <td class="stat">66.7%</td>
+    <td class="stat">+1.68%</td>
+    <td class="stat">+10.1%</td>
+    <td class="stat">1.15</td>
+    <td class="stat miss">-4.9%</td>
+    <td class="stat ok">+92.2%</td>
+    <td class="stat">32h</td>
+  </tr>
+  <tr>
+    <td><b>Weekly DCA Monday 00:00 UTC (long, hold 7d)</b></td>
+    <td class="stat">26</td>
+    <td class="stat">42.3%</td>
+    <td class="stat">-1.98%</td>
+    <td class="stat">-71.4%</td>
+    <td class="stat">-0.48</td>
+    <td class="stat miss">-76.8%</td>
+    <td class="stat ok">+10.6%</td>
+    <td class="stat">168h</td>
+  </tr>
+</table>
+
+<div class="callout callout-info">
+  <b>💡 Как читать эти числа:</b><br>
+  · <b>Buy &amp; Hold return -82.1%</b> — это твой benchmark. Всё что даёт МЕНЬШЕ — теряет vs пассивного держания.<br>
+  · <b>Win Rate</b> — доля прибыльных trades. Baseline для random = 50%. Ниже 55% edge отсутствует.<br>
+  · <b>Sharpe</b> — соотношение доходности к риску. &gt;1 — приемлемо, &gt;2 — хорошо.<br>
+  · <b>Max DD</b> — насколько глубоко просаживалась equity curve. &lt;-30% — некомфортно.<br>
+  · <b>Edge vs B&amp;H</b> — насколько лучше/хуже пассивного holding. Положительное — strategy добавляет ценность.
+</div>
+
+<h2>🌊 Regime Analysis</h2>
+<p>Классификация дней по типу рынка. Понимание какие условия доминируют для STRK.</p>
+
+<table>
+  <tr><th>Regime</th><th>Days</th><th>Share</th><th>What it means</th></tr>
+  <tr>
+    <td><b>range</b></td>
+    <td class="stat">29</td>
+    <td class="stat">7.9%</td>
+    <td>Флэт, |slope 7d| &lt; 2% — плохо для trend follow</td>
+  </tr>
+  <tr>
+    <td><b>trending_up</b></td>
+    <td class="stat">95</td>
+    <td class="stat">26.0%</td>
+    <td>Uptrend, slope 7d &gt; +5% — swing long работает</td>
+  </tr>
+  <tr>
+    <td><b>trending_down</b></td>
+    <td class="stat">160</td>
+    <td class="stat">43.8%</td>
+    <td>Downtrend, slope 7d &lt; -5% — swing short или флэт</td>
+  </tr>
+  <tr>
+    <td><b>whipsaw</b></td>
+    <td class="stat">3</td>
+    <td class="stat">0.8%</td>
+    <td>Резкое движение, но 14d flat — dangerous chop, oба TP и SL часто триггерят</td>
+  </tr>
+  <tr>
+    <td><b>drift</b></td>
+    <td class="stat">71</td>
+    <td class="stat">19.5%</td>
+    <td>Мелкий тренд, 2-5% за 7d — mixed conditions</td>
+  </tr>
+  <tr>
+    <td><b>unknown</b></td>
+    <td class="stat">7</td>
+    <td class="stat">1.9%</td>
+    <td>Недостаточно данных для классификации</td>
+  </tr>
+</table>
+
+<h3>Volatility Calibration</h3>
+<table>
+  <tr><th>Metric</th><th>Value</th><th>Practical use</th></tr>
+  <tr><td>Avg daily range</td><td class="stat">10.50%</td><td>средний high-low спред за день</td></tr>
+  <tr><td>Std daily range</td><td class="stat">17.99%</td><td>волатильность волатильности</td></tr>
+  <tr><td>7d avg vol</td><td class="stat">10.58%</td><td>сглаженная недельная волатильность</td></tr>
+  <tr><td><b>Suggested stop-loss</b></td><td class="stat"><b>15.7%</b></td><td>1.5× daily range — не выбивает шумом</td></tr>
+  <tr><td><b>Suggested take-profit</b></td><td class="stat"><b>31.5%</b></td><td>3× daily range — R/R 2:1</td></tr>
+</table>
+
+<div class="callout">
+  <b>⚠ Важно про STRK:</b><br>
+  Средний daily range 10.5% значит что stop &lt; 10.5% будет часто выбивать нормальным шумом.<br>
+  Используй stop минимум 15.7% и take минимум 31.5% для R/R 2:1.
+</div>
+
+<h2>📌 Практические выводы</h2>
+<ul>
+  <li><b>Доминирующий режим</b>: trending_down — 160 дней из 365</li>
+  <li><b>Лучшая baseline strategy</b>: RSI<30 → +5%/-3% or 72h (long) (+35.7%)</li>
+  <li><b>Худшая baseline strategy</b>: Weekly DCA Monday 00:00 UTC (long, hold 7d) (-71.4%)</li>
+  <li><b>Buy &amp; Hold reference</b>: -82.1%</li>
+  <li><b>Volatility calibration</b>: normal stop 15.7% · normal take 31.5%</li>
+</ul>
+
+<div class="callout callout-info">
+  <b>🎯 Ключевой вывод:</b><br>
+  Через 30-60 дней твой Confluence Gate + Shadow Voters дадут числа precision по live signals.<br>
+  · Если Confluence RALLY signals показывают &gt;100% precision — есть edge над baseline.<br>
+  · Если ниже — signals не лучше простых правил, нужен tune или упрощение.<br>
+  · Если ~100% — движок даёт то же что RSI + breakout вместе. Простота выигрывает.
+</div>
+
+<div class="footer">
+  <p><b>STRK Engine · strk_baseline_analysis.py</b></p>
+  <p>Это baseline reference. НЕ trade recommendation. НЕ бэктест твоих Confluence signals (у них нет history).</p>
+  <p>Числа для сравнения с forward-test через 30-60 дней через weekly_backtest.py.</p>
+</div>
+
+</body></html>
