@@ -1,19 +1,19 @@
 {
-  "as_of": "2026-08-10T09:21:41.499409+00:00",
+  "as_of": "2026-08-10T09:41:09.164506+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 11,
-      "total_usd": 2524607.0,
-      "net_usd_delta_24h": -357.0,
-      "net_strk_delta_24h": 462216.0,
+      "total_usd": 2515900.0,
+      "net_usd_delta_24h": -416.0,
+      "net_strk_delta_24h": 656955.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 126633561.0,
+      "tvl_strk_now": 126824970.0,
       "tvl_usd_now": 5665302,
-      "apy_pct": 6.78,
+      "apy_pct": 6.76,
       "strk_delta_24h": -33721.0,
       "strk_delta_7d": 213833.0,
       "pct_24h": -0.03,
@@ -21,7 +21,7 @@
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-10T09:21:41.456712+00:00",
+      "as_of": "2026-08-10T09:41:09.124630+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 126633561.0,
+    "endur_lst_tvl_strk": 126824970.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
     "stake_delta_24h_strk": -33721.0,
-    "lp_delta_24h_strk": 462216.0,
+    "lp_delta_24h_strk": 656955.0,
     "stake_signal": "STABLE",
-    "lp_signal": "STABLE"
+    "lp_signal": "POSITIVE"
   },
-  "overall_direction": "STABLE",
-  "layman": "Ликвидность в экосистеме стабильна за 24ч. Нет сильных движений.",
+  "overall_direction": "LP_ADDING",
+  "layman": "Приток в DEX-пулы, стейкинг без движения. Готовится торговая ликвидность.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5
