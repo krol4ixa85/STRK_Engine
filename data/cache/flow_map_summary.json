@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-10T09:41:18.044282+00:00",
+  "as_of": "2026-08-10T09:56:05.836290+00:00",
   "flow_class": "ACCUMULATION_DOMINANT",
   "class_distribution": {
     "BRIDGE_IN": 1,
@@ -186,11 +186,11 @@
     },
     {
       "flow_class": "REWARDS",
-      "route": "validators(4) → staking_contract → stakers(193)",
+      "route": "validators(4) → staking_contract → stakers(212)",
       "reasoning": [
-        "retention = 62.9% (in=51,196, out=19,006)",
-        "cp_in=4, cp_out=193",
-        "staking pattern: 4 inflow sources → 193 outflow destinations",
+        "retention = 58.1% (in=55,951, out=23,460)",
+        "cp_in=4, cp_out=212",
+        "staking pattern: 4 inflow sources → 212 outflow destinations",
         "classified as REWARDS distribution (not sell pressure)"
       ],
       "confidence": "high",
@@ -198,11 +198,11 @@
       "chain": "starknet",
       "metrics": {
         "edges_count": 498,
-        "vol_in_strk": 51195.8155,
-        "vol_out_strk": 19005.7989,
-        "net_flow_strk": 32190.0166,
+        "vol_in_strk": 55950.7715,
+        "vol_out_strk": 23459.8999,
+        "net_flow_strk": 32490.8715,
         "cp_in": 4,
-        "cp_out": 193
+        "cp_out": 212
       }
     },
     {
@@ -226,8 +226,8 @@
   ],
   "not_checked": false,
   "source_summaries": {
-    "l1_as_of": "2026-08-10T09:41:14.125427+00:00",
-    "l2_as_of": "2026-08-10T09:41:17.987546+00:00"
+    "l1_as_of": "2026-08-10T09:56:01.772680+00:00",
+    "l2_as_of": "2026-08-10T09:56:05.780965+00:00"
   },
   "caveats": [
     "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
