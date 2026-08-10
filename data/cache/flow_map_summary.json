@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-10T10:03:38.035222+00:00",
+  "as_of": "2026-08-10T10:09:21.005847+00:00",
   "flow_class": "ACCUMULATION_DOMINANT",
   "class_distribution": {
     "BRIDGE_IN": 1,
@@ -145,21 +145,21 @@
     },
     {
       "flow_class": "ACCUMULATION",
-      "route": "many(32) → this seed → few(0)",
+      "route": "many(31) → this seed → few(0)",
       "reasoning": [
-        "retention = 100.0% (in=8,637,996, out=0)",
-        "cp_in=32, cp_out=0",
-        "ACCUMULATION signature: 32 sources → 1 holder, retention 100.0%"
+        "retention = 100.0% (in=6,637,995, out=0)",
+        "cp_in=31, cp_out=0",
+        "ACCUMULATION signature: 31 sources → 1 holder, retention 100.0%"
       ],
       "confidence": "medium",
       "seed_name": "discovered_a4b9569b",
       "chain": "ethereum",
       "metrics": {
-        "edges_count": 45,
-        "vol_in_strk": 8637995.6781,
+        "edges_count": 44,
+        "vol_in_strk": 6637994.937,
         "vol_out_strk": 0,
-        "net_flow_strk": 8637995.6781,
-        "cp_in": 32,
+        "net_flow_strk": 6637994.937,
+        "cp_in": 31,
         "cp_out": 0
       }
     },
@@ -188,7 +188,7 @@
       "flow_class": "REWARDS",
       "route": "validators(4) → staking_contract → stakers(213)",
       "reasoning": [
-        "retention = 60.1% (in=55,328, out=22,090)",
+        "retention = 60.1% (in=55,588, out=22,170)",
         "cp_in=4, cp_out=213",
         "staking pattern: 4 inflow sources → 213 outflow destinations",
         "classified as REWARDS distribution (not sell pressure)"
@@ -198,9 +198,9 @@
       "chain": "starknet",
       "metrics": {
         "edges_count": 498,
-        "vol_in_strk": 55328.4619,
-        "vol_out_strk": 22089.5903,
-        "net_flow_strk": 33238.8715,
+        "vol_in_strk": 55588.3335,
+        "vol_out_strk": 22169.5879,
+        "net_flow_strk": 33418.7455,
         "cp_in": 4,
         "cp_out": 213
       }
@@ -226,8 +226,8 @@
   ],
   "not_checked": false,
   "source_summaries": {
-    "l1_as_of": "2026-08-10T10:03:34.302969+00:00",
-    "l2_as_of": "2026-08-10T10:03:37.980404+00:00"
+    "l1_as_of": "2026-08-10T10:09:17.210882+00:00",
+    "l2_as_of": "2026-08-10T10:09:20.952362+00:00"
   },
   "caveats": [
     "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
