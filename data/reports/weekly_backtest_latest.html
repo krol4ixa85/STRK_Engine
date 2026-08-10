@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>STRK Engine · Weekly Backtest · 2026-08-10 10:05 UTC</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; max-width: 900px; margin: 20px auto; padding: 20px; background: #f7f7f9; color: #222; }
+  h1 { color: #1a1a1a; border-bottom: 2px solid #333; padding-bottom: 8px; }
+  h2 { color: #444; margin-top: 32px; border-left: 4px solid #4c9aff; padding-left: 10px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: #fff; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #ddd; }
+  th { background: #f0f0f5; }
+  .warn { color: #cc8800; font-size: 0.9em; }
+  .ok { color: #0a7000; font-weight: bold; }
+  .miss { color: #a00000; font-weight: bold; }
+  .na { color: #888; }
+  .footer { margin-top: 40px; font-size: 0.85em; color: #888; }
+  pre { background: #f0f0f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+</style></head>
+<body>
+
+<h1>📊 STRK Engine · Weekly Backtest</h1>
+<p><b>Generated:</b> 2026-08-10 10:05 UTC</p>
+
+<h2>📈 Общая статистика</h2>
+<table>
+  <tr><th>Источник</th><th>Всего</th><th>CLOSED</th><th>PENDING</th></tr>
+  <tr><td>shadow_votes.jsonl</td><td>40</td><td>1</td><td>39</td></tr>
+  <tr><td>all_history.jsonl</td><td>12</td><td>0</td><td>12</td></tr>
+</table>
+
+<h2>🎯 Confluence Gate (real DECISION)</h2>
+<table>
+  <tr><th>Window</th><th>Accuracy</th><th>N (closed)</th><th>Note</th></tr>
+  <tr><td>72h</td><td>0.0%</td><td>1</td><td class="warn"> ⚠️ insufficient data (N&lt;5)</td></tr>
+  <tr><td>7d</td><td>N/A</td><td>0</td><td class="warn"> ⚠️ insufficient data (N&lt;5)</td></tr>
+</table>
+
+<h3>Breakdown по signal type</h3>
+<table>
+  <tr><th>Window</th><th>Signal</th><th>Accuracy</th><th>N</th></tr>
+  <tr><td>72h</td><td>NEUTRAL_LOW</td><td>0.0%</td><td>1</td></tr>
+</table>
+
+<h2>🧠 Composite v2 (context signal)</h2>
+<table>
+  <tr><th>Window</th><th>Accuracy</th><th>N (closed)</th><th>Note</th></tr>
+  <tr><td>72h</td><td>N/A</td><td>0</td><td class="warn"> ⚠️ insufficient data (N&lt;5)</td></tr>
+  <tr><td>7d</td><td>N/A</td><td>0</td><td class="warn"> ⚠️ insufficient data (N&lt;5)</td></tr>
+</table>
+
+<h2>🔍 Shadow Voters (candidates for voter_wire_v2)</h2>
+<p>HIT/MISS/SKIP уже посчитан <code>shadow_postmortem.py</code>. Accuracy = HITS / (HITS + MISSES), SKIP excluded.</p>
+<table>
+  <tr><th>Voter</th><th>72h Accuracy</th><th>72h N</th><th>7d Accuracy</th><th>7d N</th><th>Ready for wire-in?</th></tr>
+</table>
+
+<h2>💡 Что это значит</h2>
+<ul>
+  <li><b>Confluence Gate</b> — главный DECISION. Если accuracy на 72h &lt; 55%, пороги нужно пересматривать.</li>
+  <li><b>Composite v2</b> — старый composite baseline. Точность для сравнения.</li>
+  <li><b>Shadow Voters</b> — кандидаты в voter_wire_v2 (ШАГ 3). Wire-in только если precision ≥ 55% на N≥15.</li>
+  <li><b>SKIP votes</b> — voter отказался голосовать (NEUTRAL/UNKNOWN). Не считаются ошибкой.</li>
+</ul>
+
+<div class="footer">
+  <p>STRK Engine · weekly_backtest.py · N&lt;15 = недостаточно для калибровки.</p>
+  <p>Пороги: RALLY &gt; +3% · CRASH &lt; -3% · NEUTRAL иначе.</p>
+</div>
+
+</body></html>
