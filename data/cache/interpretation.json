@@ -1,83 +1,115 @@
 {
-  "as_of": "2026-08-05T19:29:39.903574+00:00",
+  "as_of": "2026-08-10T08:12:00.402666+00:00",
   "context_snapshot": {
-    "phase": "UNKNOWN",
-    "sub_phase": "",
+    "phase": "ACCUMULATION",
+    "sub_phase": "Phase B · building base",
     "wyckoff_conf": "LOW",
-    "price": 0,
-    "high_14d": 0,
-    "low_14d": 0,
-    "slope_3d": 0,
-    "slope_accel": 0,
-    "vol_ratio_3d": 1,
-    "rsi": 50,
-    "pct_from_high": 0,
-    "pct_from_low": 0,
+    "price": 0.02472,
+    "high_14d": 0.03173,
+    "low_14d": 0.02291,
+    "slope_3d": -1.79,
+    "slope_accel": -3.49,
+    "vol_ratio_3d": 0.95,
+    "rsi": 48.6,
+    "pct_from_high": -22.09,
+    "pct_from_low": 7.9,
     "funding_apr": 0,
-    "funding_min_7d": 0,
+    "funding_min_7d": -9.71,
     "short_crowded": false,
     "long_crowded": false,
-    "hhi": 0.05,
+    "hhi": 0.0462,
     "entropy": 5,
     "large_receivers_14d": 0,
-    "top5_share": 0,
-    "cex_signal": "NEUTRAL",
+    "top5_share": 38.68,
+    "cex_signal": "MILD_DISTRIBUTION",
     "cex_net_7d": 0,
     "cex_consecutive": 0,
     "effort_signal": "NEUTRAL",
     "cvd_signal": "NEUTRAL",
-    "event_signal": "CALM",
-    "event_bull": 0,
-    "event_bear": 0,
-    "sector_signal": "NEUTRAL",
-    "strk_alpha_7d": 0,
-    "days_to_unlock": 999,
-    "unlock_amount": 0,
-    "supply_30d": 0,
-    "btc_price": 63967.8,
+    "event_signal": "POSITIVE_CATALYST",
+    "event_bull": 8,
+    "event_bear": 2,
+    "sector_signal": "IN_LINE",
+    "strk_alpha_7d": -1.62,
+    "days_to_unlock": 4,
+    "unlock_amount": 64000000,
+    "supply_30d": 64000000,
+    "btc_price": 65267.1,
     "btc_cycle": "DOWN",
-    "btc_dist200": -9.78
+    "btc_dist200": -6.87
   },
-  "patterns_matched": 1,
+  "patterns_matched": 2,
   "interpretation": {
     "primary": {
-      "name": "RANGE_BOUND",
-      "label": "Range-bound / sideways",
-      "confidence": 70,
-      "direction": "NEUTRAL",
-      "hypothesis": "Consolidation. Ни быки ни медведи не берут инициативу.",
-      "narrative": "Цена в узком range: 0.0000-0.0000. Volatility сжата. Ждём breakout в любую сторону.",
-      "position_hint": "Wait. Trade range trades (buy support, sell resistance) с малым размером, или подожди пробоя.",
+      "name": "PRE_UNLOCK_WEAKNESS",
+      "label": "Pre-unlock weakness (4d)",
+      "confidence": 85,
+      "direction": "BEARISH_SHORT",
+      "hypothesis": "Через 4 дней unlock 64M STRK. Крупные разгружаются заранее.",
+      "narrative": "Supply shock приближается: 64M STRK unlock через 4д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
+      "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
       "triggers_watch": [
-        "Break ABOVE 0.0000 on volume = trend up",
-        "Break BELOW 0.0000 on volume = trend down"
+        "Day-of-unlock volume spike = capitulation zone (bounce entry)",
+        "CEX flow flip to OUTFLOW = unlock уже отработан",
+        "Price recovery выше pre-announcement level = supply absorbed"
       ],
-      "invalidation": "Direct trend break — паттерн заменяется на trend pattern."
+      "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
     },
-    "secondary": null,
+    "secondary": {
+      "name": "ACCUMULATION_BASE",
+      "label": "Accumulation · Phase B · base building",
+      "confidence": 75,
+      "direction": "NEUTRAL_TO_BULLISH",
+      "hypothesis": "Крупные тихо аккумулируют. Розница пассивна. Volatility сжимается.",
+      "narrative": "Phase B — building phase. Цена в узком range 0.0229-0.0317. Volume 0.9× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
+      "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0317 на volume expansion 1.5×+.",
+      "triggers_watch": [
+        "Break ABOVE $0.0317 on volume 1.5×+ = SOS, markup starts",
+        "Break BELOW $0.0229 on volume = Spring failure, deeper accumulation",
+        "CEX flow flip to OUTFLOW 3+ days = whales accumulating too"
+      ],
+      "invalidation": "Если цена уйдёт ниже $0.0229 без быстрого возврата — фаза продлевается или переходит в markdown."
+    },
     "tertiary": null,
-    "summary": "Цена в узком range: 0.0000-0.0000. Volatility сжата. Ждём breakout в любую сторону.",
-    "position_hint": "Wait. Trade range trades (buy support, sell resistance) с малым размером, или подожди пробоя.",
+    "summary": "Supply shock приближается: 64M STRK unlock через 4д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
+    "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
     "triggers": [
-      "Break ABOVE 0.0000 on volume = trend up",
-      "Break BELOW 0.0000 on volume = trend down"
+      "Day-of-unlock volume spike = capitulation zone (bounce entry)",
+      "CEX flow flip to OUTFLOW = unlock уже отработан",
+      "Price recovery выше pre-announcement level = supply absorbed"
     ],
-    "invalidation": "Direct trend break — паттерн заменяется на trend pattern."
+    "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
   },
   "all_matches": [
     {
-      "name": "RANGE_BOUND",
-      "label": "Range-bound / sideways",
-      "confidence": 70,
-      "direction": "NEUTRAL",
-      "hypothesis": "Consolidation. Ни быки ни медведи не берут инициативу.",
-      "narrative": "Цена в узком range: 0.0000-0.0000. Volatility сжата. Ждём breakout в любую сторону.",
-      "position_hint": "Wait. Trade range trades (buy support, sell resistance) с малым размером, или подожди пробоя.",
+      "name": "PRE_UNLOCK_WEAKNESS",
+      "label": "Pre-unlock weakness (4d)",
+      "confidence": 85,
+      "direction": "BEARISH_SHORT",
+      "hypothesis": "Через 4 дней unlock 64M STRK. Крупные разгружаются заранее.",
+      "narrative": "Supply shock приближается: 64M STRK unlock через 4д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
+      "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
       "triggers_watch": [
-        "Break ABOVE 0.0000 on volume = trend up",
-        "Break BELOW 0.0000 on volume = trend down"
+        "Day-of-unlock volume spike = capitulation zone (bounce entry)",
+        "CEX flow flip to OUTFLOW = unlock уже отработан",
+        "Price recovery выше pre-announcement level = supply absorbed"
       ],
-      "invalidation": "Direct trend break — паттерн заменяется на trend pattern."
+      "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
+    },
+    {
+      "name": "ACCUMULATION_BASE",
+      "label": "Accumulation · Phase B · base building",
+      "confidence": 75,
+      "direction": "NEUTRAL_TO_BULLISH",
+      "hypothesis": "Крупные тихо аккумулируют. Розница пассивна. Volatility сжимается.",
+      "narrative": "Phase B — building phase. Цена в узком range 0.0229-0.0317. Volume 0.9× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
+      "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0317 на volume expansion 1.5×+.",
+      "triggers_watch": [
+        "Break ABOVE $0.0317 on volume 1.5×+ = SOS, markup starts",
+        "Break BELOW $0.0229 on volume = Spring failure, deeper accumulation",
+        "CEX flow flip to OUTFLOW 3+ days = whales accumulating too"
+      ],
+      "invalidation": "Если цена уйдёт ниже $0.0229 без быстрого возврата — фаза продлевается или переходит в markdown."
     }
   ]
 }

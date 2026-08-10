@@ -1,0 +1,99 @@
+{
+  "ts": "2026-08-10T08:12:13.156227+00:00",
+  "level": "INACTIVE",
+  "active_categories": 0,
+  "total_categories": 3,
+  "categories": [
+    {
+      "category": "A",
+      "name": "Positioning / Derivatives",
+      "active": false,
+      "active_count": 0,
+      "total": 3,
+      "conditions": [
+        {
+          "id": "A1",
+          "name": "Funding crowded short",
+          "active": false,
+          "evidence": "Funding APR +5.47%"
+        },
+        {
+          "id": "A2",
+          "name": "Funding accelerating negative",
+          "active": false,
+          "evidence": "trend=, APR=5.475"
+        },
+        {
+          "id": "A3",
+          "name": "Extreme short flag",
+          "active": false,
+          "evidence": "extreme=normal"
+        }
+      ]
+    },
+    {
+      "category": "B",
+      "name": "On-chain Accumulation",
+      "active": false,
+      "active_count": 0,
+      "total": 3,
+      "conditions": [
+        {
+          "id": "B1",
+          "name": "SMART cohort accumulation",
+          "active": false,
+          "evidence": "SMART 24h net -5.43M STRK (threshold +2.0M)"
+        },
+        {
+          "id": "B2",
+          "name": "CEX outflow streak",
+          "active": false,
+          "evidence": "2 consecutive bullish days (threshold 3)"
+        },
+        {
+          "id": "B3",
+          "name": "WATCHLIST accumulating",
+          "active": false,
+          "evidence": "WATCHLIST 24h net +0.06M STRK"
+        }
+      ]
+    },
+    {
+      "category": "C",
+      "name": "Technical setup",
+      "active": false,
+      "active_count": 0,
+      "total": 3,
+      "conditions": [
+        {
+          "id": "C1",
+          "name": "Oversold + volume spike",
+          "active": false,
+          "evidence": "RSI 48.6, Vol 0.95x"
+        },
+        {
+          "id": "C2",
+          "name": "At 14d range low",
+          "active": false,
+          "evidence": "7.9% from 14d low"
+        },
+        {
+          "id": "C3",
+          "name": "CVD bull divergence",
+          "active": false,
+          "evidence": "CVD 1h = STEALTH_DISTRIBUTION"
+        }
+      ]
+    }
+  ],
+  "thresholds": {
+    "funding_crowded_short_pct": -15.0,
+    "funding_accel_pct": -10.0,
+    "smart_accum_strk": 2000000,
+    "cex_outflow_streak_days": 3,
+    "watchlist_accum_strk": 100000,
+    "rsi_oversold": 30,
+    "vol_spike_ratio": 2.0,
+    "pct_from_low_max": 5.0
+  }
+}

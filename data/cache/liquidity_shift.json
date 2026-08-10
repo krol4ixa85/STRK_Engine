@@ -1,0 +1,49 @@
+{
+  "as_of": "2026-08-10T08:10:15.186556+00:00",
+  "components": {
+    "ekubo": {
+      "status": "OK",
+      "pool_count": 11,
+      "total_usd": 2539404.0,
+      "net_usd_delta_24h": -335.0,
+      "net_strk_delta_24h": 69380.0,
+      "signal": "STABLE"
+    },
+    "endur_lst": {
+      "status": "OK",
+      "tvl_strk_now": 126824970.0,
+      "tvl_usd_now": 5567415,
+      "apy_pct": 6.76,
+      "strk_delta_24h": -33721.0,
+      "strk_delta_7d": 213833.0,
+      "pct_24h": -0.03,
+      "pct_7d": 0.17,
+      "signal": "STABLE"
+    },
+    "native_staking": {
+      "as_of": "2026-08-10T08:10:15.147444+00:00",
+      "status": "NOT_CHECKED",
+      "reason": "RPC unavailable or staking_selector not configured",
+      "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
+      "signal": "UNKNOWN"
+    }
+  },
+  "derived": {
+    "total_stake_strk": null,
+    "endur_lst_tvl_strk": 126824970.0,
+    "pure_native_stake_strk": null,
+    "lst_share_of_stake_pct": null
+  },
+  "vectors": {
+    "stake_delta_24h_strk": -33721.0,
+    "lp_delta_24h_strk": 69380.0,
+    "stake_signal": "STABLE",
+    "lp_signal": "STABLE"
+  },
+  "overall_direction": "STABLE",
+  "layman": "Ликвидность в экосистеме стабильна за 24ч. Нет сильных движений.",
+  "thresholds": {
+    "abs_strk_noise": 200000,
+    "pct_stake_noise": 0.5
+  }
+}
