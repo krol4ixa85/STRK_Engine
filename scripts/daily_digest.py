@@ -303,6 +303,150 @@ def _safe(s):
     return s.replace('<', '&lt;').replace('>', '&gt;')
 
 
+# ============================================================
+# SHADOW VOTERS · читаем последний run из shadow_votes.jsonl
+# Показываем: current votes + aggregate + rolling precision (когда наберётся N≥15)
+# ============================================================
+def _load_latest_shadow_votes():
+    """Return dict with current shadow snapshot and per-voter precision.
+    Returns None if нет данных.
+    """
+    path = SCRIPT_DIR / 'data' / 'history' / 'shadow_votes.jsonl'
+    if not path.exists():
+        return None
+    records = []
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    records.append(json.loads(line))
+                except Exception:
+                    continue
+    except Exception:
+        return None
+    if not records:
+        return None
+
+    # Найти самый свежий run по run_id или issued_at (window=72h — берём его как current)
+    latest_72h = None
+    latest_ts = None
+    for r in records:
+        if r.get('window') != '72h':
+            continue
+        ts = r.get('issued_at', '')
+        if latest_ts is None or ts > latest_ts:
+            latest_ts = ts
+            latest_72h = r
+
+    if not latest_72h:
+        # Fallback — берём просто последнюю запись
+        latest_72h = records[-1]
+
+    # Precision по voter'ам из CLOSED записей за 30 дней
+    from datetime import timedelta
+    cutoff = None
+    try:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    except Exception:
+        pass
+
+    voter_stats = {}  # voter_name → {'hits': N, 'total': N}
+    for r in records:
+        if r.get('status') != 'CLOSED':
+            continue
+        try:
+            r_ts = datetime.fromisoformat(r.get('issued_at', ''))
+            if cutoff and r_ts < cutoff:
+                continue
+        except Exception:
+            continue
+        per_voter = r.get('per_voter_outcome') or {}
+        for voter, verdict in per_voter.items():
+            if voter not in voter_stats:
+                voter_stats[voter] = {'hits': 0, 'total': 0}
+            v = str(verdict).upper()
+            if v == 'HIT':
+                voter_stats[voter]['hits'] += 1
+                voter_stats[voter]['total'] += 1
+            elif v == 'MISS':
+                voter_stats[voter]['total'] += 1
+            # SKIP — не учитываем в total
+
+    return {
+        'latest': latest_72h,
+        'voter_stats': voter_stats,
+        'total_closed': sum(1 for r in records if r.get('status') == 'CLOSED'),
+        'total_pending': sum(1 for r in records if r.get('status') == 'PENDING'),
+    }
+
+
+def _format_shadow_voters_block(compact=False):
+    """Build shadow voters block for RUN/LIQ/digest.
+    compact=True — 4 строки (для LIQ / digest)
+    compact=False — полный блок (для RUN MSG1)
+    """
+    data = _load_latest_shadow_votes()
+    if not data or not data.get('latest'):
+        if compact:
+            return "<b>🔍 Shadow Voters:</b> NOT_CHECKED\n\n"
+        return ("━━━━━━━━━━━━━━━━━━━\n"
+                "<b>🔍 SHADOW VOTERS</b>\n"
+                "━━━━━━━━━━━━━━━━━━━\n"
+                "<i>Нет данных в shadow_votes.jsonl — ждём accumulate</i>\n\n")
+
+    latest = data['latest']
+    votes = latest.get('shadow_votes') or {}
+    agg = latest.get('aggregate_shadow') or {}
+    stats = data['voter_stats']
+    closed = data['total_closed']
+
+    shadow_signal = agg.get('shadow_signal', 'SHADOW_NEUTRAL')
+    rally_n = agg.get('rally_votes', 0)
+    crash_n = agg.get('crash_votes', 0)
+    neutral_n = agg.get('neutral_votes', 0)
+
+    # === COMPACT ===
+    if compact:
+        # Одной строкой
+        _shadow_short = shadow_signal.replace('SHADOW_', '')
+        line = f"<b>🔍 Shadow:</b> {_shadow_short} · rally {rally_n} · crash {crash_n} · neutral {neutral_n}"
+        line += f" · N_closed={closed}\n\n"
+        return line
+
+    # === FULL ===
+    text = "━━━━━━━━━━━━━━━━━━━\n"
+    text += "<b>🔍 SHADOW VOTERS</b> <i>(candidates for voter_wire_v2, NOT in DECISION)</i>\n"
+    text += "━━━━━━━━━━━━━━━━━━━\n"
+    text += f"<b>Aggregate:</b> {shadow_signal}\n"
+    text += f"<b>Counts:</b> rally {rally_n} · crash {crash_n} · neutral {neutral_n}\n\n"
+
+    # Per-voter current votes
+    text += "<b>Текущие голоса:</b>\n"
+    for voter_name, vote_data in votes.items():
+        vote = vote_data.get('vote', 'UNKNOWN') if isinstance(vote_data, dict) else str(vote_data)
+        value = vote_data.get('value', '?') if isinstance(vote_data, dict) else '?'
+        # Emoji per vote type
+        emoji = '🟢' if vote == 'RALLY' else ('🔴' if vote == 'CRASH' else '⚪')
+        # Precision if есть
+        s = stats.get(voter_name, {})
+        n = s.get('total', 0)
+        if n >= 15:
+            pct = s['hits'] / n * 100
+            prec_str = f" · <b>{pct:.0f}%</b> (N={n})"
+        elif n > 0:
+            prec_str = f" · N={n}&lt;15"
+        else:
+            prec_str = ""
+        text += f"  {emoji} <code>{voter_name}</code>: {vote} ({_safe(str(value))}){prec_str}\n"
+
+    text += f"\n<i>N closed forecasts: {closed} · Wire-in требует N≥15 + precision≥55%</i>\n"
+    text += "<i>💡 Voters ТОЛЬКО shadow — не влияют на current DECISION.</i>\n\n"
+    return text
+
+
 def _get_layman_verdict(signal, confidence):
     """Return human-readable verdict for DECISION signal + confidence.
     Fallback — generic based on confidence level."""
@@ -562,6 +706,9 @@ def format_digest():
     _horizons = _compute_action_3horizons(_wyk_h, _tech_h, _cex_h, _coh_h,
                                            _unlock_h, _news_h, _btc_h, _fund_h, _cvd_h)
     text += _format_3horizon_block(_horizons)
+
+    # SHADOW voters (compact for digest)
+    text += _format_shadow_voters_block(compact=True)
 
     # === DECISION (single source of truth) — signal + action одной секцией ===
     if confluence:
@@ -1584,6 +1731,9 @@ def format_liq():
     t += f"{_horizons_liq['swing']['emoji']} <b>SWING:</b> {_horizons_liq['swing']['verdict']}\n"
     t += f"{_horizons_liq['sqz']['emoji']} <b>SQZ:</b> {_horizons_liq['sqz']['verdict']}\n\n"
 
+    # SHADOW voters (compact 1-liner)
+    t += _format_shadow_voters_block(compact=True)
+
     # DECISION (canonical)
     sig = conf.get('signal', NOT_CHECKED)
     cfd = conf.get('confidence', NOT_CHECKED)
@@ -1686,6 +1836,9 @@ def format_run_telegram():
                                               unlock, news, _get_btc_context(composite, macro),
                                               fund, cvd)
     m1 += _format_3horizon_block(_horizons_r)
+
+    # === SHADOW VOTERS === (candidates for voter_wire_v2, NOT in DECISION)
+    m1 += _format_shadow_voters_block(compact=False)
 
     m1 += "━━━━━━━━━━━━━━━━━━━\n"
     m1 += "<b>🎯 DECISION</b>\n"
