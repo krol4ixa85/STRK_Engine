@@ -32,6 +32,15 @@ env:
   SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
   STRICT_NO_TRADING: 'true'
 
+permissions:
+  contents: write
+
+# Concurrency: main workflow не должен пересекаться с squeeze fast workflow.
+# Разные groups — параллельно работают, но каждый group serializes своих runs.
+concurrency:
+  group: strk-main
+  cancel-in-progress: false
+
 jobs:
   composite:
     runs-on: ubuntu-latest
@@ -168,16 +177,9 @@ jobs:
       - name: Whale auto-analysis
         run: python3 scripts/detectors/whale_auto_analysis.py || true
 
-      # STAGE 7.5 · SQUEEZE DETECTION (отдельный стрим в @strk_dynamic3_bot)
-      - name: Squeeze detector (compute state)
-        run: python3 scripts/detectors/squeeze_detector.py || true
-
-      - name: Squeeze notifier (alert to @strk_dynamic3_bot)
-        run: python3 scripts/detectors/squeeze_notifier.py || true
-
-      # STAGE 7.6 · DYNAMIC EXIT SIGNALS (для активных squeeze positions)
-      - name: Dynamic exit signals
-        run: python3 scripts/detectors/dynamic_exit_signals.py || true
+      # STAGE 7.5-7.6 · SQUEEZE + EXIT SIGNALS
+      # Перенесены в отдельный workflow .github/workflows/strk_squeeze.yml
+      # который бежит каждые 30 минут (быстрее для реагирования на squeeze setups).
 
       # STAGE 7.9 · WEEKLY BACKTEST (только воскресенье 00:00 UTC или mode=backtest)
       - name: Weekly backtest
