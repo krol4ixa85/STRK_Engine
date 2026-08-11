@@ -1,12 +1,12 @@
 {
   "_meta": {
-    "as_of": "2026-08-11T17:08:39.078162+00:00",
+    "as_of": "2026-08-11T17:20:50.224317+00:00",
     "purpose": "Aggregated data for STRK Engine LIQ/RUN report",
     "philosophy": "Data only. No DECISION. Agent interprets.",
     "strict_no_trading": true
   },
   "flow_map": {
-    "as_of": "2026-08-11T17:08:39.071901+00:00",
+    "as_of": "2026-08-11T17:20:50.217773+00:00",
     "flow_class": "ACCUMULATION_DOMINANT",
     "class_distribution": {
       "BRIDGE_IN": 1,
@@ -133,19 +133,19 @@
         "flow_class": "UNKNOWN",
         "route": "unclassified pattern",
         "reasoning": [
-          "retention = -1.4% (in=55,567,080, out=56,363,175)",
+          "retention = -1.3% (in=55,567,080, out=56,268,391)",
           "cp_in=19, cp_out=43",
           "no clear pattern matched",
-          "pattern: cp_in=19, cp_out=43, net=-796,094, retention=-1.4326726386117539"
+          "pattern: cp_in=19, cp_out=43, net=-701,311, retention=-1.2620972233541083"
         ],
         "confidence": "low",
         "seed_name": "smart_accumulator_1",
         "chain": "ethereum",
         "metrics": {
-          "edges_count": 133,
+          "edges_count": 132,
           "vol_in_strk": 55567080.3186,
-          "vol_out_strk": 56363174.6744,
-          "net_flow_strk": -796094.3558,
+          "vol_out_strk": 56268390.8964,
+          "net_flow_strk": -701310.5778,
           "cp_in": 19,
           "cp_out": 43
         }
@@ -192,7 +192,7 @@
         "flow_class": "REWARDS",
         "route": "validators(5) → staking_contract → stakers(207)",
         "reasoning": [
-          "retention = 51.6% (in=55,307, out=26,775)",
+          "retention = 51.7% (in=55,132, out=26,624)",
           "cp_in=5, cp_out=207",
           "staking pattern: 5 inflow sources → 207 outflow destinations",
           "classified as REWARDS distribution (not sell pressure)"
@@ -201,10 +201,10 @@
         "seed_name": "staking_contract",
         "chain": "starknet",
         "metrics": {
-          "edges_count": 500,
-          "vol_in_strk": 55306.7752,
-          "vol_out_strk": 26775.4538,
-          "net_flow_strk": 28531.3214,
+          "edges_count": 499,
+          "vol_in_strk": 55132.1173,
+          "vol_out_strk": 26623.5194,
+          "net_flow_strk": 28508.5978,
           "cp_in": 5,
           "cp_out": 207
         }
@@ -230,8 +230,8 @@
     ],
     "not_checked": false,
     "source_summaries": {
-      "l1_as_of": "2026-08-11T17:08:35.144567+00:00",
-      "l2_as_of": "2026-08-11T17:08:39.021897+00:00"
+      "l1_as_of": "2026-08-11T17:20:45.750781+00:00",
+      "l2_as_of": "2026-08-11T17:20:50.170828+00:00"
     },
     "caveats": [
       "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
@@ -314,10 +314,10 @@
       "category": "watchlist",
       "role": "Smart accumulator holding 12.96M STRK (from Rally #1 discovery)",
       "importance": "high",
-      "edges_count": 133,
+      "edges_count": 132,
       "vol_in_strk": 55567080.3186,
-      "vol_out_strk": 56363174.6744,
-      "net_flow_strk": -796094.3558,
+      "vol_out_strk": 56268390.8964,
+      "net_flow_strk": -701310.5778,
       "unique_counterparties_in": 19,
       "unique_counterparties_out": 43
     },
@@ -353,10 +353,10 @@
       "category": "l2_native",
       "role": "Starknet staking contract",
       "importance": "critical",
-      "edges_count": 500,
-      "vol_in_strk": 55306.7752,
-      "vol_out_strk": 26775.4538,
-      "net_flow_strk": 28531.3214,
+      "edges_count": 499,
+      "vol_in_strk": 55132.1173,
+      "vol_out_strk": 26623.5194,
+      "net_flow_strk": 28508.5978,
       "unique_counterparties_in": 5,
       "unique_counterparties_out": 207
     },
