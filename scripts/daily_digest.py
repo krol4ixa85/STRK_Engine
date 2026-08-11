@@ -448,12 +448,15 @@ def _format_shadow_voters_block(compact=False):
 
 
 def _load_dune_starknet():
-    """Load daily + weekly + monthly + cex_flow Dune data."""
+    """Load daily + weekly + monthly + cex_flow Dune data.
+    Возвращает normalized структуру с columns lookup для robust parsing."""
     daily_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet.json'
     weekly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_weekly.json'
     monthly_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_starknet_monthly.json'
     cex_flow_path = SCRIPT_DIR / 'data' / 'cache' / 'dune_cex_flow.json'
-    out = {'daily': None, 'weekly': None, 'monthly': None, 'cex_flow': None, 'age_h': None}
+    out = {'daily': None, 'weekly': None, 'monthly': None, 'cex_flow': None,
+           'daily_cols': [], 'weekly_cols': [], 'monthly_cols': [], 'cex_flow_cols': [],
+           'age_h': None}
 
     for key, path in [('daily', daily_path), ('weekly', weekly_path),
                       ('monthly', monthly_path), ('cex_flow', cex_flow_path)]:
@@ -463,9 +466,11 @@ def _load_dune_starknet():
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             rows = data.get('rows', [])
+            columns = data.get('columns', [])
             if not rows:
                 continue
             out[key] = rows
+            out[f'{key}_cols'] = columns
             if key == 'daily':
                 try:
                     ts = datetime.fromisoformat(data.get('collected_at', ''))
@@ -475,6 +480,31 @@ def _load_dune_starknet():
         except Exception:
             continue
     return out
+
+
+def _get_col(row, cols, name, positional_idx=None, default=None):
+    """Robust cell access — работает с dict rows и list rows.
+    Prefer column name lookup, fall back to positional index."""
+    if row is None:
+        return default
+    # Dict row (named columns)
+    if isinstance(row, dict):
+        val = row.get(name)
+        return val if val is not None else default
+    # List row (positional)
+    if isinstance(row, list):
+        # Try column names first
+        if cols and name in cols:
+            try:
+                idx = cols.index(name)
+                if idx < len(row):
+                    return row[idx] if row[idx] is not None else default
+            except (ValueError, IndexError):
+                pass
+        # Fall back to positional index if provided
+        if positional_idx is not None and positional_idx < len(row):
+            return row[positional_idx] if row[positional_idx] is not None else default
+    return default
 
 
 def _format_dune_starknet_block(compact=False):
@@ -601,27 +631,21 @@ def _format_dune_starknet_block(compact=False):
     # MONTHLY view — structural signal (embedded SQL classification)
     if data['monthly']:
         rows = data['monthly']
+        cols = data.get('monthly_cols', [])
         latest_m = rows[0] if rows else []
 
-        def _m_val(row, key, idx):
-            if isinstance(row, dict):
-                return row.get(key)
-            elif isinstance(row, list) and len(row) > idx:
-                return row[idx]
-            return None
-
-        # Columns positional: day, current_txs, txs_7d_avg, txs_30d_max,
-        #                    pct_from_7d_avg, pct_from_30d_max, signal, score1, score2, verdict
-        m_current = _m_val(latest_m, 'current_txs', 1) or 0
-        m_30d_max = _m_val(latest_m, 'txs_30d_max', 3) or 1
-        m_pct_from_max = _m_val(latest_m, 'pct_from_30d_max', 5) or 0
-        m_signal = _m_val(latest_m, 'signal', 6) or 'UNKNOWN'
-        m_verdict = _m_val(latest_m, 'verdict', 9) or ''
+        # Columns: day, current_txs, txs_7d_avg, txs_30d_max,
+        #          pct_from_7d_avg, pct_from_30d_max, signal, score1, score2, verdict
+        m_current = _get_col(latest_m, cols, 'current_txs', 1, 0) or 0
+        m_30d_max = _get_col(latest_m, cols, 'txs_30d_max', 3, 1) or 1
+        m_pct_from_max = _get_col(latest_m, cols, 'pct_from_30d_max', 5, 0) or 0
+        m_signal = _get_col(latest_m, cols, 'signal', 6, 'UNKNOWN') or 'UNKNOWN'
+        m_verdict = _get_col(latest_m, cols, 'verdict', 9, '') or ''
 
         # Streak — сколько дней подряд одинаковый signal
         streak = 1
         for i in range(1, min(len(rows), 30)):
-            prev_signal = _m_val(rows[i], 'signal', 6)
+            prev_signal = _get_col(rows[i], cols, 'signal', 6)
             if prev_signal == m_signal:
                 streak += 1
             else:
@@ -639,17 +663,15 @@ def _format_dune_starknet_block(compact=False):
 
     # CEX FLOW ETH-side (Dune) — ERC-20 STRK wrapper
     if data.get('cex_flow'):
-        def _cex_r(row, idx):
-            if isinstance(row, list) and len(row) > idx:
-                return row[idx]
-            return None
         rows = data['cex_flow']
+        cols = data.get('cex_flow_cols', [])
         # Columns: day, inflow_strk, outflow_strk, net_flow_strk
+        # NB: rows часто DESC от Dune — берём последние 7 (не в конце, а первые)
         recent = rows[:7] if len(rows) >= 7 else rows
         try:
-            total_in = sum(float(_cex_r(r, 1) or 0) for r in recent)
-            total_out = sum(float(_cex_r(r, 2) or 0) for r in recent)
-            total_net = sum(float(_cex_r(r, 3) or 0) for r in recent)
+            total_in = sum(float(_get_col(r, cols, 'inflow_strk', 1, 0) or 0) for r in recent)
+            total_out = sum(float(_get_col(r, cols, 'outflow_strk', 2, 0) or 0) for r in recent)
+            total_net = sum(float(_get_col(r, cols, 'net_flow_strk', 3, 0) or 0) for r in recent)
 
             text += "<b>CEX flow ETH-side (Dune):</b>\n"
             text += f"  7d inflow:   <code>{total_in/1e6:+.1f}M</code> STRK\n"
@@ -662,8 +684,8 @@ def _format_dune_starknet_block(compact=False):
             else:
                 text += "<i>(neutral)</i>\n"
             text += "\n"
-        except Exception:
-            pass
+        except Exception as e:
+            text += f"<i>CEX flow parse error: {_safe(str(e))}</i>\n\n"
 
     # Impact hint для FUND horizon
     if data['daily']:
@@ -706,37 +728,51 @@ def _compute_current_phase(wyckoff, technical, dune_data, squeeze_state):
     bearish_days_30d = 0
 
     monthly = dune_data.get('monthly') if dune_data else None
+    monthly_cols = dune_data.get('monthly_cols', []) if dune_data else []
     if monthly and len(monthly) > 0:
-        def _v(row, idx):
-            if isinstance(row, list) and len(row) > idx:
-                return row[idx]
+        def _v(row, name, idx):
+            """Read cell — works with dict rows OR list rows."""
+            if row is None:
+                return None
+            if isinstance(row, dict):
+                return row.get(name)
+            if isinstance(row, list):
+                if monthly_cols and name in monthly_cols:
+                    try:
+                        i = monthly_cols.index(name)
+                        if i < len(row):
+                            return row[i]
+                    except (ValueError, IndexError):
+                        pass
+                if idx is not None and idx < len(row):
+                    return row[idx]
             return None
 
         latest = monthly[0]
-        dune_signal = _v(latest, 6) or 'UNKNOWN'
-        dune_pct_from_peak = _v(latest, 5) or 0
+        dune_signal = _v(latest, 'signal', 6) or 'UNKNOWN'
+        dune_pct_from_peak = _v(latest, 'pct_from_30d_max', 5) or 0
 
         # Current streak
         dune_streak = 1
         for i in range(1, min(len(monthly), 30)):
-            if _v(monthly[i], 6) == dune_signal:
+            if _v(monthly[i], 'signal', 6) == dune_signal:
                 dune_streak += 1
             else:
                 break
 
         # Previous streak (immediately before current change)
         if dune_streak < len(monthly):
-            prev_sig = _v(monthly[dune_streak], 6)
+            prev_sig = _v(monthly[dune_streak], 'signal', 6)
             if prev_sig and prev_sig != dune_signal:
                 for i in range(dune_streak, min(len(monthly), 30)):
-                    if _v(monthly[i], 6) == prev_sig:
+                    if _v(monthly[i], 'signal', 6) == prev_sig:
                         prev_bearish_streak += 1
                     else:
                         break
 
         # Total bearish days in last 30 rows (structural context)
         for i in range(min(len(monthly), 30)):
-            if _v(monthly[i], 6) == 'BEARISH_BREAKDOWN':
+            if _v(monthly[i], 'signal', 6) == 'BEARISH_BREAKDOWN':
                 bearish_days_30d += 1
 
     # === Squeeze active? ===
