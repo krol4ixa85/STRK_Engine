@@ -17,6 +17,7 @@ on:
           - liq
           - run
           - backtest
+          - baseline
 
 # Global env — все шаги видят все секреты
 env:
@@ -61,7 +62,7 @@ jobs:
           fi
 
       # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
-      # Cache 20h daily / 6d weekly — не расходуем executions без нужды.
+      # Cache 20h daily / 6d weekly / 5d monthly / 24h cex_flow — economy на free tier.
       # Тихо skipped если DUNE_API_KEY не установлен.
       - name: Dune collector · Starknet stats
         env:
@@ -71,6 +72,13 @@ jobs:
           DUNE_QUERY_ID_MONTHLY: ${{ secrets.DUNE_QUERY_ID_MONTHLY }}
           DUNE_QUERY_ID_CEX_FLOW: ${{ secrets.DUNE_QUERY_ID_CEX_FLOW }}
         run: python3 scripts/collectors/dune_collector.py || true
+
+      # STAGE 1.6 · CEX FLOW ALERT (detect DISTRIBUTION → ACCUMULATION transitions)
+      # Читает existing cex_flow.json (обновляется в STAGE 1 через Etherscan).
+      # Real-time каждый час — реагирует на flip, без Dune credits.
+      # Alert в @strk_dynamic3_bot с dedup 24h.
+      - name: CEX flow alert detector
+        run: python3 scripts/detectors/cex_flow_alert.py || true
 
       # ============================================================
       # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
@@ -196,16 +204,23 @@ jobs:
         if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
         run: python3 scripts/weekly_backtest.py || true
 
+      # STAGE 7.95 · BASELINE ANALYSIS (mode=baseline)
+      - name: Install baseline deps
+        if: github.event.inputs.mode == 'baseline'
+        run: pip install pandas numpy ccxt pyarrow
+
+      - name: STRK baseline analysis
+        if: github.event.inputs.mode == 'baseline'
+        run: python3 scripts/strk_baseline_analysis.py || true
+
       # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
 
       # STAGE 9 · SEND (MODE = digest | liq | run)
-      # По cron */6 всегда MODE=digest
-      # По workflow_dispatch — MODE берётся из inputs.mode
-      # SKIP если это weekly backtest run (не смешиваем)
+      # SKIP если mode=backtest или mode=baseline (у них свои каналы отправки)
       - name: Send Telegram delivery
-        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest'
+        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
