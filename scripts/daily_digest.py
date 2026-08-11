@@ -526,22 +526,25 @@ def _format_dune_starknet_block(compact=False):
         text = "<b>🌐 STARKNET (Dune):</b>\n"
         if data['daily'] and len(data['daily']) >= 7:
             rows = data['daily']
-            latest_txs = _r(rows[0], 1) or 0
-            wow_txs = _r(rows[6], 1) or 1
+            cols = data.get('daily_cols', [])
+            latest_txs = _get_col(rows[0], cols, 'total_txs', 1, 0) or 0
+            wow_txs = _get_col(rows[6], cols, 'total_txs', 1, 1) or 1
             txs_wow = (latest_txs / wow_txs - 1) * 100 if wow_txs else 0
-            latest_new = _r(rows[0], 6) or 0
-            wow_new = _r(rows[6], 6) or 1
+            latest_new = _get_col(rows[0], cols, 'new_accounts', 6, 0) or 0
+            wow_new = _get_col(rows[6], cols, 'new_accounts', 6, 1) or 1
             new_wow = (latest_new / wow_new - 1) * 100 if wow_new else 0
             _warn_a = ' ⚠' if txs_wow <= -20 else ''
             _warn_n = ' ⚠' if new_wow <= -20 else ''
             text += f"  Activity: <code>{int(latest_txs)/1000:.0f}K</code>/day · WoW <code>{txs_wow:+.0f}%</code>{_warn_a}\n"
             text += f"  Adoption: <code>{int(latest_new)}</code>/day · WoW <code>{new_wow:+.0f}%</code>{_warn_n}\n"
         if data.get('monthly') and len(data['monthly']) > 0:
-            latest_m = data['monthly'][0]
-            m_signal = _r(latest_m, 6) or 'UNKNOWN'
-            m_pct = _r(latest_m, 5) or 0
-            bearish_30d = sum(1 for r in data['monthly'][:30]
-                              if _r(r, 6) == 'BEARISH_BREAKDOWN')
+            m_rows = data['monthly']
+            m_cols = data.get('monthly_cols', [])
+            latest_m = m_rows[0]
+            m_signal = _get_col(latest_m, m_cols, 'signal', 6, 'UNKNOWN') or 'UNKNOWN'
+            m_pct = _get_col(latest_m, m_cols, 'pct_from_30d_max', 5, 0) or 0
+            bearish_30d = sum(1 for r in m_rows[:30]
+                              if _get_col(r, m_cols, 'signal', 6) == 'BEARISH_BREAKDOWN')
             text += f"  Monthly: <code>{_safe(str(m_signal))}</code> ({bearish_30d}/30d bearish, {m_pct:+.0f}% от peak)\n"
         text += "\n"
         return text
