@@ -167,19 +167,34 @@ def main():
     logger.info("DUNE COLLECTOR · Starknet Analytics")
     logger.info("=" * 60)
 
+    # === LOUD DIAGNOSTICS ===
     api_key = os.environ.get('DUNE_API_KEY', '').strip()
-    if not api_key:
-        logger.error("DUNE_API_KEY not set — skipping Dune collector")
-        return 0  # не error, просто skip
-
     query_daily = os.environ.get('DUNE_QUERY_ID_DAILY', '').strip()
     query_weekly = os.environ.get('DUNE_QUERY_ID_WEEKLY', '').strip()
     query_monthly = os.environ.get('DUNE_QUERY_ID_MONTHLY', '').strip()
     query_cex_flow = os.environ.get('DUNE_QUERY_ID_CEX_FLOW', '').strip()
 
-    if not query_daily and not query_weekly and not query_monthly and not query_cex_flow:
+    logger.info("Environment diagnostic:")
+    logger.info(f"  DUNE_API_KEY:            {'✓ SET (len ' + str(len(api_key)) + ')' if api_key else '✗ MISSING'}")
+    logger.info(f"  DUNE_QUERY_ID_DAILY:     {'✓ ' + query_daily if query_daily else '✗ MISSING'}")
+    logger.info(f"  DUNE_QUERY_ID_WEEKLY:    {'✓ ' + query_weekly if query_weekly else '✗ MISSING'}")
+    logger.info(f"  DUNE_QUERY_ID_MONTHLY:   {'✓ ' + query_monthly if query_monthly else '✗ MISSING'}")
+    logger.info(f"  DUNE_QUERY_ID_CEX_FLOW:  {'✓ ' + query_cex_flow if query_cex_flow else '✗ MISSING'}")
+    logger.info(f"  Cache dir:               {CACHE_DIR} ({'exists' if CACHE_DIR.exists() else 'MISSING'})")
+
+    if not api_key:
+        # Явно кричим в GitHub Actions лог (появится красным в UI)
+        print("::error title=DUNE_API_KEY missing::Set secret DUNE_API_KEY in repo settings")
+        logger.error("DUNE_API_KEY not set — skipping Dune collector")
+        return 0
+
+    if not (query_daily or query_weekly or query_monthly or query_cex_flow):
+        print("::error title=No Dune query IDs::Set DUNE_QUERY_ID_DAILY/WEEKLY/MONTHLY/CEX_FLOW secrets")
         logger.error("No DUNE_QUERY_ID_* configured — skipping")
         return 0
+
+    logger.info(f"\nCache directory: {CACHE_DIR}")
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
     if query_daily:
         try:
