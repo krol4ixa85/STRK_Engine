@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-11T18:36:29.200681+00:00",
+  "as_of": "2026-08-11T19:52:06.074265+00:00",
   "flow_class": "ACCUMULATION_DOMINANT",
   "class_distribution": {
     "BRIDGE_IN": 1,
@@ -15,9 +15,9 @@
       "flow_class": "BRIDGE_IN",
       "route": "multiple_l1 (25) → bridge → L2",
       "reasoning": [
-        "retention = 97.5% (in=10,730,545, out=270,000)",
+        "retention = 97.2% (in=9,491,186, out=270,000)",
         "cp_in=25, cp_out=11",
-        "bridge net INFLOW +10,460,545 STRK — potential accumulation intent (needs L2 TVL check)",
+        "bridge net INFLOW +9,221,186 STRK — potential accumulation intent (needs L2 TVL check)",
         "⚠ NE trust as accumulation without L2 destination check"
       ],
       "confidence": "medium",
@@ -25,9 +25,9 @@
       "chain": "ethereum",
       "metrics": {
         "edges_count": 59,
-        "vol_in_strk": 10730544.7737,
+        "vol_in_strk": 9491186.2369,
         "vol_out_strk": 269999.9219,
-        "net_flow_strk": 10460544.8518,
+        "net_flow_strk": 9221186.315,
         "cp_in": 25,
         "cp_out": 11
       }
@@ -126,40 +126,40 @@
       "flow_class": "UNKNOWN",
       "route": "unclassified pattern",
       "reasoning": [
-        "retention = 3.9% (in=58,537,080, out=56,256,760)",
-        "cp_in=20, cp_out=42",
+        "retention = 3.9% (in=58,537,080, out=56,257,255)",
+        "cp_in=20, cp_out=43",
         "no clear pattern matched",
-        "pattern: cp_in=20, cp_out=42, net=+2,280,320, retention=3.8955141597238674"
+        "pattern: cp_in=20, cp_out=43, net=+2,279,825, retention=3.894668868504525"
       ],
       "confidence": "low",
       "seed_name": "smart_accumulator_1",
       "chain": "ethereum",
       "metrics": {
-        "edges_count": 132,
+        "edges_count": 133,
         "vol_in_strk": 58537080.3186,
-        "vol_out_strk": 56256760.0661,
-        "net_flow_strk": 2280320.2524,
+        "vol_out_strk": 56257254.8749,
+        "net_flow_strk": 2279825.4436,
         "cp_in": 20,
-        "cp_out": 42
+        "cp_out": 43
       }
     },
     {
       "flow_class": "ACCUMULATION",
-      "route": "many(32) → this seed → few(0)",
+      "route": "many(31) → this seed → few(0)",
       "reasoning": [
-        "retention = 100.0% (in=8,611,516, out=0)",
-        "cp_in=32, cp_out=0",
-        "ACCUMULATION signature: 32 sources → 1 holder, retention 100.0%"
+        "retention = 100.0% (in=8,607,913, out=0)",
+        "cp_in=31, cp_out=0",
+        "ACCUMULATION signature: 31 sources → 1 holder, retention 100.0%"
       ],
       "confidence": "medium",
       "seed_name": "discovered_a4b9569b",
       "chain": "ethereum",
       "metrics": {
-        "edges_count": 46,
-        "vol_in_strk": 8611516.4521,
+        "edges_count": 45,
+        "vol_in_strk": 8607912.9487,
         "vol_out_strk": 0,
-        "net_flow_strk": 8611516.4521,
-        "cp_in": 32,
+        "net_flow_strk": 8607912.9487,
+        "cp_in": 31,
         "cp_out": 0
       }
     },
@@ -183,23 +183,23 @@
     },
     {
       "flow_class": "REWARDS",
-      "route": "validators(5) → staking_contract → stakers(188)",
+      "route": "validators(1) → staking_contract → stakers(194)",
       "reasoning": [
-        "retention = 49.8% (in=135,154, out=67,825)",
-        "cp_in=5, cp_out=188",
-        "staking pattern: 5 inflow sources → 188 outflow destinations",
+        "retention = -1303.4% (in=17,494, out=245,510)",
+        "cp_in=1, cp_out=194",
+        "staking pattern: 1 inflow sources → 194 outflow destinations",
         "classified as REWARDS distribution (not sell pressure)"
       ],
       "confidence": "high",
       "seed_name": "staking_contract",
       "chain": "starknet",
       "metrics": {
-        "edges_count": 499,
-        "vol_in_strk": 135154.1056,
-        "vol_out_strk": 67825.4783,
-        "net_flow_strk": 67328.6273,
-        "cp_in": 5,
-        "cp_out": 188
+        "edges_count": 500,
+        "vol_in_strk": 17493.7292,
+        "vol_out_strk": 245509.6131,
+        "net_flow_strk": -228015.8839,
+        "cp_in": 1,
+        "cp_out": 194
       }
     },
     {
@@ -223,8 +223,8 @@
   ],
   "not_checked": false,
   "source_summaries": {
-    "l1_as_of": "2026-08-11T18:36:25.510155+00:00",
-    "l2_as_of": "2026-08-11T18:36:29.146907+00:00"
+    "l1_as_of": "2026-08-11T19:52:02.015248+00:00",
+    "l2_as_of": "2026-08-11T19:52:06.023658+00:00"
   },
   "caveats": [
     "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
