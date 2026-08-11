@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-11T15:01:51.438690+00:00",
+  "as_of": "2026-08-11T16:31:35.938541+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 10,
-      "total_usd": 2401485.0,
-      "net_usd_delta_24h": -1073.0,
-      "net_strk_delta_24h": 2639607.0,
+      "total_usd": 2366135.0,
+      "net_usd_delta_24h": -1281.0,
+      "net_strk_delta_24h": 3040589.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 134413510.0,
-      "tvl_usd_now": 5485806,
+      "tvl_strk_now": 134379261.0,
+      "tvl_usd_now": 5683735,
       "apy_pct": 6.75,
-      "strk_delta_24h": -64553.0,
-      "strk_delta_7d": 167529.0,
-      "pct_24h": -0.05,
-      "pct_7d": 0.13,
-      "signal": "STABLE"
+      "strk_delta_24h": 7605701.0,
+      "strk_delta_7d": 7837784.0,
+      "pct_24h": 6.0,
+      "pct_7d": 6.19,
+      "signal": "LST_MINTING"
     },
     "native_staking": {
-      "as_of": "2026-08-11T15:01:51.395500+00:00",
+      "as_of": "2026-08-11T16:31:35.904903+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 134413510.0,
+    "endur_lst_tvl_strk": 134379261.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -64553.0,
-    "lp_delta_24h_strk": 2639607.0,
-    "stake_signal": "STABLE",
+    "stake_delta_24h_strk": 7605701.0,
+    "lp_delta_24h_strk": 3040589.0,
+    "stake_signal": "POSITIVE",
     "lp_signal": "POSITIVE"
   },
-  "overall_direction": "LP_ADDING",
-  "layman": "Приток в DEX-пулы, стейкинг без движения. Готовится торговая ликвидность.",
+  "overall_direction": "LOCKING_UP",
+  "layman": "Приток и в стейкинг, и в DEX-пулы. Ликвидность заякоривается в экосистеме — накопительный сигнал.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5
