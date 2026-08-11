@@ -1,24 +1,24 @@
 {
-  "as_of": "2026-08-11T02:00:00.841642+00:00",
-  "valid_until": "2026-08-18T02:00:00.841642+00:00",
+  "as_of": "2026-08-11T03:53:48.360798+00:00",
+  "valid_until": "2026-08-18T03:53:48.360798+00:00",
   "current_state": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase B · building base",
-    "confidence": "MEDIUM",
+    "confidence": "LOW",
     "price": 0.0242,
     "btc_cycle": "DOWN",
-    "btc_price": 64077.6,
+    "btc_price": 64130.4,
     "short_crowded": false,
     "long_crowded": false,
     "days_to_next_unlock": 3,
     "next_unlock_strk": 64000000,
-    "cex_flow_signal": "MIXED"
+    "cex_flow_signal": "MILD_DISTRIBUTION"
   },
   "scenarios": [
     {
       "type": "BASE",
       "label": "Продолжение accumulation",
-      "probability_pct": 73,
+      "probability_pct": 65,
       "price_range": [
         0.0224,
         0.0266
@@ -31,7 +31,7 @@
     {
       "type": "BULL",
       "label": "Positive shock / squeeze",
-      "probability_pct": 9,
+      "probability_pct": 8,
       "price_range": [
         0.0249,
         0.0349
@@ -44,15 +44,15 @@
     {
       "type": "BEAR",
       "label": "Negative shock / markdown",
-      "probability_pct": 18,
+      "probability_pct": 27,
       "price_range": [
-        0.0218,
-        0.0235
+        0.0183,
+        0.0224
       ],
       "timeframe_days": 14,
-      "narrative": "Ограниченная коррекция в тренде.",
-      "catalyst": "Trigger: broader crypto sell-off.",
-      "position_hint": "Short only below $0.0235 with stop $0.0254. Or reduce longs."
+      "narrative": "Cascade breakdown. CEX inflows + unlock 64M через 3d вызывают sell pressure.",
+      "catalyst": "Trigger: break BELOW $0.0229 + volume spike. Или BTC уходит под $60k.",
+      "position_hint": "Short only below $0.0224 with stop $0.0254. Or reduce longs."
     }
   ]
 }
