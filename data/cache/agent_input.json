@@ -1,12 +1,12 @@
 {
   "_meta": {
-    "as_of": "2026-08-11T19:52:06.080913+00:00",
+    "as_of": "2026-08-11T19:56:02.800502+00:00",
     "purpose": "Aggregated data for STRK Engine LIQ/RUN report",
     "philosophy": "Data only. No DECISION. Agent interprets.",
     "strict_no_trading": true
   },
   "flow_map": {
-    "as_of": "2026-08-11T19:52:06.074265+00:00",
+    "as_of": "2026-08-11T19:56:02.794857+00:00",
     "flow_class": "ACCUMULATION_DOMINANT",
     "class_distribution": {
       "BRIDGE_IN": 1,
@@ -190,11 +190,11 @@
       },
       {
         "flow_class": "REWARDS",
-        "route": "validators(1) → staking_contract → stakers(194)",
+        "route": "validators(1) → staking_contract → stakers(193)",
         "reasoning": [
-          "retention = -1303.4% (in=17,494, out=245,510)",
-          "cp_in=1, cp_out=194",
-          "staking pattern: 1 inflow sources → 194 outflow destinations",
+          "retention = -1324.1% (in=17,220, out=245,236)",
+          "cp_in=1, cp_out=193",
+          "staking pattern: 1 inflow sources → 193 outflow destinations",
           "classified as REWARDS distribution (not sell pressure)"
         ],
         "confidence": "high",
@@ -202,11 +202,11 @@
         "chain": "starknet",
         "metrics": {
           "edges_count": 500,
-          "vol_in_strk": 17493.7292,
-          "vol_out_strk": 245509.6131,
-          "net_flow_strk": -228015.8839,
+          "vol_in_strk": 17219.8569,
+          "vol_out_strk": 245236.1833,
+          "net_flow_strk": -228016.3264,
           "cp_in": 1,
-          "cp_out": 194
+          "cp_out": 193
         }
       },
       {
@@ -230,8 +230,8 @@
     ],
     "not_checked": false,
     "source_summaries": {
-      "l1_as_of": "2026-08-11T19:52:02.015248+00:00",
-      "l2_as_of": "2026-08-11T19:52:06.023658+00:00"
+      "l1_as_of": "2026-08-11T19:55:58.677133+00:00",
+      "l2_as_of": "2026-08-11T19:56:02.753162+00:00"
     },
     "caveats": [
       "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
@@ -354,11 +354,11 @@
       "role": "Starknet staking contract",
       "importance": "critical",
       "edges_count": 500,
-      "vol_in_strk": 17493.7292,
-      "vol_out_strk": 245509.6131,
-      "net_flow_strk": -228015.8839,
+      "vol_in_strk": 17219.8569,
+      "vol_out_strk": 245236.1833,
+      "net_flow_strk": -228016.3264,
       "unique_counterparties_in": 1,
-      "unique_counterparties_out": 194
+      "unique_counterparties_out": 193
     },
     {
       "seed_name": "bridge_starknet_l2",
