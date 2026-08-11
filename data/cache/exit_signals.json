@@ -1,8 +1,8 @@
 {
-  "ts": "2026-08-11T18:04:47.821413+00:00",
+  "ts": "2026-08-11T18:37:46.270324+00:00",
   "long_exit": {
-    "level": "WARNING",
-    "active_count": 1,
+    "level": "NEUTRAL",
+    "active_count": 0,
     "triggers": [
       {
         "id": "L1",
@@ -13,14 +13,14 @@
       {
         "id": "L2",
         "name": "SMART cohort distributing",
-        "active": true,
-        "evidence": "SMART 24h net -3.37M STRK (threshold -0.5M)"
+        "active": false,
+        "evidence": "SMART 24h net -0.40M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=1.21"
+        "evidence": "price_up_3d=False, vol_ratio=1.22"
       },
       {
         "id": "L4",
@@ -44,13 +44,13 @@
         "id": "S2",
         "name": "SMART cohort accumulating",
         "active": false,
-        "evidence": "SMART 24h net -3.37M STRK"
+        "evidence": "SMART 24h net -0.40M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 31.0, vol_ratio 1.21"
+        "evidence": "RSI 30.75, vol_ratio 1.22"
       },
       {
         "id": "S4",
