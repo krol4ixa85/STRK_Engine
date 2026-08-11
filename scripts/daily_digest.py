@@ -652,20 +652,26 @@ def _format_dune_starknet_block(compact=False):
                 break
 
         text += "<b>Monthly view</b> <i>(SQL-classified)</i>:\n"
-        text += f"  Signal:  <code>{_safe(str(m_signal))}</code> ({streak}d streak)\n"
-        if m_verdict:
-            text += f"  Verdict: {_safe(str(m_verdict))}\n"
-        try:
-            text += f"  From 30d peak: <code>{float(m_pct_from_max):+.1f}%</code>\n"
-        except Exception:
-            pass
+        # DEBUG fallback: signal UNKNOWN — покажем raw диагностику
+        if m_signal == 'UNKNOWN':
+            text += f"  <i>⚠ Signal UNKNOWN. Columns: {_safe(str(cols)[:120])}</i>\n"
+            if latest_m:
+                row_type = 'dict' if isinstance(latest_m, dict) else ('list' if isinstance(latest_m, list) else 'other')
+                text += f"  <i>Row[0] ({row_type}): {_safe(str(latest_m)[:200])}</i>\n"
+        else:
+            text += f"  Signal:  <code>{_safe(str(m_signal))}</code> ({streak}d streak)\n"
+            if m_verdict:
+                text += f"  Verdict: {_safe(str(m_verdict))}\n"
+            try:
+                text += f"  From 30d peak: <code>{float(m_pct_from_max):+.1f}%</code>\n"
+            except Exception:
+                pass
         text += "\n"
 
     # CEX FLOW ETH-side (Dune) — ERC-20 STRK wrapper
     if data.get('cex_flow'):
         rows = data['cex_flow']
         cols = data.get('cex_flow_cols', [])
-        # Columns: day, inflow_strk, outflow_strk, net_flow_strk
         # NB: rows часто DESC от Dune — берём последние 7 (не в конце, а первые)
         recent = rows[:7] if len(rows) >= 7 else rows
         try:
@@ -674,15 +680,23 @@ def _format_dune_starknet_block(compact=False):
             total_net = sum(float(_get_col(r, cols, 'net_flow_strk', 3, 0) or 0) for r in recent)
 
             text += "<b>CEX flow ETH-side (Dune):</b>\n"
-            text += f"  7d inflow:   <code>{total_in/1e6:+.1f}M</code> STRK\n"
-            text += f"  7d outflow:  <code>{total_out/1e6:+.1f}M</code> STRK\n"
-            text += f"  7d net:      <code>{total_net/1e6:+.2f}M</code> STRK "
-            if total_net < -1_000_000:
-                text += "<i>(accumulation)</i>\n"
-            elif total_net > 1_000_000:
-                text += "<i>(distribution)</i>\n"
+            # DEBUG fallback: если все нули — покажем сырую диагностику
+            if total_in == 0 and total_out == 0:
+                text += f"  <i>⚠ Все нули. Columns: {_safe(str(cols)[:120])}</i>\n"
+                if rows:
+                    first_row = rows[0]
+                    row_type = 'dict' if isinstance(first_row, dict) else ('list' if isinstance(first_row, list) else 'other')
+                    text += f"  <i>Row[0] ({row_type}): {_safe(str(first_row)[:200])}</i>\n"
             else:
-                text += "<i>(neutral)</i>\n"
+                text += f"  7d inflow:   <code>{total_in/1e6:+.1f}M</code> STRK\n"
+                text += f"  7d outflow:  <code>{total_out/1e6:+.1f}M</code> STRK\n"
+                text += f"  7d net:      <code>{total_net/1e6:+.2f}M</code> STRK "
+                if total_net < -1_000_000:
+                    text += "<i>(accumulation)</i>\n"
+                elif total_net > 1_000_000:
+                    text += "<i>(distribution)</i>\n"
+                else:
+                    text += "<i>(neutral)</i>\n"
             text += "\n"
         except Exception as e:
             text += f"<i>CEX flow parse error: {_safe(str(e))}</i>\n\n"
