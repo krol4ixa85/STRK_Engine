@@ -232,10 +232,13 @@ jobs:
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
-          # git add -A подхватывает и modified и untracked — новые jsonl файлы
-          # (discovery_candidates, whale_events, squeeze_alerts) больше не теряются.
+          # Показываем, какие Dune-файлы есть
+          echo "=== Dune files in data/cache: ==="
+          ls -la data/cache/dune_*.json 2>/dev/null || echo "No dune files found"
+          # Принудительно добавляем Dune-файлы (даже если в .gitignore)
+          git add -f data/cache/dune_*.json 2>/dev/null || echo "No dune files to add"
+          # Добавляем все остальные изменения
           git add -A data/
-          # --cached — проверяем что реально в staging area
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
