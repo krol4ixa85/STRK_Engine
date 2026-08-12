@@ -1,13 +1,13 @@
 {
-  "as_of": "2026-08-12T16:08:08.606230+00:00",
-  "valid_until": "2026-08-19T16:08:08.606230+00:00",
+  "as_of": "2026-08-12T18:00:55.435872+00:00",
+  "valid_until": "2026-08-19T18:00:55.435872+00:00",
   "current_state": {
-    "phase": "ACCUMULATION",
-    "sub_phase": "Phase A · initial demand",
-    "confidence": "LOW",
+    "phase": "MARKDOWN",
+    "sub_phase": "Trend continuation down",
+    "confidence": "MEDIUM",
     "price": 0.0232,
     "btc_cycle": "DOWN",
-    "btc_price": 63451.2,
+    "btc_price": 63462.8,
     "short_crowded": false,
     "long_crowded": false,
     "days_to_next_unlock": 2,
@@ -17,21 +17,21 @@
   "scenarios": [
     {
       "type": "BASE",
-      "label": "Продолжение accumulation",
-      "probability_pct": 73,
+      "label": "Продолжение markdown",
+      "probability_pct": 75,
       "price_range": [
-        0.0221,
-        0.0255
+        0.0191,
+        0.0239
       ],
       "timeframe_days": 14,
-      "narrative": "Продолжение аккумуляции в диапазоне. Крупные покупают на dip, розница пассивна.",
-      "catalyst": "Постепенное building base 2-6 недель до подтверждения markup.",
+      "narrative": "Падение продолжается. Lower highs, lower lows. Unlock через 2 дней добавит давления.",
+      "catalyst": "Ждать капитуляции: extreme neg funding + volume spike + 7 дней без новых лоу.",
       "position_hint": "Stay flat. Не открывать directional trade без confirmation."
     },
     {
       "type": "BULL",
       "label": "Positive shock / squeeze",
-      "probability_pct": 9,
+      "probability_pct": 8,
       "price_range": [
         0.0239,
         0.0349
@@ -44,7 +44,7 @@
     {
       "type": "BEAR",
       "label": "Negative shock / markdown",
-      "probability_pct": 18,
+      "probability_pct": 17,
       "price_range": [
         0.0209,
         0.0225

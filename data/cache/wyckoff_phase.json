@@ -1,17 +1,18 @@
 {
-  "as_of": "2026-08-12T16:07:16.011075+00:00",
-  "phase": "ACCUMULATION",
-  "sub_phase": "Phase A · initial demand",
-  "confidence": "LOW",
-  "score": 2,
+  "as_of": "2026-08-12T18:00:11.871060+00:00",
+  "phase": "MARKDOWN",
+  "sub_phase": "Trend continuation down",
+  "confidence": "MEDIUM",
+  "score": 3,
   "all_scores": {
     "ACCUMULATION": 2,
     "MARKUP": 0,
     "DISTRIBUTION": 0,
-    "MARKDOWN": 2
+    "MARKDOWN": 3
   },
   "reasons": [
-    "few LARGE receivers (3)"
+    "downtrend structure",
+    "Effort/Result markdown pattern"
   ],
   "technical": {
     "price_now": 0.0232,
@@ -27,41 +28,41 @@
     "support_zones": [
       0.0225,
       0.0229,
-      0.0231
+      0.023
     ],
-    "avg_vol_30": 132609.74,
-    "last_vol": 2981.61,
-    "vol_ratio_last": 0.02,
-    "vol_trend_10": 1.12,
+    "avg_vol_30": 133933.01,
+    "last_vol": 42679.8,
+    "vol_ratio_last": 0.32,
+    "vol_trend_10": 1.14,
     "structure": "DOWNTREND",
-    "compression": 0.16,
-    "pct_from_high_14d": -27.01,
-    "pct_from_low_14d": 3.07
+    "compression": 0.4,
+    "pct_from_high_14d": -27.04,
+    "pct_from_low_14d": 3.03
   },
   "triggers": {
     "to_next_phase": [
       [
-        "Break ABOVE $0.0265 on volume",
+        "Price stops making new lows for 7+ days",
+        true
+      ],
+      [
+        "Funding extreme negative 5+ fundings row",
         false
       ],
       [
-        "Distribution ratio holds above 0.30",
+        "Auto-rejected count drops",
         false
       ],
       [
-        "BTC breaks up-cycle",
-        false
-      ],
-      [
-        "Volume expansion up 2+ candles",
-        false
+        "Watchlist balance stops decreasing",
+        true
       ]
     ],
     "exit_signals": [
-      "If flat: consider LONG on break above $0.0265 with stop at $0.0225",
-      "Position sizing: small (accumulation not confirmed until markup)"
+      "If short: cover below $0.0203 (capitulation) or above $0.0225 (invalidation)",
+      "If flat: DO NOT LONG YET, wait for accumulation confirmation"
     ],
-    "next_phase": "MARKUP"
+    "next_phase": "ACCUMULATION"
   },
-  "layman_explanation": "Фаза НАКОПЛЕНИЯ. Крупные игроки тихо покупают токены у розницы. Цена в боковике, объём падает. Это до-стадия роста. Обычно длится 2-8 недель. Ничего покупать пока не время — жди пробоя вверх с объёмом."
+  "layman_explanation": "Фаза ПАДЕНИЯ. Разгружаются lonely holders, паника. Цена делает lower lows. Не ловить нож. Ждать капитуляцию: экстремальные шорт-funding'и, объём выше среднего в 3-5×, цена стоит 7+ дней без новых минимумов."
 }

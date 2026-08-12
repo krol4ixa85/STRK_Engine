@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-12T16:08:24.165800+00:00",
+  "as_of": "2026-08-12T18:01:08.798801+00:00",
   "events": [
     {
       "amount_M_strk": 14.85,
@@ -26,23 +26,23 @@
       "meaning": "Токены уходят с биржи (Coinbase_1) на приватный кошелёк → smart money buying"
     },
     {
-      "amount_M_strk": 13.75,
-      "from": "Coinbase_1",
-      "from_kind": "CEX",
-      "to": "0x689a5f...",
-      "to_kind": "UNKNOWN",
-      "from_addr_short": "Coinbase_1",
-      "to_addr_short": "0x689a5fbf...",
-      "classification": "ACCUMULATION",
-      "sentiment": "BULLISH",
-      "meaning": "Токены уходят с биржи (Coinbase_1) на приватный кошелёк → smart money buying"
+      "amount_M_strk": 6.53,
+      "from": "0x689a5f...",
+      "from_kind": "UNKNOWN",
+      "to": "Coinbase_1",
+      "to_kind": "CEX",
+      "from_addr_short": "0x689a5fbf...",
+      "to_addr_short": "Coinbase_1",
+      "classification": "DISTRIBUTION",
+      "sentiment": "BEARISH",
+      "meaning": "Крупный отправитель шлёт токены на биржу (Coinbase_1) → whale selling"
     }
   ],
   "cohort_read": {
-    "read": "WHALES_ACCUMULATING",
-    "summary": "2/3 топ-транзакций = ACCUMULATION (from CEX to private). Bullish read.",
-    "dist_count": 1,
-    "accum_count": 2,
+    "read": "WHALES_DISTRIBUTING",
+    "summary": "2/3 топ-транзакций = DISTRIBUTION (whales sending to exchanges). Bearish read.",
+    "dist_count": 2,
+    "accum_count": 1,
     "neutral_count": 0
   }
 }
