@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-12T06:19:43.758211+00:00",
+  "ts": "2026-08-12T08:22:24.760570+00:00",
   "long_exit": {
     "level": "WARNING",
     "active_count": 1,
@@ -14,7 +14,7 @@
         "id": "L2",
         "name": "SMART cohort distributing",
         "active": true,
-        "evidence": "SMART 24h net -1.27M STRK (threshold -0.5M)"
+        "evidence": "SMART 24h net -2.25M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
@@ -26,7 +26,7 @@
         "id": "L4",
         "name": "Funding crowded long (flush risk)",
         "active": false,
-        "evidence": "funding APR 5.475%, long_crowded=False"
+        "evidence": "funding APR -1.167%, long_crowded=False"
       }
     ]
   },
@@ -44,19 +44,19 @@
         "id": "S2",
         "name": "SMART cohort accumulating",
         "active": false,
-        "evidence": "SMART 24h net -1.27M STRK"
+        "evidence": "SMART 24h net -2.25M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 42.53, vol_ratio 1.25"
+        "evidence": "RSI 41.01, vol_ratio 1.25"
       },
       {
         "id": "S4",
         "name": "Funding crowded short (squeeze risk)",
         "active": false,
-        "evidence": "funding APR 5.475%, short_crowded=False"
+        "evidence": "funding APR -1.167%, short_crowded=False"
       }
     ]
   },
