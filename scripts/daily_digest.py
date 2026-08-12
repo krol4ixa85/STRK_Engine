@@ -541,11 +541,22 @@ def _format_dune_starknet_block(compact=False):
             m_rows = data['monthly']
             m_cols = data.get('monthly_cols', [])
             latest_m = m_rows[0]
-            m_signal = _get_col(latest_m, m_cols, 'signal', 6, 'UNKNOWN') or 'UNKNOWN'
-            m_pct = _get_col(latest_m, m_cols, 'pct_from_30d_max', 5, 0) or 0
-            bearish_30d = sum(1 for r in m_rows[:30]
-                              if _get_col(r, m_cols, 'signal', 6) == 'BEARISH_BREAKDOWN')
-            text += f"  Monthly: <code>{_safe(str(m_signal))}</code> ({bearish_30d}/30d bearish, {m_pct:+.0f}% от peak)\n"
+            # Support both v1 (signal, pct_from_30d_max) и v2 (phase_signal, w_m_pct)
+            m_signal = (_get_col(latest_m, m_cols, 'phase_signal', None) or
+                        _get_col(latest_m, m_cols, 'signal', 6, 'UNKNOWN') or 'UNKNOWN')
+            m_pct = _get_col(latest_m, m_cols, 'w_m_pct', None)
+            if m_pct is None:
+                m_pct = _get_col(latest_m, m_cols, 'pct_from_30d_max', 5, 0)
+            try:
+                m_pct = float(m_pct) if m_pct is not None else 0
+            except Exception:
+                m_pct = 0
+
+            def _lsig(r):
+                return (_get_col(r, m_cols, 'phase_signal', None) or
+                        _get_col(r, m_cols, 'signal', 6))
+            bearish_30d = sum(1 for r in m_rows[:30] if _lsig(r) == 'BEARISH_BREAKDOWN')
+            text += f"  Monthly: <code>{_safe(str(m_signal))}</code> ({bearish_30d}/30d bearish, trend {m_pct:+.0f}%)\n"
         text += "\n"
         return text
 
@@ -637,25 +648,43 @@ def _format_dune_starknet_block(compact=False):
         cols = data.get('monthly_cols', [])
         latest_m = rows[0] if rows else []
 
-        # Columns: day, current_txs, txs_7d_avg, txs_30d_max,
-        #          pct_from_7d_avg, pct_from_30d_max, signal, score1, score2, verdict
-        m_current = _get_col(latest_m, cols, 'current_txs', 1, 0) or 0
-        m_30d_max = _get_col(latest_m, cols, 'txs_30d_max', 3, 1) or 1
-        m_pct_from_max = _get_col(latest_m, cols, 'pct_from_30d_max', 5, 0) or 0
-        m_signal = _get_col(latest_m, cols, 'signal', 6, 'UNKNOWN') or 'UNKNOWN'
-        m_verdict = _get_col(latest_m, cols, 'verdict', 9, '') or ''
+        # Columns support two SQL versions:
+        # v1: signal, pct_from_30d_max, verdict
+        # v2: phase_signal, swing_trading_signal, d_w_pct, w_m_pct
+        # _get_col will find whichever exists.
+        def _monthly_signal(row):
+            return (_get_col(row, cols, 'phase_signal', None) or
+                    _get_col(row, cols, 'signal', 6) or 'UNKNOWN')
 
-        # Streak — сколько дней подряд одинаковый signal
+        def _monthly_verdict(row):
+            return (_get_col(row, cols, 'swing_trading_signal', None) or
+                    _get_col(row, cols, 'verdict', 9) or '')
+
+        def _monthly_pct(row):
+            # w_m_pct = weekly vs monthly (structural), predpochtitelno
+            # d_w_pct = daily vs weekly (краткосрочный шум)
+            v = (_get_col(row, cols, 'w_m_pct', None) or
+                 _get_col(row, cols, 'pct_from_30d_max', 5))
+            if v is None:
+                return 0
+            try:
+                return float(v)
+            except (ValueError, TypeError):
+                return 0
+
+        m_signal = _monthly_signal(latest_m)
+        m_verdict = _monthly_verdict(latest_m)
+        m_pct_from_max = _monthly_pct(latest_m)
+
+        # Streak
         streak = 1
         for i in range(1, min(len(rows), 30)):
-            prev_signal = _get_col(rows[i], cols, 'signal', 6)
-            if prev_signal == m_signal:
+            if _monthly_signal(rows[i]) == m_signal:
                 streak += 1
             else:
                 break
 
         text += "<b>Monthly view</b> <i>(SQL-classified)</i>:\n"
-        # DEBUG fallback: signal UNKNOWN — покажем raw диагностику
         if m_signal == 'UNKNOWN':
             text += f"  <i>⚠ Signal UNKNOWN. Columns: {_safe(str(cols)[:120])}</i>\n"
             if latest_m:
@@ -666,7 +695,7 @@ def _format_dune_starknet_block(compact=False):
             if m_verdict:
                 text += f"  Verdict: {_safe(str(m_verdict))}\n"
             try:
-                text += f"  From 30d peak: <code>{float(m_pct_from_max):+.1f}%</code>\n"
+                text += f"  Trend: <code>{m_pct_from_max:+.1f}%</code>\n"
             except Exception:
                 pass
         text += "\n"
@@ -765,31 +794,44 @@ def _compute_current_phase(wyckoff, technical, dune_data, squeeze_state):
                     return row[idx]
             return None
 
+        def _sig(row):
+            """Get signal — supports both 'phase_signal' (v2) and 'signal' (v1)."""
+            return _v(row, 'phase_signal', None) or _v(row, 'signal', 6) or 'UNKNOWN'
+
+        def _pct(row):
+            v = _v(row, 'w_m_pct', None) or _v(row, 'pct_from_30d_max', 5)
+            if v is None:
+                return 0
+            try:
+                return float(v)
+            except (ValueError, TypeError):
+                return 0
+
         latest = monthly[0]
-        dune_signal = _v(latest, 'signal', 6) or 'UNKNOWN'
-        dune_pct_from_peak = _v(latest, 'pct_from_30d_max', 5) or 0
+        dune_signal = _sig(latest)
+        dune_pct_from_peak = _pct(latest)
 
         # Current streak
         dune_streak = 1
         for i in range(1, min(len(monthly), 30)):
-            if _v(monthly[i], 'signal', 6) == dune_signal:
+            if _sig(monthly[i]) == dune_signal:
                 dune_streak += 1
             else:
                 break
 
-        # Previous streak (immediately before current change)
+        # Previous streak
         if dune_streak < len(monthly):
-            prev_sig = _v(monthly[dune_streak], 'signal', 6)
+            prev_sig = _sig(monthly[dune_streak])
             if prev_sig and prev_sig != dune_signal:
                 for i in range(dune_streak, min(len(monthly), 30)):
-                    if _v(monthly[i], 'signal', 6) == prev_sig:
+                    if _sig(monthly[i]) == prev_sig:
                         prev_bearish_streak += 1
                     else:
                         break
 
-        # Total bearish days in last 30 rows (structural context)
+        # Total bearish days in last 30 rows
         for i in range(min(len(monthly), 30)):
-            if _v(monthly[i], 'signal', 6) == 'BEARISH_BREAKDOWN':
+            if _sig(monthly[i]) == 'BEARISH_BREAKDOWN':
                 bearish_days_30d += 1
 
     # === Squeeze active? ===
