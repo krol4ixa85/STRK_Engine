@@ -33,6 +33,14 @@ env:
   SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
   STRICT_NO_TRADING: 'true'
 
+permissions:
+  contents: write
+
+# Concurrency: main workflow не должен пересекаться с squeeze fast workflow.
+concurrency:
+  group: strk-main
+  cancel-in-progress: false
+
 jobs:
   composite:
     runs-on: ubuntu-latest
@@ -61,35 +69,23 @@ jobs:
             echo "::warning::scripts/collectors/run_all_collectors.py NOT FOUND - fallback: skip collectors"
           fi
 
-      # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
-      # Cache 20h daily / 6d weekly / 5d monthly / 24h cex_flow — economy на free tier.
-      # Тихо skipped если DUNE_API_KEY не установлен.
-      - name: Dune collector · Starknet stats
-        env:
-          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
-          DUNE_QUERY_ID_DAILY: ${{ secrets.DUNE_QUERY_ID_DAILY }}
-          DUNE_QUERY_ID_WEEKLY: ${{ secrets.DUNE_QUERY_ID_WEEKLY }}
-          DUNE_QUERY_ID_MONTHLY: ${{ secrets.DUNE_QUERY_ID_MONTHLY }}
-          DUNE_QUERY_ID_CEX_FLOW: ${{ secrets.DUNE_QUERY_ID_CEX_FLOW }}
-        run: python3 scripts/collectors/dune_collector.py || true
-
-      # STAGE 1.6 · CEX FLOW ALERT (detect DISTRIBUTION → ACCUMULATION transitions)
-      # Читает existing cex_flow.json (обновляется в STAGE 1 через Etherscan).
-      # Real-time каждый час — реагирует на flip, без Dune credits.
-      # Alert в @strk_dynamic3_bot с dedup 24h.
-      - name: CEX flow alert detector
-        run: python3 scripts/detectors/cex_flow_alert.py || true
-
-      # STAGE 1.7 · SWING SHADOW VOTER (monthly Dune signal → shadow_votes.jsonl)
-      # НЕ влияет на Confluence Gate DECISION.
-      # Пишет vote в shadow_votes.jsonl для будущего measurement precision.
-      # Через 30-60 дней shadow_postmortem закроет 15+ прогнозов → weekly_backtest.
-      # Wire-in в confluence_gate ТОЛЬКО если precision >= 55%.
-      - name: Swing shadow voter (monthly Dune)
-        run: python3 scripts/detectors/swing_shadow_voter.py || true
+      # ============================================================
+      # STAGE 1.5 · FALSE SIGNALS ANALYZER (data collection only)
+      # ============================================================
+      - name: False signals analyzer (data collection)
+        run: python3 scripts/detectors/false_signals_analyzer.py || true
 
       # ============================================================
-      # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
+      # STAGE 1.6 · AVNU SHADOW VOTER (shadow measurement, NOT in DECISION)
+      # ============================================================
+      - name: AVNU shadow voter
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_AVNU: ${{ secrets.DUNE_QUERY_ID_AVNU }}
+        run: python3 scripts/detectors/avnu_shadow_voter.py || true
+
+      # ============================================================
+      # STAGE 2 · Liquidity/staking
       # ============================================================
       - name: Liquidity shift chain (ekubo + endur + native staking + shift)
         run: |
@@ -110,8 +106,6 @@ jobs:
       - name: Auto-discovery
         run: python3 scripts/detectors/auto_discovery.py || true
 
-      # Watchlist notifier — только при mode=digest (не спамить при каждом cron)
-      # Так лента WATCH? синхронизируется с daily heartbeat, не с каждым LIQ/RUN
       - name: Watchlist notifier (WATCH? candidates)
         if: github.event.inputs.mode == 'digest' || github.event.schedule == '0 18 * * *' || github.event_name == 'schedule' && github.event.schedule == '0 18 * * *'
         run: python3 scripts/detectors/watchlist_notifier.py || true
@@ -122,7 +116,6 @@ jobs:
       - name: Auto-decision layer
         run: python3 scripts/detectors/decision_layer.py || true
 
-      # ⚡ Composite v2 (main brain) — writes composite_signal_v2.json
       - name: Composite detector v2 (main brain)
         env:
           COMPOSITE_SILENT: 'true'
@@ -137,7 +130,6 @@ jobs:
       - name: Concentration metrics
         run: python3 scripts/detectors/concentration_metrics.py || true
 
-      # ⚡ Bridge activity — writes bridge_activity.json
       - name: Bridge activity
         run: python3 scripts/detectors/bridge_activity.py || true
 
@@ -196,37 +188,34 @@ jobs:
       - name: Whale auto-analysis
         run: python3 scripts/detectors/whale_auto_analysis.py || true
 
-      # STAGE 7.5 · SQUEEZE DETECTION (отдельный стрим в @strk_dynamic3_bot)
+      # STAGE 7.5 · SQUEEZE DETECTION
       - name: Squeeze detector (compute state)
         run: python3 scripts/detectors/squeeze_detector.py || true
-
       - name: Squeeze notifier (alert to @strk_dynamic3_bot)
         run: python3 scripts/detectors/squeeze_notifier.py || true
 
-      # STAGE 7.6 · DYNAMIC EXIT SIGNALS (для активных squeeze positions)
+      # STAGE 7.6 · DYNAMIC EXIT SIGNALS
       - name: Dynamic exit signals
         run: python3 scripts/detectors/dynamic_exit_signals.py || true
 
-      # STAGE 7.9 · WEEKLY BACKTEST (только воскресенье 00:00 UTC или mode=backtest)
+      # STAGE 7.9 · WEEKLY BACKTEST
       - name: Weekly backtest
         if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
         run: python3 scripts/weekly_backtest.py || true
 
-      # STAGE 7.95 · BASELINE ANALYSIS (mode=baseline)
+      # STAGE 7.95 · BASELINE ANALYSIS
       - name: Install baseline deps
         if: github.event.inputs.mode == 'baseline'
         run: pip install pandas numpy ccxt pyarrow
-
       - name: STRK baseline analysis
         if: github.event.inputs.mode == 'baseline'
         run: python3 scripts/strk_baseline_analysis.py || true
 
-      # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
+      # STAGE 8 · HTML REPORT
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
 
-      # STAGE 9 · SEND (MODE = digest | liq | run)
-      # SKIP если mode=backtest или mode=baseline (у них свои каналы отправки)
+      # STAGE 9 · SEND
       - name: Send Telegram delivery
         if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline'
         env:
@@ -235,22 +224,18 @@ jobs:
           echo "=== Delivery MODE=$MODE ==="
           python3 scripts/daily_digest.py || echo "delivery failed"
 
-      # STAGE 10 · PERSISTENCE (bulletproof — commits ALL data/ changes)
+      # STAGE 10 · PERSISTENCE
       - name: Commit state files
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
-          # git add -A подхватывает и modified и untracked — новые jsonl файлы
-          # (discovery_candidates, whale_events, squeeze_alerts) больше не теряются.
           git add -A data/
-          # --cached — проверяем что реально в staging area
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
             echo "=== Changes to commit: ==="
             git diff --cached --stat
             git commit -m "chore: state update (mode=${{ github.event.inputs.mode || 'digest' }}) [skip ci]"
-            # retry push с rebase если удалённое было обновлено параллельным run
             git push || (git pull --rebase && git push) || echo "Push failed"
           fi
 
@@ -259,34 +244,8 @@ jobs:
         with:
           name: strk-signal
           path: |
-            data/cache/composite_signal_v2.json
-            data/cache/agent_input.json
-            data/cache/cross_window_pattern.json
-            data/cache/whale_analysis.json
-            data/cache/cohort_tracker.json
-            data/cache/wyckoff_phase.json
-            data/cache/interpretation.json
-            data/cache/concentration_metrics.json
-            data/cache/effort_result.json
-            data/cache/cvd_analysis.json
-            data/cache/cex_flow.json
-            data/cache/technical_momentum.json
-            data/cache/scenario_analysis.json
-            data/cache/scenarios/
-            data/cache/decision_log.json
-            data/cache/liquidity_shift.json
-            data/cache/ekubo_flow.json
-            data/cache/endur_lst_flow.json
-            data/cache/native_staking_flow.json
-            data/cache/covert_flow_signal.json
-            data/cache/shadow_calibration.json
-            data/cache/discord_monitor_state.json
-            data/cache/starknet_discord.json
-            data/cache/whale_monitor_state.json
-            data/cache/bridge_activity.json
-            data/history/shadow_votes.jsonl
-            data/history/all_history.jsonl
-            data/history/alerts.jsonl
+            data/cache/*.json
+            data/history/*.jsonl
+            data/reports/
             data/dashboards/
             data/graphs/
-            data/reports/
