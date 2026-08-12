@@ -61,155 +61,17 @@ jobs:
             echo "::warning::scripts/collectors/run_all_collectors.py NOT FOUND - fallback: skip collectors"
           fi
 
-      # STAGE 1.5 · DUNE COLLECTOR (INLINE — no external file dependency)
-      # Весь Python код здесь напрямую — не зависит от scripts/collectors/dune_collector.py.
-      # Гарантированно запускается если API key + query IDs установлены.
-      # ГРОМКИЕ ошибки: увидишь красный ::error в UI если что-то не так.
-      - name: Dune collector (inline)
+      # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
+      # Cache 20h daily / 6d weekly / 5d monthly / 24h cex_flow — economy на free tier.
+      # Тихо skipped если DUNE_API_KEY не установлен.
+      - name: Dune collector · Starknet stats
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_DAILY: ${{ secrets.DUNE_QUERY_ID_DAILY }}
           DUNE_QUERY_ID_WEEKLY: ${{ secrets.DUNE_QUERY_ID_WEEKLY }}
           DUNE_QUERY_ID_MONTHLY: ${{ secrets.DUNE_QUERY_ID_MONTHLY }}
           DUNE_QUERY_ID_CEX_FLOW: ${{ secrets.DUNE_QUERY_ID_CEX_FLOW }}
-        run: |
-          mkdir -p data/cache
-          python3 << 'PYEOF'
-          import os, sys, json, time
-          import urllib.request, urllib.error
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          CACHE_DIR = Path('data/cache')
-          DUNE_API = 'https://api.dune.com/api/v1'
-
-          api_key = os.environ.get('DUNE_API_KEY', '').strip()
-          queries = {
-              'daily':     (os.environ.get('DUNE_QUERY_ID_DAILY', '').strip(),     20),
-              'weekly':    (os.environ.get('DUNE_QUERY_ID_WEEKLY', '').strip(),    24*6),
-              'monthly':   (os.environ.get('DUNE_QUERY_ID_MONTHLY', '').strip(),   24*5),
-              'cex_flow':  (os.environ.get('DUNE_QUERY_ID_CEX_FLOW', '').strip(),  24),
-          }
-
-          filenames = {
-              'daily':     'dune_starknet.json',
-              'weekly':    'dune_starknet_weekly.json',
-              'monthly':   'dune_starknet_monthly.json',
-              'cex_flow':  'dune_cex_flow.json',
-          }
-
-          print("=" * 60)
-          print("DUNE COLLECTOR · Starknet Analytics (INLINE)")
-          print("=" * 60)
-          print(f"API key:        {'✓ SET (len ' + str(len(api_key)) + ')' if api_key else '✗ MISSING'}")
-          for name, (qid, _) in queries.items():
-              print(f"{name.upper():16} {'✓ ' + qid if qid else '✗ MISSING'}")
-          print()
-
-          if not api_key:
-              print("::error title=DUNE_API_KEY missing::Add secret DUNE_API_KEY in Repo Settings → Secrets → Actions")
-              sys.exit(0)  # graceful exit — не ломаем весь workflow
-
-          any_query = any(qid for qid, _ in queries.values())
-          if not any_query:
-              print("::error title=No Dune query IDs::Add DUNE_QUERY_ID_DAILY/WEEKLY/MONTHLY/CEX_FLOW secrets")
-              sys.exit(0)
-
-          def dune_req(path, method='GET', body=None):
-              url = f"{DUNE_API}{path}"
-              headers = {'X-Dune-API-Key': api_key, 'Content-Type': 'application/json'}
-              data = json.dumps(body).encode() if body else None
-              req = urllib.request.Request(url, data=data, headers=headers, method=method)
-              with urllib.request.urlopen(req, timeout=30) as r:
-                  return json.loads(r.read())
-
-          def cache_fresh(path, max_age_h):
-              if not path.exists():
-                  return False
-              try:
-                  d = json.load(open(path))
-                  ts = datetime.fromisoformat(d.get('collected_at', ''))
-                  age = (datetime.now(timezone.utc) - ts).total_seconds() / 3600
-                  return age < max_age_h
-              except Exception:
-                  return False
-
-          def fetch(qid, cache_path, max_age_h, name):
-              print(f"\n=== {name} (query {qid}) ===")
-              if cache_fresh(cache_path, max_age_h):
-                  print(f"  ✓ Cache fresh (< {max_age_h}h) — skip execute")
-                  return
-              try:
-                  print(f"  Executing query {qid}...")
-                  exec_resp = dune_req(f'/query/{qid}/execute', method='POST')
-                  exec_id = exec_resp.get('execution_id')
-                  if not exec_id:
-                      print(f"::warning::No execution_id in response for {name}")
-                      return
-                  print(f"  execution_id: {exec_id}")
-
-                  for i in range(100):
-                      st = dune_req(f'/execution/{exec_id}/status')
-                      state = st.get('state', 'UNKNOWN')
-                      if state == 'QUERY_STATE_COMPLETED':
-                          print(f"  ✓ Completed after ~{i*3}s")
-                          res = dune_req(f'/execution/{exec_id}/results')
-                          rows = ((res.get('result') or {}).get('rows') or [])
-                          meta = (res.get('result') or {}).get('metadata') or {}
-                          out = {
-                              'collected_at': datetime.now(timezone.utc).isoformat(),
-                              'query_id': qid,
-                              'execution_id': exec_id,
-                              'row_count': len(rows),
-                              'columns': meta.get('column_names', []),
-                              'rows': rows,
-                          }
-                          cache_path.parent.mkdir(parents=True, exist_ok=True)
-                          with open(cache_path, 'w', encoding='utf-8') as f:
-                              json.dump(out, f, indent=2, ensure_ascii=False, default=str)
-                          print(f"  ✓ Saved {len(rows)} rows to {cache_path.name}")
-                          return
-                      elif state in ('QUERY_STATE_FAILED', 'QUERY_STATE_CANCELLED'):
-                          print(f"::warning::Query {qid} failed: {state}")
-                          return
-                      time.sleep(3)
-                  print(f"::warning::Query {qid} timed out after 5 min")
-              except urllib.error.HTTPError as e:
-                  body = e.read().decode()[:300] if e.fp else ''
-                  print(f"::error title=Dune HTTP {e.code} for {name}::{body}")
-              except Exception as e:
-                  print(f"::error title=Dune exception for {name}::{e}")
-
-          for name, (qid, max_age_h) in queries.items():
-              if not qid:
-                  print(f"\n=== {name}: SKIP (no query ID) ===")
-                  continue
-              fetch(qid, CACHE_DIR / filenames[name], max_age_h, name)
-
-          print("\n" + "=" * 60)
-          print("Files created in data/cache/:")
-          for name, fname in filenames.items():
-              p = CACHE_DIR / fname
-              if p.exists():
-                  size = p.stat().st_size
-                  print(f"  ✓ {fname} ({size} bytes)")
-              else:
-                  print(f"  ✗ {fname} NOT CREATED")
-          print("=" * 60)
-          PYEOF
-
-      # STAGE 1.55 · VERIFY DUNE FILES (always visible in logs)
-      - name: Verify Dune data files
-        run: |
-          echo "=== Dune data files in data/cache/ ==="
-          for f in dune_starknet dune_starknet_weekly dune_starknet_monthly dune_cex_flow; do
-            if [ -f "data/cache/${f}.json" ]; then
-              rows=$(python3 -c "import json; print(json.load(open('data/cache/${f}.json')).get('row_count', 0))")
-              echo "  ✓ ${f}.json ($rows rows)"
-            else
-              echo "  ✗ ${f}.json NOT CREATED"
-            fi
-          done
+        run: python3 scripts/collectors/dune_collector.py || true
 
       # STAGE 1.6 · CEX FLOW ALERT (detect DISTRIBUTION → ACCUMULATION transitions)
       # Читает existing cex_flow.json (обновляется в STAGE 1 через Etherscan).
@@ -217,6 +79,14 @@ jobs:
       # Alert в @strk_dynamic3_bot с dedup 24h.
       - name: CEX flow alert detector
         run: python3 scripts/detectors/cex_flow_alert.py || true
+
+      # STAGE 1.7 · SWING SHADOW VOTER (monthly Dune signal → shadow_votes.jsonl)
+      # НЕ влияет на Confluence Gate DECISION.
+      # Пишет vote в shadow_votes.jsonl для будущего measurement precision.
+      # Через 30-60 дней shadow_postmortem закроет 15+ прогнозов → weekly_backtest.
+      # Wire-in в confluence_gate ТОЛЬКО если precision >= 55%.
+      - name: Swing shadow voter (monthly Dune)
+        run: python3 scripts/detectors/swing_shadow_voter.py || true
 
       # ============================================================
       # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
