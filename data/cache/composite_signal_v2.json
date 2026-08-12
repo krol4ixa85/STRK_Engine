@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-12T13:16:55.260568+00:00",
+  "as_of": "2026-08-12T21:51:41.997193+00:00",
   "signal": "BEARISH_STRONG",
   "confidence": "HIGH (multiple modules aligned)",
   "scoring": {
@@ -58,42 +58,42 @@
     "distribution": {
       "signal": "BEARISH",
       "counts": {
-        "MICRO": 36,
+        "MICRO": 38,
         "SMALL": 2,
-        "MEDIUM": 9,
+        "MEDIUM": 10,
         "LARGE": 3
       },
       "totals": {
-        "MICRO": 7979161.86,
+        "MICRO": 8566822.7,
         "SMALL": 1380017.89,
-        "MEDIUM": 22068637.28,
-        "LARGE": 43494179.4
+        "MEDIUM": 24395888.64,
+        "LARGE": 43504180.27
       },
-      "ratio_smallamt_over_largeamt": 0.2152,
-      "total_transfers_analyzed": 6049,
-      "net_receivers_count": 50
+      "ratio_smallamt_over_largeamt": 0.2286,
+      "total_transfers_analyzed": 5956,
+      "net_receivers_count": 53
     },
     "btc_context": {
-      "btc_price": 63988.5,
-      "dist200_pct": -8.36,
-      "slope30_pct": 2.19,
-      "slope7_pct": -0.62,
-      "acceleration": -1.13,
+      "btc_price": 63529.8,
+      "dist200_pct": -8.85,
+      "slope30_pct": -1.9,
+      "slope7_pct": -1.7,
+      "acceleration": -1.26,
       "cycle": "DOWN"
     },
     "funding": {
       "signal": "NEUTRAL",
-      "reason": "current +5.5% ann; 3d neg fundings: 17%; 7d min: -9.7%; funding in normal range",
+      "reason": "current +5.5% ann; 3d neg fundings: 17%; 7d min: -8.5%; funding in normal range",
       "funding_metrics": {
-        "as_of": "2026-08-12T13:16:41.062021+00:00",
+        "as_of": "2026-08-12T21:51:34.266374+00:00",
         "source": "OKX STRK-USDT-SWAP",
         "current_annualized_pct": 5.475,
         "avg_3d_pct": 3.851,
-        "avg_7d_pct": 2.691,
-        "avg_14d_pct": 1.047,
+        "avg_7d_pct": 3.352,
+        "avg_14d_pct": 1.161,
         "pct_negative_3d": 16.7,
-        "pct_negative_7d": 21.4,
-        "min_ann_7d": -9.71,
+        "pct_negative_7d": 16.7,
+        "min_ann_7d": -8.47,
         "max_ann_7d": 5.48,
         "extreme": "normal",
         "short_crowded": false,
@@ -132,35 +132,31 @@
         "days_ago": 119
       },
       "days_to_final_unlock": 245,
-      "as_of": "2026-08-12T13:16:41.535679+00:00"
+      "as_of": "2026-08-12T21:51:34.593226+00:00"
     },
     "whales": {
       "signal": "MIXED_ACTIVITY",
-      "events_24h": 15,
-      "largest_event_strk": 4340142.74470172,
-      "total_amount_24h": 26462583.453797277,
+      "events_24h": 11,
+      "largest_event_strk": 2019153.9462607,
+      "total_amount_24h": 11164798.28175419,
       "bearish_amount": 989405.50021826,
-      "bullish_amount": 1127275.0,
+      "bullish_amount": 535881.0,
       "by_class": {
-        "UNKNOWN_LARGE": {
-          "count": 7,
-          "total": 14069659.707302373
-        },
-        "CEX_WITHDRAWAL": {
-          "count": 2,
-          "total": 1127275.0
-        },
-        "WATCHLIST_INFLOW": {
-          "count": 2,
-          "total": 7310142.74470172
-        },
         "WATCHLIST_OUTFLOW": {
           "count": 3,
           "total": 2966100.50157492
         },
+        "UNKNOWN_LARGE": {
+          "count": 6,
+          "total": 6673411.27996101
+        },
         "CEX_DEPOSIT": {
           "count": 1,
           "total": 989405.50021826
+        },
+        "CEX_WITHDRAWAL": {
+          "count": 1,
+          "total": 535881.0
         }
       }
     },

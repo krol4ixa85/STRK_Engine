@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-12T13:18:09.898314+00:00",
+  "ts": "2026-08-12T21:52:37.890895+00:00",
   "long_exit": {
     "level": "WARNING",
     "active_count": 1,
@@ -7,20 +7,20 @@
       {
         "id": "L1",
         "name": "CEX flow flip → distribution",
-        "active": false,
-        "evidence": "bearish streak 0 days (was bullish 1)"
+        "active": true,
+        "evidence": "bearish streak 2 days (was bullish 0)"
       },
       {
         "id": "L2",
         "name": "SMART cohort distributing",
-        "active": true,
-        "evidence": "SMART 24h net -1.53M STRK (threshold -0.5M)"
+        "active": false,
+        "evidence": "SMART 24h net +1.74M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=1.34"
+        "evidence": "price_up_3d=False, vol_ratio=1.24"
       },
       {
         "id": "L4",
@@ -31,26 +31,26 @@
     ]
   },
   "short_exit": {
-    "level": "NEUTRAL",
-    "active_count": 0,
+    "level": "WARNING",
+    "active_count": 1,
     "triggers": [
       {
         "id": "S1",
         "name": "CEX flow flip → accumulation",
         "active": false,
-        "evidence": "bullish streak 1 days (was bearish 0)"
+        "evidence": "bullish streak 0 days (was bearish 2)"
       },
       {
         "id": "S2",
         "name": "SMART cohort accumulating",
-        "active": false,
-        "evidence": "SMART 24h net -1.53M STRK"
+        "active": true,
+        "evidence": "SMART 24h net +1.74M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 26.8, vol_ratio 1.34"
+        "evidence": "RSI 23.34, vol_ratio 1.24"
       },
       {
         "id": "S4",

@@ -1,38 +1,37 @@
 {
-  "as_of": "2026-08-12T13:17:39.561710+00:00",
+  "as_of": "2026-08-12T21:52:11.259523+00:00",
   "features": {
-    "price_now": 0.02327,
-    "slope_3d_pct": -6.21,
-    "slope_7d_pct": -8.6,
-    "slope_14d_pct": -13.53,
-    "slope_accel_pct": -3.81,
-    "vol_ratio_3d_vs_30d": 1.34,
-    "vol_ratio_7d_vs_30d": 1.07,
-    "vol_accel": 1.26,
-    "high_14d": 0.02739,
+    "price_now": 0.02265,
+    "slope_3d_pct": -3.62,
+    "slope_7d_pct": -11.42,
+    "slope_14d_pct": -14.04,
+    "slope_accel_pct": 4.19,
+    "vol_ratio_3d_vs_30d": 1.24,
+    "vol_ratio_7d_vs_30d": 1.09,
+    "vol_accel": 1.14,
+    "high_14d": 0.02652,
     "low_14d": 0.02247,
-    "range_pct": 21.9,
-    "pct_from_high": -15.04,
-    "pct_from_low": 3.56,
+    "range_pct": 18.02,
+    "pct_from_high": -14.59,
+    "pct_from_low": 0.8,
     "structure": "DOWNTREND",
-    "bb_width_pct": 5.56,
-    "rsi": 26.8
+    "bb_width_pct": 5.35,
+    "rsi": 23.34
   },
   "classification": {
-    "signal": "BEARISH",
-    "score": 4,
+    "signal": "BULLISH",
+    "score": 3,
     "votes": {
-      "BULLISH": 1,
-      "BEARISH": 4
+      "BULLISH": 3,
+      "BEARISH": 2
     },
     "reasons": [
-      "DOWNTREND (LH/LL)",
-      "slope_3d -6.2%",
-      "slope decelerating"
+      "slope accelerating +4.2%",
+      "RSI 23 oversold"
     ]
   },
   "backtest_stats": {
-    "as_of": "2026-08-12T13:17:39.349156+00:00",
+    "as_of": "2026-08-12T21:52:11.017771+00:00",
     "accuracy_pct": 33.3,
     "hits": 3,
     "total": 9,
@@ -42,236 +41,229 @@
         "type": "RALLY",
         "move": 135,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
-        "outcome": "MISS"
+        "outcome": "HIT"
       },
       {
         "event": "Crash_1",
         "type": "CRASH",
         "move": -86,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
-        "outcome": "HIT"
+        "outcome": "MISS"
       },
       {
         "event": "Rally_2",
         "type": "RALLY",
         "move": 175,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
-        "outcome": "MISS"
+        "outcome": "HIT"
       },
       {
         "event": "Crash_2",
         "type": "CRASH",
         "move": -88,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
-        "outcome": "HIT"
+        "outcome": "MISS"
       },
       {
         "event": "Rally_3",
         "type": "RALLY",
         "move": 99,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
-        "outcome": "MISS"
+        "outcome": "HIT"
       },
       {
         "event": "Crash_3",
         "type": "CRASH",
         "move": -56,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
-        "outcome": "HIT"
+        "outcome": "MISS"
       },
       {
         "event": "Quiet_A",
         "type": "QUIET",
         "move": 0,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
         "outcome": "MISS"
       },
@@ -280,32 +272,31 @@
         "type": "QUIET",
         "move": 0,
         "features": {
-          "price_now": 0.02327,
-          "slope_3d_pct": -6.21,
-          "slope_7d_pct": -8.6,
-          "slope_14d_pct": -13.53,
-          "slope_accel_pct": -3.81,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.04,
-          "pct_from_low": 3.56,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.8
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
         "outcome": "MISS"
       },
@@ -314,32 +305,31 @@
         "type": "QUIET",
         "move": 0,
         "features": {
-          "price_now": 0.02326,
-          "slope_3d_pct": -6.25,
-          "slope_7d_pct": -8.64,
-          "slope_14d_pct": -13.56,
-          "slope_accel_pct": -3.85,
-          "vol_ratio_3d_vs_30d": 1.34,
-          "vol_ratio_7d_vs_30d": 1.07,
-          "vol_accel": 1.26,
-          "high_14d": 0.02739,
+          "price_now": 0.02265,
+          "slope_3d_pct": -3.62,
+          "slope_7d_pct": -11.42,
+          "slope_14d_pct": -14.04,
+          "slope_accel_pct": 4.19,
+          "vol_ratio_3d_vs_30d": 1.24,
+          "vol_ratio_7d_vs_30d": 1.09,
+          "vol_accel": 1.14,
+          "high_14d": 0.02652,
           "low_14d": 0.02247,
-          "range_pct": 21.9,
-          "pct_from_high": -15.08,
-          "pct_from_low": 3.52,
+          "range_pct": 18.02,
+          "pct_from_high": -14.59,
+          "pct_from_low": 0.8,
           "structure": "DOWNTREND",
-          "bb_width_pct": 5.56,
-          "rsi": 26.56
+          "bb_width_pct": 5.35,
+          "rsi": 23.34
         },
-        "detected": "BEARISH",
+        "detected": "BULLISH",
         "votes": {
-          "BULLISH": 1,
-          "BEARISH": 4
+          "BULLISH": 3,
+          "BEARISH": 2
         },
         "reasons": [
-          "DOWNTREND (LH/LL)",
-          "slope_3d -6.2%",
-          "slope decelerating"
+          "slope accelerating +4.2%",
+          "RSI 23 oversold"
         ],
         "outcome": "MISS"
       }
