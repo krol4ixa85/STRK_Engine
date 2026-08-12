@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-12T11:52:16.216627+00:00",
+  "ts": "2026-08-12T12:57:38.906488+00:00",
   "long_exit": {
     "level": "WARNING",
     "active_count": 1,
@@ -8,25 +8,25 @@
         "id": "L1",
         "name": "CEX flow flip → distribution",
         "active": false,
-        "evidence": "bearish streak 0 days (was bullish 0)"
+        "evidence": "bearish streak 0 days (was bullish 1)"
       },
       {
         "id": "L2",
         "name": "SMART cohort distributing",
         "active": true,
-        "evidence": "SMART 24h net -3.24M STRK (threshold -0.5M)"
+        "evidence": "SMART 24h net -1.53M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=1.33"
+        "evidence": "price_up_3d=False, vol_ratio=1.34"
       },
       {
         "id": "L4",
         "name": "Funding crowded long (flush risk)",
         "active": false,
-        "evidence": "funding APR -1.167%, long_crowded=False"
+        "evidence": "funding APR 5.475%, long_crowded=False"
       }
     ]
   },
@@ -38,25 +38,25 @@
         "id": "S1",
         "name": "CEX flow flip → accumulation",
         "active": false,
-        "evidence": "bullish streak 0 days (was bearish 0)"
+        "evidence": "bullish streak 1 days (was bearish 0)"
       },
       {
         "id": "S2",
         "name": "SMART cohort accumulating",
         "active": false,
-        "evidence": "SMART 24h net -3.24M STRK"
+        "evidence": "SMART 24h net -1.53M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 47.17, vol_ratio 1.33"
+        "evidence": "RSI 29.56, vol_ratio 1.34"
       },
       {
         "id": "S4",
         "name": "Funding crowded short (squeeze risk)",
         "active": false,
-        "evidence": "funding APR -1.167%, short_crowded=False"
+        "evidence": "funding APR 5.475%, short_crowded=False"
       }
     ]
   },
