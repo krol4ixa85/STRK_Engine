@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-08-13T15:41:04.170492+00:00",
+  "strk_status": {
+    "verdict": "STILL_ACCUMULATION",
+    "triggers_hit": 0,
+    "triggers_total": 4,
+    "recommendation": "STRK в accumulation. Ротировать капитал в active sectors.",
+    "wyckoff_phase": "ACCUMULATION",
+    "dune_monthly_signal": "BEARISH_BREAKDOWN",
+    "cex_signal": "STRONG_DISTRIBUTION",
+    "strk_price": null,
+    "bearish_30d": 28
+  },
+  "re_entry_triggers": {
+    "trigger_list": [
+      [
+        "✗",
+        "Wyckoff",
+        "ACCUMULATION (need MARKUP/ACC)"
+      ],
+      [
+        "✗",
+        "Dune monthly",
+        "BEARISH_BREAKDOWN (28/30d bearish)"
+      ],
+      [
+        "✗",
+        "CEX flow",
+        "STRONG_DISTRIBUTION (need ACCUMULATION)"
+      ],
+      [
+        "✗",
+        "Activity",
+        "WoW -23% (need >+10%)"
+      ]
+    ]
+  },
+  "strong_buy": [
+    {
+      "sector": "INFRA",
+      "token": "LINK",
+      "net_flow_m_usd": 16.43,
+      "price_change_7d_pct": 6.1,
+      "tx_count": 129154,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "L2",
+      "token": "MNT",
+      "net_flow_m_usd": 0.28,
+      "price_change_7d_pct": 13.3,
+      "tx_count": 7326,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "LST",
+      "token": "ETHFI",
+      "net_flow_m_usd": 0.08,
+      "price_change_7d_pct": 8.5,
+      "tx_count": 9917,
+      "signal": "STRONG_BUY"
+    }
+  ],
+  "divergence": [],
+  "buy_pressure": [
+    {
+      "sector": "DeFi",
+      "token": "MORPHO",
+      "net_flow_m_usd": 0.54,
+      "net_flow_pct": 8.2,
+      "tx_count": 37076,
+      "signal": "BUY_PRESSURE"
+    }
+  ],
+  "sell": [
+    {
+      "sector": "DeFi",
+      "token": "UNI",
+      "net_flow_m_usd": -1.72,
+      "net_flow_pct": -6.9,
+      "tx_count": 140378,
+      "signal": "SELL_PRESSURE"
+    }
+  ]
+}
