@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-12T22:23:18.463164+00:00",
+  "ts": "2026-08-13T09:04:48.650411+00:00",
   "level": "INACTIVE",
   "active_categories": 1,
   "total_categories": 3,
@@ -34,15 +34,15 @@
     {
       "category": "B",
       "name": "On-chain Accumulation",
-      "active": false,
-      "active_count": 1,
+      "active": true,
+      "active_count": 2,
       "total": 3,
       "conditions": [
         {
           "id": "B1",
           "name": "SMART cohort accumulation",
-          "active": false,
-          "evidence": "SMART 24h net +1.74M STRK (threshold +2.0M)"
+          "active": true,
+          "evidence": "SMART 24h net +4.46M STRK (threshold +2.0M)"
         },
         {
           "id": "B2",
@@ -54,34 +54,34 @@
           "id": "B3",
           "name": "WATCHLIST accumulating",
           "active": true,
-          "evidence": "WATCHLIST 24h net +3.88M STRK"
+          "evidence": "WATCHLIST 24h net +1.90M STRK"
         }
       ]
     },
     {
       "category": "C",
       "name": "Technical setup",
-      "active": true,
-      "active_count": 2,
+      "active": false,
+      "active_count": 0,
       "total": 3,
       "conditions": [
         {
           "id": "C1",
           "name": "Oversold + volume spike",
           "active": false,
-          "evidence": "RSI 22.56, Vol 1.26x"
+          "evidence": "RSI 36.9, Vol 1.01x"
         },
         {
           "id": "C2",
           "name": "At 14d range low",
-          "active": true,
-          "evidence": "1.5% from 14d low"
+          "active": false,
+          "evidence": "5.1% from 14d low"
         },
         {
           "id": "C3",
           "name": "CVD bull divergence",
-          "active": true,
-          "evidence": "CVD 1h = BULLISH_DIVERGENCE"
+          "active": false,
+          "evidence": "CVD 1h = HEALTHY_UPTREND"
         }
       ]
     }

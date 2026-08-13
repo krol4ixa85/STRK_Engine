@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-12T22:21:19.365381+00:00",
+  "as_of": "2026-08-13T09:02:05.964237+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 9,
-      "total_usd": 2292744.0,
-      "net_usd_delta_24h": -223.0,
-      "net_strk_delta_24h": 1553457.0,
+      "total_usd": 2367417.0,
+      "net_usd_delta_24h": 229.0,
+      "net_strk_delta_24h": 103913.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 134217833.0,
-      "tvl_usd_now": 5454367,
+      "tvl_strk_now": 133933029.0,
+      "tvl_usd_now": 5566433,
       "apy_pct": 6.84,
-      "strk_delta_24h": -166986.0,
-      "strk_delta_7d": 7637337.0,
-      "pct_24h": -0.12,
-      "pct_7d": 6.03,
+      "strk_delta_24h": -194103.0,
+      "strk_delta_7d": 7353455.0,
+      "pct_24h": -0.14,
+      "pct_7d": 5.8,
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-12T22:21:19.326672+00:00",
+      "as_of": "2026-08-13T09:02:05.934509+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 134217833.0,
+    "endur_lst_tvl_strk": 133933029.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -166986.0,
-    "lp_delta_24h_strk": 1553457.0,
+    "stake_delta_24h_strk": -194103.0,
+    "lp_delta_24h_strk": 103913.0,
     "stake_signal": "STABLE",
-    "lp_signal": "POSITIVE"
+    "lp_signal": "STABLE"
   },
-  "overall_direction": "LP_ADDING",
-  "layman": "Приток в DEX-пулы, стейкинг без движения. Готовится торговая ликвидность.",
+  "overall_direction": "STABLE",
+  "layman": "Ликвидность в экосистеме стабильна за 24ч. Нет сильных движений.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5
