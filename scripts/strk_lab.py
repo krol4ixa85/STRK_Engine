@@ -225,8 +225,8 @@ def get_top_movers():
             strong_buys.append({
                 'sector': _get(r, 'sector'),
                 'token': token,
-                'net_flow_m': _get(r, 'net_flow_m_usd', 0) or 0,
-                'price_change_pct': _get(r, 'price_change_7d_pct', 0) or 0,
+                'net_flow_m_usd': _get(r, 'net_flow_m_usd', 0) or 0,
+                'price_change_7d_pct': _get(r, 'price_change_7d_pct', 0) or 0,
                 'tx_count': tx_count,
                 'signal': signal,
             })
@@ -235,18 +235,23 @@ def get_top_movers():
             divergences.append({
                 'sector': _get(r, 'sector'),
                 'token': token,
-                'net_flow_m': _get(r, 'net_flow_m_usd', 0) or 0,
-                'price_change_pct': _get(r, 'price_change_7d_pct', 0) or 0,
+                'net_flow_m_usd': _get(r, 'net_flow_m_usd', 0) or 0,
+                'price_change_7d_pct': _get(r, 'price_change_7d_pct', 0) or 0,
                 'tx_count': tx_count,
+                'signal': 'DIVERGENCE',
             })
+            seen.add(token)
+        elif signal in ('STRONG_SELL', 'SELL_PRESSURE'):
+            # для полноты — sell tokens тоже в snapshot
             seen.add(token)
 
     # Sort by net flow desc
-    strong_buys.sort(key=lambda x: x['net_flow_m'], reverse=True)
-    divergences.sort(key=lambda x: x['net_flow_m'], reverse=True)
+    strong_buys.sort(key=lambda x: x['net_flow_m_usd'], reverse=True)
+    divergences.sort(key=lambda x: x['net_flow_m_usd'], reverse=True)
 
     # BUY_PRESSURE (без price up) from netflow — kandidati bez momentum yet
     buy_pressure_no_price = []
+    sell_tokens = []
     for r in rows_nf:
         token = _get(r, 'token')
         if not token or token in seen:
@@ -254,20 +259,62 @@ def get_top_movers():
         tx_count = _get(r, 'tx_count', 0) or 0
         if tx_count < LIQUIDITY_FLOOR_TX:
             continue
-        if _get(r, 'direction') == 'BUY_PRESSURE':
-            nf = _get(r, 'net_flow_m_usd', 0) or 0
-            if nf > 0.5:  # min $500K net flow
-                buy_pressure_no_price.append({
-                    'sector': _get(r, 'sector'),
-                    'token': token,
-                    'net_flow_m': nf,
-                    'net_flow_pct': _get(r, 'net_flow_pct', 0) or 0,
-                    'tx_count': tx_count,
-                })
-                seen.add(token)
-    buy_pressure_no_price.sort(key=lambda x: x['net_flow_m'], reverse=True)
+        direction = _get(r, 'direction')
+        nf = _get(r, 'net_flow_m_usd', 0) or 0
+        if direction == 'BUY_PRESSURE' and nf > 0.5:
+            buy_pressure_no_price.append({
+                'sector': _get(r, 'sector'),
+                'token': token,
+                'net_flow_m_usd': nf,
+                'net_flow_pct': _get(r, 'net_flow_pct', 0) or 0,
+                'tx_count': tx_count,
+                'signal': 'BUY_PRESSURE',
+            })
+            seen.add(token)
+        elif direction == 'SELL_PRESSURE' and nf < -0.5:
+            sell_tokens.append({
+                'sector': _get(r, 'sector'),
+                'token': token,
+                'net_flow_m_usd': nf,
+                'net_flow_pct': _get(r, 'net_flow_pct', 0) or 0,
+                'tx_count': tx_count,
+                'signal': 'SELL_PRESSURE',
+            })
+            seen.add(token)
+    buy_pressure_no_price.sort(key=lambda x: x['net_flow_m_usd'], reverse=True)
+    sell_tokens.sort(key=lambda x: x['net_flow_m_usd'])
 
-    return strong_buys, divergences, buy_pressure_no_price
+    return strong_buys, divergences, buy_pressure_no_price, sell_tokens
+
+
+def save_snapshot(ctx, status, strong_buys, divergences, buy_pressure, sell_tokens):
+    """Сохраняет structured snapshot для rotation_tracker и других consumers."""
+    snapshot = {
+        'generated_at': datetime.now(timezone.utc).isoformat(),
+        'strk_status': {
+            'verdict': status['verdict'],
+            'triggers_hit': status['triggers_hit'],
+            'triggers_total': status['triggers_total'],
+            'recommendation': status['recommendation'],
+            'wyckoff_phase': ctx.get('wyckoff_phase'),
+            'dune_monthly_signal': ctx.get('dune_monthly_signal'),
+            'cex_signal': ctx.get('cex_signal'),
+            'strk_price': ctx.get('strk_price'),
+            'bearish_30d': ctx.get('bearish_30d'),
+        },
+        're_entry_triggers': {
+            'trigger_list': status['trigger_list'],
+        },
+        'strong_buy': strong_buys,
+        'divergence': divergences,
+        'buy_pressure': buy_pressure,
+        'sell': sell_tokens,
+    }
+    snapshot_path = CACHE_DIR / 'strk_lab_report.json'
+    snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(snapshot_path, 'w', encoding='utf-8') as f:
+        json.dump(snapshot, f, indent=2, ensure_ascii=False, default=str)
+    logger.info(f"Snapshot saved: {snapshot_path.name}")
 
 
 def format_lab_report():
@@ -275,7 +322,10 @@ def format_lab_report():
 
     ctx = get_strk_context()
     status = compute_strk_status(ctx)
-    strong_buys, divergences, buy_pressure = get_top_movers()
+    strong_buys, divergences, buy_pressure, sell_tokens = get_top_movers()
+
+    # Save structured snapshot для rotation_tracker и других consumers
+    save_snapshot(ctx, status, strong_buys, divergences, buy_pressure, sell_tokens)
 
     text = f"<b>🧪 STRK LAB · Portfolio Rotation</b>\n"
     text += f"<i>{ts}</i>\n\n"
@@ -317,8 +367,8 @@ def format_lab_report():
         for sb in strong_buys[:8]:
             text += (f"  <code>{sb['token']:<6}</code> "
                      f"({_safe(sb['sector']):<8}) "
-                     f"net <code>{sb['net_flow_m']:+.1f}M</code> · "
-                     f"price <code>{sb['price_change_pct']:+.1f}%</code>\n")
+                     f"net <code>{sb['net_flow_m_usd']:+.1f}M</code> · "
+                     f"price <code>{sb['price_change_7d_pct']:+.1f}%</code>\n")
         text += "\n"
     else:
         text += "━━━━━━━━━━━━━━━━━━━\n"
@@ -335,8 +385,8 @@ def format_lab_report():
         for dv in divergences[:5]:
             text += (f"  <code>{dv['token']:<6}</code> "
                      f"({_safe(dv['sector']):<8}) "
-                     f"net <code>{dv['net_flow_m']:+.1f}M</code> · "
-                     f"price <code>{dv['price_change_pct']:+.1f}%</code>\n")
+                     f"net <code>{dv['net_flow_m_usd']:+.1f}M</code> · "
+                     f"price <code>{dv['price_change_7d_pct']:+.1f}%</code>\n")
         text += "\n"
 
     # === BUY PRESSURE (без price confirmation) ===
@@ -348,7 +398,7 @@ def format_lab_report():
         for bp in buy_pressure[:5]:
             text += (f"  <code>{bp['token']:<6}</code> "
                      f"({_safe(bp['sector']):<8}) "
-                     f"net <code>{bp['net_flow_m']:+.1f}M</code> "
+                     f"net <code>{bp['net_flow_m_usd']:+.1f}M</code> "
                      f"({bp['net_flow_pct']:+.0f}%)\n")
         text += "\n"
 
