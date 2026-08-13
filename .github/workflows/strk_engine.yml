@@ -89,6 +89,11 @@ jobs:
           DUNE_QUERY_ID_SECTOR_MOMENTUM: ${{ secrets.DUNE_QUERY_ID_SECTOR_MOMENTUM }}
         run: python3 scripts/collectors/dune_sector_collector.py || true
 
+      # STAGE 1.56 · ROTATION TRACKER (детектор изменений в LAB signals)
+      # Читает snapshot от strk_lab.py (data/cache/strk_lab_report.json)
+      # → alert в @Lab_sector_bot при NEW_STRONG_BUY / DIVERGENCE_WARN / EXIT / CONFIRMED_HOLD_3D
+      # Запускается ПОСЛЕ strk_lab.py — поэтому лучше в step после LAB (STAGE 8.5)
+
       # STAGE 1.6 · CEX FLOW ALERT (detect DISTRIBUTION → ACCUMULATION transitions)
       # Читает existing cex_flow.json (обновляется в STAGE 1 через Etherscan).
       # Real-time каждый час — реагирует на flip, без Dune credits.
@@ -236,12 +241,23 @@ jobs:
       # STAGE 8.5 · LAB REPORT (Portfolio Rotation Compass)
       # Отправляется в @Lab_sector_bot (не @STRK_GUARDIAN_BOT)
       # Запускается при cron 08:30 UTC или ручном mode=lab
+      # ВАЖНО: сохраняет data/cache/strk_lab_report.json для rotation_tracker
       - name: STRK LAB · Portfolio Rotation report
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
         env:
           TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/strk_lab.py || true
+
+      # STAGE 8.6 · ROTATION TRACKER (детектор изменений от LAB snapshot)
+      # Запускается после LAB чтобы прочитать свежий strk_lab_report.json
+      # Alert в @Lab_sector_bot при: NEW_STRONG_BUY, DIVERGENCE_WARN, EXIT, CONFIRMED_HOLD_3D
+      - name: Rotation tracker (LAB signals changes)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/detectors/rotation_tracker.py || true
 
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
