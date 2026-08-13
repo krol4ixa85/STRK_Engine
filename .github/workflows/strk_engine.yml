@@ -2,9 +2,10 @@ name: STRK Engine Automation
 
 on:
   schedule:
-    # Основной digest 3 раза в день (08:00 / 14:00 / 20:00 UTC = 11:00 / 17:00 / 23:00 MSK)
-    # Ручной трейдинг не требует hourly — важнее event-driven alerts (см. strk_squeeze.yml + alert детекторы)
+    # Основной digest 3 раза в день (08:00 / 14:00 / 20:00 UTC)
     - cron: '0 8,14,20 * * *'
+    # LAB режим — 1 раз утром (08:30 UTC = 11:30 MSK)
+    - cron: '30 8 * * *'
     # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
     - cron: '0 0 * * 0'
   workflow_dispatch:
@@ -19,6 +20,8 @@ on:
           - liq
           - run
           - backtest
+          - baseline
+          - lab
           - baseline
 
 # Global env — все шаги видят все секреты
@@ -75,23 +78,23 @@ jobs:
           DUNE_QUERY_ID_CEX_FLOW: ${{ secrets.DUNE_QUERY_ID_CEX_FLOW }}
         run: python3 scripts/collectors/dune_collector.py || true
 
+      # STAGE 1.55 · SECTOR ROTATION COLLECTOR (для LAB режима)
+      # Запускается ТОЛЬКО при mode=lab или cron 08:30 UTC
+      # Экономим Analyst tier credits — не qazhe run
+      - name: Dune sector collector (LAB)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_SECTOR_NETFLOW: ${{ secrets.DUNE_QUERY_ID_SECTOR_NETFLOW }}
+          DUNE_QUERY_ID_SECTOR_MOMENTUM: ${{ secrets.DUNE_QUERY_ID_SECTOR_MOMENTUM }}
+        run: python3 scripts/collectors/dune_sector_collector.py || true
+
       # STAGE 1.6 · CEX FLOW ALERT (detect DISTRIBUTION → ACCUMULATION transitions)
       # Читает existing cex_flow.json (обновляется в STAGE 1 через Etherscan).
       # Real-time каждый час — реагирует на flip, без Dune credits.
       # Alert в @strk_dynamic3_bot с dedup 24h.
       - name: CEX flow alert detector
         run: python3 scripts/detectors/cex_flow_alert.py || true
-
-      # STAGE 1.7 · PHASE CHANGE ALERT (structural transitions → @strk_dynamic3_bot)
-      # Отслеживает CURRENT PHASE / Wyckoff / Dune monthly signal changes.
-      # Alert только когда signal реально сменился. Dedup 24h.
-      # Ручному трейдеру: "context изменился, посмотри digest".
-      - name: Phase change alert detector
-        env:
-          SQUEEZE_BOT_TOKEN: ${{ secrets.SQUEEZE_BOT_TOKEN }}
-          SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python3 scripts/detectors/phase_change_alert.py || true
 
       # ============================================================
       # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
@@ -230,10 +233,20 @@ jobs:
       - name: Generate RUN report (HTML)
         run: python3 scripts/run_report.py || true
 
+      # STAGE 8.5 · LAB REPORT (Portfolio Rotation Compass)
+      # Отправляется в @Lab_sector_bot (не @STRK_GUARDIAN_BOT)
+      # Запускается при cron 08:30 UTC или ручном mode=lab
+      - name: STRK LAB · Portfolio Rotation report
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/strk_lab.py || true
+
       # STAGE 9 · SEND (MODE = digest | liq | run)
-      # SKIP если mode=backtest или mode=baseline (у них свои каналы отправки)
+      # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
       - name: Send Telegram delivery
-        if: github.event.schedule != '0 0 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline'
+        if: github.event.schedule != '0 0 * * 0' && github.event.schedule != '30 8 * * *' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline' && github.event.inputs.mode != 'lab'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
