@@ -1,20 +1,20 @@
 {
-  "as_of": "2026-08-13T15:40:28.892858+00:00",
+  "as_of": "2026-08-13T20:31:42.111290+00:00",
   "window_hours": 168,
-  "total_transactions": 202,
+  "total_transactions": 206,
   "inflow_count": 79,
-  "outflow_count": 118,
+  "outflow_count": 122,
   "rebalance_count": 5,
   "days_data": [
     {
       "day": "2026-08-06",
-      "inflow_strk": 1425022.49,
-      "outflow_strk": 4659344.39,
+      "inflow_strk": 481014.96,
+      "outflow_strk": 0,
       "rebalance_strk": 5055306.84,
-      "net_strk": 3234321.89,
-      "net_direction": "BULLISH",
-      "inflow_count": 3,
-      "outflow_count": 2
+      "net_strk": -481014.96,
+      "net_direction": "NEUTRAL",
+      "inflow_count": 1,
+      "outflow_count": 0
     },
     {
       "day": "2026-08-07",
@@ -78,19 +78,19 @@
     },
     {
       "day": "2026-08-13",
-      "inflow_strk": 6783944.22,
-      "outflow_strk": 4796812.46,
+      "inflow_strk": 23668438.74,
+      "outflow_strk": 20893469.42,
       "rebalance_strk": 10323020.56,
-      "net_strk": -1987131.76,
+      "net_strk": -2774969.32,
       "net_direction": "BEARISH",
-      "inflow_count": 11,
-      "outflow_count": 13
+      "inflow_count": 13,
+      "outflow_count": 19
     }
   ],
   "classification": {
     "signal": "STRONG_DISTRIBUTION",
     "confidence": "HIGH",
-    "interpretation": "3 days consecutive CEX inflow, net -16.2M STRK — whales sending to exchanges (BEARISH)",
+    "interpretation": "3 days consecutive CEX inflow, net -17.0M STRK — whales sending to exchanges (BEARISH)",
     "stats": {
       "days_analyzed": 7,
       "bullish_days": 2,
@@ -98,12 +98,17 @@
       "neutral_days": 0,
       "consecutive_bullish": 0,
       "consecutive_bearish": 3,
-      "total_net_strk": -16224089.59,
-      "total_inflow_strk": 87438566.12,
-      "total_outflow_strk": 71214476.52
+      "total_net_strk": -17011927.15,
+      "total_inflow_strk": 104323060.64,
+      "total_outflow_strk": 87311133.48
     }
   },
   "top_inflows": [
+    {
+      "amount": 16300000.0,
+      "to_cex": "Coinbase_1",
+      "from": "0x55ccb545d767203fe023c7847f1cae2aa24820b8"
+    },
     {
       "amount": 14850000.0,
       "to_cex": "Coinbase_1",
@@ -111,11 +116,6 @@
     },
     {
       "amount": 6533607.305071051,
-      "to_cex": "Coinbase_1",
-      "from": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
-    },
-    {
-      "amount": 6415780.665015975,
       "to_cex": "Coinbase_1",
       "from": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
     }
@@ -127,14 +127,14 @@
       "to": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
     },
     {
+      "amount": 13987923.543145867,
+      "from_cex": "Coinbase_1",
+      "to": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
+    },
+    {
       "amount": 4999976.0,
       "from_cex": "Binance_16",
       "to": "0x9a4079e68b540333bb4ec95042841e18e0479e3d"
-    },
-    {
-      "amount": 3942224.16265,
-      "from_cex": "Binance_14",
-      "to": "0x7fc4fb502458821e9d73de7a67d85e72e9695a62"
     }
   ]
 }

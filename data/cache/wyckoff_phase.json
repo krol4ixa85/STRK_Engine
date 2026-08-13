@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-13T15:40:00.512135+00:00",
+  "as_of": "2026-08-13T20:31:15.520067+00:00",
   "phase": "ACCUMULATION",
   "sub_phase": "Phase A · initial demand",
   "confidence": "MEDIUM",
@@ -8,46 +8,46 @@
     "ACCUMULATION": 4,
     "MARKUP": 0,
     "DISTRIBUTION": 2,
-    "MARKDOWN": 2
+    "MARKDOWN": 3
   },
   "reasons": [
-    "few LARGE receivers (3)",
-    "small holders active (ratio 0.263)"
+    "few LARGE receivers (2)",
+    "small holders active (ratio 0.367)"
   ],
   "technical": {
-    "price_now": 0.0232,
-    "high_7d": 0.0262,
+    "price_now": 0.0228,
+    "high_7d": 0.0259,
     "low_7d": 0.0222,
     "high_14d": 0.0317,
     "low_14d": 0.0222,
     "resistance_zones": [
-      0.0262,
-      0.0257,
-      0.0255
+      0.0259,
+      0.0256,
+      0.0254
     ],
     "support_zones": [
       0.0222,
       0.0226,
       0.0229
     ],
-    "avg_vol_30": 141747.12,
-    "last_vol": 125606.63,
-    "vol_ratio_last": 0.89,
-    "vol_trend_10": 0.92,
+    "avg_vol_30": 141782.89,
+    "last_vol": 4294.01,
+    "vol_ratio_last": 0.03,
+    "vol_trend_10": 0.83,
     "structure": "DOWNTREND",
-    "compression": 1.08,
-    "pct_from_high_14d": -26.95,
-    "pct_from_low_14d": 4.37
+    "compression": 0.17,
+    "pct_from_high_14d": -28.11,
+    "pct_from_low_14d": 2.7
   },
   "triggers": {
     "to_next_phase": [
       [
-        "Break ABOVE $0.0262 on volume",
+        "Break ABOVE $0.0259 on volume",
         false
       ],
       [
         "Distribution ratio holds above 0.30",
-        false
+        true
       ],
       [
         "BTC breaks up-cycle",
@@ -59,7 +59,7 @@
       ]
     ],
     "exit_signals": [
-      "If flat: consider LONG on break above $0.0262 with stop at $0.0222",
+      "If flat: consider LONG on break above $0.0259 with stop at $0.0222",
       "Position sizing: small (accumulation not confirmed until markup)"
     ],
     "next_phase": "MARKUP"
