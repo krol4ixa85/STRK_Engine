@@ -1,50 +1,50 @@
 {
-  "as_of": "2026-08-13T09:04:31.322034+00:00",
-  "valid_until": "2026-08-20T09:04:31.322034+00:00",
+  "as_of": "2026-08-13T14:53:15.522833+00:00",
+  "valid_until": "2026-08-20T14:53:15.522833+00:00",
   "current_state": {
-    "phase": "MARKDOWN",
-    "sub_phase": "Trend continuation down",
+    "phase": "ACCUMULATION",
+    "sub_phase": "Phase A · initial demand",
     "confidence": "MEDIUM",
-    "price": 0.0233,
+    "price": 0.0232,
     "btc_cycle": "DOWN",
-    "btc_price": 63730.2,
+    "btc_price": 63927.9,
     "short_crowded": false,
     "long_crowded": false,
     "days_to_next_unlock": 1,
     "next_unlock_strk": 64000000,
-    "cex_flow_signal": "MILD_DISTRIBUTION"
+    "cex_flow_signal": "STRONG_DISTRIBUTION"
   },
   "scenarios": [
     {
       "type": "BASE",
-      "label": "Продолжение markdown",
-      "probability_pct": 67,
+      "label": "Продолжение accumulation",
+      "probability_pct": 65,
       "price_range": [
-        0.0189,
-        0.024
+        0.0218,
+        0.0255
       ],
       "timeframe_days": 14,
-      "narrative": "Падение продолжается. Lower highs, lower lows. Unlock через 1 дней добавит давления.",
-      "catalyst": "Ждать капитуляции: extreme neg funding + volume spike + 7 дней без новых лоу.",
+      "narrative": "Продолжение аккумуляции в диапазоне. Крупные покупают на dip, розница пассивна.",
+      "catalyst": "Постепенное building base 2-6 недель до подтверждения markup.",
       "position_hint": "Stay flat. Не открывать directional trade без confirmation."
     },
     {
       "type": "BULL",
       "label": "Positive shock / squeeze",
-      "probability_pct": 7,
+      "probability_pct": 8,
       "price_range": [
-        0.024,
+        0.0239,
         0.0349
       ],
       "timeframe_days": 7,
       "narrative": "Ограниченный отскок в диапазоне. BTC в down-cycle снижает вероятность.",
       "catalyst": "Trigger: BTC breaks +5% в неделю.",
-      "position_hint": "Long only above $0.0240 with stop $0.0221. Size small."
+      "position_hint": "Long only above $0.0239 with stop $0.0220. Size small."
     },
     {
       "type": "BEAR",
       "label": "Negative shock / markdown",
-      "probability_pct": 26,
+      "probability_pct": 27,
       "price_range": [
         0.0178,
         0.0218
@@ -52,7 +52,7 @@
       "timeframe_days": 14,
       "narrative": "Cascade breakdown. CEX inflows + unlock 64M через 1d вызывают sell pressure.",
       "catalyst": "Trigger: break BELOW $0.0222 + volume spike. Или BTC уходит под $60k.",
-      "position_hint": "Short only below $0.0218 with stop $0.0245. Or reduce longs."
+      "position_hint": "Short only below $0.0218 with stop $0.0244. Or reduce longs."
     }
   ]
 }
