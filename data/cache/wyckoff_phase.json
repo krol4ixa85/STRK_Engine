@@ -1,48 +1,49 @@
 {
-  "as_of": "2026-08-13T20:31:15.520067+00:00",
+  "as_of": "2026-08-14T08:57:40.428990+00:00",
   "phase": "ACCUMULATION",
   "sub_phase": "Phase A · initial demand",
-  "confidence": "MEDIUM",
-  "score": 4,
+  "confidence": "HIGH",
+  "score": 5,
   "all_scores": {
-    "ACCUMULATION": 4,
+    "ACCUMULATION": 5,
     "MARKUP": 0,
     "DISTRIBUTION": 2,
     "MARKDOWN": 3
   },
   "reasons": [
     "few LARGE receivers (2)",
-    "small holders active (ratio 0.367)"
+    "small holders active (ratio 0.388)",
+    "range compression + volume dry"
   ],
   "technical": {
-    "price_now": 0.0228,
-    "high_7d": 0.0259,
+    "price_now": 0.0227,
+    "high_7d": 0.0257,
     "low_7d": 0.0222,
     "high_14d": 0.0317,
     "low_14d": 0.0222,
     "resistance_zones": [
-      0.0259,
-      0.0256,
-      0.0254
+      0.0257,
+      0.0254,
+      0.0252
     ],
     "support_zones": [
       0.0222,
       0.0226,
-      0.0229
+      0.0226
     ],
-    "avg_vol_30": 141782.89,
-    "last_vol": 4294.01,
-    "vol_ratio_last": 0.03,
-    "vol_trend_10": 0.83,
+    "avg_vol_30": 139020.44,
+    "last_vol": 19533.88,
+    "vol_ratio_last": 0.14,
+    "vol_trend_10": 0.6,
     "structure": "DOWNTREND",
-    "compression": 0.17,
-    "pct_from_high_14d": -28.11,
-    "pct_from_low_14d": 2.7
+    "compression": 0.39,
+    "pct_from_high_14d": -28.52,
+    "pct_from_low_14d": 2.12
   },
   "triggers": {
     "to_next_phase": [
       [
-        "Break ABOVE $0.0259 on volume",
+        "Break ABOVE $0.0257 on volume",
         false
       ],
       [
@@ -59,7 +60,7 @@
       ]
     ],
     "exit_signals": [
-      "If flat: consider LONG on break above $0.0259 with stop at $0.0222",
+      "If flat: consider LONG on break above $0.0257 with stop at $0.0222",
       "Position sizing: small (accumulation not confirmed until markup)"
     ],
     "next_phase": "MARKUP"
