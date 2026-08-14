@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-14T14:46:49.208582+00:00",
+  "as_of": "2026-08-14T20:21:49.936879+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 9,
-      "total_usd": 2299465.0,
-      "net_usd_delta_24h": -488.0,
-      "net_strk_delta_24h": 1329084.0,
+      "total_usd": 2327876.0,
+      "net_usd_delta_24h": -204.0,
+      "net_strk_delta_24h": -314661.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 135397182.0,
-      "tvl_usd_now": 5544887,
+      "tvl_strk_now": 135988173.0,
+      "tvl_usd_now": 5569087,
       "apy_pct": 6.84,
-      "strk_delta_24h": -73405.0,
-      "strk_delta_7d": 8732607.0,
-      "pct_24h": -0.05,
-      "pct_7d": 6.89,
+      "strk_delta_24h": 445751.0,
+      "strk_delta_7d": 9251763.0,
+      "pct_24h": 0.33,
+      "pct_7d": 7.3,
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-14T14:46:49.171115+00:00",
+      "as_of": "2026-08-14T20:21:49.895499+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 135397182.0,
+    "endur_lst_tvl_strk": 135988173.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -73405.0,
-    "lp_delta_24h_strk": 1329084.0,
-    "stake_signal": "STABLE",
-    "lp_signal": "POSITIVE"
+    "stake_delta_24h_strk": 445751.0,
+    "lp_delta_24h_strk": -314661.0,
+    "stake_signal": "POSITIVE",
+    "lp_signal": "STABLE"
   },
-  "overall_direction": "LP_ADDING",
-  "layman": "Приток в DEX-пулы, стейкинг без движения. Готовится торговая ликвидность.",
+  "overall_direction": "STAKE_INFLOW",
+  "layman": "Приток в стейкинг, DEX-пулы без движения. Слабый бычий сигнал.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5

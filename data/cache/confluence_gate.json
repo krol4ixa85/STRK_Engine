@@ -1,38 +1,39 @@
 {
-  "as_of": "2026-08-14T14:48:44.352249+00:00",
-  "signal": "RALLY_MEDIUM",
-  "confidence": "MEDIUM",
-  "summary": "Partial rally signals (4/9+)",
-  "action": "STAY FLAT",
-  "rally_score": 4,
-  "crash_score": 3,
+  "as_of": "2026-08-14T20:23:37.092823+00:00",
+  "signal": "RALLY_HIGH_CONFLUENCE",
+  "confidence": "HIGH",
+  "summary": "STRONG RALLY SETUP - 6 independent checks agree",
+  "action": "Consider LONG on break above $0.0262 with stop $0.0222",
+  "rally_score": 6,
+  "crash_score": 1,
   "checks": {
     "on_chain_ok": true,
     "price_up_3d": false,
     "accelerating": true,
     "vol_expanding": false,
     "not_distributing_cex": true,
-    "events_supportive": false,
-    "liquidity_shift_bullish": true
+    "events_supportive": true,
+    "liquidity_shift_bullish": true,
+    "strong_off_chain_bull": true
   },
   "inputs_used": {
     "wyckoff_phase": "ACCUMULATION",
     "technical_signal": "NEUTRAL",
-    "slope_3d_pct": -1.78,
-    "slope_accel_pct": 5.49,
-    "vol_ratio_3d": 0.88,
-    "rsi": 45.45,
-    "pct_from_high": -14.58,
-    "pct_from_low": 1.8,
+    "slope_3d_pct": -1.2,
+    "slope_accel_pct": 5.0,
+    "vol_ratio_3d": 0.79,
+    "rsi": 47.83,
+    "pct_from_high": -13.11,
+    "pct_from_low": 3.56,
     "short_crowded": false,
     "long_crowded": false,
     "cex_signal": "NEUTRAL",
-    "event_signal": "HIGH_VOL_WINDOW",
+    "event_signal": "POSITIVE_CATALYST",
     "event_bullish": 6,
-    "event_bearish": 5,
-    "liquidity_shift_direction": "LP_ADDING",
+    "event_bearish": 2,
+    "liquidity_shift_direction": "STAKE_INFLOW",
     "bridge_activity_signal": "LOW_ACTIVITY",
-    "cross_token_alpha_7d_pct": -5.29
+    "cross_token_alpha_7d_pct": -2.97
   },
   "voter_wire_v1": {
     "status": "LIVE_BONUS",
@@ -40,7 +41,7 @@
     "bonuses_active": {
       "liquidity_shift": true,
       "bridge_activity": true,
-      "cross_token": true
+      "cross_token": false
     },
     "thresholds": {
       "liquidity_shift_rally_values": [

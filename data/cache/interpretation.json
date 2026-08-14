@@ -1,44 +1,44 @@
 {
-  "as_of": "2026-08-14T14:48:46.449396+00:00",
+  "as_of": "2026-08-14T20:23:39.744698+00:00",
   "context_snapshot": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase A · initial demand",
     "wyckoff_conf": "HIGH",
-    "price": 0.02261,
+    "price": 0.023,
     "high_14d": 0.02647,
     "low_14d": 0.02221,
-    "slope_3d": -1.78,
-    "slope_accel": 5.49,
-    "vol_ratio_3d": 0.88,
-    "rsi": 45.45,
-    "pct_from_high": -14.58,
-    "pct_from_low": 1.8,
+    "slope_3d": -1.2,
+    "slope_accel": 5.0,
+    "vol_ratio_3d": 0.79,
+    "rsi": 47.83,
+    "pct_from_high": -13.11,
+    "pct_from_low": 3.56,
     "funding_apr": 0,
     "funding_min_7d": -8.47,
     "short_crowded": false,
     "long_crowded": false,
-    "hhi": 0.0597,
+    "hhi": 0.06,
     "entropy": 5,
     "large_receivers_14d": 0,
-    "top5_share": 45.01,
+    "top5_share": 45.15,
     "cex_signal": "MILD_DISTRIBUTION",
     "cex_net_7d": 0,
     "cex_consecutive": 0,
     "effort_signal": "NEUTRAL",
     "cvd_signal": "NEUTRAL",
-    "event_signal": "HIGH_VOL_WINDOW",
+    "event_signal": "POSITIVE_CATALYST",
     "event_bull": 6,
-    "event_bear": 5,
-    "sector_signal": "STRK_UNDERPERFORMING",
-    "strk_alpha_7d": -5.29,
+    "event_bear": 2,
+    "sector_signal": "DIVERGING",
+    "strk_alpha_7d": -2.97,
     "days_to_unlock": 0,
     "unlock_amount": 64000000,
     "supply_30d": 64000000,
-    "btc_price": 62737.8,
+    "btc_price": 62945.4,
     "btc_cycle": "DOWN",
-    "btc_dist200": -9.82
+    "btc_dist200": -9.36
   },
-  "patterns_matched": 2,
+  "patterns_matched": 1,
   "interpretation": {
     "primary": {
       "name": "PRE_UNLOCK_WEAKNESS",
@@ -55,21 +55,7 @@
       ],
       "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
     },
-    "secondary": {
-      "name": "SECTOR_ROTATION_OUT",
-      "label": "L2 sector rotation OUT of STRK",
-      "confidence": 80,
-      "direction": "BEARISH_MID",
-      "hypothesis": "STRK alpha -5.3% vs L2 sector — деньги уходят из STRK специфически, не broad L2 weakness.",
-      "narrative": "STRK 7d показывает -5.3% относительно L2 сектора. Это не macro — это STRK-специфический sell-off. ARB, OP, ZK ведут себя иначе. Причины обычно: (a) upcoming supply pressure, (b) narrative shift, (c) whale distribution. Unlock через 0д может быть ключевым фактором.",
-      "position_hint": "Long STRK здесь — против тренда сектора. Wait либо для sector rotation IN, либо для capitulation setup.",
-      "triggers_watch": [
-        "STRK alpha 7d > +2% = rotation reversal",
-        "CEX flow flip OUTFLOW",
-        "Positive catalyst (upgrade, partnership, listing)"
-      ],
-      "invalidation": "Alpha 7d flip to positive + BTC UP cycle = rotation IN, паттерн сброшен."
-    },
+    "secondary": null,
     "tertiary": null,
     "summary": "Supply shock приближается: 64M STRK unlock через 0д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
     "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
@@ -95,21 +81,6 @@
         "Price recovery выше pre-announcement level = supply absorbed"
       ],
       "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
-    },
-    {
-      "name": "SECTOR_ROTATION_OUT",
-      "label": "L2 sector rotation OUT of STRK",
-      "confidence": 80,
-      "direction": "BEARISH_MID",
-      "hypothesis": "STRK alpha -5.3% vs L2 sector — деньги уходят из STRK специфически, не broad L2 weakness.",
-      "narrative": "STRK 7d показывает -5.3% относительно L2 сектора. Это не macro — это STRK-специфический sell-off. ARB, OP, ZK ведут себя иначе. Причины обычно: (a) upcoming supply pressure, (b) narrative shift, (c) whale distribution. Unlock через 0д может быть ключевым фактором.",
-      "position_hint": "Long STRK здесь — против тренда сектора. Wait либо для sector rotation IN, либо для capitulation setup.",
-      "triggers_watch": [
-        "STRK alpha 7d > +2% = rotation reversal",
-        "CEX flow flip OUTFLOW",
-        "Positive catalyst (upgrade, partnership, listing)"
-      ],
-      "invalidation": "Alpha 7d flip to positive + BTC UP cycle = rotation IN, паттерн сброшен."
     }
   ]
 }
