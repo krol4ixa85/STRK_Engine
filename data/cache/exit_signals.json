@@ -1,8 +1,8 @@
 {
-  "ts": "2026-08-14T09:39:10.559080+00:00",
+  "ts": "2026-08-14T14:48:59.646055+00:00",
   "long_exit": {
-    "level": "WARNING",
-    "active_count": 1,
+    "level": "NEUTRAL",
+    "active_count": 0,
     "triggers": [
       {
         "id": "L1",
@@ -13,20 +13,20 @@
       {
         "id": "L2",
         "name": "SMART cohort distributing",
-        "active": true,
-        "evidence": "SMART 24h net -1.80M STRK (threshold -0.5M)"
+        "active": false,
+        "evidence": "SMART 24h net -0.04M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=0.99"
+        "evidence": "price_up_3d=False, vol_ratio=0.88"
       },
       {
         "id": "L4",
         "name": "Funding crowded long (flush risk)",
         "active": false,
-        "evidence": "funding APR -1.409%, long_crowded=False"
+        "evidence": "funding APR -3.247%, long_crowded=False"
       }
     ]
   },
@@ -44,19 +44,19 @@
         "id": "S2",
         "name": "SMART cohort accumulating",
         "active": false,
-        "evidence": "SMART 24h net -1.80M STRK"
+        "evidence": "SMART 24h net -0.04M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 38.54, vol_ratio 0.99"
+        "evidence": "RSI 45.45, vol_ratio 0.88"
       },
       {
         "id": "S4",
         "name": "Funding crowded short (squeeze risk)",
         "active": false,
-        "evidence": "funding APR -1.409%, short_crowded=False"
+        "evidence": "funding APR -3.247%, short_crowded=False"
       }
     ]
   },
