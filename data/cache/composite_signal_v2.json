@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-14T20:22:51.250168+00:00",
+  "as_of": "2026-08-15T08:16:52.874157+00:00",
   "signal": "BEARISH_STRONG",
   "confidence": "HIGH (multiple modules aligned)",
   "scoring": {
@@ -7,8 +7,8 @@
     "confidence": "HIGH (multiple modules aligned)",
     "votes": {
       "bullish": 0,
-      "bearish": 4,
-      "neutral": 2
+      "bearish": 6,
+      "neutral": 1
     },
     "bullish_share": 0.0,
     "breakdown": [
@@ -19,8 +19,8 @@
       ],
       [
         "distribution",
-        "NEUTRAL",
-        "weight 1"
+        "BEARISH",
+        "weight 2"
       ],
       [
         "btc_cycle",
@@ -56,43 +56,43 @@
   },
   "inputs": {
     "distribution": {
-      "signal": "NEUTRAL",
+      "signal": "BEARISH",
       "counts": {
-        "MICRO": 40,
-        "SMALL": 3,
+        "MICRO": 41,
+        "SMALL": 2,
         "MEDIUM": 12,
-        "LARGE": 2
+        "LARGE": 3
       },
       "totals": {
-        "MICRO": 8782586.75,
-        "SMALL": 2335629.2,
-        "MEDIUM": 31440652.07,
-        "LARGE": 29628474.76
+        "MICRO": 9043963.13,
+        "SMALL": 1738128.05,
+        "MEDIUM": 31064210.74,
+        "LARGE": 42220408.99
       },
-      "ratio_smallamt_over_largeamt": 0.3753,
-      "total_transfers_analyzed": 5836,
-      "net_receivers_count": 57
+      "ratio_smallamt_over_largeamt": 0.2554,
+      "total_transfers_analyzed": 5862,
+      "net_receivers_count": 58
     },
     "btc_context": {
-      "btc_price": 62945.4,
-      "dist200_pct": -9.36,
-      "slope30_pct": -2.72,
-      "slope7_pct": -3.28,
-      "acceleration": -2.65,
+      "btc_price": 63055.7,
+      "dist200_pct": -9.2,
+      "slope30_pct": -2.55,
+      "slope7_pct": -3.11,
+      "acceleration": -2.52,
       "cycle": "DOWN"
     },
     "funding": {
       "signal": "NEUTRAL",
-      "reason": "current -0.2% ann; 3d neg fundings: 28%; 7d min: -8.5%; funding in normal range",
+      "reason": "current +3.6% ann; 3d neg fundings: 28%; 7d min: -8.5%; funding in normal range",
       "funding_metrics": {
-        "as_of": "2026-08-14T20:22:42.838994+00:00",
+        "as_of": "2026-08-15T08:16:40.221942+00:00",
         "source": "OKX STRK-USDT-SWAP",
-        "current_annualized_pct": -0.246,
-        "avg_3d_pct": 3.27,
-        "avg_7d_pct": 3.883,
-        "avg_14d_pct": 2.12,
+        "current_annualized_pct": 3.597,
+        "avg_3d_pct": 2.908,
+        "avg_7d_pct": 3.656,
+        "avg_14d_pct": 2.19,
         "pct_negative_3d": 27.8,
-        "pct_negative_7d": 16.7,
+        "pct_negative_7d": 19.0,
         "min_ann_7d": -8.47,
         "max_ann_7d": 5.48,
         "extreme": "normal",
@@ -103,10 +103,10 @@
         "samples_14d": 84
       },
       "cross_source_check": {
-        "okx_current_pct": -0.246,
-        "bitget_current_pct": 5.475,
-        "diff_pct": 5.721,
-        "agreement": "disagree"
+        "okx_current_pct": 3.597,
+        "bitget_current_pct": 5.037,
+        "diff_pct": 1.44,
+        "agreement": "agree"
       }
     },
     "unlock": {
@@ -114,25 +114,25 @@
       "reasons": [
         "quarterly linear emission 5.4% of circ"
       ],
-      "circulating_supply_est": 6948670000,
+      "circulating_supply_est": 6952840000,
       "daily_emission_strk": 4170000,
       "weekly_dilution_pct": 0.42,
-      "quarterly_dilution_pct": 5.401,
+      "quarterly_dilution_pct": 5.398,
       "next_cliff": {
         "date": "2026-10-15",
         "amount_strk": 200000000,
         "category": "quarterly_3",
-        "days_until": 61,
-        "pct_of_current_circ": 2.8782486432655454
+        "days_until": 60,
+        "pct_of_current_circ": 2.8765223994799247
       },
       "last_cliff": {
         "date": "2026-04-15",
         "amount_strk": 500000000,
         "category": "annual_2",
-        "days_ago": 121
+        "days_ago": 122
       },
-      "days_to_final_unlock": 243,
-      "as_of": "2026-08-14T20:22:43.166756+00:00"
+      "days_to_final_unlock": 242,
+      "as_of": "2026-08-15T08:16:40.490083+00:00"
     },
     "whales": {
       "signal": "QUIET",
