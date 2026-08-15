@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-15T14:14:37.418400+00:00",
+  "as_of": "2026-08-15T20:11:18.397603+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 9,
-      "total_usd": 2330269.0,
-      "net_usd_delta_24h": -177.0,
-      "net_strk_delta_24h": -836751.0,
+      "total_usd": 2355100.0,
+      "net_usd_delta_24h": -114.0,
+      "net_strk_delta_24h": -465038.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 135910021.0,
-      "tvl_usd_now": 5546484,
+      "tvl_strk_now": 135750916.0,
+      "tvl_usd_now": 5519257,
       "apy_pct": 6.84,
-      "strk_delta_24h": -75683.0,
-      "strk_delta_7d": 9182925.0,
-      "pct_24h": -0.06,
-      "pct_7d": 7.25,
+      "strk_delta_24h": -221614.0,
+      "strk_delta_7d": 9036993.0,
+      "pct_24h": -0.16,
+      "pct_7d": 7.13,
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-15T14:14:37.379242+00:00",
+      "as_of": "2026-08-15T20:11:18.358951+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 135910021.0,
+    "endur_lst_tvl_strk": 135750916.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -75683.0,
-    "lp_delta_24h_strk": -836751.0,
-    "stake_signal": "STABLE",
-    "lp_signal": "NEGATIVE"
+    "stake_delta_24h_strk": -221614.0,
+    "lp_delta_24h_strk": -465038.0,
+    "stake_signal": "NEGATIVE",
+    "lp_signal": "STABLE"
   },
-  "overall_direction": "LP_REMOVING",
-  "layman": "Отток из DEX-пулов, стейкинг без движения. LP выводят капитал — тонкие книги ближе.",
+  "overall_direction": "STAKE_OUTFLOW",
+  "layman": "Отток из стейкинга, DEX-пулы без движения. Слабый медвежий сигнал.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5

@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-15T14:16:39.458120+00:00",
+  "ts": "2026-08-15T20:12:49.378881+00:00",
   "level": "INACTIVE",
   "active_categories": 1,
   "total_categories": 3,
@@ -15,13 +15,13 @@
           "id": "A1",
           "name": "Funding crowded short",
           "active": false,
-          "evidence": "Funding APR +5.47%"
+          "evidence": "Funding APR -7.82%"
         },
         {
           "id": "A2",
           "name": "Funding accelerating negative",
           "active": false,
-          "evidence": "trend=, APR=5.475"
+          "evidence": "trend=, APR=-7.815"
         },
         {
           "id": "A3",
@@ -34,15 +34,15 @@
     {
       "category": "B",
       "name": "On-chain Accumulation",
-      "active": false,
-      "active_count": 1,
+      "active": true,
+      "active_count": 2,
       "total": 3,
       "conditions": [
         {
           "id": "B1",
           "name": "SMART cohort accumulation",
-          "active": false,
-          "evidence": "SMART 24h net -2.07M STRK (threshold +2.0M)"
+          "active": true,
+          "evidence": "SMART 24h net +2.24M STRK (threshold +2.0M)"
         },
         {
           "id": "B2",
@@ -61,27 +61,27 @@
     {
       "category": "C",
       "name": "Technical setup",
-      "active": true,
-      "active_count": 2,
+      "active": false,
+      "active_count": 1,
       "total": 3,
       "conditions": [
         {
           "id": "C1",
           "name": "Oversold + volume spike",
           "active": false,
-          "evidence": "RSI 44.22, Vol 0.59x"
+          "evidence": "RSI 42.15, Vol 0.53x"
         },
         {
           "id": "C2",
           "name": "At 14d range low",
           "active": true,
-          "evidence": "3.2% from 14d low"
+          "evidence": "4.5% from 14d low"
         },
         {
           "id": "C3",
           "name": "CVD bull divergence",
-          "active": true,
-          "evidence": "CVD 1h = STEALTH_ACCUMULATION"
+          "active": false,
+          "evidence": "CVD 1h = STEALTH_DISTRIBUTION"
         }
       ]
     }
