@@ -1,12 +1,12 @@
 {
-  "as_of": "2026-08-15T08:58:35.103733+00:00",
+  "as_of": "2026-08-15T14:16:25.795694+00:00",
   "status": "OK",
-  "overall_signal": "ACCUMULATION",
-  "layman": "Мягкая аккумуляция: 1 держателей vs 0 раздающих.",
+  "overall_signal": "NEUTRAL",
+  "layman": "Нейтрально: 0 accum, 0 dist, 3 neutral.",
   "counts": {
-    "accumulation": 1,
+    "accumulation": 0,
     "distribution": 0,
-    "neutral": 2,
+    "neutral": 3,
     "inactive": 0,
     "total_analyzed": 3
   },
@@ -21,26 +21,7 @@
     "aggregate_strong_min_count": 3
   },
   "params_status": "HYPOTHESIS",
-  "top_accumulators": [
-    {
-      "address": "0xa4b9569bf942c3aad23c0c2d322fe4aff8e1bf30",
-      "seed_name": "discovered_a4b9569b",
-      "category": "watchlist",
-      "metrics": {
-        "vol_in": 8261423.99,
-        "vol_out": 2449766.33,
-        "net": 5811657.66,
-        "retention_pct": 70.35,
-        "unique_cp_in": 34,
-        "unique_cp_out": 84,
-        "num_tx_in": 55,
-        "num_tx_out": 104,
-        "avg_size_in": 150207.71,
-        "avg_size_out": 23555.45
-      },
-      "classification": "ACCUMULATION"
-    }
-  ],
+  "top_accumulators": [],
   "top_distributors": [],
   "inactive_addresses": 0,
   "note": "Shadow signal · NOT decision-relevant. Registered as voter in shadow_voter.py; calibration через ≥15 closed shadow forecasts."
