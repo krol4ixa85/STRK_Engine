@@ -1,0 +1,49 @@
+name: LAB Bot Command Polling
+
+# Отдельный workflow для polling команд @Lab_sector_bot
+# Каждые 5 мин проверяет getUpdates → обрабатывает /help /status /check /list /refresh
+# 
+# Latency: 0-10 min (worst case) от команды до ответа.
+# Если нужно быстрее — рассмотри Railway.app / Fly.io / Oracle Cloud free VPS.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # каждые 5 минут
+  workflow_dispatch:         # manual trigger для тестов
+
+concurrency:
+  group: lab-bot-polling
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # для commit lab_bot_state.json
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4     # < 5 min чтоб не пересекались с следующим cron
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Poll and handle commands
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/lab_bot_commands.py --once
+
+      # Commit updated state — чтобы next run знал last processed update_id
+      - name: Commit state
+        run: |
+          if [ -f data/cache/lab_bot_state.json ]; then
+            git config user.name "STRK Engine Bot"
+            git config user.email "bot@strk.engine"
+            git add data/cache/lab_bot_state.json
+            if ! git diff --cached --quiet; then
+              git commit -m "chore: lab_bot state update [skip ci]"
+              git push
+            fi
+          fi
