@@ -116,11 +116,23 @@ def get_strk_context():
     stats = classification.get('stats') or {}
     ctx['cex_consecutive_bullish'] = stats.get('consecutive_bullish', 0)
 
-    # STRK price
-    for src in (composite, load_json(CACHE_DIR / 'technical_momentum.json', {})):
-        v = src.get('price') or src.get('current_price')
-        if isinstance(v, (int, float)) and 0.001 < v < 100:
-            ctx['strk_price'] = float(v)
+    # STRK price — читаем из разных возможных мест
+    price_sources = [
+        (composite, ['price', 'current_price', 'price_now']),
+        (composite.get('inputs', {}).get('strk_context') or {}, ['price', 'price_now']),
+        (load_json(CACHE_DIR / 'technical_momentum.json', {}).get('features') or {}, ['price_now', 'price', 'close']),
+        (load_json(CACHE_DIR / 'technical_momentum.json', {}), ['price', 'current_price', 'price_now']),
+        (load_json(CACHE_DIR / 'wyckoff_phase.json', {}), ['price', 'current_price']),
+    ]
+    for src, keys in price_sources:
+        if not isinstance(src, dict):
+            continue
+        for k in keys:
+            v = src.get(k)
+            if isinstance(v, (int, float)) and 0.001 < v < 100:
+                ctx['strk_price'] = float(v)
+                break
+        if ctx.get('strk_price'):
             break
 
     return ctx
