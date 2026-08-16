@@ -542,8 +542,11 @@ def process_updates(updates, state):
 
         # Only respond to authorized chat
         if CHAT_ID and str(chat_id) != CHAT_ID:
-            logger.info(f"Ignoring message from unauthorized chat {chat_id}")
+            logger.warning(f"❌ IGNORING message from chat_id={chat_id} (authorized CHAT_ID env={CHAT_ID})")
+            logger.warning(f"   ↑ Если это ТВОЙ чат — обнови secret TELEGRAM_CHAT_ID на {chat_id}")
             continue
+
+        logger.info(f"✓ Authorized chat_id={chat_id} · processing text: {text[:80]!r}")
 
         if text.startswith('/'):
             try:
@@ -560,26 +563,66 @@ def process_updates(updates, state):
 # MAIN
 # ============================================================
 def run_once():
+    logger.info("=" * 60)
+    logger.info("LAB BOT POLLING · handling one iteration")
+    logger.info("=" * 60)
+
     if not LAB_BOT_TOKEN:
-        logger.error("TELEGRAM_LAB_SECTOR_BOT not set — cannot run")
+        logger.error("❌ TELEGRAM_LAB_SECTOR_BOT env NOT SET — cannot run")
+        print("::error title=LAB bot token missing::Add TELEGRAM_LAB_SECTOR_BOT secret in repo settings")
         return 1
+    logger.info(f"✓ Bot token present (len={len(LAB_BOT_TOKEN)})")
+
     if not CHAT_ID:
-        logger.warning("TELEGRAM_CHAT_ID not set — will respond to any chat (not recommended)")
+        logger.warning("⚠ TELEGRAM_CHAT_ID env NOT SET — bot will respond to ANY chat (unsafe)")
+    else:
+        logger.info(f"✓ CHAT_ID={CHAT_ID} (only this chat authorized)")
+
+    # Verify bot is alive
+    try:
+        me_url = f"https://api.telegram.org/bot{LAB_BOT_TOKEN}/getMe"
+        with urllib.request.urlopen(me_url, timeout=10) as r:
+            me = json.loads(r.read())
+        if me.get('ok'):
+            bot_info = me.get('result', {})
+            logger.info(f"✓ Bot alive: @{bot_info.get('username')} (id={bot_info.get('id')})")
+        else:
+            logger.error(f"❌ getMe failed: {me}")
+            return 1
+    except Exception as e:
+        logger.error(f"❌ Cannot reach Telegram API: {e}")
+        return 1
 
     state = load_state()
     offset = state.get('last_update_id', 0) + 1
+    logger.info(f"State: last_update_id={state.get('last_update_id', 0)} → asking offset={offset}")
 
     # If state is fresh (offset == 1), get real offset from Telegram
     if offset <= 1:
         logger.info("Fresh state — fetching offset from Telegram")
         offset = get_offset_from_telegram()
+        logger.info(f"Telegram says offset should be {offset}")
 
     updates = get_updates(offset=offset)
-    logger.info(f"Received {len(updates)} updates (offset={offset})")
+    logger.info(f"📥 Received {len(updates)} updates from getUpdates(offset={offset})")
 
-    if updates:
-        state = process_updates(updates, state)
-        save_state(state)
+    if not updates:
+        logger.info("No new updates. If you sent /help but bot didn't receive it:")
+        logger.info("  1. Check @Lab_sector_bot in Telegram — did you press START?")
+        logger.info("  2. Try: delete data/cache/lab_bot_state.json + rerun this workflow")
+        logger.info("  3. Check https://api.telegram.org/bot<TOKEN>/getUpdates to see raw updates")
+        return 0
+
+    # Log what we got
+    for u in updates[:5]:
+        msg = u.get('message') or u.get('edited_message') or {}
+        chat = msg.get('chat', {})
+        text = msg.get('text', '')[:80]
+        logger.info(f"  update_id={u.get('update_id')} chat_id={chat.get('id')} text={text!r}")
+
+    state = process_updates(updates, state)
+    save_state(state)
+    logger.info(f"✓ Processed {len(updates)} updates · new last_update_id={state.get('last_update_id')}")
     return 0
 
 
