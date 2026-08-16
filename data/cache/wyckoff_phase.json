@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-15T20:12:01.954647+00:00",
+  "as_of": "2026-08-16T00:45:14.156425+00:00",
   "phase": "ACCUMULATION",
   "sub_phase": "Phase A · initial demand",
   "confidence": "HIGH",
@@ -12,39 +12,39 @@
   },
   "reasons": [
     "few LARGE receivers (3)",
-    "small holders active (ratio 0.265)",
+    "small holders active (ratio 0.263)",
     "price consolidation",
     "range compression + volume dry"
   ],
   "technical": {
-    "price_now": 0.0232,
-    "high_7d": 0.0254,
+    "price_now": 0.0231,
+    "high_7d": 0.0252,
     "low_7d": 0.0222,
     "high_14d": 0.0317,
     "low_14d": 0.0222,
     "resistance_zones": [
-      0.0254,
+      0.0252,
       0.025,
-      0.0248
+      0.0246
     ],
     "support_zones": [
       0.0222,
       0.0225,
       0.0226
     ],
-    "avg_vol_30": 99998.95,
-    "last_vol": 1345.3,
-    "vol_ratio_last": 0.01,
-    "vol_trend_10": 0.49,
+    "avg_vol_30": 97239.52,
+    "last_vol": 1921.09,
+    "vol_ratio_last": 0.02,
+    "vol_trend_10": 0.47,
     "structure": "CONSOLIDATION",
-    "compression": 0.07,
-    "pct_from_high_14d": -26.88,
-    "pct_from_low_14d": 4.46
+    "compression": 0.17,
+    "pct_from_high_14d": -27.32,
+    "pct_from_low_14d": 3.83
   },
   "triggers": {
     "to_next_phase": [
       [
-        "Break ABOVE $0.0254 on volume",
+        "Break ABOVE $0.0252 on volume",
         false
       ],
       [
@@ -61,7 +61,7 @@
       ]
     ],
     "exit_signals": [
-      "If flat: consider LONG on break above $0.0254 with stop at $0.0222",
+      "If flat: consider LONG on break above $0.0252 with stop at $0.0222",
       "Position sizing: small (accumulation not confirmed until markup)"
     ],
     "next_phase": "MARKUP"

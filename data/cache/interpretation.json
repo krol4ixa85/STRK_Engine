@@ -1,86 +1,49 @@
 {
-  "as_of": "2026-08-15T20:12:39.145632+00:00",
+  "as_of": "2026-08-16T00:46:00.447805+00:00",
   "context_snapshot": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase A · initial demand",
     "wyckoff_conf": "HIGH",
-    "price": 0.0232,
+    "price": 0.02303,
     "high_14d": 0.02647,
     "low_14d": 0.02221,
-    "slope_3d": 0.26,
-    "slope_accel": 8.01,
-    "vol_ratio_3d": 0.53,
-    "rsi": 42.15,
-    "pct_from_high": -12.35,
-    "pct_from_low": 4.46,
+    "slope_3d": -0.48,
+    "slope_accel": 6.34,
+    "vol_ratio_3d": 0.52,
+    "rsi": 41.67,
+    "pct_from_high": -13.0,
+    "pct_from_low": 3.69,
     "funding_apr": 0,
     "funding_min_7d": -8.47,
     "short_crowded": false,
     "long_crowded": false,
-    "hhi": 0.0632,
+    "hhi": 0.0633,
     "entropy": 5,
     "large_receivers_14d": 0,
-    "top5_share": 46.3,
+    "top5_share": 46.39,
     "cex_signal": "MILD_DISTRIBUTION",
     "cex_net_7d": 0,
     "cex_consecutive": 0,
     "effort_signal": "NEUTRAL",
     "cvd_signal": "NEUTRAL",
-    "event_signal": "HIGH_VOL_WINDOW",
+    "event_signal": "POSITIVE_CATALYST",
     "event_bull": 6,
-    "event_bear": 4,
+    "event_bear": 1,
     "sector_signal": "DIVERGING",
-    "strk_alpha_7d": -1.29,
-    "days_to_unlock": -1,
+    "strk_alpha_7d": -1.34,
+    "days_to_unlock": 29,
     "unlock_amount": 64000000,
-    "supply_30d": 128000000,
-    "btc_price": 63077.4,
+    "supply_30d": 64000000,
+    "btc_price": 63069.7,
     "btc_cycle": "DOWN",
-    "btc_dist200": -9.0
+    "btc_dist200": -9.01
   },
-  "patterns_matched": 1,
+  "patterns_matched": 0,
   "interpretation": {
-    "primary": {
-      "name": "PRE_UNLOCK_WEAKNESS",
-      "label": "Pre-unlock weakness (-1d)",
-      "confidence": 85,
-      "direction": "BEARISH_SHORT",
-      "hypothesis": "Через -1 дней unlock 64M STRK. Крупные разгружаются заранее.",
-      "narrative": "Supply shock приближается: 64M STRK unlock через -1д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
-      "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
-      "triggers_watch": [
-        "Day-of-unlock volume spike = capitulation zone (bounce entry)",
-        "CEX flow flip to OUTFLOW = unlock уже отработан",
-        "Price recovery выше pre-announcement level = supply absorbed"
-      ],
-      "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
-    },
-    "secondary": null,
-    "tertiary": null,
-    "summary": "Supply shock приближается: 64M STRK unlock через -1д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
-    "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
-    "triggers": [
-      "Day-of-unlock volume spike = capitulation zone (bounce entry)",
-      "CEX flow flip to OUTFLOW = unlock уже отработан",
-      "Price recovery выше pre-announcement level = supply absorbed"
-    ],
-    "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
+    "primary": null,
+    "summary": "Нет чёткого паттерна. Данные противоречивы или недостаточны.",
+    "position_hint": "STAY FLAT. Wait for pattern to emerge.",
+    "triggers": []
   },
-  "all_matches": [
-    {
-      "name": "PRE_UNLOCK_WEAKNESS",
-      "label": "Pre-unlock weakness (-1d)",
-      "confidence": 85,
-      "direction": "BEARISH_SHORT",
-      "hypothesis": "Через -1 дней unlock 64M STRK. Крупные разгружаются заранее.",
-      "narrative": "Supply shock приближается: 64M STRK unlock через -1д. Крупные обычно разгружаются за 3-7 дней до события чтобы получить лучшую цену. CEX flow: MILD_DISTRIBUTION. Historically STRK показывает slower price для 5-10 дней до unlock, затем relief bounce.",
-      "position_hint": "Not the time for longs. Если уже long — trail stop плотно. Consider hedge/reduce перед unlock.",
-      "triggers_watch": [
-        "Day-of-unlock volume spike = capitulation zone (bounce entry)",
-        "CEX flow flip to OUTFLOW = unlock уже отработан",
-        "Price recovery выше pre-announcement level = supply absorbed"
-      ],
-      "invalidation": "Если CEX flow flip to OUTFLOW за 3+ дня до unlock — supply уже poured out, паттерн отменён."
-    }
-  ]
+  "all_matches": []
 }
