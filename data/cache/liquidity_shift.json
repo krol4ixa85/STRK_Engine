@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-16T00:44:16.626344+00:00",
+  "as_of": "2026-08-16T08:16:58.074638+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 9,
-      "total_usd": 2339643.0,
-      "net_usd_delta_24h": 77.0,
-      "net_strk_delta_24h": 412354.0,
+      "total_usd": 2344155.0,
+      "net_usd_delta_24h": 16.0,
+      "net_strk_delta_24h": 54546.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 135757508.0,
-      "tvl_usd_now": 5516884,
+      "tvl_strk_now": 135721962.0,
+      "tvl_usd_now": 5485577,
       "apy_pct": 6.84,
-      "strk_delta_24h": -234788.0,
-      "strk_delta_7d": 9023820.0,
-      "pct_24h": -0.17,
-      "pct_7d": 7.12,
+      "strk_delta_24h": -35547.0,
+      "strk_delta_7d": 8863271.0,
+      "pct_24h": -0.03,
+      "pct_7d": 6.99,
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-16T00:44:16.588077+00:00",
+      "as_of": "2026-08-16T08:16:58.046074+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 135757508.0,
+    "endur_lst_tvl_strk": 135721962.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -234788.0,
-    "lp_delta_24h_strk": 412354.0,
-    "stake_signal": "NEGATIVE",
+    "stake_delta_24h_strk": -35547.0,
+    "lp_delta_24h_strk": 54546.0,
+    "stake_signal": "STABLE",
     "lp_signal": "STABLE"
   },
-  "overall_direction": "STAKE_OUTFLOW",
-  "layman": "Отток из стейкинга, DEX-пулы без движения. Слабый медвежий сигнал.",
+  "overall_direction": "STABLE",
+  "layman": "Ликвидность в экосистеме стабильна за 24ч. Нет сильных движений.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5
