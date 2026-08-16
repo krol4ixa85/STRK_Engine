@@ -1,12 +1,12 @@
 {
   "_meta": {
-    "as_of": "2026-08-16T08:59:23.037578+00:00",
+    "as_of": "2026-08-16T14:12:55.903490+00:00",
     "purpose": "Aggregated data for STRK Engine LIQ/RUN report",
     "philosophy": "Data only. No DECISION. Agent interprets.",
     "strict_no_trading": true
   },
   "flow_map": {
-    "as_of": "2026-08-16T08:59:23.030598+00:00",
+    "as_of": "2026-08-16T14:12:55.897105+00:00",
     "flow_class": "BRIDGE_IN_DOMINANT",
     "class_distribution": {
       "BRIDGE_IN": 1,
@@ -19,23 +19,23 @@
     "per_seed_classification": [
       {
         "flow_class": "BRIDGE_IN",
-        "route": "multiple_l1 (48) → bridge → L2",
+        "route": "multiple_l1 (50) → bridge → L2",
         "reasoning": [
-          "retention = 88.3% (in=9,629,366, out=1,130,400)",
-          "cp_in=48, cp_out=12",
-          "bridge net INFLOW +8,498,967 STRK — potential accumulation intent (needs L2 TVL check)",
+          "retention = 88.4% (in=9,726,616, out=1,129,499)",
+          "cp_in=50, cp_out=11",
+          "bridge net INFLOW +8,597,118 STRK — potential accumulation intent (needs L2 TVL check)",
           "⚠ NE trust as accumulation without L2 destination check"
         ],
         "confidence": "medium",
         "seed_name": "bridge_starkgate_l1",
         "chain": "ethereum",
         "metrics": {
-          "edges_count": 83,
-          "vol_in_strk": 9629366.1231,
-          "vol_out_strk": 1130399.5098,
-          "net_flow_strk": 8498966.6132,
-          "cp_in": 48,
-          "cp_out": 12
+          "edges_count": 84,
+          "vol_in_strk": 9726616.1231,
+          "vol_out_strk": 1129498.5365,
+          "net_flow_strk": 8597117.5865,
+          "cp_in": 50,
+          "cp_out": 11
         }
       },
       {
@@ -132,20 +132,20 @@
         "flow_class": "UNKNOWN",
         "route": "unclassified pattern",
         "reasoning": [
-          "retention = -0.2% (in=56,517,880, out=56,615,373)",
-          "cp_in=11, cp_out=32",
+          "retention = -2.2% (in=41,367,903, out=42,294,563)",
+          "cp_in=9, cp_out=32",
           "no clear pattern matched",
-          "pattern: cp_in=11, cp_out=32, net=-97,493, retention=-0.17249943157942038"
+          "pattern: cp_in=9, cp_out=32, net=-926,660, retention=-2.2400456850162564"
         ],
         "confidence": "low",
         "seed_name": "smart_accumulator_1",
         "chain": "ethereum",
         "metrics": {
-          "edges_count": 105,
-          "vol_in_strk": 56517880.1503,
-          "vol_out_strk": 56615373.1723,
-          "net_flow_strk": -97493.022,
-          "cp_in": 11,
+          "edges_count": 98,
+          "vol_in_strk": 41367903.1503,
+          "vol_out_strk": 42294563.0798,
+          "net_flow_strk": -926659.9295,
+          "cp_in": 9,
           "cp_out": 32
         }
       },
@@ -153,21 +153,21 @@
         "flow_class": "UNKNOWN",
         "route": "unclassified pattern",
         "reasoning": [
-          "retention = 60.4% (in=7,947,267, out=3,148,059)",
-          "cp_in=36, cp_out=98",
+          "retention = 58.6% (in=7,911,385, out=3,274,368)",
+          "cp_in=35, cp_out=107",
           "no clear pattern matched",
-          "pattern: cp_in=36, cp_out=98, net=+4,799,208, retention=60.38815304286496"
+          "pattern: cp_in=35, cp_out=107, net=+4,637,018, retention=58.61195731036035"
         ],
         "confidence": "low",
         "seed_name": "discovered_a4b9569b",
         "chain": "ethereum",
         "metrics": {
-          "edges_count": 182,
-          "vol_in_strk": 7947267.2254,
-          "vol_out_strk": 3148059.3306,
-          "net_flow_strk": 4799207.8948,
-          "cp_in": 36,
-          "cp_out": 98
+          "edges_count": 192,
+          "vol_in_strk": 7911385.2722,
+          "vol_out_strk": 3274367.5138,
+          "net_flow_strk": 4637017.7583,
+          "cp_in": 35,
+          "cp_out": 107
         }
       },
       {
@@ -193,11 +193,11 @@
       },
       {
         "flow_class": "REWARDS",
-        "route": "validators(6) → staking_contract → stakers(188)",
+        "route": "validators(4) → staking_contract → stakers(206)",
         "reasoning": [
-          "retention = 4.3% (in=20,964, out=20,056)",
-          "cp_in=6, cp_out=188",
-          "staking pattern: 6 inflow sources → 188 outflow destinations",
+          "retention = 11.4% (in=20,940, out=18,542)",
+          "cp_in=4, cp_out=206",
+          "staking pattern: 4 inflow sources → 206 outflow destinations",
           "classified as REWARDS distribution (not sell pressure)"
         ],
         "confidence": "high",
@@ -205,11 +205,11 @@
         "chain": "starknet",
         "metrics": {
           "edges_count": 500,
-          "vol_in_strk": 20964.145,
-          "vol_out_strk": 20055.5282,
-          "net_flow_strk": 908.6168,
-          "cp_in": 6,
-          "cp_out": 188
+          "vol_in_strk": 20939.765,
+          "vol_out_strk": 18542.2275,
+          "net_flow_strk": 2397.5375,
+          "cp_in": 4,
+          "cp_out": 206
         }
       },
       {
@@ -233,8 +233,8 @@
     ],
     "not_checked": false,
     "source_summaries": {
-      "l1_as_of": "2026-08-16T08:59:18.638469+00:00",
-      "l2_as_of": "2026-08-16T08:59:22.977239+00:00"
+      "l1_as_of": "2026-08-16T14:12:51.006575+00:00",
+      "l2_as_of": "2026-08-16T14:12:55.846436+00:00"
     },
     "caveats": [
       "REBALANCE/DISTRIBUTION classes need counterparty labels for full confirmation",
@@ -249,12 +249,12 @@
       "category": "l1_infrastructure",
       "role": "L1 StarkGate bridge to Starknet",
       "importance": "critical",
-      "edges_count": 83,
-      "vol_in_strk": 9629366.1231,
-      "vol_out_strk": 1130399.5098,
-      "net_flow_strk": 8498966.6132,
-      "unique_counterparties_in": 48,
-      "unique_counterparties_out": 12
+      "edges_count": 84,
+      "vol_in_strk": 9726616.1231,
+      "vol_out_strk": 1129498.5365,
+      "net_flow_strk": 8597117.5865,
+      "unique_counterparties_in": 50,
+      "unique_counterparties_out": 11
     },
     {
       "seed_name": "custody_endpoint_1",
@@ -317,11 +317,11 @@
       "category": "watchlist",
       "role": "Smart accumulator holding 12.96M STRK (from Rally #1 discovery)",
       "importance": "high",
-      "edges_count": 105,
-      "vol_in_strk": 56517880.1503,
-      "vol_out_strk": 56615373.1723,
-      "net_flow_strk": -97493.022,
-      "unique_counterparties_in": 11,
+      "edges_count": 98,
+      "vol_in_strk": 41367903.1503,
+      "vol_out_strk": 42294563.0798,
+      "net_flow_strk": -926659.9295,
+      "unique_counterparties_in": 9,
       "unique_counterparties_out": 32
     },
     {
@@ -330,12 +330,12 @@
       "category": "watchlist",
       "role": "Auto-discovered ACCUMULATOR pattern",
       "importance": "medium",
-      "edges_count": 182,
-      "vol_in_strk": 7947267.2254,
-      "vol_out_strk": 3148059.3306,
-      "net_flow_strk": 4799207.8948,
-      "unique_counterparties_in": 36,
-      "unique_counterparties_out": 98
+      "edges_count": 192,
+      "vol_in_strk": 7911385.2722,
+      "vol_out_strk": 3274367.5138,
+      "net_flow_strk": 4637017.7583,
+      "unique_counterparties_in": 35,
+      "unique_counterparties_out": 107
     },
     {
       "seed_name": "discovered_76ec5a0d",
@@ -359,11 +359,11 @@
       "role": "Starknet staking contract",
       "importance": "critical",
       "edges_count": 500,
-      "vol_in_strk": 20964.145,
-      "vol_out_strk": 20055.5282,
-      "net_flow_strk": 908.6168,
-      "unique_counterparties_in": 6,
-      "unique_counterparties_out": 188
+      "vol_in_strk": 20939.765,
+      "vol_out_strk": 18542.2275,
+      "net_flow_strk": 2397.5375,
+      "unique_counterparties_in": 4,
+      "unique_counterparties_out": 206
     },
     {
       "seed_name": "bridge_starknet_l2",
