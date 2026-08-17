@@ -1,7 +1,7 @@
 {
-  "ts": "2026-08-17T14:19:19.179444+00:00",
+  "ts": "2026-08-17T20:16:22.600370+00:00",
   "level": "INACTIVE",
-  "active_categories": 0,
+  "active_categories": 1,
   "total_categories": 3,
   "categories": [
     {
@@ -42,7 +42,7 @@
           "id": "B1",
           "name": "SMART cohort accumulation",
           "active": false,
-          "evidence": "SMART 24h net -0.82M STRK (threshold +2.0M)"
+          "evidence": "SMART 24h net -1.29M STRK (threshold +2.0M)"
         },
         {
           "id": "B2",
@@ -54,34 +54,34 @@
           "id": "B3",
           "name": "WATCHLIST accumulating",
           "active": false,
-          "evidence": "WATCHLIST 24h net -0.54M STRK"
+          "evidence": "WATCHLIST 24h net +0.01M STRK"
         }
       ]
     },
     {
       "category": "C",
       "name": "Technical setup",
-      "active": false,
-      "active_count": 1,
+      "active": true,
+      "active_count": 2,
       "total": 3,
       "conditions": [
         {
           "id": "C1",
           "name": "Oversold + volume spike",
           "active": false,
-          "evidence": "RSI 42.62, Vol 0.45x"
+          "evidence": "RSI 43.09, Vol 0.46x"
         },
         {
           "id": "C2",
           "name": "At 14d range low",
           "active": true,
-          "evidence": "4.4% from 14d low"
+          "evidence": "3.6% from 14d low"
         },
         {
           "id": "C3",
           "name": "CVD bull divergence",
-          "active": false,
-          "evidence": "CVD 1h = HEALTHY_DOWNTREND"
+          "active": true,
+          "evidence": "CVD 1h = BULLISH_DIVERGENCE"
         }
       ]
     }
