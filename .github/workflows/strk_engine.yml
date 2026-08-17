@@ -4,8 +4,9 @@ on:
   schedule:
     # Основной digest 3 раза в день (08:00 / 14:00 / 20:00 UTC)
     - cron: '0 8,14,20 * * *'
-    # LAB режим — 1 раз утром (08:30 UTC = 11:30 MSK)
-    - cron: '30 8 * * *'
+    # LAB режим — 2 раза в сутки (утро 08:30 UTC = 11:30 MSK, вечер 20:30 UTC = 23:30 MSK)
+    # Cache queries обновляются 2 раза, credits использование в бюджете Analyst tier
+    - cron: '30 8,20 * * *'
     # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
     - cron: '0 0 * * 0'
   workflow_dispatch:
@@ -82,7 +83,7 @@ jobs:
       # Запускается ТОЛЬКО при mode=lab или cron 08:30 UTC
       # Экономим Analyst tier credits — не qazhe run
       - name: Dune sector collector (LAB)
-        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_SECTOR_NETFLOW: ${{ secrets.DUNE_QUERY_ID_SECTOR_NETFLOW }}
@@ -243,7 +244,7 @@ jobs:
       # Запускается при cron 08:30 UTC или ручном mode=lab
       # ВАЖНО: сохраняет data/cache/strk_lab_report.json для rotation_tracker
       - name: STRK LAB · Portfolio Rotation report
-        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -253,7 +254,7 @@ jobs:
       # Запускается после LAB чтобы прочитать свежий strk_lab_report.json
       # Alert в @Lab_sector_bot при: NEW_STRONG_BUY, DIVERGENCE_WARN, EXIT, CONFIRMED_HOLD_3D
       - name: Rotation tracker (LAB signals changes)
-        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8 * * *'
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -262,7 +263,7 @@ jobs:
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
       - name: Send Telegram delivery
-        if: github.event.schedule != '0 0 * * 0' && github.event.schedule != '30 8 * * *' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline' && github.event.inputs.mode != 'lab'
+        if: github.event.schedule != '0 0 * * 0' && github.event.schedule != '30 8,20 * * *' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline' && github.event.inputs.mode != 'lab'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
