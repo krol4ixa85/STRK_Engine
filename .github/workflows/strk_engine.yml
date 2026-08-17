@@ -7,6 +7,8 @@ on:
     # LAB режим — 2 раза в сутки (утро 08:30 UTC = 11:30 MSK, вечер 20:30 UTC = 23:30 MSK)
     # Cache queries обновляются 2 раза, credits использование в бюджете Analyst tier
     - cron: '30 8,20 * * *'
+    # Weekly LAB summary — воскресенье 21:00 UTC = 00:00 MSK понедельника
+    - cron: '0 21 * * 0'
     # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
     - cron: '0 0 * * 0'
   workflow_dispatch:
@@ -274,10 +276,20 @@ jobs:
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         run: python3 scripts/detectors/lab_signals_verifier.py || true
 
+      # STAGE 8.9 · WEEKLY SUMMARY (воскресенье 21:00 UTC = 00:00 MSK понедельника)
+      # Аггрегирует 7 дней LAB активности → отчёт в @Lab_sector_bot
+      # Также обновляет data/cache/weekly_summary.json для команды /week
+      - name: Weekly LAB summary
+        if: github.event.schedule == '0 21 * * 0' || github.event.inputs.mode == 'lab'
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/weekly_summary.py || true
+
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
       - name: Send Telegram delivery
-        if: github.event.schedule != '0 0 * * 0' && github.event.schedule != '30 8,20 * * *' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline' && github.event.inputs.mode != 'lab'
+        if: github.event.schedule != '0 0 * * 0' && github.event.schedule != '30 8,20 * * *' && github.event.schedule != '0 21 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline' && github.event.inputs.mode != 'lab'
         env:
           MODE: ${{ github.event.inputs.mode || 'digest' }}
         run: |
