@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-08-17T08:33:28.341578+00:00",
+  "as_of": "2026-08-17T09:13:18.527079+00:00",
   "context_snapshot": {
     "phase": "ACCUMULATION",
-    "sub_phase": "Phase B · building base",
+    "sub_phase": "Phase A · initial demand",
     "wyckoff_conf": "HIGH",
-    "price": 0.02332,
+    "price": 0.02325,
     "high_14d": 0.02647,
     "low_14d": 0.02221,
-    "slope_3d": 2.46,
-    "slope_accel": 9.11,
-    "vol_ratio_3d": 0.44,
+    "slope_3d": 2.15,
+    "slope_accel": 8.78,
+    "vol_ratio_3d": 0.45,
     "rsi": 40.43,
-    "pct_from_high": -11.9,
-    "pct_from_low": 5.0,
+    "pct_from_high": -12.16,
+    "pct_from_low": 4.68,
     "funding_apr": 0,
     "funding_min_7d": -7.81,
     "short_crowded": false,
     "long_crowded": false,
-    "hhi": 0.0616,
+    "hhi": 0.0615,
     "entropy": 5,
     "large_receivers_14d": 0,
-    "top5_share": 45.54,
+    "top5_share": 45.51,
     "cex_signal": "MILD_DISTRIBUTION",
     "cex_net_7d": 0,
     "cex_consecutive": 0,
@@ -30,57 +30,20 @@
     "event_bull": 5,
     "event_bear": 1,
     "sector_signal": "DIVERGING",
-    "strk_alpha_7d": 1.84,
+    "strk_alpha_7d": 1.51,
     "days_to_unlock": 28,
     "unlock_amount": 64000000,
     "supply_30d": 64000000,
-    "btc_price": 63430.6,
+    "btc_price": 63416.3,
     "btc_cycle": "DOWN",
-    "btc_dist200": -8.35
+    "btc_dist200": -8.37
   },
-  "patterns_matched": 1,
+  "patterns_matched": 0,
   "interpretation": {
-    "primary": {
-      "name": "ACCUMULATION_BASE",
-      "label": "Accumulation · Phase B · base building",
-      "confidence": 75,
-      "direction": "NEUTRAL_TO_BULLISH",
-      "hypothesis": "Крупные тихо аккумулируют. Розница пассивна. Volatility сжимается.",
-      "narrative": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.4× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
-      "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0265 на volume expansion 1.5×+.",
-      "triggers_watch": [
-        "Break ABOVE $0.0265 on volume 1.5×+ = SOS, markup starts",
-        "Break BELOW $0.0222 on volume = Spring failure, deeper accumulation",
-        "CEX flow flip to OUTFLOW 3+ days = whales accumulating too"
-      ],
-      "invalidation": "Если цена уйдёт ниже $0.0222 без быстрого возврата — фаза продлевается или переходит в markdown."
-    },
-    "secondary": null,
-    "tertiary": null,
-    "summary": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.4× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
-    "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0265 на volume expansion 1.5×+.",
-    "triggers": [
-      "Break ABOVE $0.0265 on volume 1.5×+ = SOS, markup starts",
-      "Break BELOW $0.0222 on volume = Spring failure, deeper accumulation",
-      "CEX flow flip to OUTFLOW 3+ days = whales accumulating too"
-    ],
-    "invalidation": "Если цена уйдёт ниже $0.0222 без быстрого возврата — фаза продлевается или переходит в markdown."
+    "primary": null,
+    "summary": "Нет чёткого паттерна. Данные противоречивы или недостаточны.",
+    "position_hint": "STAY FLAT. Wait for pattern to emerge.",
+    "triggers": []
   },
-  "all_matches": [
-    {
-      "name": "ACCUMULATION_BASE",
-      "label": "Accumulation · Phase B · base building",
-      "confidence": 75,
-      "direction": "NEUTRAL_TO_BULLISH",
-      "hypothesis": "Крупные тихо аккумулируют. Розница пассивна. Volatility сжимается.",
-      "narrative": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.4× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
-      "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0265 на volume expansion 1.5×+.",
-      "triggers_watch": [
-        "Break ABOVE $0.0265 on volume 1.5×+ = SOS, markup starts",
-        "Break BELOW $0.0222 on volume = Spring failure, deeper accumulation",
-        "CEX flow flip to OUTFLOW 3+ days = whales accumulating too"
-      ],
-      "invalidation": "Если цена уйдёт ниже $0.0222 без быстрого возврата — фаза продлевается или переходит в markdown."
-    }
-  ]
+  "all_matches": []
 }
