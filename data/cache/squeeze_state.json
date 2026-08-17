@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-16T20:21:41.386763+00:00",
+  "ts": "2026-08-17T08:33:46.849762+00:00",
   "level": "INACTIVE",
   "active_categories": 0,
   "total_categories": 3,
@@ -48,7 +48,7 @@
           "id": "B2",
           "name": "CEX outflow streak",
           "active": false,
-          "evidence": "0 consecutive bullish days (threshold 3)"
+          "evidence": "1 consecutive bullish days (threshold 3)"
         },
         {
           "id": "B3",
@@ -62,26 +62,26 @@
       "category": "C",
       "name": "Technical setup",
       "active": false,
-      "active_count": 0,
+      "active_count": 1,
       "total": 3,
       "conditions": [
         {
           "id": "C1",
           "name": "Oversold + volume spike",
           "active": false,
-          "evidence": "RSI 45.53, Vol 0.39x"
+          "evidence": "RSI 40.43, Vol 0.44x"
         },
         {
           "id": "C2",
           "name": "At 14d range low",
-          "active": false,
-          "evidence": "5.3% from 14d low"
+          "active": true,
+          "evidence": "5.0% from 14d low"
         },
         {
           "id": "C3",
           "name": "CVD bull divergence",
           "active": false,
-          "evidence": "CVD 1h = HEALTHY_UPTREND"
+          "evidence": "CVD 1h = STEALTH_DISTRIBUTION"
         }
       ]
     }
