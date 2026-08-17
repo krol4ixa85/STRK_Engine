@@ -260,6 +260,20 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/detectors/rotation_tracker.py || true
 
+      # STAGE 8.7 · BACKTEST · RECORDER (записывает STRONG_BUY signals для measurement)
+      # Каждый LAB run пишет currently STRONG_BUY tokens → lab_signals.jsonl (PENDING)
+      # Через 7 дней verifier закрывает и считает HIT/MISS/NEUTRAL.
+      - name: LAB signals recorder (backtest data collection)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        run: python3 scripts/detectors/lab_signals_recorder.py || true
+
+      # STAGE 8.8 · BACKTEST · VERIFIER (закрывает PENDING старше 7d + строит summary)
+      # Reads current prices from momentum snapshot, updates records, writes summary.
+      # Worker /check <TOKEN> читает summary для показа реальной precision.
+      - name: LAB signals verifier (close PENDING, build summary)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        run: python3 scripts/detectors/lab_signals_verifier.py || true
+
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
       - name: Send Telegram delivery
