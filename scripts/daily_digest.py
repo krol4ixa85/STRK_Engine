@@ -139,7 +139,7 @@ LAYMAN_VERDICTS = {
 #   SQZ (4-24h)     — RSI, CVD, Funding, Slope 3d
 # Три независимых вердикта, НЕ смешивать между собой.
 # ============================================================
-def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx, funding, cvd_data):
+def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx, funding, cvd_data, dune_data=None):
     """Return dict {fund, swing, sqz} — each with verdict, data, action."""
     # === Extract data ===
     phase = str(wyckoff.get('phase', 'UNKNOWN'))
@@ -208,19 +208,86 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
     vol_high = vol_ratio and vol_ratio > 1.0
     vol_breakout = vol_ratio and vol_ratio > 1.5
 
-    if btc_up and range_pos == 'LOW' and vol_high:
+    # ================================================================
+    # 🛑 ON-CHAIN VETO RULE (added 2026-08-18)
+    # ================================================================
+    # Проблема: раньше SWING GREEN давался чисто по TA (btc_up + range_pos + vol),
+    # игнорируя on-chain BEARISH (Dune monthly, CEX distribution, Wyckoff).
+    # Fix: если on-chain явно BEARISH — блокируем GREEN, максимум YELLOW.
+    #
+    # Логика veto:
+    # 1. Dune monthly BEARISH_BREAKDOWN + bearish_30d > 20  → strong bear
+    # 2. CEX STRONG_DISTRIBUTION                             → institutional selling
+    # 3. Wyckoff DISTRIBUTION явная                          → phase against long
+    # Если ЛЮБОЕ из 3 → veto GREEN, force YELLOW with warning.
+    onchain_veto = False
+    veto_reasons = []
+
+    # Check Dune monthly signal (загружаем если передано)
+    dune_monthly_bear = False
+    dune_bearish_days = 0
+    if dune_data:
+        m_rows = dune_data.get('monthly') or []
+        m_cols = dune_data.get('monthly_cols') or []
+        if m_rows:
+            latest_m = m_rows[0] if isinstance(m_rows[0], (dict, list)) else None
+            if latest_m:
+                dune_signal = (_get_col(latest_m, m_cols, 'phase_signal', None) or
+                               _get_col(latest_m, m_cols, 'signal', None) or '')
+                dune_signal = str(dune_signal).upper()
+                if 'BEARISH_BREAKDOWN' in dune_signal:
+                    dune_monthly_bear = True
+                # Bearish 30d count
+                dune_bearish_days = sum(
+                    1 for r in m_rows[:30]
+                    if 'BEARISH_BREAKDOWN' in str(
+                        _get_col(r, m_cols, 'phase_signal', None) or
+                        _get_col(r, m_cols, 'signal', None) or ''
+                    ).upper()
+                )
+
+    if dune_monthly_bear and dune_bearish_days > 20:
+        onchain_veto = True
+        veto_reasons.append(f'Dune BEARISH_BREAKDOWN ({dune_bearish_days}/30d bearish)')
+
+    # Check CEX strong distribution
+    if 'STRONG_DISTRIBUTION' in cex_signal:
+        onchain_veto = True
+        veto_reasons.append(f'CEX {cex_signal}')
+
+    # Check Wyckoff explicit distribution phase (не MARKUP/ACCUMULATION)
+    if is_distribution and phase.upper() in ('DISTRIBUTION', 'MARKDOWN'):
+        onchain_veto = True
+        veto_reasons.append(f'Wyckoff {phase}')
+
+    # ================================================================
+    # SWING DECISION with veto applied
+    # ================================================================
+    if btc_up and range_pos == 'LOW' and vol_high and not onchain_veto:
         swing['emoji'] = '🟢'
         swing['verdict'] = 'ЛОНГ ОТ ПОДДЕРЖКИ'
         swing['data'] = f'BTC {btc_cycle}, price near low, Vol {vol_ratio:.2f}x'
         _stop = low_14d * 0.985 if low_14d else 0
         _target = (low_14d + (high_14d - low_14d) * 0.5) if (low_14d and high_14d) else 0
         swing['action'] = f'Long от ${low_14d:.4f}, stop ${_stop:.4f}, target ${_target:.4f}'
-    elif btc_up and range_pos == 'HIGH' and vol_breakout:
+    elif btc_up and range_pos == 'HIGH' and vol_breakout and not onchain_veto:
         swing['emoji'] = '🟢'
         swing['verdict'] = 'ВХОД НА ПРОБОЕ'
         swing['data'] = f'BTC {btc_cycle}, testing top, Vol {vol_ratio:.2f}x'
         _stop = high_14d * 0.99 if high_14d else 0
         swing['action'] = f'Long на break > ${high_14d:.4f}, stop ${_stop:.4f}'
+    elif onchain_veto and (btc_up and (range_pos == 'LOW' or vol_breakout)):
+        # TA хотела GREEN, но on-chain veto → forced YELLOW
+        swing['emoji'] = '🟡'
+        swing['verdict'] = 'ФЛЭТ (TA vs ON-CHAIN CONFLICT)'
+        _vol_str = f'{vol_ratio:.2f}x' if vol_ratio else '?'
+        _ta_signal = f'BTC {btc_cycle}, price low, Vol {_vol_str}' if range_pos == 'LOW' else f'BTC {btc_cycle}, breakout, Vol {_vol_str}'
+        swing['data'] = f'⚠ TA→GREEN, но on-chain BEAR: {"; ".join(veto_reasons)}'
+        swing['action'] = (
+            f'НЕ входить в лонг. TA сигналит {_ta_signal}, '
+            f'но on-chain говорит обратное. Классический bull trap risk. '
+            f'Ждать resolution: либо on-chain flip в BULLISH, либо TA сломается.'
+        )
     elif btc_down or cex_dist:
         swing['emoji'] = '🟡'
         swing['verdict'] = 'ФЛЭТ'
@@ -1232,8 +1299,10 @@ def format_digest():
     _comp_h = load_json('composite_signal_v2.json') or {}
     _macro_h = load_json('agent_input.json') or {}
     _btc_h = _get_btc_context(_comp_h, _macro_h)
+    _dune_h = _load_dune_starknet()  # для on-chain veto rule
     _horizons = _compute_action_3horizons(_wyk_h, _tech_h, _cex_h, _coh_h,
-                                           _unlock_h, _news_h, _btc_h, _fund_h, _cvd_h)
+                                           _unlock_h, _news_h, _btc_h, _fund_h, _cvd_h,
+                                           dune_data=_dune_h)
     text += _format_3horizon_block(_horizons)
 
     # SHADOW voters (compact for digest)
@@ -2269,8 +2338,10 @@ def format_liq():
     _macro_liq = load_json('agent_input.json') or {}
     _composite_liq = load_json('composite_signal_v2.json') or {}
     _btc_liq = _get_btc_context(_composite_liq, _macro_liq)
+    _dune_liq = _load_dune_starknet()  # для on-chain veto rule
     _horizons_liq = _compute_action_3horizons(wyk, _tech_feat, cex, cohorts,
-                                                unlock, news, _btc_liq, {}, cvd)
+                                                unlock, news, _btc_liq, {}, cvd,
+                                                dune_data=_dune_liq)
     # LIQ compact — только 3 вердикта одной строкой
     t += "━━━━━━━━━━━━━━━━━━━\n"
     t += "<b>🎯 ЧТО ДЕЛАТЬ СЕЙЧАС</b>\n"
@@ -2386,9 +2457,10 @@ def format_run_telegram():
 
     # === 3-HORIZON ACTION VERDICT (первый содержательный блок в MSG1) ===
     _tech_feat_r = tech_full.get('features') or {}
+    _dune_r = _load_dune_starknet()  # для on-chain veto rule
     _horizons_r = _compute_action_3horizons(wyk, _tech_feat_r, cex, cohorts,
                                               unlock, news, _get_btc_context(composite, macro),
-                                              fund, cvd)
+                                              fund, cvd, dune_data=_dune_r)
     m1 += _format_3horizon_block(_horizons_r)
 
     # === SHADOW VOTERS === (candidates for voter_wire_v2, NOT in DECISION)
