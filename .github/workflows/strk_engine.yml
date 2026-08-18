@@ -100,6 +100,36 @@ jobs:
       - name: Alt-cycle collector (macro compass)
         run: python3 scripts/collectors/alt_cycle_collector.py || true
 
+      # STAGE 1.57 · DEFILLAMA COLLECTOR (TVL по chains)
+      # Free API, показывает где реально капитал сидит в DeFi.
+      # Cache 6h.
+      - name: DeFiLlama collector (TVL)
+        run: python3 scripts/collectors/defillama_collector.py || true
+
+      # STAGE 1.58 · FUNDING COLLECTOR (perpetual funding rates)
+      # CoinGecko derivatives — funding для major tokens + top gainers/losers.
+      # Cache 30 min.
+      - name: Funding collector (perp funding)
+        run: python3 scripts/collectors/funding_collector.py || true
+
+      # STAGE 1.59 · STABLES COLLECTOR (dry powder tracking)
+      # Общий marketcap стейблов = "сухой порох" рынка.
+      # Cache 4h.
+      - name: Stables collector (dry powder)
+        run: python3 scripts/collectors/stables_collector.py || true
+
+      # STAGE 1.60 · DUNE EXTENDED (forked queries из community dashboards)
+      # Whale movements + Starknet DAU + New wallets.
+      # Требует DUNE_QUERY_ID_WHALES_24H, DUNE_QUERY_ID_STARKNET_DAU, DUNE_QUERY_ID_STARKNET_NEW_WALLETS.
+      # Weekly queries запускаются только по воскресеньям (внутри скрипта).
+      - name: Dune extended collector (forked queries)
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_WHALES_24H: ${{ secrets.DUNE_QUERY_ID_WHALES_24H }}
+          DUNE_QUERY_ID_STARKNET_DAU: ${{ secrets.DUNE_QUERY_ID_STARKNET_DAU }}
+          DUNE_QUERY_ID_STARKNET_NEW_WALLETS: ${{ secrets.DUNE_QUERY_ID_STARKNET_NEW_WALLETS }}
+        run: python3 scripts/collectors/dune_extended_collector.py || true
+
       # STAGE 1.56 · ROTATION TRACKER (детектор изменений в LAB signals)
       # Читает snapshot от strk_lab.py (data/cache/strk_lab_report.json)
       # → alert в @Lab_sector_bot при NEW_STRONG_BUY / DIVERGENCE_WARN / EXIT / CONFIRMED_HOLD_3D
