@@ -25,6 +25,9 @@
   --yellow-bg: #fef3c7;
   --blue: #1e40af;
   --blue-bg: #e0e7ff;
+  --orange: #FF9900;
+  --orange-bg: #fff4e0;
+  --orange-strong: #E58800;
   --gray-bg: #f4f4f3;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -67,9 +70,10 @@ body {
   font-family: 'SF Mono', 'Menlo', monospace;
 }
 .badge.live {
-  background: var(--green-bg);
-  color: var(--green);
-  border-color: rgba(15, 121, 56, 0.2);
+  background: var(--orange-bg);
+  color: var(--orange-strong);
+  border-color: rgba(255, 153, 0, 0.35);
+  font-weight: 600;
 }
 .btn {
   background: var(--bg-elevated);
@@ -82,7 +86,7 @@ body {
   font-weight: 500;
   transition: all 0.15s;
 }
-.btn:hover { background: var(--bg-subtle); border-color: var(--border-strong); }
+.btn:hover { background: var(--bg-subtle); border-color: var(--orange); color: var(--orange-strong); }
 .hero {
   display: grid;
   grid-template-columns: 1fr;
@@ -102,9 +106,11 @@ body {
   flex-direction: column;
   min-height: 200px;
 }
-.hero-block.state-red { border-left-color: var(--red); }
+.hero-block.state-red { border-left-color: var(--red); border-left-width: 5px; }
+.hero-block.state-red .hero-verdict { color: var(--red); }
 .hero-block.state-yellow { border-left-color: var(--yellow); }
-.hero-block.state-green { border-left-color: var(--green); }
+.hero-block.state-green { border-left-color: var(--green); border-left-width: 5px; }
+.hero-block.state-green .hero-verdict { color: var(--green); }
 .hero-block.state-neutral { border-left-color: var(--text-muted); }
 .hero-label {
   font-size: 10px;
@@ -179,6 +185,10 @@ body {
 .recommendation-icon { font-size: 20px; flex-shrink: 0; }
 .recommendation-text { flex: 1; font-size: 13px; color: var(--text); line-height: 1.5; }
 .recommendation-action { font-weight: 600; color: var(--text-bright); }
+.attention-number { color: var(--orange-strong); font-weight: 700; }
+.pos.strong-move { color: var(--orange-strong); font-weight: 700; }
+.recommendation-banner.orange { background: var(--orange-bg); border-color: rgba(255, 153, 0, 0.35); }
+.hero-block.state-attention { border-left-color: var(--orange); background: linear-gradient(to right, rgba(255, 153, 0, 0.02), var(--bg-elevated) 20%); }
 .capital-flow-visual {
   display: flex;
   align-items: center;
@@ -200,15 +210,16 @@ body {
   flex-shrink: 0;
 }
 .flow-node.active {
-  background: var(--blue-bg);
-  border-color: var(--blue);
-  color: var(--blue);
-  font-weight: 600;
-  transform: scale(1.05);
+  background: var(--orange-bg);
+  border-color: var(--orange);
+  color: var(--orange-strong);
+  font-weight: 700;
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(255, 153, 0, 0.25);
 }
 .flow-node-icon { font-size: 14px; display: block; margin-bottom: 2px; }
 .flow-arrow { color: var(--text-muted); font-size: 11px; flex-shrink: 0; }
-.flow-arrow.active { color: var(--blue); font-weight: 700; }
+.flow-arrow.active { color: var(--orange-strong); font-weight: 700; font-size: 14px; }
 .cards-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
 @media (min-width: 768px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1200px) {
@@ -435,6 +446,55 @@ tr:hover td { background: var(--bg-subtle); }
     <div id="signals-content" class="loading">Loading...</div>
   </div>
 
+
+  <!-- TVL by Chain (DeFiLlama) -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🏦 TVL по chains</div>
+      <div class="card-subtitle" id="tvl-snapshot-age"></div>
+    </div>
+    <div class="layman-intro">
+      TVL (Total Value Locked) = сколько денег заперто в DeFi этого blockchain. Растёт TVL = ecosystem растёт. Крупнейший рост = там основной flow капитала.
+    </div>
+    <div id="tvl-content" class="loading">Loading...</div>
+  </div>
+
+  <!-- Funding Rates -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📊 Funding Rates</div>
+      <div class="card-subtitle" id="funding-snapshot-age"></div>
+    </div>
+    <div class="layman-intro">
+      Funding rate = плата за держать позицию в perpetual futures. Высокая LONG funding (>30% APR) = много jinovcov, риск short squeeze. Обратное для SHORT.
+    </div>
+    <div id="funding-content" class="loading">Loading...</div>
+  </div>
+
+  <!-- Stables (Dry Powder) -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💵 Стейблы · Dry Powder</div>
+      <div class="card-subtitle" id="stables-snapshot-age"></div>
+    </div>
+    <div class="layman-intro">
+      Общая капитализация стейблов = "сухой порох" рынка (деньги ждут). Растёт = деньги ждут входа (bullish setup). Падает = деньги в риске (late cycle).
+    </div>
+    <div id="stables-content" class="loading">Loading...</div>
+  </div>
+
+  <!-- Top Movers 24h -->
+  <div class="card card-wide">
+    <div class="card-header">
+      <div class="card-title">🚀 Топ движения 24h</div>
+      <div class="card-subtitle">Top gainers/losers</div>
+    </div>
+    <div class="layman-intro">
+      Топ токены по 24h price change среди major coins (mcap >$100M). Отфильтровано от шума мелких токенов. Крупные движения = momentum candidates.
+    </div>
+    <div id="movers-content" class="loading">Loading...</div>
+  </div>
+
   <div class="card card-full">
     <div class="card-header">
       <div class="card-title">🌍 Alt-Cycle Compass · подробно</div>
@@ -461,6 +521,10 @@ const FILES = {
   precision: 'data/cache/lab_signals_summary.json',
   rotation: 'data/history/rotation_alerts.jsonl',
   altcycle: 'data/cache/alt_cycle.json',
+  defillama: 'data/cache/defillama_tvl.json',
+  funding: 'data/cache/funding_signals.json',
+  stables: 'data/cache/stables_signal.json',
+  duneext: 'data/cache/dune_extended.json',
 };
 const AUTO_REFRESH_MS = 5 * 60 * 1000;
 
@@ -746,6 +810,161 @@ function renderRotation(events) {
   if (!html) { el.innerHTML = '<div class="empty">Только тихие обновления за 7 дней</div>'; return; }
   el.innerHTML = html;
 }
+
+
+function renderTVL(data) {
+  const el = document.getElementById('tvl-content');
+  if (!data) { el.innerHTML = '<div class="empty">DeFiLlama data не загружен</div>'; return; }
+  const chains = data.chains_current || {};
+  const history = data.chains_history_7d || {};
+  const flow = data.cross_chain_flow || {};
+
+  const rows = Object.entries(chains).map(([name, d]) => {
+    const hist = history[name] || {};
+    const change = hist.change_7d_pct;
+    return { name, tvl: d.tvl_usd || 0, change_7d: change };
+  }).sort((a, b) => b.tvl - a.tvl);
+
+  let html = '<div class="table-wrapper"><table><thead><tr><th>Chain</th><th class="number">TVL</th><th class="number">7d</th></tr></thead><tbody>';
+  for (const r of rows) {
+    const changeCls = r.change_7d >= 5 ? 'pos strong-move' : r.change_7d >= 0 ? 'pos' : 'neg';
+    html += `<tr><td><strong>${r.name}</strong></td><td class="number">$${(r.tvl/1e9).toFixed(2)}B</td><td class="number ${changeCls}">${r.change_7d !== null && r.change_7d !== undefined ? (r.change_7d >= 0 ? '+' : '') + r.change_7d.toFixed(1) + '%' : '—'}</td></tr>`;
+  }
+  html += '</tbody></table></div>';
+
+  if (flow.leader) {
+    html += `<div style="margin-top: 12px; padding: 10px; background: var(--orange-bg); border-radius: 6px; font-size: 12px; border-left: 3px solid var(--orange);">
+      📊 Leader: <strong>${flow.leader}</strong> <span class="pos strong-move">${(flow.leader_change_7d_pct || 0).toFixed(1)}%</span> vs Laggard: <strong>${flow.laggard}</strong> <span class="neg">${(flow.laggard_change_7d_pct || 0).toFixed(1)}%</span>
+    </div>`;
+  }
+
+  el.innerHTML = html;
+  const age = ago(data.generated_at);
+  document.getElementById('tvl-snapshot-age').textContent = 'Обновлено ' + age.text;
+}
+
+function renderFunding(data) {
+  const el = document.getElementById('funding-content');
+  if (!data) { el.innerHTML = '<div class="empty">Funding данные не собраны</div>'; return; }
+  const funding = data.funding_rates || {};
+  const extreme = data.extreme_funding || [];
+
+  if (Object.keys(funding).length === 0) {
+    el.innerHTML = '<div class="empty">Нет доступных funding данных</div>';
+    return;
+  }
+
+  let html = '';
+
+  // Extreme funding — top attention
+  if (extreme.length > 0) {
+    html += '<div style="margin-bottom: 12px;"><div class="hero-label" style="color: var(--orange-strong); margin-bottom: 8px;">⚠ Extreme funding</div>';
+    for (const ex of extreme.slice(0, 5)) {
+      const isLong = ex.signal.includes('LONG');
+      html += `<div class="event-item ${isLong ? 'sell' : 'new'}" style="padding: 8px 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <span><strong class="token-tag">${ex.token}</strong> <span style="font-size: 10px; color: var(--text-muted);">${isLong ? 'LONG squeeze риск' : 'SHORT squeeze возможность'}</span></span>
+          <span class="attention-number">${ex.funding_apr_pct >= 0 ? '+' : ''}${ex.funding_apr_pct.toFixed(1)}%</span>
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  // Selected tokens table
+  const selectedTokens = ['BTC', 'ETH', 'SOL', 'STRK', 'LINK', 'MORPHO', 'AAVE'];
+  const filtered = selectedTokens.map(t => ({ token: t, ...funding[t] })).filter(x => x.funding_apr_pct !== undefined);
+  if (filtered.length > 0) {
+    html += '<div class="hero-label" style="margin-bottom: 4px;">Основные токены</div><div class="table-wrapper"><table><thead><tr><th>Token</th><th class="number">Funding APR</th><th>Signal</th></tr></thead><tbody>';
+    for (const f of filtered) {
+      const cls = f.funding_apr_pct > 20 ? 'neg' : f.funding_apr_pct < -10 ? 'pos' : 'muted';
+      html += `<tr><td><span class="token-tag">${f.token}</span></td><td class="number ${cls}">${f.funding_apr_pct >= 0 ? '+' : ''}${f.funding_apr_pct.toFixed(1)}%</td><td style="font-size: 10px; color: var(--text-muted);">${f.signal || 'N/A'}</td></tr>`;
+    }
+    html += '</tbody></table></div>';
+  }
+
+  el.innerHTML = html;
+  const age = ago(data.generated_at);
+  document.getElementById('funding-snapshot-age').textContent = 'Обновлено ' + age.text;
+}
+
+function renderStables(data) {
+  const el = document.getElementById('stables-content');
+  if (!data) { el.innerHTML = '<div class="empty">Stables данные не собраны</div>'; return; }
+
+  const signal = data.signal || 'UNKNOWN';
+  const dominance = data.stables_dominance_pct || 0;
+  const total = data.total_stables_marketcap_usd || 0;
+  const reasons = data.reasoning || [];
+
+  const signalMap = {
+    'HIGH_DRY_POWDER': { color: 'var(--green)', bg: 'var(--green-bg)', label: 'Много кэша · bullish setup' },
+    'ELEVATED_DRY_POWDER': { color: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'Умеренно кэша' },
+    'BALANCED': { color: 'var(--text-muted)', bg: 'var(--bg-subtle)', label: 'Сбалансировано' },
+    'LOW_DRY_POWDER': { color: 'var(--orange-strong)', bg: 'var(--orange-bg)', label: 'Late-cycle · осторожно' },
+    'CRITICALLY_LOW': { color: 'var(--red)', bg: 'var(--red-bg)', label: 'Топ формируется' },
+    'UNKNOWN': { color: 'var(--text-muted)', bg: 'var(--bg-subtle)', label: 'Нет данных' },
+  };
+  const info = signalMap[signal] || signalMap.UNKNOWN;
+
+  let html = `
+    <div style="text-align: center; padding: 16px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
+      <div style="font-size: 28px; font-weight: 700; color: ${info.color}; font-family: monospace;">${dominance.toFixed(1)}%</div>
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Доминирование стейблов</div>
+      <div style="font-size: 12px; color: ${info.color}; margin-top: 8px; font-weight: 600;">${info.label}</div>
+    </div>
+    <div class="detail-row"><span class="detail-key">Всего стейблов</span><span class="detail-val">$${(total/1e9).toFixed(1)}B</span></div>
+    <div class="detail-row"><span class="detail-key">% от crypto mcap</span><span class="detail-val">${dominance.toFixed(2)}%</span></div>
+    <div class="detail-row"><span class="detail-key">Signal</span><span class="detail-val">${signal}</span></div>
+  `;
+
+  if (reasons.length > 0) {
+    html += '<div style="margin-top: 12px;"><div class="hero-label" style="margin-bottom: 8px;">Обоснование</div>';
+    for (const r of reasons) html += `<div class="trigger-list-item">· ${r}</div>`;
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+  const age = ago(data.generated_at);
+  document.getElementById('stables-snapshot-age').textContent = 'Обновлено ' + age.text;
+}
+
+function renderMovers(data) {
+  const el = document.getElementById('movers-content');
+  if (!data) { el.innerHTML = '<div class="empty">Данные movers не собраны</div>'; return; }
+  const gainers = data.top_gainers_24h || [];
+  const losers = data.top_losers_24h || [];
+
+  if (gainers.length === 0 && losers.length === 0) {
+    el.innerHTML = '<div class="empty">Нет доступных данных</div>';
+    return;
+  }
+
+  let html = '<div style="display: grid; grid-template-columns: 1fr; gap: 12px;">';
+  html += '<style>@media(min-width: 640px) { #movers-content > div { grid-template-columns: 1fr 1fr !important; } }</style>';
+
+  // Gainers
+  html += '<div><div class="hero-label" style="color: var(--green); margin-bottom: 8px;">🟢 Топ рост 24h</div><div class="table-wrapper"><table>';
+  html += '<thead><tr><th>Token</th><th class="number">Change</th><th class="number">Vol</th></tr></thead><tbody>';
+  for (const g of gainers.slice(0, 5)) {
+    const cls = g.price_change_24h_pct > 10 ? 'pos strong-move' : 'pos';
+    html += `<tr><td><span class="token-tag">${g.token}</span></td><td class="number ${cls}">+${g.price_change_24h_pct.toFixed(1)}%</td><td class="number muted">$${(g.volume_24h_usd/1e6).toFixed(0)}M</td></tr>`;
+  }
+  html += '</tbody></table></div></div>';
+
+  // Losers
+  html += '<div><div class="hero-label" style="color: var(--red); margin-bottom: 8px;">🔴 Топ падение 24h</div><div class="table-wrapper"><table>';
+  html += '<thead><tr><th>Token</th><th class="number">Change</th><th class="number">Vol</th></tr></thead><tbody>';
+  for (const l of losers.slice(0, 5)) {
+    html += `<tr><td><span class="token-tag">${l.token}</span></td><td class="number neg">${l.price_change_24h_pct.toFixed(1)}%</td><td class="number muted">$${(l.volume_24h_usd/1e6).toFixed(0)}M</td></tr>`;
+  }
+  html += '</tbody></table></div></div>';
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+
 function renderAltCycleDetail(data) {
   const el = document.getElementById('altcycle-detail-content');
   if (!data) { el.innerHTML = '<div class="empty">Данные не собраны</div>'; return; }
@@ -788,15 +1007,20 @@ async function loadAll(manual = false) {
   if (manual) { btn.textContent = 'Loading...'; btn.disabled = true; }
   badge.className = 'badge'; badge.textContent = 'Загрузка...';
   try {
-    const [lab, momentum, precision, rotation, altcycle] = await Promise.all([
+    const [lab, momentum, precision, rotation, altcycle, tvl, funding, stables] = await Promise.all([
       fetchJSON(FILES.lab), fetchJSON(FILES.momentum), fetchJSON(FILES.precision),
       fetchJSONL(FILES.rotation), fetchJSON(FILES.altcycle),
+      fetchJSON(FILES.defillama), fetchJSON(FILES.funding), fetchJSON(FILES.stables),
     ]);
     renderHero(altcycle, lab);
     renderStrkDetails(lab);
     renderSignals(momentum);
     renderPrecision(precision);
     renderRotation(rotation);
+    renderTVL(tvl);
+    renderFunding(funding);
+    renderStables(stables);
+    renderMovers(funding);
     renderAltCycleDetail(altcycle);
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
