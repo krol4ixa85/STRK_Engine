@@ -1,0 +1,108 @@
+{
+  "_version": "1.0.0",
+  "_generated_at": "2026-08-18",
+  "_purpose": "Single source of truth для всех thresholds системы. Меняешь здесь → скрипты подхватывают.",
+  "_note": "НЕ ЯВЛЯЕТСЯ semantic layer. Простой config-based simplification.",
+
+  "backtest": {
+    "hit_threshold_pct": 3.0,
+    "_hit_note": "Через 7 дней после signal: если price ↑ > +3% → HIT, ↓ < -3% → MISS, между → NEUTRAL",
+    "verify_after_days": 7,
+    "min_n_for_precision": 5,
+    "_min_n_note": "Не показываем precision числа если actionable N меньше",
+    "min_n_high_confidence": 15,
+    "_high_conf_note": "N ≥ 15 = убираем caveat 'wide CI'",
+    "min_n_purged_walk_forward": 25,
+    "_purged_note": "Purged OOS validation активируется при этом N",
+    "purged_embargo_days": 5,
+    "purged_n_folds": 4,
+    "purged_min_oos_per_fold": 8
+  },
+
+  "signals": {
+    "liquidity_floor_tx": 5000,
+    "_liquidity_note": "Токены с tx_count < этого исключаются из signals",
+    "confirmed_hold_days": 3,
+    "_confirmed_note": "STRONG_BUY streak >= 3d → CONFIRMED_HOLD alert",
+    "divergence_days_to_confirm": 2,
+    "_divergence_note": "DIVERGENCE считается подтверждённым если 2+ дня negative flow",
+    "high_liquidity_tx_threshold": 50000,
+    "medium_liquidity_tx_threshold": 10000
+  },
+
+  "onchain_veto": {
+    "_purpose": "Rules блокирующие SWING GREEN в Guardian bot если on-chain BEARISH",
+    "dune_bearish_30d_threshold": 20,
+    "_dune_bearish_note": "Dune BEARISH_BREAKDOWN + bearish_days >= threshold → veto",
+    "cex_veto_signals": ["STRONG_DISTRIBUTION"],
+    "wyckoff_veto_phases": ["DISTRIBUTION", "MARKDOWN"],
+    "_action_note": "При veto → downgrade GREEN до YELLOW с warning 'TA vs ON-CHAIN CONFLICT'"
+  },
+
+  "playbook": {
+    "_purpose": "Пороги для 3-variant playbook в rotation_tracker",
+    "conservative": {
+      "trim_pct_range": [30, 50],
+      "scale_in_pct": null
+    },
+    "balanced": {
+      "trailing_stop_pct": 8,
+      "_trailing_note": "8% ≈ 1 ATR для liquid crypto, защищает от нормальной volatility",
+      "scale_in_pct": [25, 33]
+    },
+    "aggressive": {
+      "confirmation_days": 2,
+      "_confirmation_note": "Ждать 2+ дня negative flow перед exit",
+      "hold_expected_drawdown_pct": [8, 15],
+      "add_on_dip_pct": [-5, 0]
+    }
+  },
+
+  "alt_cycle": {
+    "_purpose": "Пороги классификации 6 фаз alt-cycle",
+    "btcd_high_pct": 55,
+    "btcd_low_pct": 50,
+    "btcd_euphoria_pct": 45,
+    "ethbtc_strong_up_pct": 3.0,
+    "ethbtc_down_pct": -1.0,
+    "btc_up_pct": 3,
+    "btc_flat_range_pct": [-3, 3],
+    "eth_alt_season_pct": 5,
+    "ethbtc_euphoria_pct": 10,
+    "cache_ttl_hours": 4
+  },
+
+  "cron_schedule": {
+    "_note": "Все times в UTC",
+    "digest": "0 8,14,20 * * *",
+    "lab_refresh": "30 8,20 * * *",
+    "weekly_summary": "0 21 * * 0",
+    "weekly_backtest": "0 0 * * 0"
+  },
+
+  "watchlist": {
+    "cf_kv_namespace": "lab_watchlist",
+    "max_tokens_per_user": 20,
+    "alert_types_default": "strict",
+    "_strict_note": "strict = только transitions (NEW_STRONG_BUY, DIVERGENCE, EXIT, CONFIRMED_HOLD_3D). all = любые изменения (сейчас не implemented)"
+  },
+
+  "_metrics_status": {
+    "_purpose": "Список метрик с их текущим статусом (clear/measuring/experimental)",
+    "clear_definitions": [
+      "STRONG_BUY signal (Dune momentum + price + tx floor)",
+      "DIVERGENCE (price up + flow down)",
+      "STRK phase (Wyckoff + Dune monthly + CEX flow + activity)",
+      "Alt-cycle phase (BTC.D + ETH/BTC + TOTAL3)"
+    ],
+    "measuring_precision": [
+      "LAB STRONG_BUY signals (N < 5 yet)",
+      "Purged OOS precision (N < 25 yet)",
+      "CVD shadow voter (N=17, promising but small sample)"
+    ],
+    "unclear_or_broken": [
+      "liquidity_shift voter (11% precision, contrarian or broken)",
+      "bridge_activity voter (0 actionable из 119 CLOSED)"
+    ]
+  }
+}
