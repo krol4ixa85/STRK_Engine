@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1419">
+<title>STRK LAB · Rotation Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+<style>
+:root {
+  --bg: #0f1419;
+  --bg-card: #1a2028;
+  --bg-card-hover: #232a34;
+  --border: #2a323d;
+  --text: #d1d5db;
+  --text-muted: #6b7280;
+  --text-bright: #f3f4f6;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --blue: #3b82f6;
+  --purple: #a855f7;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 16px;
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.status-badge.live {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.btn {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--blue);
+}
+
+/* Grid layout */
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .full-width { grid-column: 1 / -1; }
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.15s;
+}
+
+.card:hover { border-color: rgba(59, 130, 246, 0.3); }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* STRK Status */
+.verdict {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.verdict.red { color: var(--red); }
+.verdict.yellow { color: var(--yellow); }
+.verdict.green { color: var(--green); }
+.verdict.unknown { color: var(--text-muted); }
+
+.triggers {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.trigger-dot {
+  width: 40px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border);
+}
+.trigger-dot.hit { background: var(--green); }
+
+.status-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-row:last-child { border-bottom: none; }
+.detail-key { color: var(--text-muted); }
+.detail-val { color: var(--text-bright); font-family: 'Menlo', 'Monaco', monospace; font-size: 12px; }
+
+/* Table */
+.table-wrapper { overflow-x: auto; margin: 0 -16px; padding: 0 16px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  padding: 8px 6px;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 12px;
+}
+
+tr:hover td { background: rgba(59, 130, 246, 0.05); }
+
+.token-tag {
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.sector-tag {
+  color: var(--text-muted);
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--bg);
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.signal-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.signal-STRONG_BUY { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+.signal-STRONG_SELL { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+.signal-DIVERGENCE { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+.signal-NEUTRAL_FLOW_UP { background: rgba(107, 114, 128, 0.2); color: var(--text-muted); }
+.signal-NEUTRAL { background: rgba(107, 114, 128, 0.2); color: var(--text-muted); }
+
+.number { text-align: right; }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.muted { color: var(--text-muted); }
+
+/* Precision cards */
+.precision-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.precision-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.precision-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-bright);
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.precision-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.precision-context {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Rotation events */
+.event-item {
+  padding: 10px;
+  background: var(--bg);
+  border-left: 3px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.event-item.new { border-left-color: var(--green); }
+.event-item.exit { border-left-color: var(--text-muted); }
+.event-item.divergence { border-left-color: var(--yellow); }
+.event-item.sell { border-left-color: var(--red); }
+
+.event-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+/* Loading / error states */
+.loading, .empty, .error {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.error { color: var(--red); }
+
+/* Footer */
+.footer {
+  margin-top: 32px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+/* Warning banner */
+.warning {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: var(--yellow);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.snapshot-age {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.fresh { color: var(--green); }
+.stale { color: var(--yellow); }
+.very-stale { color: var(--red); }
+
+/* Alt-Cycle Compass */
+.altcycle-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 900px) {
+  .altcycle-wrapper { grid-template-columns: 320px 1fr; }
+}
+
+.phase-badge {
+  text-align: center;
+  padding: 20px;
+  background: var(--bg);
+  border-radius: 12px;
+  border: 2px solid var(--border);
+}
+
+.phase-num {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-bright);
+  line-height: 1;
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.phase-num-total {
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+.phase-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  color: var(--text-bright);
+}
+
+.phase-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.phase-confidence {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 12px;
+}
+
+.confidence-HIGH { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+.confidence-MEDIUM { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+.confidence-LOW { background: rgba(107, 114, 128, 0.2); color: var(--text-muted); }
+.confidence-NONE { background: rgba(107, 114, 128, 0.1); color: var(--text-muted); }
+
+/* Phase 1-6 colors */
+.phase-1 { border-color: var(--text-muted); }         /* CASH */
+.phase-2 { border-color: #f59e0b; }                    /* BTC */
+.phase-3 { border-color: #6366f1; }                    /* ETH */
+.phase-4 { border-color: var(--green); }               /* MAJOR ALT */
+.phase-5 { border-color: var(--purple); }              /* EUPHORIA */
+.phase-6 { border-color: var(--red); }                 /* DISTRIBUTION */
+.phase-0 { border-color: var(--border); }              /* MIXED */
+
+/* Cycle diagram */
+.cycle-flow {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.cycle-step {
+  flex: 1;
+  min-width: 60px;
+  padding: 8px 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  position: relative;
+}
+
+.cycle-step.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--blue);
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.cycle-step-num {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Menlo', 'Monaco', monospace;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.macro-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.macro-metric {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.macro-metric-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.macro-metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-bright);
+  font-family: 'Menlo', 'Monaco', monospace;
+  margin: 4px 0 2px;
+}
+
+.macro-metric-change {
+  font-size: 11px;
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.reasoning-list {
+  margin: 12px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.reasoning-list li {
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--text);
+  padding-left: 18px;
+  position: relative;
+}
+
+.reasoning-list li:before {
+  content: '·';
+  position: absolute;
+  left: 6px;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.sector-recs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.sector-rec {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.sector-rec.favor {
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid var(--green);
+}
+
+.sector-rec.avoid {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid var(--red);
+}
+
+.sector-rec-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-family: 'Menlo', 'Monaco', monospace;
+  margin-bottom: 4px;
+}
+
+.sector-rec-tokens {
+  font-weight: 600;
+  color: var(--text-bright);
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="header">
+  <h1>🧪 STRK LAB Dashboard</h1>
+  <div class="header-actions">
+    <span class="status-badge" id="last-update">Loading...</span>
+    <button class="btn" onclick="loadAll(true)" id="refresh-btn">↻ Refresh</button>
+  </div>
+</header>
+
+<!-- ALT-CYCLE COMPASS · macro context (full width, on top) -->
+<div class="card full-width" style="margin-bottom: 16px;">
+  <div class="card-header">
+    <div class="card-title">🌍 Alt-Cycle Compass · Макро-фаза</div>
+    <div class="card-subtitle" id="altcycle-snapshot-age"></div>
+  </div>
+  <div id="altcycle-content" class="loading">Loading macro data...</div>
+</div>
+
+<!-- STRK STATUS Card (full width) -->
+<div class="card full-width" style="margin-bottom: 16px;">
+  <div class="card-header">
+    <div class="card-title">📍 STRK Status</div>
+    <div class="card-subtitle" id="strk-snapshot-age"></div>
+  </div>
+  <div id="strk-status-content" class="loading">Loading...</div>
+</div>
+
+<!-- Grid: STRONG_BUY table + Backtest precision -->
+<div class="grid">
+
+  <!-- STRONG BUY Table (spans full width on desktop) -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div class="card-title">🟢 Active Signals</div>
+      <div class="card-subtitle" id="momentum-snapshot-age"></div>
+    </div>
+    <div id="signals-content" class="loading">Loading...</div>
+  </div>
+
+  <!-- Backtest Precision -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📊 Backtest Precision</div>
+      <div class="card-subtitle">Real-time honest measurement</div>
+    </div>
+    <div id="precision-content" class="loading">Loading...</div>
+  </div>
+
+  <!-- Rotation Events -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🔄 Recent Rotation Events</div>
+      <div class="card-subtitle">Last 7 days</div>
+    </div>
+    <div id="rotation-content" class="loading">Loading...</div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  STRK LAB · Portfolio Rotation Compass · <a href="https://github.com/krol4ixa85/STRK_Engine" target="_blank">GitHub</a>
+  · Auto-refresh каждые 5 мин · Обновление данных 2×/сутки (11:30 + 23:30 MSK)
+</footer>
+
+</div>
+
+<script>
+// =================================
+// CONFIG
+// =================================
+const GITHUB_REPO = 'krol4ixa85/STRK_Engine';
+const GITHUB_BRANCH = 'main';
+const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}`;
+
+const FILES = {
+  lab: 'data/cache/strk_lab_report.json',
+  momentum: 'data/cache/dune_sector_momentum.json',
+  precision: 'data/cache/lab_signals_summary.json',
+  rotation: 'data/history/rotation_alerts.jsonl',
+  weekly: 'data/cache/weekly_summary.json',
+  altcycle: 'data/cache/alt_cycle.json',  // macro compass
+};
+
+const AUTO_REFRESH_MS = 5 * 60 * 1000; // 5 min
+
+// =================================
+// HELPERS
+// =================================
+function ago(iso) {
+  if (!iso) return { text: 'unknown', klass: 'muted' };
+  try {
+    const t = new Date(iso);
+    const diffMin = (Date.now() - t.getTime()) / 60000;
+    if (diffMin < 60) return { text: `${Math.round(diffMin)}m ago`, klass: diffMin < 60 ? 'fresh' : 'stale' };
+    if (diffMin < 60 * 24) return { text: `${(diffMin/60).toFixed(1)}h ago`, klass: diffMin < 60 * 24 ? 'stale' : 'very-stale' };
+    return { text: `${(diffMin/60/24).toFixed(1)}d ago`, klass: 'very-stale' };
+  } catch (e) {
+    return { text: 'unknown', klass: 'muted' };
+  }
+}
+
+function fmtNum(n, decimals = 2, sign = false) {
+  if (n === null || n === undefined || isNaN(n)) return 'n/a';
+  const v = Number(n);
+  const s = sign && v >= 0 ? '+' : '';
+  return `${s}${v.toFixed(decimals)}`;
+}
+
+function fmtInt(n) {
+  if (n === null || n === undefined || isNaN(n)) return 'n/a';
+  return Number(n).toLocaleString();
+}
+
+function classForVerdict(v) {
+  if (!v) return 'unknown';
+  if (v.includes('RE_ENTRY') || v.includes('BULLISH')) return 'green';
+  if (v.includes('WATCH') || v.includes('INFLECTION')) return 'yellow';
+  return 'red';
+}
+
+async function fetchJSON(path) {
+  const url = `${BASE_URL}/${path}?t=${Math.floor(Date.now() / 60000)}`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch (e) {
+    console.error(`Fetch failed ${path}:`, e);
+    return null;
+  }
+}
+
+async function fetchJSONL(path) {
+  const url = `${BASE_URL}/${path}?t=${Math.floor(Date.now() / 60000)}`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const text = await r.text();
+    return text.split('\n').filter(line => line.trim()).map(line => {
+      try { return JSON.parse(line); } catch { return null; }
+    }).filter(x => x);
+  } catch (e) {
+    console.error(`Fetch JSONL failed ${path}:`, e);
+    return [];
+  }
+}
+
+// =================================
+// RENDERERS
+// =================================
+function renderAltCycle(data) {
+  const el = document.getElementById('altcycle-content');
+  const ageEl = document.getElementById('altcycle-snapshot-age');
+
+  if (!data) {
+    el.innerHTML = '<div class="empty">Macro data ещё не собран. Запусти alt_cycle_collector.py.</div>';
+    return;
+  }
+
+  const phase = data.phase || {};
+  const m = data.metrics || {};
+  const recs = data.sector_recommendations || {};
+
+  const phaseNames = {
+    1: 'CASH', 2: 'BTC SEASON', 3: 'ETH ROTATION',
+    4: 'MAJOR ALT', 5: 'EUPHORIA', 6: 'DISTRIBUTION'
+  };
+
+  const cycleSteps = [
+    { num: 1, name: 'CASH', label: 'Стейблы' },
+    { num: 2, name: 'BTC', label: 'BTC сезон' },
+    { num: 3, name: 'ETH', label: 'ETH ротация' },
+    { num: 4, name: 'MAJOR', label: 'Крупные альты' },
+    { num: 5, name: 'MEMES', label: 'Эйфория' },
+    { num: 6, name: 'DIST', label: 'Distribution' },
+  ];
+
+  const currentPhase = phase.phase_num || 0;
+
+  let html = '<div class="altcycle-wrapper">';
+
+  // LEFT: Phase badge
+  html += `
+    <div class="phase-badge phase-${currentPhase}">
+      <div>
+        <span class="phase-num">${currentPhase}</span><span class="phase-num-total">/6</span>
+      </div>
+      <div class="phase-name">${phase.phase_name || 'Unknown'}</div>
+      <div class="phase-label">${phase.phase || '—'}</div>
+      <div class="phase-confidence confidence-${phase.confidence || 'NONE'}">
+        Confidence: ${phase.confidence || 'NONE'}
+      </div>
+    </div>
+  `;
+
+  // RIGHT: Metrics + reasoning + recommendations
+  html += '<div>';
+
+  // Macro metrics (3 columns)
+  html += '<div class="macro-metrics">';
+  html += `
+    <div class="macro-metric">
+      <div class="macro-metric-label">BTC.D</div>
+      <div class="macro-metric-value">${m.btc_dominance_pct !== null && m.btc_dominance_pct !== undefined ? m.btc_dominance_pct.toFixed(1) + '%' : '—'}</div>
+      <div class="macro-metric-change muted">${m.btc_dominance_pct > 55 ? 'HIGH' : m.btc_dominance_pct < 50 ? 'LOW' : 'MID'}</div>
+    </div>
+    <div class="macro-metric">
+      <div class="macro-metric-label">ETH / BTC</div>
+      <div class="macro-metric-value">${m.ethbtc_ratio_now !== null && m.ethbtc_ratio_now !== undefined ? m.ethbtc_ratio_now.toFixed(5) : '—'}</div>
+      <div class="macro-metric-change ${m.ethbtc_change_7d_pct >= 0 ? 'pos' : 'neg'}">${fmtNum(m.ethbtc_change_7d_pct, 1, true)}% 7d</div>
+    </div>
+    <div class="macro-metric">
+      <div class="macro-metric-label">TOTAL3</div>
+      <div class="macro-metric-value">${m.total3_usd ? '$' + (m.total3_usd / 1e9).toFixed(0) + 'B' : '—'}</div>
+      <div class="macro-metric-change muted">ex BTC/ETH</div>
+    </div>
+  `;
+  html += '</div>';
+
+  // Cycle flow visualization
+  html += '<div class="cycle-flow">';
+  for (const step of cycleSteps) {
+    const isActive = step.num === currentPhase;
+    html += `
+      <div class="cycle-step ${isActive ? 'active' : ''}" title="${step.label}">
+        <span class="cycle-step-num">${step.num}</span>
+        ${step.name}
+      </div>
+    `;
+  }
+  html += '</div>';
+
+  // Reasoning
+  const reasons = phase.reasoning || [];
+  if (reasons.length > 0) {
+    html += '<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 12px;">Обоснование:</div>';
+    html += '<ul class="reasoning-list">';
+    for (const r of reasons) {
+      html += `<li>${r}</li>`;
+    }
+    html += '</ul>';
+  }
+
+  // Sector recommendations
+  html += '<div class="sector-recs">';
+  html += `
+    <div class="sector-rec favor">
+      <div class="sector-rec-label">🟢 Favor</div>
+      <div class="sector-rec-tokens">${(recs.favor || []).join(', ') || '—'}</div>
+    </div>
+    <div class="sector-rec avoid">
+      <div class="sector-rec-label">🔴 Avoid</div>
+      <div class="sector-rec-tokens">${(recs.avoid || []).join(', ') || '—'}</div>
+    </div>
+  `;
+  html += '</div>';
+
+  if (recs.note) {
+    html += `<div style="margin-top: 8px; padding: 10px; background: var(--bg); border-radius: 6px; font-size: 12px; color: var(--text);">💡 ${recs.note}</div>`;
+  }
+
+  html += '</div>'; // right column
+  html += '</div>'; // wrapper
+
+  // BTC + ETH prices footer
+  html += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); font-family: monospace; display: flex; gap: 16px; flex-wrap: wrap;">`;
+  html += `<span>BTC: <span style="color: var(--text-bright);">$${m.btc_price_usd ? m.btc_price_usd.toLocaleString('en-US', {maximumFractionDigits: 0}) : '?'}</span> <span class="${m.btc_change_7d_pct >= 0 ? 'pos' : 'neg'}">(${fmtNum(m.btc_change_7d_pct, 1, true)}% 7d)</span></span>`;
+  html += `<span>ETH: <span style="color: var(--text-bright);">$${m.eth_price_usd ? m.eth_price_usd.toLocaleString('en-US', {maximumFractionDigits: 0}) : '?'}</span> <span class="${m.eth_change_7d_pct >= 0 ? 'pos' : 'neg'}">(${fmtNum(m.eth_change_7d_pct, 1, true)}% 7d)</span></span>`;
+  html += `<span>Total mcap: <span style="color: var(--text-bright);">$${m.total_marketcap_usd ? (m.total_marketcap_usd / 1e12).toFixed(2) + 'T' : '?'}</span></span>`;
+  html += `</div>`;
+
+  el.innerHTML = html;
+
+  const age = ago(data.generated_at);
+  ageEl.innerHTML = `<span class="snapshot-age ${age.klass}">Updated ${age.text}</span>`;
+}
+
+function renderStrkStatus(snap) {
+  const el = document.getElementById('strk-status-content');
+  if (!snap) {
+    el.innerHTML = '<div class="error">⚠ Не удалось загрузить STRK snapshot</div>';
+    return;
+  }
+  const strk = snap.strk_status || {};
+  const trigList = (snap.re_entry_triggers && snap.re_entry_triggers.trigger_list) || [];
+  const verdict = strk.verdict || 'UNKNOWN';
+  const verdictClass = classForVerdict(verdict);
+  const emoji = verdictClass === 'green' ? '🟢' : verdictClass === 'yellow' ? '🟡' : verdictClass === 'red' ? '🔴' : '⚪';
+
+  const hit = strk.triggers_hit || 0;
+  const total = strk.triggers_total || 4;
+
+  let html = `
+    <div class="verdict ${verdictClass}">
+      ${emoji} ${verdict}
+    </div>
+    <div class="triggers" title="Triggers ${hit}/${total}">
+      ${Array.from({length: total}, (_, i) => `<div class="trigger-dot ${i < hit ? 'hit' : ''}"></div>`).join('')}
+    </div>
+    <div class="status-details">
+      <div class="detail-row">
+        <span class="detail-key">Price</span>
+        <span class="detail-val">${strk.strk_price ? '$' + Number(strk.strk_price).toFixed(4) : 'n/a'}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Wyckoff</span>
+        <span class="detail-val">${strk.wyckoff_phase || 'n/a'}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Dune monthly</span>
+        <span class="detail-val">${strk.dune_monthly_signal || 'n/a'}${strk.bearish_30d !== undefined ? ` (${strk.bearish_30d}/30d)` : ''}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">CEX flow</span>
+        <span class="detail-val">${strk.cex_signal || 'n/a'}</span>
+      </div>
+    </div>
+  `;
+
+  // Triggers list
+  if (trigList.length > 0) {
+    html += '<div style="margin-top: 16px;">';
+    html += '<div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Re-Entry Triggers</div>';
+    for (const t of trigList) {
+      if (Array.isArray(t) && t.length >= 3) {
+        const [mark, name, detail] = t;
+        const c = mark === '✓' ? 'pos' : 'muted';
+        html += `<div style="font-size: 12px; margin: 4px 0; font-family: monospace;"><span class="${c}">${mark}</span> <b>${name}</b>: <span style="color: var(--text-muted);">${detail}</span></div>`;
+      }
+    }
+    html += '</div>';
+  }
+
+  if (strk.recommendation) {
+    html += `<div style="margin-top: 12px; padding: 10px; background: var(--bg); border-left: 3px solid var(--blue); border-radius: 4px; font-size: 13px;">💡 ${strk.recommendation}</div>`;
+  }
+
+  el.innerHTML = html;
+
+  const age = ago(snap.generated_at);
+  document.getElementById('strk-snapshot-age').innerHTML = `<span class="snapshot-age ${age.klass}">Updated ${age.text}</span>`;
+}
+
+function renderSignals(momentum) {
+  const el = document.getElementById('signals-content');
+  if (!momentum || !momentum.rows) {
+    el.innerHTML = '<div class="error">⚠ Не удалось загрузить momentum data</div>';
+    return;
+  }
+
+  const LIQUIDITY_FLOOR = 5000;
+  const seen = new Set();
+  const buckets = { STRONG_BUY: [], DIVERGENCE: [], STRONG_SELL: [] };
+
+  for (const r of momentum.rows) {
+    if (!r) continue;
+    const token = String(r.token || '').toUpperCase();
+    if (!token || seen.has(token)) continue;
+    if ((r.tx_count || 0) < LIQUIDITY_FLOOR) continue;
+    const sig = r.signal;
+    if (buckets[sig]) {
+      buckets[sig].push(r);
+      seen.add(token);
+    }
+  }
+
+  for (const k of Object.keys(buckets)) {
+    buckets[k].sort((a, b) => (b.net_flow_m_usd || 0) - (a.net_flow_m_usd || 0));
+  }
+
+  const total = buckets.STRONG_BUY.length + buckets.DIVERGENCE.length + buckets.STRONG_SELL.length;
+  if (total === 0) {
+    el.innerHTML = '<div class="empty">Нет активных сигналов</div>';
+    return;
+  }
+
+  let html = '<div class="table-wrapper"><table>';
+  html += `
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Signal</th>
+        <th class="number">Net Flow 7d</th>
+        <th class="number">Price 7d</th>
+        <th class="number">TX Count</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  for (const bucket of ['STRONG_BUY', 'DIVERGENCE', 'STRONG_SELL']) {
+    for (const r of buckets[bucket]) {
+      const nf = r.net_flow_m_usd || 0;
+      const pc = r.price_change_7d_pct || 0;
+      const tx = r.tx_count || 0;
+      html += `
+        <tr>
+          <td>
+            <span class="token-tag">${r.token}</span>
+            <span class="sector-tag">${r.sector || ''}</span>
+          </td>
+          <td><span class="signal-badge signal-${r.signal}">${r.signal.replace('_', ' ')}</span></td>
+          <td class="number ${nf >= 0 ? 'pos' : 'neg'}">${fmtNum(nf, 2, true)}M</td>
+          <td class="number ${pc >= 0 ? 'pos' : 'neg'}">${fmtNum(pc, 1, true)}%</td>
+          <td class="number muted">${fmtInt(tx)}</td>
+        </tr>
+      `;
+    }
+  }
+
+  html += '</tbody></table></div>';
+
+  html += `<div style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">
+    Filtered: tx_count ≥ ${LIQUIDITY_FLOOR} · Deduped by token
+  </div>`;
+
+  el.innerHTML = html;
+
+  const age = ago(momentum.collected_at || momentum.generated_at);
+  document.getElementById('momentum-snapshot-age').innerHTML = `<span class="snapshot-age ${age.klass}">Updated ${age.text}</span>`;
+}
+
+function renderPrecision(summary) {
+  const el = document.getElementById('precision-content');
+  if (!summary) {
+    el.innerHTML = '<div class="empty">Backtest module ещё собирает данные</div>';
+    return;
+  }
+
+  const overall = summary.overall || {};
+  const purged = summary.purged_walk_forward || {};
+
+  let html = '<div class="precision-grid">';
+
+  // Overall precision
+  const oPrec = overall.precision_pct;
+  const oN = overall.n_actionable || 0;
+  const oHasData = overall.has_enough_data;
+  html += `
+    <div class="precision-item">
+      <div class="precision-value ${oPrec !== null && oPrec !== undefined ? (oPrec >= 55 ? 'pos' : 'neg') : 'muted'}">
+        ${oPrec !== null && oPrec !== undefined && oHasData ? oPrec + '%' : '—'}
+      </div>
+      <div class="precision-label">Overall</div>
+      <div class="precision-context">N=${oN}${oHasData ? '' : ' (need ≥5)'}</div>
+    </div>
+  `;
+
+  // Purged OOS precision
+  const pPrec = purged.oos_precision_pct_mean;
+  const pStd = purged.oos_precision_pct_std;
+  const pReady = purged.enough_data;
+  html += `
+    <div class="precision-item">
+      <div class="precision-value ${pReady && pPrec !== null ? (pPrec >= 55 ? 'pos' : 'neg') : 'muted'}">
+        ${pReady && pPrec !== null ? pPrec + '%' : '—'}
+      </div>
+      <div class="precision-label">Purged OOS</div>
+      <div class="precision-context">${pReady ? `±${pStd}% (${purged.n_folds_used} folds)` : 'need N≥25'}</div>
+    </div>
+  `;
+
+  // Stats
+  html += `
+    <div class="precision-item">
+      <div class="precision-value">${overall.hits || 0}</div>
+      <div class="precision-label">Hits</div>
+      <div class="precision-context">${overall.n_closed || 0} closed</div>
+    </div>
+    <div class="precision-item">
+      <div class="precision-value">${overall.misses || 0}</div>
+      <div class="precision-label">Misses</div>
+      <div class="precision-context">${overall.neutrals || 0} neutral</div>
+    </div>
+  `;
+
+  html += '</div>';
+
+  // Leakage warning
+  if (purged.leakage_warning) {
+    html += `<div class="warning" style="margin-top: 12px; font-size: 12px;">⚠ ${purged.leakage_warning}</div>`;
+  }
+
+  // Per-token top 5 by precision
+  const perToken = summary.per_token || {};
+  const tokensWithData = Object.entries(perToken)
+    .filter(([tk, s]) => s.has_enough_data && s.precision_pct !== null)
+    .map(([tk, s]) => ({token: tk, ...s}))
+    .sort((a, b) => b.precision_pct - a.precision_pct)
+    .slice(0, 5);
+
+  if (tokensWithData.length > 0) {
+    html += '<div style="margin-top: 16px;">';
+    html += '<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Top by precision</div>';
+    for (const t of tokensWithData) {
+      const avg = t.avg_return_pct;
+      html += `
+        <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; font-family: monospace;">
+          <span><span class="token-tag">${t.token}</span></span>
+          <span>
+            <span class="${t.precision_pct >= 55 ? 'pos' : 'neg'}">${t.precision_pct}%</span>
+            <span class="muted"> (N=${t.n_actionable})</span>
+            ${avg !== null && avg !== undefined ? `<span class="${avg >= 0 ? 'pos' : 'neg'}"> · ${fmtNum(avg, 1, true)}%</span>` : ''}
+          </span>
+        </div>
+      `;
+    }
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top: 12px; font-size: 11px; color: var(--text-muted);">💡 Purged OOS активируется при N_actionable ≥ 25 (~60 дней данных)</div>';
+
+  el.innerHTML = html;
+}
+
+function renderRotation(events) {
+  const el = document.getElementById('rotation-content');
+  if (!events || events.length === 0) {
+    el.innerHTML = '<div class="empty">Нет rotation events</div>';
+    return;
+  }
+
+  // Last 7 days
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const recent = events.filter(e => {
+    try {
+      return new Date(e.ts).getTime() >= weekAgo;
+    } catch { return false; }
+  }).reverse();
+
+  if (recent.length === 0) {
+    el.innerHTML = '<div class="empty">Нет events за 7 дней</div>';
+    return;
+  }
+
+  let html = '';
+  for (const e of recent.slice(0, 10)) {
+    const time = new Date(e.ts).toLocaleString('ru-RU', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+    const entries = [];
+    if (e.entered_strong_buy && e.entered_strong_buy.length) {
+      entries.push({klass: 'new', label: '📈 NEW STRONG_BUY', tokens: e.entered_strong_buy});
+    }
+    if (e.strong_to_divergence && e.strong_to_divergence.length) {
+      entries.push({klass: 'divergence', label: '⚠ DIVERGENCE', tokens: e.strong_to_divergence});
+    }
+    if (e.strong_to_sell && e.strong_to_sell.length) {
+      entries.push({klass: 'sell', label: '🚪 EXIT (→SELL)', tokens: e.strong_to_sell});
+    }
+    if (e.exited_strong_buy_quiet && e.exited_strong_buy_quiet.length) {
+      entries.push({klass: 'exit', label: '⚪ Quiet exit', tokens: e.exited_strong_buy_quiet});
+    }
+    for (const entry of entries) {
+      html += `
+        <div class="event-item ${entry.klass}">
+          <div><strong>${entry.label}</strong>: ${entry.tokens.map(t => `<span class="token-tag">${t}</span>`).join(', ')}</div>
+          <div class="event-time">${time}</div>
+        </div>
+      `;
+    }
+  }
+
+  if (!html) {
+    el.innerHTML = '<div class="empty">Только quiet updates за 7 дней</div>';
+    return;
+  }
+
+  el.innerHTML = html;
+}
+
+// =================================
+// MAIN
+// =================================
+async function loadAll(manual = false) {
+  const btn = document.getElementById('refresh-btn');
+  const badge = document.getElementById('last-update');
+  if (manual) {
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+  }
+  badge.className = 'status-badge';
+  badge.textContent = 'Loading...';
+
+  try {
+    const [lab, momentum, precision, rotation, altcycle] = await Promise.all([
+      fetchJSON(FILES.lab),
+      fetchJSON(FILES.momentum),
+      fetchJSON(FILES.precision),
+      fetchJSONL(FILES.rotation),
+      fetchJSON(FILES.altcycle),
+    ]);
+
+    renderAltCycle(altcycle);
+    renderStrkStatus(lab);
+    renderSignals(momentum);
+    renderPrecision(precision);
+    renderRotation(rotation);
+
+    badge.className = 'status-badge live';
+    const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+    badge.textContent = `● Live · ${now}`;
+  } catch (e) {
+    console.error('Load failed:', e);
+    badge.textContent = '⚠ Error';
+  } finally {
+    if (manual) {
+      btn.textContent = '↻ Refresh';
+      btn.disabled = false;
+    }
+  }
+}
+
+// Initial load
+loadAll();
+
+// Auto-refresh every 5 minutes
+setInterval(() => loadAll(false), AUTO_REFRESH_MS);
+</script>
+
+</body>
+</html>
