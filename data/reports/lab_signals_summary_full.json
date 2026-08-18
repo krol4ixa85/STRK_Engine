@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T09:30:38.699270+00:00",
+  "generated_at": "2026-08-18T20:54:05.713010+00:00",
   "overall": {
     "n_closed": 0,
     "n_actionable": 0,
@@ -11,7 +11,17 @@
     "has_enough_data": false,
     "high_confidence": false
   },
+  "purged_walk_forward": {
+    "enough_data": false,
+    "oos_precision_pct_mean": null,
+    "oos_precision_pct_std": null,
+    "n_folds_used": 0,
+    "embargo_days": 5,
+    "reason_if_not_ready": "no closed signals",
+    "leakage_warning": null,
+    "fold_results": []
+  },
   "per_token": {},
   "per_sector": {},
-  "note": "Precision measured on +3% / -3% threshold after 7d. N < 5 = hidden. N < 15 = wide CI, treat cautiously."
+  "note": "Precision measured on +3% / -3% threshold after 7d. N < 5 = hidden. N < 15 = wide CI, treat cautiously. Purged OOS activates at N >= 25 (more honest estimate)."
 }
