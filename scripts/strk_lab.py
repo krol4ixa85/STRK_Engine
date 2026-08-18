@@ -116,23 +116,11 @@ def get_strk_context():
     stats = classification.get('stats') or {}
     ctx['cex_consecutive_bullish'] = stats.get('consecutive_bullish', 0)
 
-    # STRK price — читаем из разных возможных мест
-    price_sources = [
-        (composite, ['price', 'current_price', 'price_now']),
-        (composite.get('inputs', {}).get('strk_context') or {}, ['price', 'price_now']),
-        (load_json(CACHE_DIR / 'technical_momentum.json', {}).get('features') or {}, ['price_now', 'price', 'close']),
-        (load_json(CACHE_DIR / 'technical_momentum.json', {}), ['price', 'current_price', 'price_now']),
-        (load_json(CACHE_DIR / 'wyckoff_phase.json', {}), ['price', 'current_price']),
-    ]
-    for src, keys in price_sources:
-        if not isinstance(src, dict):
-            continue
-        for k in keys:
-            v = src.get(k)
-            if isinstance(v, (int, float)) and 0.001 < v < 100:
-                ctx['strk_price'] = float(v)
-                break
-        if ctx.get('strk_price'):
+    # STRK price
+    for src in (composite, load_json(CACHE_DIR / 'technical_momentum.json', {})):
+        v = src.get('price') or src.get('current_price')
+        if isinstance(v, (int, float)) and 0.001 < v < 100:
+            ctx['strk_price'] = float(v)
             break
 
     return ctx
@@ -300,7 +288,21 @@ def get_top_movers():
 
 
 def save_snapshot(ctx, status, strong_buys, divergences, buy_pressure, sell_tokens):
-    """Сохраняет structured snapshot для rotation_tracker и других consumers."""
+    """Сохраняет structured snapshot + бэкапит предыдущий для 24h delta comparison."""
+    snapshot_path = CACHE_DIR / 'strk_lab_report.json'
+    prev_snapshot_path = CACHE_DIR / 'strk_lab_report_prev.json'
+
+    # Backup previous snapshot BEFORE overwriting (for 24h delta)
+    if snapshot_path.exists():
+        try:
+            with open(snapshot_path, 'r', encoding='utf-8') as f:
+                prev_data = json.load(f)
+            with open(prev_snapshot_path, 'w', encoding='utf-8') as f:
+                json.dump(prev_data, f, indent=2, ensure_ascii=False, default=str)
+            logger.info(f"Backed up prev snapshot to {prev_snapshot_path.name}")
+        except Exception as e:
+            logger.warning(f"Could not backup prev snapshot: {e}")
+
     snapshot = {
         'generated_at': datetime.now(timezone.utc).isoformat(),
         'strk_status': {
@@ -322,7 +324,6 @@ def save_snapshot(ctx, status, strong_buys, divergences, buy_pressure, sell_toke
         'buy_pressure': buy_pressure,
         'sell': sell_tokens,
     }
-    snapshot_path = CACHE_DIR / 'strk_lab_report.json'
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     with open(snapshot_path, 'w', encoding='utf-8') as f:
         json.dump(snapshot, f, indent=2, ensure_ascii=False, default=str)
