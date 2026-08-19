@@ -2578,36 +2578,72 @@ function renderDuneEnhancedScan(scan) {
   let verdictNote = '';
   let action = '';
   
-  if (phase === 'LONG_ACCUMULATION') {
-    verdictLabel = '🔴 LONG ACCUMULATION · подготовка exit';
-    verdictColor = 'var(--red)';
-    verdictBg = 'rgba(203, 45, 45, 0.08)';
-    verdictNote = 'Актив накапливается ' + streak + '+ недель подряд. По Wyckoff — вероятно поздняя accumulation или ранняя markup. Скоро может пойти распределение.';
-    action = 'Trim позицию 25-50%. Установить take profit на +15-20% от текущего уровня. Watch: DIVERGENCE, whale distribution, объём на новых high.';
+  // Wyckoff-informed verdicts (v2)
+  const sosCount = scan.recent_sos_count || 0;
+  const distCount = scan.recent_dist_count || 0;
+  const recent8w = scan.recent_8w_netflow_m_usd || 0;
+  const recent4w = scan.recent_4w_netflow_m_usd || 0;
+  const price90Change = scan.price_90d_change_pct || 0;
+  
+  if (phase === 'LATE_ACCUMULATION_OR_MARKUP') {
+    verdictLabel = '🚀 LATE ACCUMULATION → MARKUP';
+    verdictColor = 'var(--green)';
+    verdictBg = 'rgba(46, 160, 67, 0.10)';
+    verdictNote = sosCount + ' SOS events за последние 8 недель + 180d netflow +$' + (netflow180/1e6).toFixed(1) + 'M. По Wyckoff — крупные завершили накопление, готовят markup. Возможно retest перед импульсом.';
+    action = 'ENTRY OK — часть позиции сейчас. Watch: следующие 2 недели netflow должен быть positive для confirmation. Stop below recent low.';
+  } else if (phase === 'MID_ACCUMULATION_STRONG') {
+    verdictLabel = '🟢 MID ACCUMULATION · strong';
+    verdictColor = 'var(--green)';
+    verdictBg = 'rgba(46, 160, 67, 0.08)';
+    verdictNote = '1 SOS event + recent 8w netflow +$' + recent8w.toFixed(1) + 'M. Крупные подтверждают накопление.';
+    action = 'Можно докупать частично (25-33%). Trailing stop below last SOS week low.';
   } else if (phase === 'MID_ACCUMULATION') {
     verdictLabel = '🟡 MID ACCUMULATION · держать';
     verdictColor = '#F59E0B';
     verdictBg = 'rgba(245, 158, 11, 0.08)';
-    verdictNote = 'Стабильная accumulation ' + streak + ' недель. Momentum validated, но ещё не поздно.';
-    action = 'Держать позицию. Trailing stop -8-10%. Не докупать агрессивно — размер уже собран.';
+    verdictNote = 'Стабильная accumulation ' + streak + ' недель. Momentum validated.';
+    action = 'Держать позицию. Trailing stop -8-10%. Не докупать агрессивно.';
+  } else if (phase === 'ACCUMULATION_PHASE_B') {
+    verdictLabel = '🟡 ACCUMULATION Phase B · range';
+    verdictColor = '#F59E0B';
+    verdictBg = 'rgba(245, 158, 11, 0.08)';
+    verdictNote = 'Балансированные потоки, ' + pctPositive.toFixed(0) + '% недель positive, 180d netflow +$' + (netflow180/1e6).toFixed(1) + 'M. Range-bound accumulation по Wyckoff Phase B — smart money накапливает пока retail продаёт.';
+    action = 'Watch mode. Не докупать до SOS event (weekly netflow > $10M) или breakout из range. Держать если позиция есть.';
   } else if (phase === 'EARLY_ACCUMULATION') {
-    verdictLabel = '🟢 EARLY ACCUMULATION · докупать OK';
+    verdictLabel = '🟢 EARLY ACCUMULATION · new';
     verdictColor = 'var(--green)';
     verdictBg = 'rgba(46, 160, 67, 0.08)';
     verdictNote = 'Только ' + streak + ' недель accumulation. Momentum на старте, risk/reward высокий.';
-    action = 'Можно докупать частично (25-33% от планового размера). Watch: 2-3 weeks для confirmation.';
-  } else if (phase === 'DISTRIBUTION_OR_MARKDOWN') {
-    verdictLabel = '⛔ DISTRIBUTION / MARKDOWN · exit';
+    action = 'Можно докупать частично (25-33%). Watch: 2-3 weeks для confirmation.';
+  } else if (phase === 'DISTRIBUTION_ACTIVE') {
+    verdictLabel = '🔴 DISTRIBUTION ACTIVE';
+    verdictColor = 'var(--red)';
+    verdictBg = 'rgba(203, 45, 45, 0.10)';
+    verdictNote = distCount + ' distribution events за 8 недель + recent 4w netflow ' + recent4w.toFixed(1) + 'M + price ' + price90Change.toFixed(1) + '% 90d. Активное распределение.';
+    action = 'EXIT priority. Не входить. Если позиция — фиксировать 75-100%.';
+  } else if (phase === 'MARKDOWN') {
+    verdictLabel = '⛔ MARKDOWN · downtrend';
     verdictColor = 'var(--red)';
     verdictBg = 'rgba(203, 45, 45, 0.08)';
-    verdictNote = '180d netflow отрицательный. Актив в distribution phase или markdown.';
-    action = 'Не входить. Если позиция есть — trim/exit. Смотреть на sector rotation для нового кандидата.';
+    verdictNote = 'Long-term outflow (' + (netflow180/1e6).toFixed(1) + 'M за 180d) + бегство продолжается.';
+    action = 'STAY OUT. Ждать stabilization (streak возвращается positive + higher low на price).';
+  } else if (phase === 'WEAKENING') {
+    verdictLabel = '⚠ WEAKENING · risk';
+    verdictColor = '#EA580C';
+    verdictBg = 'rgba(234, 88, 12, 0.08)';
+    verdictNote = 'Больше outflows чем inflows, negative cumulative. Не сильный distribution, но слабость.';
+    action = 'Не докупать. Watch: если продолжится → distribution. Если развернётся SOS event → re-accumulation.';
   } else {
     verdictLabel = '~ MIXED / NEUTRAL';
     verdictColor = 'var(--text-muted)';
     verdictBg = 'var(--bg-subtle)';
     verdictNote = 'Нет ярко выраженной фазы. Watch mode.';
-    action = 'Wait. Актив без чёткого direction — не entry candidate.';
+    action = 'Wait. Актив без чёткого direction.';
+  }
+  
+  // Add SOS/dist events info if any
+  if (sosCount > 0 || distCount > 0) {
+    verdictNote += ' [SOS: ' + sosCount + ' | Dist: ' + distCount + ' за 8w]';
   }
   
   const verdictEl = document.getElementById('scanner-verdict');
