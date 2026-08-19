@@ -22,13 +22,13 @@ def load(name):
 def compute_scenarios(lab, altcycle, confluence, funding, stables, netflow):
     scenarios = []
     strk = lab.get('strk_status', {}) if lab else {}
-    triggers_hit = strk.get('triggers_hit', 0)
+    triggers_hit = (strk.get('triggers_hit') or 0)
     triggers_total = strk.get('triggers_total', 4)
     phase = strk.get('wyckoff_phase', '?')
-    current_price = strk.get('strk_price', 0.023)
+    current_price = strk.get('strk_price') or 0.023
     
-    rally = confluence.get('rally_score', 0) if confluence else 0
-    crash = confluence.get('crash_score', 0) if confluence else 0
+    rally = (confluence.get('rally_score') or 0) if confluence else 0
+    crash = (confluence.get('crash_score') or 0) if confluence else 0
     
     alt_phase = altcycle.get('phase', {}).get('phase', '') if altcycle else ''
     alt_conf = altcycle.get('phase', {}).get('confidence', 'LOW') if altcycle else 'LOW'
@@ -38,7 +38,7 @@ def compute_scenarios(lab, altcycle, confluence, funding, stables, netflow):
     if netflow and netflow.get('rows'):
         for r in netflow['rows']:
             if r.get('sector') in ('INFRA', 'RWA', 'LST'):
-                utility_flow_m += r.get('net_flow_m_usd', 0)
+                utility_flow_m += (r.get('net_flow_m_usd') or 0)
     
     # BULL MARKUP
     bull_prob = 0
@@ -93,7 +93,7 @@ def compute_scenarios(lab, altcycle, confluence, funding, stables, netflow):
     dist_prob = 0
     if crash >= 4: dist_prob += 30
     if utility_flow_m < -5: dist_prob += 20
-    if strk.get('bearish_30d', 0) >= 27: dist_prob += 20
+    if (strk.get('bearish_30d') or 0) >= 27: dist_prob += 20
     if 'BEARISH' in strk.get('dune_monthly_signal', ''): dist_prob += 15
     dist_prob = min(dist_prob, 60)
     
@@ -154,7 +154,7 @@ def main():
     
     scenarios = compute_scenarios(lab, altcycle, confluence, funding, stables, netflow)
     
-    current_price = lab.get('strk_status', {}).get('strk_price', 0.023) if lab else 0.023
+    current_price = (lab.get('strk_status', {}).get('strk_price') if lab else None) or 0.023
     
     output = {
         'computed_at': datetime.now(timezone.utc).isoformat(),
