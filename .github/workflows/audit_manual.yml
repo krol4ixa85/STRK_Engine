@@ -1,0 +1,85 @@
+name: Audit & Inventory (manual)
+
+# Отдельный workflow — только manual запуск.
+# Используется для быстрой диагностики без запуска full pipeline.
+#
+# Что делает:
+#   1. Клонирует repo (включая всё data/cache/)
+#   2. Запускает выбранный script
+#   3. Показывает вывод в Actions logs
+#   4. Commit результата обратно в repo (если script создал output)
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Какой script запустить?'
+        required: true
+        default: 'detector_inventory'
+        type: choice
+        options:
+          - detector_inventory
+          - system_health
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo (with all data/)
+        uses: actions/checkout@v4
+        with:
+          # Full clone чтобы получить свежие data/cache/
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: List available cache files
+        run: |
+          echo "=== Available data/cache/ files: ==="
+          ls -la data/cache/ 2>/dev/null | head -30 || echo "No data/cache/ directory"
+          echo ""
+          echo "=== Available data/history/ files: ==="
+          ls -la data/history/ 2>/dev/null | head -10 || echo "No data/history/ directory"
+
+      - name: Run detector_inventory
+        if: ${{ inputs.script == 'detector_inventory' }}
+        run: |
+          echo "======================================"
+          echo "RUNNING: scripts/detector_inventory.py"
+          echo "======================================"
+          python3 scripts/detector_inventory.py
+
+      - name: Run system_health audit
+        if: ${{ inputs.script == 'system_health' }}
+        run: |
+          echo "======================================"
+          echo "RUNNING: scripts/audit_system.py"
+          echo "======================================"
+          python3 scripts/audit_system.py
+
+      - name: Commit output back to repo
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Audit Bot"
+          git add data/cache/*.json || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: audit output (${{ inputs.script }}) [skip ci]"
+            git push || echo "Push failed (не критично для audit)"
+          fi
+
+      - name: Upload output as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-output-${{ inputs.script }}
+          path: |
+            data/cache/detector_inventory.json
+            data/cache/system_health.json
+          if-no-files-found: warn
+          retention-days: 7
