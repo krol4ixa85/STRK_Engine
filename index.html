@@ -537,6 +537,17 @@ const FILES = {
 };
 const AUTO_REFRESH_MS = 5 * 60 * 1000;
 
+
+// Null-safe age formatter — не падает если ts undefined
+function safeAge(ts) {
+  if (!ts) return { text: 'н/д' };
+  try {
+    return ago(ts);
+  } catch(e) {
+    return { text: 'н/д' };
+  }
+}
+
 function ago(iso) {
   if (!iso) return { text: 'unknown', klass: 'muted' };
   try {
@@ -1018,6 +1029,7 @@ function renderMovers(data) {
 
 function renderWhaleAlerts(alerts) {
   const el = document.getElementById('whale-content');
+  if (!el) return;
   if (!alerts || alerts.length === 0) {
     el.innerHTML = '<div class="empty">Ждём первый snapshot через 7 дней</div>';
     return;
@@ -1085,14 +1097,21 @@ function renderWhaleAlerts(alerts) {
 
 function renderSectorFlow(netflowData) {
   const el = document.getElementById('sector-flow-content');
-  if (!netflowData || !netflowData.rows || netflowData.rows.length === 0) {
+  if (!el) return;  // защита от отсутствия элемента
+  if (!netflowData) {
     el.innerHTML = '<div class="empty">Sector netflow data не загружен</div>';
+    return;
+  }
+  // Try multiple possible row locations
+  const rows = netflowData.rows || netflowData.data || netflowData.sectors || [];
+  if (!Array.isArray(rows) || rows.length === 0) {
+    el.innerHTML = '<div class="empty">Sector netflow: нет строк данных (структура: ' + Object.keys(netflowData).join(', ') + ')</div>';
     return;
   }
 
   // Aggregate by sector
   const bySector = {};
-  for (const r of netflowData.rows) {
+  for (const r of rows) {
     const sector = r.sector || r.category || 'Unknown';
     const flow = parseFloat(r.net_flow_m_usd || r.netflow_usd || r.net_flow || 0);
     if (!bySector[sector]) bySector[sector] = { flow: 0, tokens: [] };
@@ -1143,12 +1162,13 @@ function renderSectorFlow(netflowData) {
   }
 
   el.innerHTML = html;
-  const age = ago(netflowData.collected_at || netflowData.generated_at);
+  const age = safeAge(netflowData.collected_at || netflowData.generated_at);
   document.getElementById('sector-flow-age').textContent = 'Обновлено ' + age.text;
 }
 
 function renderNews(newsData) {
   const el = document.getElementById('news-content');
+  if (!el) return;
   if (!newsData) {
     el.innerHTML = '<div class="empty">News data не загружен</div>';
     return;
@@ -1204,12 +1224,13 @@ function renderNews(newsData) {
   html += '<div style="margin-top: 12px; padding: 10px; background: var(--yellow-bg); border-radius: 6px; font-size: 11px; color: var(--yellow);">💡 Планируется: topic filters (regulations, tokenization, zk-privacy, RWA)</div>';
 
   el.innerHTML = html;
-  const age = ago(newsData.generated_at);
+  const age = safeAge(newsData.generated_at);
   document.getElementById('news-age').textContent = 'Обновлено ' + age.text;
 }
 
 function renderConfluence(confluenceData) {
   const el = document.getElementById('confluence-content');
+  if (!el) return;
   if (!confluenceData) {
     el.innerHTML = '<div class="empty">Confluence gate data не загружен</div>';
     return;
@@ -1248,12 +1269,17 @@ function renderConfluence(confluenceData) {
   `;
 
   el.innerHTML = html;
-  const age = ago(confluenceData.generated_at || confluenceData.as_of);
+  const age = safeAge(confluenceData.generated_at || confluenceData.as_of);
   document.getElementById('confluence-age').textContent = 'Обновлено ' + age.text;
 }
 
 
 function renderAltCycleDetail(data) {
+  if (!data) {
+    const el = document.getElementById('altcycle-detail-content');
+    if (el) el.innerHTML = '<div class="empty">Alt-cycle data не загружен</div>';
+    return;
+  }
   const el = document.getElementById('altcycle-detail-content');
   if (!data) { el.innerHTML = '<div class="empty">Данные не собраны</div>'; return; }
   const phase = data.phase || {};
@@ -1302,20 +1328,24 @@ async function loadAll(manual = false) {
       fetchJSONL(FILES.whaleAlerts),
       fetchJSON(FILES.news), fetchJSON(FILES.confluence),
     ]);
-    renderHero(altcycle, lab);
-    renderStrkDetails(lab);
-    renderSignals(momentum);
-    renderPrecision(precision);
-    renderRotation(rotation);
-    renderTVL(tvl);
-    renderFunding(funding);
-    renderStables(stables);
-    renderMovers(funding);
-    renderWhaleAlerts(whaleAlerts);
-    renderSectorFlow(netflow);       // NEW
-    renderNews(news);                 // NEW
-    renderConfluence(confluence);     // NEW
-    renderAltCycleDetail(altcycle);
+    // Wrap each render в try/catch — одна ошибка не должна ломать всё
+    const safeRender = (name, fn) => {
+      try { fn(); } catch(e) { console.error('[' + name + '] render error:', e); }
+    };
+    safeRender('Hero', () => renderHero(altcycle, lab));
+    safeRender('StrkDetails', () => renderStrkDetails(lab));
+    safeRender('Signals', () => renderSignals(momentum));
+    safeRender('Precision', () => renderPrecision(precision));
+    safeRender('Rotation', () => renderRotation(rotation));
+    safeRender('TVL', () => renderTVL(tvl));
+    safeRender('Funding', () => renderFunding(funding));
+    safeRender('Stables', () => renderStables(stables));
+    safeRender('Movers', () => renderMovers(funding));
+    safeRender('WhaleAlerts', () => renderWhaleAlerts(whaleAlerts));
+    safeRender('SectorFlow', () => renderSectorFlow(netflow));
+    safeRender('News', () => renderNews(news));
+    safeRender('Confluence', () => renderConfluence(confluence));
+    safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
     badge.textContent = `● Live · ${now}`;
