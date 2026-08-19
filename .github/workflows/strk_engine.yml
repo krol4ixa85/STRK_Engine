@@ -118,17 +118,44 @@ jobs:
       - name: Stables collector (dry powder)
         run: python3 scripts/collectors/stables_collector.py || true
 
-      # STAGE 1.60 · DUNE EXTENDED (forked queries из community dashboards)
-      # Whale movements + Starknet DAU + New wallets.
-      # Требует DUNE_QUERY_ID_WHALES_24H, DUNE_QUERY_ID_STARKNET_DAU, DUNE_QUERY_ID_STARKNET_NEW_WALLETS.
-      # Weekly queries запускаются только по воскресеньям (внутри скрипта).
-      - name: Dune extended collector (forked queries)
+      # STAGE 1.60 · DUNE EXTENDED (DISABLED · queries too heavy)
+      # Fork community dashboards хорошая идея но:
+      # - Whale movements query cost > tier limit → HTTP 402 Payment Required
+      # - Failed executions still charge credits (~500+ credits за попытку)
+      # - Community queries не оптимизированы для API polling
+      #
+      # Оставлено закомментированным. Разкомментируй когда:
+      # 1. Найдёшь LEGKOVESные queries (< 100 credits/execute)
+      # 2. Или напишешь свои custom SQL (можно контролировать cost)
+      # 3. Или мигрируешь на Plus tier ($390/mo)
+      #
+      # Пока используются свободные data sources (defillama, coingecko).
+      # Whale monitoring покрывается existing whale_monitor.py.
+      #
+      # - name: Dune extended collector (forked queries) [DISABLED]
+      #   env:
+      #     DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+      #     DUNE_QUERY_ID_WHALES_24H: ${{ secrets.DUNE_QUERY_ID_WHALES_24H }}
+      #     DUNE_QUERY_ID_STARKNET_DAU: ${{ secrets.DUNE_QUERY_ID_STARKNET_DAU }}
+      #     DUNE_QUERY_ID_STARKNET_NEW_WALLETS: ${{ secrets.DUNE_QUERY_ID_STARKNET_NEW_WALLETS }}
+      #   run: python3 scripts/collectors/dune_extended_collector.py || true
+
+      # STAGE 1.65 · WHALE HOLDINGS COLLECTOR (weekly cadence, smart selection)
+      # Использует твою параметризованную query 8374340 через API.
+      # Cadence: weekly (внутри скрипта проверяется MIN_INTERVAL_HOURS=168).
+      # Tokens: STRK (always) + STRONG_BUY current + recently EXITED (max 5 per run).
+      # Cost: ~25 credits per token × 5 = ~125/week = ~500/mo. Fits в Free tier.
+      #
+      # Weekly cron trigger внутри скрипта — safe даже если workflow runs daily
+      # (просто skip если < 7 days с last run).
+      - name: Whale holdings collector (weekly)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *' || github.event.schedule == '0 12 * * 0'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
-          DUNE_QUERY_ID_WHALES_24H: ${{ secrets.DUNE_QUERY_ID_WHALES_24H }}
-          DUNE_QUERY_ID_STARKNET_DAU: ${{ secrets.DUNE_QUERY_ID_STARKNET_DAU }}
-          DUNE_QUERY_ID_STARKNET_NEW_WALLETS: ${{ secrets.DUNE_QUERY_ID_STARKNET_NEW_WALLETS }}
-        run: python3 scripts/collectors/dune_extended_collector.py || true
+          DUNE_QUERY_ID_WHALE_HOLDINGS: ${{ secrets.DUNE_QUERY_ID_WHALE_HOLDINGS }}
+          WHALE_HOLDINGS_MAX_TOKENS: "5"
+          WHALE_HOLDINGS_MIN_INTERVAL_HOURS: "168"
+        run: python3 scripts/collectors/whale_holdings_collector.py || true
 
       # STAGE 1.99 · SYSTEM HEALTH AUDIT
       # Проверяет что все collectors/detectors/pipeline работают.
