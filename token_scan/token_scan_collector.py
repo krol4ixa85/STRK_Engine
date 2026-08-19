@@ -45,12 +45,54 @@ REPO_ROOT = Path(__file__).parent.parent
 CACHE_DIR = REPO_ROOT / 'data' / 'cache' / 'token_scan'
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
+# Полный universe LAB monitoring (все 9 sectors × top tokens)
+# Автоматически расширяется через auto_extend_from_lab()
 TRACKED_TOKENS = [
-    'STRK', 'ZK', 'ARB', 'OP', 'MNT',           # L2
-    'LINK', 'ETHFI', 'MORPHO', 'ONDO', 'CFG',   # utility (Xenia holds)
-    'LDO', 'EIGEN', 'PENDLE', 'AAVE',           # LST/DeFi
-    'TAO', 'RNDR', 'AIXBT', 'FET',              # AI
+    # L2 
+    'STRK', 'ZK', 'ARB', 'OP', 'MNT',
+    # RWA (real world assets)
+    'LINK', 'ONDO', 'CFG',
+    # LST (liquid staking)
+    'ETHFI', 'EIGEN', 'RPL', 'LDO',
+    # INFRA
+    'GRT', 'AKT', 'RNDR',
+    # DeFi
+    'MORPHO', 'AAVE', 'PENDLE', 'CRV', 'UNI',
+    # AI Agents
+    'TAO', 'AIXBT', 'FET', 'VIRTUAL',
+    # DEPIN
+    'FIL',
+    # Gaming
+    'AXS', 'IMX', 'SAND',
+    # Meme (для reference, обычно не покупаем)
+    'DOGE', 'PEPE', 'WIF', 'BONK',
 ]
+
+def auto_extend_from_lab():
+    """Adds any currently STRONG_BUY or DIVERGENCE token that's not in TRACKED_TOKENS.
+    Called before scan to ensure ALL signaled tokens have cache.
+    """
+    lab_path = REPO_ROOT / 'data' / 'cache' / 'strk_lab_report.json'
+    if not lab_path.exists():
+        return []
+    
+    with open(lab_path) as f:
+        lab = json.load(f)
+    
+    added = []
+    tracked_set = set(TRACKED_TOKENS)
+    
+    for section in ('strong_buy', 'divergence', 'buy_pressure'):
+        for item in lab.get(section, []):
+            tok = item.get('token', '').upper()
+            if tok and tok not in tracked_set:
+                TRACKED_TOKENS.append(tok)
+                tracked_set.add(tok)
+                added.append(tok)
+    
+    if added:
+        print(f'  ↑ Auto-added from LAB signals: {", ".join(added)}')
+    return added
 
 FRESH_HOURS = 24
 STALE_DAYS = 7
@@ -308,17 +350,24 @@ def main():
     dune = DuneClient(api_key)
     
     # Determine tokens
+    # Auto-extend TRACKED_TOKENS to include current STRONG_BUY / DIVERGENCE
+    if not args.token:
+        auto_extend_from_lab()
+    
     if args.token:
         tokens = [args.token.upper()]
     elif args.strong_buy_only:
+        # Daily scan: STRONG_BUY + DIVERGENCE (user clicks on both)
         lab_path = REPO_ROOT / 'data' / 'cache' / 'strk_lab_report.json'
         if lab_path.exists():
             with open(lab_path) as f:
                 lab = json.load(f)
-            tokens = [item['token'] for item in lab.get('strong_buy', []) if item.get('token') != 'STRK']
-            print(f'STRONG_BUY tokens: {tokens}')
+            sb = [item['token'] for item in lab.get('strong_buy', [])]
+            dv = [item['token'] for item in lab.get('divergence', [])]
+            tokens = list(set(sb + dv + ['STRK']))  # always include STRK
+            print(f'Daily refresh tokens: {tokens}')
         else:
-            tokens = TRACKED_TOKENS
+            tokens = TRACKED_TOKENS[:10]
     else:
         tokens = TRACKED_TOKENS
     
