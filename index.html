@@ -498,6 +498,50 @@ tr:hover td { background: var(--bg-subtle); }
     <div id="movers-content" class="loading">Loading...</div>
   </div>
 
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🐳 Whale Alerts</div>
+      <div class="card-subtitle">Weekly · via Dune</div>
+    </div>
+    <div class="layman-intro">
+      Отслеживаем крупных holders (Whale/Shark/Dolphin) для 5 tokens (STRK + STRONG_BUY + EXITED). Alerts когда holder входит/выходит или меняет позицию >50%.
+    </div>
+    <div id="whale-content" class="loading">Loading...</div>
+  </div>
+
+  <div class="card card-wide card-full">
+    <div class="card-header">
+      <div class="card-title">💰 Куда идёт капитал · sector rotation</div>
+      <div class="card-subtitle" id="sector-flow-age">Loading...</div>
+    </div>
+    <div class="layman-intro">
+      Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
+    </div>
+    <div id="sector-flow-content" class="loading">Loading...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📰 News Feed</div>
+      <div class="card-subtitle" id="news-age">Loading...</div>
+    </div>
+    <div class="layman-intro">
+      RSS aggregation (CoinDesk, CoinTelegraph, Decrypt). Смотрим <strong>signal breakdown</strong>: positive/negative sentiment. Пока фильтр STRK-only — впереди расширение на categories (regulations, RWA, ZK).
+    </div>
+    <div id="news-content" class="loading">Loading...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🚦 Confluence Gate</div>
+      <div class="card-subtitle" id="confluence-age">Loading...</div>
+    </div>
+    <div class="layman-intro">
+      Композитный signal из <strong>9 факторов</strong> (Wyckoff, whale, CVD, funding, cross-token и др). Rally / Crash scores > 5 → чёткий signal. Если оба low → WAIT.
+    </div>
+    <div id="confluence-content" class="loading">Loading...</div>
+  </div>
+
   <div class="card card-full">
     <div class="card-header">
       <div class="card-title">🌍 Alt-Cycle Compass · подробно</div>
@@ -1176,8 +1220,11 @@ function renderNews(newsData) {
 
   const signal = newsData.overall_signal || 'NEUTRAL';
   const strkCount = newsData.strk_news_count || 0;
-  const recent = newsData.recent_news || newsData.strk_news || [];
-  const breakdown = newsData.breakdown || {};
+  // Actual JSON uses top_news (не recent_news)
+  const recent = newsData.top_news || newsData.recent_news || newsData.strk_news || [];
+  // Actual JSON uses sentiment_breakdown (не breakdown)
+  const breakdown = newsData.sentiment_breakdown || newsData.breakdown || {};
+  const interpretation = newsData.interpretation || '';
 
   const signalColors = {
     POSITIVE_CATALYST: { c: 'var(--green)', bg: 'var(--green-bg)', label: 'Bullish катализатор' },
@@ -1196,21 +1243,29 @@ function renderNews(newsData) {
 
   if (breakdown && Object.keys(breakdown).length > 0) {
     html += '<div style="display: flex; gap: 6px; margin-bottom: 12px; font-size: 11px; font-family: monospace;">';
-    if (breakdown.positive) html += `<span class="pos">✓ ${breakdown.positive} POS</span>`;
-    if (breakdown.negative) html += `<span class="neg">✗ ${breakdown.negative} NEG</span>`;
-    if (breakdown.catalyst) html += `<span style="color: var(--orange-strong); font-weight: 700;">⚡ ${breakdown.catalyst} CAT</span>`;
-    if (breakdown.neutral) html += `<span class="muted">· ${breakdown.neutral} NEU</span>`;
+    const pos = breakdown.POSITIVE || breakdown.positive || 0;
+    const neg = breakdown.NEGATIVE || breakdown.negative || 0;
+    const cat = breakdown.CATALYST || breakdown.catalyst || 0;
+    const neu = breakdown.NEUTRAL || breakdown.neutral || 0;
+    if (pos) html += `<span class="pos">✓ ${pos} POS</span>`;
+    if (neg) html += `<span class="neg">✗ ${neg} NEG</span>`;
+    if (cat) html += `<span style="color: var(--orange-strong); font-weight: 700;">⚡ ${cat} CAT</span>`;
+    if (neu) html += `<span class="muted">· ${neu} NEU</span>`;
     html += '</div>';
+  }
+  
+  if (interpretation) {
+    html += '<div style="padding: 8px; background: var(--bg-subtle); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary); font-style: italic;">💬 ' + interpretation + '</div>';
   }
 
   if (recent && recent.length > 0) {
     html += '<div style="display: flex; flex-direction: column; gap: 6px;">';
     for (const item of recent.slice(0, 5)) {
-      const sentiment = (item.sentiment || item.classification || 'NEUTRAL').toUpperCase();
-      const sColor = sentiment.includes('POS') ? 'var(--green)' : sentiment.includes('NEG') ? 'var(--red)' : 'var(--text-muted)';
-      const title = (item.title || item.headline || '').substring(0, 90);
+      const sentiment = String(item.sentiment || item.classification || 'NEUTRAL').toUpperCase();
+      const sColor = sentiment.includes('POS') || sentiment.includes('CAT') ? 'var(--green)' : sentiment.includes('NEG') ? 'var(--red)' : 'var(--text-muted)';
+      const title = String(item.title || item.headline || '').substring(0, 90);
       const src = item.source || '';
-      const dt = (item.published || item.date || '').substring(0, 16);
+      const dt = String(item.published || item.date || '').substring(0, 16);
       html += `<div style="padding: 8px; background: var(--bg-subtle); border-left: 3px solid ${sColor}; border-radius: 4px;">
         <div style="font-size: 12px; color: var(--text-bright); margin-bottom: 3px;">${title}</div>
         <div style="font-size: 10px; color: var(--text-muted); font-family: monospace;">${src} · ${dt}</div>
@@ -1249,10 +1304,17 @@ function renderConfluence(confluenceData) {
   };
   const info = statusMap[gateStatus] || statusMap.NO_SIGNAL;
 
+  const action = confluenceData.action || '';
+  const summary = confluenceData.summary || '';
+  const confidence = confluenceData.confidence || '';
+  
   let html = `
     <div style="text-align: center; padding: 12px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
       <div style="font-size: 20px; font-weight: 700; color: ${info.c};">${info.icon} ${info.label}</div>
+      ${confidence ? '<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Confidence: ' + confidence + '</div>' : ''}
     </div>
+    ${summary ? '<div style="padding: 8px; background: var(--bg-subtle); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary);">💬 ' + summary + '</div>' : ''}
+    ${action ? '<div style="padding: 8px; background: var(--orange-bg); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-bright); border-left: 3px solid var(--orange);"><strong>🎯 Action:</strong> ' + action + '</div>' : ''}
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
       <div style="text-align: center; padding: 12px; background: var(--green-bg); border-radius: 8px;">
         <div style="font-size: 24px; font-weight: 700; color: var(--green); font-family: monospace;">${rally}/9</div>
