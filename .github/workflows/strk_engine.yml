@@ -11,6 +11,12 @@ on:
     - cron: '0 21 * * 0'
     # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
     - cron: '0 0 * * 0'
+    # v5.2 · Weekly full token scan — понедельник 05:00 UTC = 08:00 MSK
+    - cron: '0 5 * * 1'
+    # v5.2 · Daily STRONG_BUY token refresh — каждый день 04:00 UTC = 07:00 MSK
+    - cron: '0 4 * * *'
+    # v5.2 · Weekly FULL RUN Level 4 — понедельник 06:00 UTC = 09:00 MSK
+    - cron: '0 6 * * 1'
   workflow_dispatch:
     inputs:
       mode:
@@ -26,6 +32,9 @@ on:
           - baseline
           - lab
           - baseline
+          - token_scan_weekly
+          - token_scan_daily
+          - full_run
 
 # Global env — все шаги видят все секреты
 env:
@@ -402,3 +411,98 @@ jobs:
             data/graphs/
           if-no-files-found: warn
           retention-days: 30
+
+
+  # ============================================================
+  # v5.2 · TOKEN SCAN (weekly full + daily STRONG_BUY refresh)
+  # ============================================================
+  weekly_token_scan:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 5 * * 1')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_weekly')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dune-client requests
+      - name: Run weekly token scan (all 18 tokens)
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
+        run: python3 token_scan/token_scan_collector.py
+      - name: Commit cache
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/
+          git diff --cached --quiet || git commit -m "chore: weekly token scan cache refresh [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  daily_token_scan:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_daily')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dune-client requests
+      - name: Run daily STRONG_BUY token refresh
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
+        run: python3 token_scan/token_scan_collector.py --strong-buy-only
+      - name: Commit cache
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/
+          git diff --cached --quiet || git commit -m "chore: daily STRONG_BUY token scan [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # v5.2 · FULL RUN Level 4 (weekly deep report)
+  # ============================================================
+  full_run:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'full_run')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate FULL RUN
+        run: |
+          mkdir -p reports
+          python3 full_run/generate_full_run.py
+      - name: Commit report
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add reports/
+          git diff --cached --quiet || git commit -m "chore: FULL RUN weekly report [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+      - name: Telegram notify (best-effort)
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          RUN_ID=$(ls reports/FULL_RUN_R*.html 2>/dev/null | sort -V | tail -1 | grep -oE 'R[0-9]+' | head -1)
+          MSG="📊 FULL RUN ${RUN_ID:-новый} готов%0A%0Ahttps://krol4ixa85.github.io/STRK_Engine/reports/latest.html"
+          curl -s "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MSG}" || true
