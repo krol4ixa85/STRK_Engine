@@ -1297,6 +1297,7 @@ function renderConfluence(confluenceData) {
   const confidence = confluenceData.confidence || '';
   const summary = confluenceData.summary || '';
   const action = confluenceData.action || '';
+  const inputs = confluenceData.inputs_used || {};
   
   const statusMap = {
     'RALLY_CONFIRMED': { c: 'var(--green)', bg: 'var(--green-bg)', label: 'RALLY подтверждён', icon: '🟢' },
@@ -1304,85 +1305,198 @@ function renderConfluence(confluenceData) {
     'NO_SIGNAL': { c: 'var(--text-muted)', bg: 'var(--bg-subtle)', label: 'WAIT · нет сигнала', icon: '⏸' },
     'RALLY_WATCH': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'RALLY watching', icon: '👁' },
     'CRASH_WATCH': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'CRASH watching', icon: '👁' },
+    'LIVE_BONUS': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'LIVE_BONUS · hypothesis', icon: '🧪' },
   };
   const info = statusMap[signal] || statusMap.NO_SIGNAL;
 
-  let html = `
-    <div style="text-align: center; padding: 12px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
-      <div style="font-size: 20px; font-weight: 700; color: ${info.c};">${info.icon} ${info.label}</div>
-      ${confidence ? '<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Confidence: ' + confidence + '</div>' : ''}
-    </div>
-    ${summary ? '<div style="padding: 8px; background: var(--bg-subtle); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary);">💬 ' + summary + '</div>' : ''}
-    ${action ? '<div style="padding: 8px; background: var(--orange-bg); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-bright); border-left: 3px solid var(--orange);"><strong>🎯 Action:</strong> ' + action + '</div>' : ''}
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-      <div style="text-align: center; padding: 12px; background: var(--green-bg); border-radius: 8px;">
-        <div style="font-size: 24px; font-weight: 700; color: var(--green); font-family: monospace;">${rally}/9</div>
-        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Rally score</div>
+  // ============================================================
+  // ГРУППЫ ФАКТОРОВ
+  // ============================================================
+  const factorGroups = {
+    'technical': {
+      label: '📈 Технические',
+      icon: '📈',
+      factors: {
+        'slope_3d_pct': { label: 'Slope 3d', suffix: '%', goodOp: (v) => v > 1, badOp: (v) => v < -2, layman: (v) => v > 1 ? 'Цена растёт' : v < -2 ? 'Цена падает' : 'Ровно' },
+        'slope_accel_pct': { label: 'Slope accel', suffix: '%', goodOp: (v) => v > 0, badOp: (v) => v < -3, layman: (v) => v > 0 ? 'Ускорение вверх' : v < -3 ? 'Ускорение вниз' : 'Стабильно' },
+        'vol_ratio_3d': { label: 'Volume ratio', suffix: 'x', goodOp: (v) => v > 1.5, badOp: (v) => v < 0.7, layman: (v) => v > 1.5 ? 'Объём растёт' : v < 0.7 ? 'Объём слабый' : 'Нормальный' },
+        'rsi': { label: 'RSI', goodOp: (v) => v > 55 && v < 70, badOp: (v) => v < 30 || v > 80, layman: (v) => v > 70 ? 'Перекуплен' : v < 30 ? 'Перепродан' : v < 45 ? 'Слабо' : 'OK' },
+      }
+    },
+    'position': {
+      label: '📊 Позиция цены',
+      icon: '📊',
+      factors: {
+        'pct_from_high': { label: 'От максимума', suffix: '%', goodOp: (v) => v > -5, badOp: (v) => v < -30, layman: (v) => v > -5 ? 'Близко к top' : v < -30 ? 'Далеко от top' : 'Средняя зона' },
+        'pct_from_low': { label: 'От минимума', suffix: '%', goodOp: (v) => v > 1 && v < 10, badOp: (v) => v > 30, layman: (v) => v < 5 ? 'Только от дна' : v > 30 ? 'Уже высоко' : 'Разворот идёт' },
+      }
+    },
+    'flow': {
+      label: '🐳 Потоки капитала',
+      icon: '🐳',
+      factors: {
+        'wyckoff_phase': { label: 'Wyckoff', good: ['ACCUMULATION', 'MARKUP'], bad: ['DISTRIBUTION', 'MARKDOWN'], layman: (v) => v === 'ACCUMULATION' ? 'Крупные тихо покупают' : v === 'DISTRIBUTION' ? 'Крупные продают' : v === 'MARKUP' ? 'Восходящий тренд' : 'Нисходящий' },
+        'short_crowded': { label: 'Shorts crowded', good: [true], bad: [false], layman: (v) => v ? 'Много шортов → потенциал сквиза' : 'Шортов мало' },
+        'long_crowded': { label: 'Longs crowded', good: [false], bad: [true], layman: (v) => v ? 'FOMO — риск дампа' : 'Нет FOMO' },
+        'cex_signal': { label: 'CEX flow', good: ['ACCUMULATION', 'BULLISH'], bad: ['DISTRIBUTION', 'BEARISH'], layman: (v) => v === 'ACCUMULATION' ? 'На биржи не заходит' : v === 'DISTRIBUTION' ? 'На биржи идёт продавать' : 'Нейтрально' },
+        'liquidity_shift_direction': { label: 'Liquidity', good: ['LOCKING_UP', 'ROTATING_TO_STAKE', 'STAKE_INFLOW', 'LP_ADDING'], bad: ['EXTRACTING', 'ROTATING_TO_DEX', 'STAKE_OUTFLOW', 'LP_REMOVING'], layman: (v) => v === 'STABLE' ? 'Ликвидность стабильна' : v.includes('LOCK') || v.includes('INFLOW') || v.includes('ADD') ? 'Приток ликвидности' : 'Отток ликвидности' },
+      }
+    },
+    'narrative': {
+      label: '📰 Нарратив',
+      icon: '📰',
+      factors: {
+        'event_signal': { label: 'Event signal', good: ['BULLISH', 'SLIGHT_BULLISH', 'STRONG_BULLISH'], bad: ['BEARISH', 'STRONG_BEARISH'], layman: (v) => v.includes('BULL') ? 'Позитивные события' : v.includes('BEAR') ? 'Негативные события' : 'Нейтрально' },
+        'event_bullish': { label: 'Bullish events', goodOp: (v) => v >= 3, badOp: (v) => v <= 0, layman: (v) => v + ' хороших новостей' },
+        'event_bearish': { label: 'Bearish events', goodOp: (v) => v <= 1, badOp: (v) => v >= 3, layman: (v) => v + ' плохих новостей' },
+      }
+    },
+    'cross_market': {
+      label: '🌐 Cross-market',
+      icon: '🌐',
+      factors: {
+        'technical_signal': { label: 'Technical', good: ['BULLISH'], bad: ['BEARISH'], layman: (v) => 'TA: ' + v },
+        'bridge_activity_signal': { label: 'Bridge activity', good: ['NET_INFLOW', 'STRONG_INFLOW'], bad: ['NET_OUTFLOW', 'STRONG_OUTFLOW'], layman: (v) => v === 'LOW_ACTIVITY' ? 'Мало L1↔L2 движения' : v.includes('INFLOW') ? 'Приток в L2' : 'Отток из L2' },
+        'cross_token_alpha_7d_pct': { label: 'Cross-token 7d', suffix: '%', goodOp: (v) => v >= 5, badOp: (v) => v <= -5, layman: (v) => v > 5 ? 'Обгоняет peers' : v < -5 ? 'Отстаёт' : 'Идёт как peers' },
+      }
+    },
+  };
+  
+  // Compute per-group verdict
+  const evaluateFactor = (key, value, rule) => {
+    if (rule.goodOp && rule.goodOp(value)) return 'BULL';
+    if (rule.badOp && rule.badOp(value)) return 'BEAR';
+    if (rule.good && rule.good.includes(value)) return 'BULL';
+    if (rule.bad && rule.bad.includes(value)) return 'BEAR';
+    return 'NEUTRAL';
+  };
+  
+  const groupStats = {};
+  for (const [gKey, group] of Object.entries(factorGroups)) {
+    let bull = 0, bear = 0, neutral = 0;
+    for (const [fKey] of Object.entries(group.factors)) {
+      if (inputs.hasOwnProperty(fKey)) {
+        const verdict = evaluateFactor(fKey, inputs[fKey], group.factors[fKey]);
+        if (verdict === 'BULL') bull++;
+        else if (verdict === 'BEAR') bear++;
+        else neutral++;
+      }
+    }
+    groupStats[gKey] = { bull, bear, neutral, total: bull + bear + neutral };
+  }
+
+  // ============================================================
+  // HTML BUILD
+  // ============================================================
+  let html = '';
+  
+  // --- ИТОГ БЛОКА (сверху, самое важное) ---
+  const asset = 'STRK'; // to be dynamic later
+  html += `
+    <div style="padding: 14px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid ${info.c};">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">🎯 Итог блока · для ${asset}</div>
+        ${confidence ? '<span style="font-size: 10px; padding: 2px 6px; background: var(--bg-subtle); border-radius: 3px; color: var(--text-muted);">Confidence: ' + confidence + '</span>' : ''}
       </div>
-      <div style="text-align: center; padding: 12px; background: var(--red-bg); border-radius: 8px;">
-        <div style="font-size: 24px; font-weight: 700; color: var(--red); font-family: monospace;">${crash}/9</div>
-        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Crash score</div>
+      <div style="font-size: 18px; font-weight: 700; color: ${info.c}; margin-bottom: 6px;">${info.icon} ${info.label}</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+        <div style="text-align: center; padding: 8px; background: var(--green-bg); border-radius: 6px;">
+          <div style="font-size: 20px; font-weight: 700; color: var(--green); font-family: monospace;">${rally}/9</div>
+          <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">RALLY</div>
+        </div>
+        <div style="text-align: center; padding: 8px; background: var(--red-bg); border-radius: 6px;">
+          <div style="font-size: 20px; font-weight: 700; color: var(--red); font-family: monospace;">${crash}/9</div>
+          <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">CRASH</div>
+        </div>
       </div>
+      ${action ? '<div style="padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px; margin-bottom: 6px; font-size: 13px; color: var(--text-bright);"><strong>🎯 Action:</strong> ' + action + '</div>' : ''}
+      ${summary ? '<div style="font-size: 12px; color: var(--text-secondary); font-style: italic;">💬 ' + summary + '</div>' : ''}
     </div>
   `;
-
-  // Детализация всех input factors — что реально в шкале
-  const inputs = confluenceData.inputs_used || {};
-  if (Object.keys(inputs).length > 0) {
-    html += '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">';
-    html += '<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 600;">📊 Факторы · актуальные значения</div>';
+  
+  // --- LAYMAN interpretation (что это значит) ---
+  // Compute dominant group
+  let dominantBullGroup = null, dominantBearGroup = null;
+  let maxBull = 0, maxBear = 0;
+  for (const [gKey, stats] of Object.entries(groupStats)) {
+    if (stats.bull > maxBull) { maxBull = stats.bull; dominantBullGroup = gKey; }
+    if (stats.bear > maxBear) { maxBear = stats.bear; dominantBearGroup = gKey; }
+  }
+  
+  const groupLaymanLabels = {
+    'technical': 'технические индикаторы',
+    'position': 'позиция цены',
+    'flow': 'потоки капитала',
+    'narrative': 'нарратив (новости/события)',
+    'cross_market': 'связь с другими активами',
+  };
+  
+  let laymanText = '';
+  if (dominantBullGroup && dominantBearGroup && maxBull >= 2 && maxBear >= 2) {
+    laymanText = `Смешанные сигналы: ${groupLaymanLabels[dominantBullGroup]} позитивны, но ${groupLaymanLabels[dominantBearGroup]} негативны. Классическая late accumulation — ждать когда momentum развернётся.`;
+  } else if (dominantBullGroup && maxBull >= 3) {
+    laymanText = `Основной сигнал: сильный ${groupLaymanLabels[dominantBullGroup]}. Setup для входа.`;
+  } else if (dominantBearGroup && maxBear >= 3) {
+    laymanText = `Основной сигнал: слабый ${groupLaymanLabels[dominantBearGroup]}. Избегать входа.`;
+  } else {
+    laymanText = 'Нет чёткого доминирующего сигнала. Wait для более ясной картины.';
+  }
+  
+  html += `
+    <div style="padding: 10px; background: var(--orange-bg); border-radius: 6px; margin-bottom: 12px; border-left: 3px solid var(--orange); font-size: 12px; color: var(--text-bright);">
+      <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">💡 Что это значит</div>
+      ${laymanText}
+    </div>
+  `;
+  
+  // --- ФАКТОРЫ ПО ГРУППАМ ---
+  html += '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">';
+  html += '<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 600;">📊 Факторы · сгруппированы</div>';
+  
+  for (const [gKey, group] of Object.entries(factorGroups)) {
+    const stats = groupStats[gKey];
+    if (stats.total === 0) continue;
     
-    // Interpret каждого фактора
-    const factorRules = {
-      'wyckoff_phase': { good: ['ACCUMULATION', 'MARKUP'], bad: ['DISTRIBUTION', 'MARKDOWN'], label: 'Wyckoff phase' },
-      'technical_signal': { good: ['BULLISH'], bad: ['BEARISH'], label: 'Technical' },
-      'slope_3d_pct': { goodOp: (v) => v > 1, badOp: (v) => v < -2, label: 'Slope 3d %', suffix: '%' },
-      'slope_accel_pct': { goodOp: (v) => v > 0, badOp: (v) => v < -3, label: 'Slope accel', suffix: '%' },
-      'vol_ratio_3d': { goodOp: (v) => v > 1.5, badOp: (v) => v < 0.7, label: 'Volume ratio 3d', suffix: 'x' },
-      'rsi': { goodOp: (v) => v > 55 && v < 70, badOp: (v) => v < 30 || v > 80, label: 'RSI' },
-      'pct_from_high': { goodOp: (v) => v > -5, badOp: (v) => v < -30, label: 'От максимума', suffix: '%' },
-      'pct_from_low': { goodOp: (v) => v < 3, badOp: (v) => v > 30, label: 'От минимума', suffix: '%' },
-      'short_crowded': { good: [true], bad: [false], label: 'Shorts crowded' },
-      'long_crowded': { good: [false], bad: [true], label: 'Longs crowded' },
-      'cex_signal': { good: ['ACCUMULATION', 'BULLISH'], bad: ['DISTRIBUTION', 'BEARISH'], label: 'CEX flow' },
-      'event_signal': { good: ['BULLISH', 'SLIGHT_BULLISH', 'STRONG_BULLISH'], bad: ['BEARISH', 'STRONG_BEARISH'], label: 'Event signal' },
-      'event_bullish': { goodOp: (v) => v >= 3, badOp: (v) => v <= 0, label: 'Bullish events' },
-      'event_bearish': { goodOp: (v) => v <= 1, badOp: (v) => v >= 3, label: 'Bearish events' },
-      'liquidity_shift_direction': { good: ['LOCKING_UP', 'ROTATING_TO_STAKE', 'STAKE_INFLOW', 'LP_ADDING'], bad: ['EXTRACTING', 'ROTATING_TO_DEX', 'STAKE_OUTFLOW', 'LP_REMOVING'], label: 'Liquidity shift' },
-      'bridge_activity_signal': { good: ['NET_INFLOW', 'STRONG_INFLOW', 'HIGH_ACTIVITY_INFLOW'], bad: ['NET_OUTFLOW', 'STRONG_OUTFLOW', 'DISTRIBUTION'], label: 'Bridge activity' },
-      'cross_token_alpha_7d_pct': { goodOp: (v) => v >= 5, badOp: (v) => v <= -5, label: 'Cross-token alpha 7d', suffix: '%' },
-    };
+    // Group header
+    const groupColor = stats.bull > stats.bear ? 'var(--green)' : stats.bear > stats.bull ? 'var(--red)' : 'var(--text-muted)';
+    const groupBg = stats.bull > stats.bear ? 'var(--green-bg)' : stats.bear > stats.bull ? 'var(--red-bg)' : 'var(--bg-subtle)';
     
-    html += '<div style="display: flex; flex-direction: column; gap: 4px;">';
-    for (const [key, value] of Object.entries(inputs)) {
-      const rule = factorRules[key] || { label: key, good: [], bad: [] };
-      const label = rule.label || key;
+    html += `<div style="margin-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: ${groupBg}; border-radius: 6px 6px 0 0; border-left: 3px solid ${groupColor};">
+        <span style="font-size: 12px; font-weight: 700; color: var(--text-bright);">${group.label}</span>
+        <span style="font-size: 11px; font-family: monospace;">
+          <span style="color: var(--green);">${stats.bull}🟢</span> · 
+          <span style="color: var(--red);">${stats.bear}🔴</span> · 
+          <span style="color: var(--text-muted);">${stats.neutral}⚪</span>
+        </span>
+      </div>
+      <div style="padding: 4px 0;">`;
+    
+    for (const [fKey, rule] of Object.entries(group.factors)) {
+      if (!inputs.hasOwnProperty(fKey)) continue;
+      const value = inputs[fKey];
+      const verdict = evaluateFactor(fKey, value, rule);
       const suffix = rule.suffix || '';
       
-      let verdict = 'NEUTRAL';
-      let color = 'var(--text-muted)';
-      let bg = 'var(--bg-subtle)';
-      let icon = '⚪';
+      const vColor = verdict === 'BULL' ? 'var(--green)' : verdict === 'BEAR' ? 'var(--red)' : 'var(--text-muted)';
+      const icon = verdict === 'BULL' ? '🟢' : verdict === 'BEAR' ? '🔴' : '⚪';
       
-      // Determine verdict
-      if (rule.goodOp && rule.goodOp(value)) { verdict = 'BULL'; color = 'var(--green)'; bg = 'var(--green-bg)'; icon = '🟢'; }
-      else if (rule.badOp && rule.badOp(value)) { verdict = 'BEAR'; color = 'var(--red)'; bg = 'var(--red-bg)'; icon = '🔴'; }
-      else if (rule.good && rule.good.includes(value)) { verdict = 'BULL'; color = 'var(--green)'; bg = 'var(--green-bg)'; icon = '🟢'; }
-      else if (rule.bad && rule.bad.includes(value)) { verdict = 'BEAR'; color = 'var(--red)'; bg = 'var(--red-bg)'; icon = '🔴'; }
-      
-      // Format value
       let displayValue = value;
       if (typeof value === 'number') displayValue = value.toFixed(2) + suffix;
       else if (typeof value === 'boolean') displayValue = value ? 'YES' : 'NO';
       
-      html += `<div style="display: grid; grid-template-columns: 130px 100px 1fr; gap: 8px; padding: 5px 8px; background: ${bg}; border-radius: 4px; font-size: 11px; align-items: center;">
-        <div style="color: var(--text-bright); font-weight: 600;">${icon} ${label}</div>
-        <div style="text-align: right; color: ${color}; font-family: monospace; font-weight: 700;">${displayValue}</div>
-        <div style="text-align: right; color: ${color}; font-size: 10px; font-family: monospace;">${verdict}</div>
+      const laymanNote = rule.layman ? rule.layman(value) : '';
+      
+      html += `<div style="display: grid; grid-template-columns: 130px 90px 1fr; gap: 8px; padding: 4px 10px; font-size: 11px; align-items: center;">
+        <div style="color: var(--text-secondary);">${icon} ${rule.label}</div>
+        <div style="text-align: right; color: ${vColor}; font-family: monospace; font-weight: 700; font-size: 11px;">${displayValue}</div>
+        <div style="color: var(--text-muted); font-size: 10px; font-style: italic;">${laymanNote}</div>
       </div>`;
     }
     html += '</div></div>';
   }
+  
+  html += '</div>';
 
   el.innerHTML = html;
   const age = safeAge(confluenceData.generated_at || confluenceData.as_of);
