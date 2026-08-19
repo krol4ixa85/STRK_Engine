@@ -388,40 +388,102 @@ tr:hover td { background: var(--bg-subtle); }
 .trigger-list-item .cross-mark { color: var(--text-muted); font-weight: 700; margin-right: 4px; }
 .footer { margin-top: 32px; padding: 16px 0; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px; text-align: center; }
 .footer a { color: var(--blue); text-decoration: none; }
+
+    /* v5.0 · View switcher */
+    body.view-strk .section-rotation-wrap,
+    body.view-strk .section-macro-wrap { display: none !important; }
+    body.view-rotation .section-strk-wrap,
+    body.view-rotation .section-macro-wrap { display: none !important; }
+    body.view-macro .section-strk-wrap,
+    body.view-macro .section-rotation-wrap { display: none !important; }
+    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-strk-wrap,
+    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-rotation-wrap,
+    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-macro-wrap { display: block; }
+    
+    .breadcrumb {
+      max-width: 1200px;
+      margin: 8px auto 16px;
+      padding: 10px 16px;
+      background: var(--bg-subtle);
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+    body.view-strk .breadcrumb,
+    body.view-rotation .breadcrumb,
+    body.view-macro .breadcrumb { display: flex; }
+    .breadcrumb-home {
+      color: var(--orange-strong, #B7791F);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255,153,0,0.08);
+    }
+    .breadcrumb-home:hover { background: rgba(255,153,0,0.15); }
+    .breadcrumb-current {
+      color: var(--text-bright);
+      font-weight: 700;
+    }
+    .breadcrumb-sep { color: var(--text-muted); }
+    
+    /* Cards clickable */
+    .overview-card-clickable {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .overview-card-clickable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .overview-card-clickable .card-arrow {
+      display: inline-block;
+      transition: transform 0.2s;
+      opacity: 0.5;
+      margin-left: 4px;
+    }
+    .overview-card-clickable:hover .card-arrow {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+
 </style>
 </head>
 <body>
-<div class="quick-nav">
-<a class="nav-strk" href="#section-strk">🎯 STRK</a>
-<a class="nav-rotation" href="#section-rotation">🔄 Rotation</a>
-<a class="nav-macro" href="#section-macro">🌍 Macro</a>
+<div class="quick-nav"><a href="javascript:void(0)" onclick="switchView('home')" style="border-left: 3px solid var(--text-muted); background: var(--bg-subtle);">🏠 Home</a>
+<a class="nav-strk" href="javascript:void(0)" onclick="switchView('strk')">🎯 STRK</a>
+<a class="nav-rotation" href="javascript:void(0)" onclick="switchView('rotation')">🔄 Rotation</a>
+<a class="nav-macro" href="javascript:void(0)" onclick="switchView('macro')">🌍 Macro</a>
 </div>
 <div class="container">
 <div id="overview-panel" style="margin: 24px 0 16px 0; padding: 20px; background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); border-radius: 16px; border: 1px solid var(--border);">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-<div id="overview-strk" style="padding: 14px; background: rgba(255,153,0,0.06); border-radius: 10px; border-left: 4px solid var(--orange, #FF9900);">
+<div class="overview-card-clickable" id="overview-strk" onclick="switchView('strk')" style="padding: 14px; background: rgba(255,153,0,0.06); border-radius: 10px; border-left: 4px solid var(--orange, #FF9900);">
 <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">🎯 STRK · твой актив</div>
 <div id="overview-strk-status" style="font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Loading...</div>
 <div id="overview-strk-detail" style="font-size: 12px; color: var(--text-secondary);"></div>
-<a href="#section-strk" style="display: inline-block; margin-top: 8px; font-size: 10px; color: var(--orange-strong, #B7791F); text-decoration: none; font-weight: 600;">↓ Подробнее</a>
 </div>
-<div id="overview-rotation" style="padding: 14px; background: rgba(46,160,67,0.06); border-radius: 10px; border-left: 4px solid var(--green, #2EA043);">
+<div class="overview-card-clickable" id="overview-rotation" onclick="switchView('rotation')" style="padding: 14px; background: rgba(46,160,67,0.06); border-radius: 10px; border-left: 4px solid var(--green, #2EA043);">
 <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">🔄 Rotation · где деньги</div>
 <div id="overview-rotation-status" style="font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Loading...</div>
 <div id="overview-rotation-detail" style="font-size: 12px; color: var(--text-secondary);"></div>
-<a href="#section-rotation" style="display: inline-block; margin-top: 8px; font-size: 10px; color: var(--green, #2EA043); text-decoration: none; font-weight: 600;">↓ Подробнее</a>
 </div>
-<div id="overview-macro" style="padding: 14px; background: rgba(88,166,255,0.06); border-radius: 10px; border-left: 4px solid #58a6ff;">
+<div class="overview-card-clickable" id="overview-macro" onclick="switchView('macro')" style="padding: 14px; background: rgba(88,166,255,0.06); border-radius: 10px; border-left: 4px solid #58a6ff;">
 <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">🌍 Macro · тезис</div>
 <div id="overview-macro-status" style="font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Loading...</div>
 <div id="overview-macro-detail" style="font-size: 12px; color: var(--text-secondary);"></div>
-<a href="#section-macro" style="display: inline-block; margin-top: 8px; font-size: 10px; color: #58a6ff; text-decoration: none; font-weight: 600;">↓ Подробнее</a>
 </div>
 </div>
 <div id="overview-alert" style="margin-top: 14px; padding: 12px; background: var(--orange-bg); border-radius: 8px; border-left: 3px solid var(--orange, #FF9900); font-size: 13px; color: var(--text-bright);">
 <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">💡 Что делать сегодня</div>
 <div id="overview-todo">Loading...</div>
 </div>
+</div><div class="breadcrumb" id="breadcrumb">
+<a class="breadcrumb-home" href="javascript:void(0)" onclick="switchView('home')">🏠 Home</a>
+<span class="breadcrumb-sep">→</span>
+<span class="breadcrumb-current" id="breadcrumb-title">—</span>
 </div>
 <header class="header">
 <div class="header-left">
@@ -441,17 +503,15 @@ tr:hover td { background: var(--bg-subtle); }
 <footer class="footer">
   STRK LAB · Portfolio Rotation Compass · <a href="https://github.com/krol4ixa85/STRK_Engine" target="_blank">GitHub</a> · Auto-refresh каждые 5 мин
 </footer>
-<div style="position: relative;">
+<div class="section-strk-wrap"><div style="position: relative;">
 <div class="section-anchor" id="section-strk"></div>
-</div>
-<div class="section-divider section-strk">
+</div><div class="section-divider section-strk">
 <div style="flex: 1;">
 <div class="section-title">🎯 STRK · MISSION CONTROL</div>
 <div class="section-subtitle">Готов ли STRK к полному входу? Триггеры / фазы / composite signal</div>
 </div>
 <div class="section-badge">Level 1 · твой актив</div>
-</div>
-<div class="cards-grid" id="cards-strk" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+</div><div class="cards-grid" id="cards-strk" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
 <div class="card">
 <div class="card-header">
 <div class="card-title">📍 STRK · детали</div>
@@ -486,11 +546,6 @@ tr:hover td { background: var(--bg-subtle); }
 <div id="liq-monitor" style="font-size: 12px; color: var(--text-bright); line-height: 1.4;">—</div>
 </div>
 </div>
-<div id="strk-phase-action" style="margin: 12px 0; padding: 12px; background: var(--orange-bg); border-radius: 8px; border-left: 4px solid var(--orange);">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">📋 Phase → Action</div>
-<div id="strk-phase-action-content" style="font-size: 14px; font-weight: 700; color: var(--text-bright);">Loading...</div>
-<div id="strk-invalidation" style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; font-style: italic;"></div>
-</div>
 <div class="loading" id="strk-details-content">Loading...</div>
 </div><div class="card">
 <div class="card-header">
@@ -508,18 +563,16 @@ tr:hover td { background: var(--bg-subtle); }
 </div>
 <div class="layman-intro">Здесь честно измеряется — из 100 сигналов STRONG_BUY сколько раз цена реально выросла +3% за 7 дней. Пока данных мало, цифры появятся через 1-2 недели.</div>
 <div class="loading" id="precision-content">Loading...</div>
-</div></div>
-<div style="position: relative;">
+</div></div></div>
+<div class="section-rotation-wrap"><div style="position: relative;">
 <div class="section-anchor" id="section-rotation"></div>
-</div>
-<div class="section-divider section-rotation">
+</div><div class="section-divider section-rotation">
 <div style="flex: 1;">
 <div class="section-title">🔄 UTILITY ROTATION</div>
 <div class="section-subtitle">Где припарковать капитал пока STRK не готов. Смотрим STRONG_BUY / потоки / whale movement</div>
 </div>
 <div class="section-badge">Level 2 · тактика</div>
-</div>
-<div class="cards-grid" id="cards-rotation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+</div><div class="cards-grid" id="cards-rotation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
 <div class="card card-wide card-full">
 <div class="card-header">
 <div class="card-title">🟢 Активные сигналы</div>
@@ -538,9 +591,6 @@ tr:hover td { background: var(--bg-subtle); }
 </div>
 <div id="signals-wrapper" style="display: none; margin-top: 12px;"><div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
 <div class="loading" id="signals-content">Loading...</div></div>
-
-
-
 </div><div class="card">
 <div class="card-header">
 <div class="card-title">🔄 События ротации</div>
@@ -557,27 +607,16 @@ tr:hover td { background: var(--bg-subtle); }
       Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
     </div>
 <div class="loading" id="sector-flow-content">Loading...</div>
-</div><div class="card">
-<div class="card-header">
-<div class="card-title">🐳 Whale Alerts</div>
-<div class="card-subtitle">Weekly · via Dune</div>
-</div>
-<div class="layman-intro">
-      Отслеживаем крупных holders (Whale/Shark/Dolphin) для 5 tokens (STRK + STRONG_BUY + EXITED). Alerts когда holder входит/выходит или меняет позицию &gt;50%.
-    </div>
-<div class="loading" id="whale-content">Loading...</div>
-</div></div>
-<div style="position: relative;">
+</div></div></div>
+<div class="section-macro-wrap"><div style="position: relative;">
 <div class="section-anchor" id="section-macro"></div>
-</div>
-<div class="section-divider section-macro">
+</div><div class="section-divider section-macro">
 <div style="flex: 1;">
 <div class="section-title">🌍 MACRO CONTEXT</div>
 <div class="section-subtitle">Тезис ещё в силе? Куда идёт крипто-рынок, макро-циклы, нарративы</div>
 </div>
 <div class="section-badge">Level 3 · background</div>
-</div>
-<div class="cards-grid" id="cards-macro" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;"><div id="macro-details" style="grid-column: 1 / -1; display: none;">
+</div><div class="cards-grid" id="cards-macro" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;"><div id="macro-details" style="grid-column: 1 / -1; display: none;">
 <div id="macro-details-inner" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
 <div class="card">
 <div class="card-header">
@@ -645,6 +684,15 @@ tr:hover td { background: var(--bg-subtle); }
     Крипто-рынок движется циклами: деньги перетекают из стейблов → BTC → ETH → крупные альты → мемы → обратно.
   </div>
 <div id="altcycle-detail-content"></div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">🐳 Whale Alerts</div>
+<div class="card-subtitle">Weekly · via Dune</div>
+</div>
+<div class="layman-intro">
+      Отслеживаем крупных holders (Whale/Shark/Dolphin) для 5 tokens (STRK + STRONG_BUY + EXITED). Alerts когда holder входит/выходит или меняет позицию &gt;50%.
+    </div>
+<div class="loading" id="whale-content">Loading...</div>
 </div></div>
 </div><div id="macro-details-toggle" onclick="toggleMacroDetails()" style="grid-column: 1 / -1; padding: 10px 16px; background: var(--bg-subtle); border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; border: 1px dashed var(--border);">
   ▼ Подробности: TVL · Funding · Stables · Movers · News · Alt-cycle detail
@@ -665,7 +713,7 @@ tr:hover td { background: var(--bg-subtle); }
 </div>
 </div>
 </div>
-</div>
+</div></div>
 </div>
 <script>
 const GITHUB_REPO = 'krol4ixa85/STRK_Engine';
@@ -1166,7 +1214,68 @@ function renderMovers(data) {
   }
 
   let html = '<div style="display: grid; grid-template-columns: 1fr; gap: 12px;">';
-  html += '<style>@media(min-width: 640px) { #movers-content > div { grid-template-columns: 1fr 1fr !important; } }</style>';
+  html += '<style>@media(min-width: 640px) { #movers-content > div { grid-template-columns: 1fr 1fr !important; } }
+    /* v5.0 · View switcher */
+    body.view-strk .section-rotation-wrap,
+    body.view-strk .section-macro-wrap { display: none !important; }
+    body.view-rotation .section-strk-wrap,
+    body.view-rotation .section-macro-wrap { display: none !important; }
+    body.view-macro .section-strk-wrap,
+    body.view-macro .section-rotation-wrap { display: none !important; }
+    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-strk-wrap,
+    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-rotation-wrap,
+    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-macro-wrap { display: block; }
+    
+    .breadcrumb {
+      max-width: 1200px;
+      margin: 8px auto 16px;
+      padding: 10px 16px;
+      background: var(--bg-subtle);
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+    body.view-strk .breadcrumb,
+    body.view-rotation .breadcrumb,
+    body.view-macro .breadcrumb { display: flex; }
+    .breadcrumb-home {
+      color: var(--orange-strong, #B7791F);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255,153,0,0.08);
+    }
+    .breadcrumb-home:hover { background: rgba(255,153,0,0.15); }
+    .breadcrumb-current {
+      color: var(--text-bright);
+      font-weight: 700;
+    }
+    .breadcrumb-sep { color: var(--text-muted); }
+    
+    /* Cards clickable */
+    .overview-card-clickable {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .overview-card-clickable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .overview-card-clickable .card-arrow {
+      display: inline-block;
+      transition: transform 0.2s;
+      opacity: 0.5;
+      margin-left: 4px;
+    }
+    .overview-card-clickable:hover .card-arrow {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+
+</style>';
 
   // Gainers
   html += '<div><div class="hero-label" style="color: var(--green); margin-bottom: 8px;">🟢 Топ рост 24h</div><div class="table-wrapper"><table>';
@@ -1739,6 +1848,9 @@ async function loadAll(manual = false) {
       try { fn(); } catch(e) { console.error('[' + name + '] render error:', e); }
     };
     // v4: renderHero disabled (replaced by Overview Panel)
+    // v5.1: Store data in global cache for Duration Scanner
+    window.STRK_DATA_CACHE = { lab: lab, momentum: momentum, netflow: netflow, rotation: rotation };
+    
     safeRender('StrkDetails', () => renderStrkDetails(lab, strkPrice));
     safeRender('Signals', () => renderSignals(momentum));
     safeRender('Precision', () => renderPrecision(precision));
@@ -1754,7 +1866,8 @@ async function loadAll(manual = false) {
     
     // v4 · Overview Panel + decision-layer renderers
     safeRender('OverviewStrk', () => renderOverviewStrk(lab, confluence, strkPrice));
-    safeRender('StrkPhaseAction', () => renderStrkPhaseAction(lab, confluence));
+    // v5.0: StrkPhaseAction disabled — covered by LIQ Decision Contract
+    // safeRender('StrkPhaseAction', () => renderStrkPhaseAction(lab, confluence));
     safeRender('StrkLIQ', () => renderStrkLIQ(lab, confluence, netflow, strkPrice));
     safeRender('OverviewRotation', () => renderOverviewRotation(lab, momentum, rotation));
     safeRender('RotationSummary', () => renderRotationSummary(lab, momentum, rotation));
@@ -2053,7 +2166,7 @@ function renderRotationSummary(labData, momentumData, rotationEventsData) {
       const flow = item.net_flow_m_usd || 0;
       // Confidence proxy: high flow + positive price = confident hold
       const confident = (flow > 5) && (priceCh > 5);
-      hold.push(`${item.token} <span style="color: var(--text-muted); font-weight: normal;">(${item.sector}, +${priceCh.toFixed(1)}%, $${flow.toFixed(1)}M)</span>`);
+      hold.push(`<a href="javascript:void(0)" onclick="openDurationScanner('${item.token}')" style="color: var(--green); text-decoration: none; border-bottom: 1px dotted; cursor: pointer;">${item.token}</a> <span style="color: var(--text-muted); font-weight: normal;">(${item.sector}, +${priceCh.toFixed(1)}%, $${flow.toFixed(1)}M)</span>`);
     }
   }
   
@@ -2061,7 +2174,7 @@ function renderRotationSummary(labData, momentumData, rotationEventsData) {
     for (const item of labData.divergence) {
       if (item.token === 'STRK') continue;
       const priceCh = item.price_change_7d_pct || 0;
-      watchTrim.push(`${item.token} <span style="color: var(--text-muted); font-weight: normal;">(${item.sector}, price +${priceCh.toFixed(0)}% но нет притока)</span>`);
+      watchTrim.push(`<a href="javascript:void(0)" onclick="openDurationScanner('${item.token}')" style="color: #F59E0B; text-decoration: none; border-bottom: 1px dotted; cursor: pointer;">${item.token}</a> <span style="color: var(--text-muted); font-weight: normal;">(${item.sector}, price +${priceCh.toFixed(0)}% но нет притока)</span>`);
     }
   }
   
@@ -2395,6 +2508,343 @@ function toggleSignalsTable() {
     : '▼ Показать полную таблицу сигналов (все STRONG_BUY / DIVERGENCE / STRONG_SELL)';
 }
 
+
+// ============================================================
+// v5.0 · View Switcher
+// ============================================================
+function switchView(view) {
+  const body = document.body;
+  const titles = {
+    'home': 'Home',
+    'strk': '🎯 STRK · Mission Control',
+    'rotation': '🔄 Utility Rotation',
+    'macro': '🌍 Macro Context'
+  };
+  
+  // Remove all view classes
+  body.classList.remove('view-home', 'view-strk', 'view-rotation', 'view-macro');
+  
+  // Add new view class
+  body.classList.add('view-' + view);
+  
+  // Update breadcrumb
+  const bcTitle = document.getElementById('breadcrumb-title');
+  if (bcTitle) bcTitle.textContent = titles[view] || view;
+  
+  // Update URL hash
+  if (view === 'home') {
+    if (history.pushState) history.pushState(null, '', window.location.pathname);
+    else window.location.hash = '';
+  } else {
+    window.location.hash = '/' + view;
+  }
+  
+  // Scroll to top of content (below overview)
+  const target = view === 'home' 
+    ? document.getElementById('overview-panel')
+    : document.querySelector('.section-' + view + '-wrap');
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// Read view from URL on page load
+function initViewFromHash() {
+  const hash = window.location.hash;
+  if (hash === '#/strk') switchView('strk');
+  else if (hash === '#/rotation') switchView('rotation');
+  else if (hash === '#/macro') switchView('macro');
+  else switchView('home');
+}
+
+// Handle back/forward
+window.addEventListener('hashchange', initViewFromHash);
+window.addEventListener('DOMContentLoaded', initViewFromHash);
+
+
+// ============================================================
+// v5.1 · Accumulation Duration Scanner
+// ============================================================
+window.STRK_DATA_CACHE = { lab: null, momentum: null, netflow: null, rotation: null };
+
+function openDurationScanner(token) {
+  const modal = document.getElementById('duration-scanner-modal');
+  if (!modal) return;
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  
+  const cache = window.STRK_DATA_CACHE;
+  const upperTok = token.toUpperCase();
+  
+  // Find data across sources
+  let tokData = null;
+  let sector = 'UNKNOWN';
+  let netflow7d = null;
+  let priceCh7d = null;
+  let txCount = null;
+  let buyVol = null;
+  let sellVol = null;
+  let signal = null;
+  
+  if (cache.netflow && Array.isArray(cache.netflow.rows)) {
+    const row = cache.netflow.rows.find(function(r) { return r && r.token === upperTok; });
+    if (row) {
+      tokData = row;
+      sector = row.sector || sector;
+      netflow7d = row.net_flow_m_usd;
+      priceCh7d = row.price_change_7d_pct;
+      txCount = row.tx_count;
+      buyVol = row.buy_volume_m_usd;
+      sellVol = row.sell_volume_m_usd;
+      signal = row.direction || row.signal;
+    }
+  }
+  
+  if (cache.momentum && Array.isArray(cache.momentum.rows)) {
+    const row = cache.momentum.rows.find(function(r) { return r && r.token === upperTok; });
+    if (row && !tokData) {
+      tokData = row;
+      sector = row.sector || sector;
+      netflow7d = row.net_flow_m_usd;
+      priceCh7d = row.price_change_7d_pct;
+      txCount = row.tx_count;
+    }
+    if (row) signal = row.signal || signal;
+  }
+  
+  // Duration analysis from rotation_alerts
+  let daysInStrongBuy = 0;
+  let enterDate = null;
+  let exitDates = [];
+  let timeline = [];
+  
+  if (cache.rotation && Array.isArray(cache.rotation)) {
+    let lastEnter = null;
+    let lastExit = null;
+    for (const ev of cache.rotation) {
+      const ts = ev.ts || ev.timestamp;
+      if (!ts) continue;
+      const entered = ev.entered_strong_buy || [];
+      const exited = ev.exited_strong_buy_quiet || [];
+      const toDivergence = ev.strong_to_divergence || [];
+      const toSell = ev.strong_to_sell || [];
+      
+      if (entered.includes(upperTok)) {
+        timeline.push({ action: 'ENTER STRONG_BUY', ts: ts });
+        lastEnter = ts;
+      }
+      if (exited.includes(upperTok)) {
+        timeline.push({ action: 'QUIET EXIT', ts: ts });
+        lastExit = ts;
+      }
+      if (toDivergence.includes(upperTok)) {
+        timeline.push({ action: '→ DIVERGENCE', ts: ts });
+      }
+      if (toSell.includes(upperTok)) {
+        timeline.push({ action: '→ STRONG_SELL', ts: ts });
+        lastExit = ts;
+      }
+    }
+    
+    if (lastEnter) {
+      enterDate = lastEnter;
+      const d = new Date(lastEnter);
+      const now = new Date();
+      const stillIn = !lastExit || new Date(lastExit) < d;
+      if (stillIn) {
+        daysInStrongBuy = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+      }
+    }
+  }
+  
+  // Sector health
+  let sectorNetflow = 0;
+  if (cache.netflow && Array.isArray(cache.netflow.rows)) {
+    for (const r of cache.netflow.rows) {
+      if (r && r.sector === sector) {
+        sectorNetflow += (r.net_flow_m_usd || 0);
+      }
+    }
+  }
+  
+  // ==== Compute VERDICT ====
+  // EARLY (0-3 days) — активно, можно докупать
+  // MID (4-14 days) — держать, watching
+  // LATE (14+ days) — готовиться к exit, следить за divergence
+  // TOO_EARLY (no data) — недостаточно истории
+  
+  let verdictLabel = '';
+  let verdictColor = '';
+  let verdictBg = '';
+  let verdictNote = '';
+  let action = '';
+  
+  if (!enterDate) {
+    verdictLabel = '❓ NO DATA';
+    verdictColor = 'var(--text-muted)';
+    verdictBg = 'var(--bg-subtle)';
+    verdictNote = 'Актив не появлялся в STRONG_BUY в последних rotation events. Возможно новый или редко попадает в signals.';
+    action = 'Wait — сначала актив должен появиться в STRONG_BUY signal. Не входить без confirmation.';
+  } else if (daysInStrongBuy === 0) {
+    verdictLabel = '⏸ EXITED';
+    verdictColor = 'var(--red)';
+    verdictBg = 'rgba(203, 45, 45, 0.06)';
+    verdictNote = 'Актив уже вышел из STRONG_BUY. Держать позицию если есть, но не докупать.';
+    action = 'Оценить exit — flow пропал. Смотреть на sector rotation для нового кандидата.';
+  } else if (daysInStrongBuy <= 3) {
+    verdictLabel = '🟢 EARLY · докупать OK';
+    verdictColor = 'var(--green)';
+    verdictBg = 'rgba(46, 160, 67, 0.08)';
+    verdictNote = 'Актив только вошёл в STRONG_BUY. Momentum на старте, риск отреверса низкий если flow сохраняется.';
+    action = 'Можно докупать частично. Watch: если через 2-3 дня signal переходит в DIVERGENCE — выйти. Иначе держать.';
+  } else if (daysInStrongBuy <= 14) {
+    verdictLabel = '🟡 MID · держать';
+    verdictColor = '#F59E0B';
+    verdictBg = 'rgba(245, 158, 11, 0.08)';
+    verdictNote = 'Актив в accumulation неделю+, момент трenda validated. Не docupать агрессивно — размер уже собран.';
+    action = 'Держать. Trailing stop на -8-10% от peak. Watch price_ch — если растёт без flow, это late accumulation, готовиться к distribution.';
+  } else if (daysInStrongBuy <= 28) {
+    verdictLabel = '🟠 LATE · готовиться к exit';
+    verdictColor = '#EA580C';
+    verdictBg = 'rgba(234, 88, 12, 0.08)';
+    verdictNote = 'Длительная accumulation. Обычно markup фаза следует за 3-4 неделями accumulation. Готовиться к частичному exit на первых признаках distribution.';
+    action = 'Не докупать. Установить take profit на +15-20% от entry. Watch: DIVERGENCE signal, price ↑ без flow, whale distribution.';
+  } else {
+    verdictLabel = '🔴 VERY LATE · exit priority';
+    verdictColor = 'var(--red)';
+    verdictBg = 'rgba(203, 45, 45, 0.08)';
+    verdictNote = 'Экстремально длительная accumulation (' + daysInStrongBuy + ' дней). Риск того что markup уже начался и мы близки к distribution высокий.';
+    action = 'Trim позицию 50%+. Watch дневной volume — если expansion + rejection = distribution подтверждается.';
+  }
+  
+  // Adjust verdict based on price/flow divergence
+  let adjustment = '';
+  if (priceCh7d != null && netflow7d != null) {
+    if (priceCh7d > 5 && netflow7d < 0.5) {
+      adjustment = ' ⚠ Цена растёт без притока — divergence risk.';
+    } else if (priceCh7d < -3 && netflow7d > 5) {
+      adjustment = ' 🎯 Цена корректируется но накопление продолжается — accumulation dip.';
+    }
+  }
+  if (adjustment) verdictNote += adjustment;
+  
+  // ==== Render ====
+  document.getElementById('scanner-token-header').textContent = upperTok;
+  document.getElementById('scanner-token-sector').innerHTML = 'Sector: <strong>' + sector + '</strong>' + (signal ? ' · Current signal: <strong>' + signal + '</strong>' : '');
+  
+  const verdictEl = document.getElementById('scanner-verdict');
+  verdictEl.style.background = verdictBg;
+  verdictEl.style.borderLeftColor = verdictColor;
+  document.getElementById('scanner-verdict-label').textContent = verdictLabel;
+  document.getElementById('scanner-verdict-label').style.color = verdictColor;
+  document.getElementById('scanner-verdict-note').textContent = verdictNote;
+  
+  // Duration
+  document.getElementById('scanner-duration').textContent = daysInStrongBuy > 0 ? daysInStrongBuy + ' d' : (enterDate ? 'exited' : 'no data');
+  document.getElementById('scanner-duration-hint').textContent = enterDate ? ('since ' + enterDate.slice(0, 10)) : 'no rotation event';
+  
+  // Netflow
+  const flowStr = netflow7d != null ? (netflow7d >= 0 ? '+' : '') + '$' + netflow7d.toFixed(2) + 'M' : 'n/a';
+  const flowEl = document.getElementById('scanner-netflow');
+  flowEl.textContent = flowStr;
+  flowEl.style.color = netflow7d > 1 ? 'var(--green)' : netflow7d < -0.5 ? 'var(--red)' : 'var(--text-bright)';
+  document.getElementById('scanner-netflow-hint').textContent = buyVol != null ? ('buy $' + buyVol.toFixed(1) + 'M vs sell $' + (sellVol||0).toFixed(1) + 'M') : '';
+  
+  // Price
+  const priceStr = priceCh7d != null ? (priceCh7d >= 0 ? '+' : '') + priceCh7d.toFixed(1) + '%' : 'n/a';
+  const priceEl = document.getElementById('scanner-price');
+  priceEl.textContent = priceStr;
+  priceEl.style.color = priceCh7d > 3 ? 'var(--green)' : priceCh7d < -3 ? 'var(--red)' : 'var(--text-bright)';
+  document.getElementById('scanner-price-hint').textContent = txCount ? (txCount.toLocaleString() + ' tx') : '';
+  
+  // Sector Health
+  const sectorEl = document.getElementById('scanner-sector-health');
+  const sectorStr = (sectorNetflow >= 0 ? '+' : '') + '$' + sectorNetflow.toFixed(1) + 'M';
+  sectorEl.textContent = sectorStr;
+  sectorEl.style.color = sectorNetflow > 1 ? 'var(--green)' : sectorNetflow < -1 ? 'var(--red)' : 'var(--text-bright)';
+  document.getElementById('scanner-sector-hint').textContent = sectorNetflow > 0 ? 'sector в притоке' : sectorNetflow < 0 ? 'sector теряет капитал' : 'нейтрально';
+  
+  // Timeline
+  const tlEl = document.getElementById('scanner-timeline');
+  if (timeline.length > 0) {
+    tlEl.innerHTML = timeline.map(function(e) {
+      const d = e.ts ? e.ts.slice(0, 10) : '?';
+      const color = e.action.includes('ENTER') ? 'var(--green)' : 'var(--red)';
+      return '<div style="margin-bottom: 3px;"><span style="color: var(--text-muted);">' + d + '</span> · <span style="color: ' + color + ';">' + e.action + '</span></div>';
+    }).join('');
+  } else {
+    tlEl.innerHTML = '<span style="color: var(--text-muted);">Нет событий в rotation history для этого актива</span>';
+  }
+  
+  // Action
+  document.getElementById('scanner-action-content').textContent = action;
+}
+
+function closeDurationScanner() {
+  const modal = document.getElementById('duration-scanner-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ESC key closes modal
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDurationScanner();
+});
+
 </script>
+
+<div id="duration-scanner-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1000; overflow-y: auto; padding: 20px;">
+<div style="max-width: 800px; margin: 40px auto; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
+<button onclick="closeDurationScanner()" style="position: absolute; top: 16px; right: 16px; background: var(--bg-subtle); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; color: var(--text-muted);">×</button>
+<div style="margin-bottom: 20px;">
+<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">📊 Accumulation Duration Scanner</div>
+<div id="scanner-token-header" style="font-size: 26px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">Loading...</div>
+<div id="scanner-token-sector" style="font-size: 13px; color: var(--text-secondary);"></div>
+</div>
+<!-- Verdict Panel -->
+<div id="scanner-verdict" style="padding: 16px; border-radius: 10px; margin-bottom: 16px; border-left: 4px solid var(--text-muted);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">🎯 Verdict</div>
+<div id="scanner-verdict-label" style="font-size: 22px; font-weight: 700; margin-bottom: 4px;">—</div>
+<div id="scanner-verdict-note" style="font-size: 13px; color: var(--text-secondary);"></div>
+</div>
+<!-- Stats Grid -->
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+<div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">⏳ В STRONG_BUY</div>
+<div id="scanner-duration" style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">—</div>
+<div id="scanner-duration-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
+</div>
+<div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">💰 Net Flow 7d</div>
+<div id="scanner-netflow" style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">—</div>
+<div id="scanner-netflow-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
+</div>
+<div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">📈 Price 7d</div>
+<div id="scanner-price" style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">—</div>
+<div id="scanner-price-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
+</div>
+<div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">🌊 Sector Health</div>
+<div id="scanner-sector-health" style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">—</div>
+<div id="scanner-sector-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
+</div>
+</div>
+<!-- Timeline -->
+<div style="margin-bottom: 16px; padding: 14px; background: var(--bg-subtle); border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">📅 Historical Timeline (rotation events)</div>
+<div id="scanner-timeline" style="font-size: 12px; color: var(--text-bright); font-family: monospace;">—</div>
+</div>
+<!-- Action -->
+<div id="scanner-action" style="padding: 14px; background: rgba(255,153,0,0.08); border-radius: 8px; border-left: 4px solid var(--orange, #FF9900);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">💡 Что делать</div>
+<div id="scanner-action-content" style="font-size: 13px; color: var(--text-bright); line-height: 1.5;">—</div>
+</div>
+<div style="margin-top: 16px; padding: 10px; background: rgba(88, 166, 255, 0.05); border-radius: 6px; border-left: 3px solid #58a6ff; font-size: 11px; color: var(--text-secondary);">
+      ℹ Duration Scanner v1 · использует rotation_alerts.jsonl + dune snapshot. Extended history (24 недели netflow) появится когда добавим per-token Dune collector.
+    </div>
+</div>
+</div>
 </body>
 </html>
