@@ -564,6 +564,28 @@ tr:hover td { background: var(--bg-subtle); }
 <div class="layman-intro">Здесь честно измеряется — из 100 сигналов STRONG_BUY сколько раз цена реально выросла +3% за 7 дней. Пока данных мало, цифры появятся через 1-2 недели.</div>
 <div class="loading" id="precision-content">Loading...</div>
 </div></div></div>
+
+<!-- STRK SCENARIOS (Type A · v1) -->
+<div class="section-scenarios-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🎯 STRK · Сценарии на 2-9 месяцев
+    </div>
+    <div class="section-header-desc">
+      Что может случиться с STRK и когда покупать/продавать. 
+      Вероятности рассчитаны на основе триггеров Wyckoff + confluence + macro.
+    </div>
+    <div class="level-label">Level 1 · scenarios</div>
+  </div>
+
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03)); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px;">
+    <div id="scenarios-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+      Loading scenarios...
+    </div>
+  </div>
+</div>
+
+
 <div class="section-rotation-wrap"><div style="position: relative;">
 <div class="section-anchor" id="section-rotation"></div>
 </div><div class="section-divider section-rotation">
@@ -1717,6 +1739,102 @@ function renderConfluence(confluenceData) {
 }
 
 
+async function renderScenarios() {
+  const container = document.getElementById('scenarios-content');
+  if (!container) return;
+  
+  try {
+    const url = `${BASE_URL}/data/cache/strk_scenarios.json?t=${Math.floor(Date.now() / 60000)}`;
+    const r = await fetch(url);
+    if (!r.ok) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">📊 Scenarios будут доступны после следующего workflow run. Модуль недавно добавлен.</div>';
+      return;
+    }
+    const data = await r.json();
+    
+    const scenarios = data.scenarios || [];
+    if (scenarios.length === 0) {
+      container.innerHTML = '<div style="color: var(--text-muted);">Нет данных для scenarios</div>';
+      return;
+    }
+    
+    const currentPrice = data.strk_current_price || 0.023;
+    const ath = data.strk_ath_usd || 4.42;
+    const athRun = data.ath_run_from_current_pct || 0;
+    
+    let html = `
+      <div style="padding: 12px 16px; background: rgba(139, 92, 246, 0.06); border-radius: 8px; margin-bottom: 8px;">
+        <div style="font-size: 12px; color: var(--text-secondary);">
+          <strong>Тезис:</strong> ${data.summary?.primary_thesis || 'ждём Spring signal'}
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+          Current: $${currentPrice.toFixed(4)} · ATH: $${ath.toFixed(2)} · Run to ATH: +${athRun.toLocaleString()}%
+        </div>
+      </div>
+    `;
+    
+    // Sort by probability desc
+    scenarios.sort((a, b) => b.probability_pct - a.probability_pct);
+    
+    for (const s of scenarios) {
+      const isPrimary = s.id === data.most_likely;
+      const color = s.id === 'bull_markup' ? 'var(--green)' :
+                    s.id === 're_accumulation' ? '#F59E0B' :
+                    s.id === 'distribution' ? 'var(--red)' :
+                    '#8B5CF6';
+      const bgColor = s.id === 'bull_markup' ? 'rgba(46, 160, 67, 0.06)' :
+                      s.id === 're_accumulation' ? 'rgba(245, 158, 11, 0.06)' :
+                      s.id === 'distribution' ? 'rgba(203, 45, 45, 0.06)' :
+                      'rgba(139, 92, 246, 0.06)';
+      
+      // Format targets
+      let targetsHtml = '';
+      const t = s.targets || {};
+      if (t.target_1) {
+        targetsHtml = `Target 1: <strong>$${t.target_1}</strong> · Target 2: <strong>$${t.target_2}</strong> · Target 3: <strong>$${t.target_3}</strong>`;
+      } else if (t.target_1_down) {
+        targetsHtml = `Down 1: <strong>$${t.target_1_down}</strong> · Down 2: <strong>$${t.target_2_down}</strong> · Floor: <strong>$${t.floor_estimate}</strong>`;
+      } else if (t.range_low) {
+        targetsHtml = `Range: <strong>$${t.range_low} - $${t.range_high}</strong>`;
+      } else if (t.flash_low) {
+        targetsHtml = `Flash low: <strong>$${t.flash_low}</strong> · Recovery: <strong>$${t.recovery_target}</strong>`;
+      }
+      
+      html += `
+        <div style="padding: 14px 16px; background: ${bgColor}; border-left: 4px solid ${color}; border-radius: 8px; ${isPrimary ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.06);' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+            <div style="font-weight: 700; color: ${color}; font-size: 15px;">
+              ${s.name} · ${s.name_ru}
+              ${isPrimary ? '<span style="font-size: 10px; margin-left: 6px; padding: 2px 6px; background: ' + color + '; color: white; border-radius: 3px;">MOST LIKELY</span>' : ''}
+            </div>
+            <div style="font-size: 20px; font-weight: 700; color: ${color};">${s.probability_pct}%</div>
+          </div>
+          
+          <div style="font-size: 13px; color: var(--text); line-height: 1.5; margin-bottom: 8px;">
+            ${s.layman}
+          </div>
+          
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+            <strong>Целевые уровни:</strong> ${targetsHtml}<br>
+            <strong>Timeframe:</strong> ${s.timeframe}
+          </div>
+          
+          <div style="font-size: 11px; color: var(--text-secondary); padding: 8px; background: rgba(255,255,255,0.5); border-radius: 4px; margin-top: 8px;">
+            <div style="margin-bottom: 4px;">✓ <strong>Подтверждает:</strong> ${s.trigger_to_confirm}</div>
+            <div style="margin-bottom: 4px;">✗ <strong>Отменяет:</strong> ${s.invalidation}</div>
+            <div style="color: ${color}; font-weight: 600;">💡 <strong>Действие:</strong> ${s.action}</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    container.innerHTML = html;
+  } catch (e) {
+    console.error('[Scenarios] render error:', e);
+    container.innerHTML = '<div style="color: var(--red);">Ошибка загрузки scenarios</div>';
+  }
+}
+
 function renderAltCycleDetail(data) {
   if (!data) {
     const el = document.getElementById('altcycle-detail-content');
@@ -1818,6 +1936,7 @@ async function loadAll(manual = false) {
     safeRender('MacroEssentials', () => renderMacroEssentials(altcycle, netflow, momentum));
     safeRender('OverviewTodo', () => renderOverviewTodo(lab, confluence, momentum, rotation, altcycle));
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
+  safeRender('Scenarios', () => renderScenarios());
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
     badge.textContent = `● Live · ${now}`;
