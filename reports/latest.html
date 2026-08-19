@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FULL RUN R10 · 2026-08-19 · STRK Engine</title>
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --bg-card: #ffffff;
+    --bg-subtle: #f0f2f5;
+    --border: #e5e7eb;
+    --text: #1a1a1a;
+    --text-bright: #0a0a0a;
+    --text-secondary: #4a5568;
+    --text-muted: #6b7280;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --orange: #ff9900;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+  }
+  * { box-sizing: border-box; }
+  body { 
+    margin: 0; 
+    padding: 24px; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); 
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  
+  header.full-run-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 32px 28px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+  }
+  header.full-run-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    font-weight: 700;
+  }
+  header.full-run-header .subtitle {
+    opacity: 0.8;
+    font-size: 14px;
+  }
+  header.full-run-header .meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  
+  section.report-section {
+    background: var(--bg-card);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  section.report-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-bright);
+  }
+  
+  .alert-box {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 8px 0;
+    font-size: 13px;
+    border-left: 4px solid;
+  }
+  .ax-bull { background: rgba(16, 185, 129, 0.08); border-color: var(--green); }
+  .ax-bear { background: rgba(239, 68, 68, 0.08); border-color: var(--red); }
+  .ax-warn { background: rgba(245, 158, 11, 0.08); border-color: var(--yellow); }
+  .ax-info { background: rgba(59, 130, 246, 0.08); border-color: var(--blue); }
+  
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .stat-box {
+    padding: 12px;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+  .stat-delta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  
+  .layer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .layer-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px;
+    padding: 10px 12px;
+    background: var(--bg-subtle);
+    border-radius: 6px;
+    align-items: center;
+    font-size: 13px;
+  }
+  .layer-tag {
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+  
+  .catalyst-list { list-style: none; padding: 0; margin: 0; }
+  .catalyst-item {
+    padding: 10px 12px;
+    border-left: 3px solid var(--text-muted);
+    background: var(--bg-subtle);
+    margin-bottom: 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .catalyst-item.high { border-color: var(--red); }
+  .catalyst-item.med { border-color: var(--yellow); }
+  .catalyst-item.low { border-color: var(--green); }
+  
+  .confidence-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+    font-size: 12px;
+  }
+  .conf-name { flex: 0 0 200px; font-weight: 600; }
+  .conf-bar-track { 
+    flex: 1; 
+    height: 8px; 
+    background: var(--bg-subtle); 
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .conf-bar-fill { 
+    height: 100%; 
+    background: var(--blue);
+  }
+  .conf-value { flex: 0 0 50px; text-align: right; font-family: monospace; }
+  
+  .dominance-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+  }
+  .dom-cell {
+    padding: 12px;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    border-top: 3px solid var(--blue);
+  }
+  .dom-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .dom-desc { font-size: 11px; color: var(--text-muted); }
+  
+  .risk-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 10px 12px;
+    background: rgba(239, 68, 68, 0.05);
+    border-left: 3px solid var(--red);
+    margin-bottom: 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .footer { 
+    text-align: center; 
+    color: var(--text-muted); 
+    font-size: 11px; 
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  
+  .back-link { 
+    display: inline-block; 
+    margin-bottom: 16px; 
+    padding: 6px 12px; 
+    background: var(--bg-card); 
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    border: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="index.html" class="back-link">← Back to LAB Home</a>
+
+<header class="full-run-header">
+  <h1>Capital Intelligence · R10 · ✓ THESIS INTACT</h1>
+  <div class="subtitle">STRK utility bet остаётся valid. Сезон Bitcoin + utility sectors (INFRA/RWA/LST) в притоке. Держать план: WAIT для STRK, HOLD в utility rotation.</div>
+  <div class="meta">
+    <span>2026-08-19</span>
+    <span>·</span>
+    <span>Run R10</span>
+    <span>·</span>
+    <span>Horizon: 2-5 years</span>
+    <span>·</span>
+    <span>STRK Engine</span>
+  </div>
+</header>
+
+<!-- §1 Executive Summary + Thesis Status -->
+<section class="report-section">
+  <h2>§1 · Executive Summary & Thesis Status</h2>
+  <div class="alert-box ax-bull">
+    <strong>✓ THESIS INTACT</strong>: STRK utility bet остаётся valid. Сезон Bitcoin + utility sectors (INFRA/RWA/LST) в притоке. Держать план: WAIT для STRK, HOLD в utility rotation.
+  </div>
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="stat-label">STRK Phase</div>
+      <div class="stat-value">ACCUMULATION</div>
+      <div class="stat-delta">0/4 triggers hit</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Alt-Cycle</div>
+      <div class="stat-value">Сезон Bitcoin</div>
+      <div class="stat-delta">Confidence: HIGH</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Utility Rotation</div>
+      <div class="stat-value">2 STRONG_BUY</div>
+      <div class="stat-delta">LINK, ETHFI</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Days to Next Review</div>
+      <div class="stat-value">7</div>
+      <div class="stat-delta">Weekly cadence</div>
+    </div>
+  </div>
+</section>
+
+<!-- §2 Memory Engine + Velocity Since Last Run -->
+<section class="report-section">
+  <h2>§2 · Memory Engine · What Changed Since Last Run</h2>
+  <p style="color: var(--text-muted);">Первый FULL RUN · сохраняю baseline для delta в следующем report.</p>
+</section>
+
+<!-- §3 Visual Dashboard Snapshot -->
+<section class="report-section">
+  <h2>§3 · Dashboard Snapshot (Section 0)</h2>
+  <div class="stat-grid"><div class="stat-box">
+        <div class="stat-label">STRK Verdict</div>
+        <div class="stat-value">STILL_ACCUMULATION</div>
+        <div class="stat-delta">ACCUMULATION</div>
+    </div><div class="stat-box">
+            <div class="stat-label">Confluence Gate</div>
+            <div class="stat-value">Rally 3/9 · Crash 2/9</div>
+            <div class="stat-delta">NO_SIGNAL</div>
+        </div><div class="stat-box">
+            <div class="stat-label">Alt-Cycle</div>
+            <div class="stat-value">Сезон Bitcoin</div>
+            <div class="stat-delta">BTC.D 56.7%</div>
+        </div></div>
+</section>
+
+<!-- §4 Stablecoin Engine + Capital Flows -->
+<section class="report-section">
+  <h2>§4 · Stablecoin Engine + Capital Flows</h2>
+  <div class="alert-box ax-bull">
+        <strong>HIGH DRY POWDER</strong>: Stables dominance 11.6%, total $267.2B
+    </div><ul style="font-size: 13px; margin: 8px 0; padding-left: 20px;"><li style="margin-bottom: 4px;">Stables доминирование 11.6% (>10%) = много кэша ждёт</li><li style="margin-bottom: 4px;">Bullish setup: капитал готов вернуться</li></ul>
+</section>
+
+<!-- §5 Layer Analysis L1-L5 -->
+<section class="report-section">
+  <h2>§5 · Layer Analysis · L1–L5</h2>
+  <div class="layer-grid"><div class="layer-row">
+            <div class="layer-tag">L1</div>
+            <div style="color: var(--text-secondary); font-size: 12px;">BTC, ETH</div>
+            <div style="text-align: right; color: var(--text-muted); font-family: monospace; font-weight: 700;">+$0.00M</div>
+        </div><div class="layer-row">
+            <div class="layer-tag">L2</div>
+            <div style="color: var(--text-secondary); font-size: 12px;">L2</div>
+            <div style="text-align: right; color: var(--red); font-family: monospace; font-weight: 700;">$-0.63M</div>
+        </div><div class="layer-row">
+            <div class="layer-tag">L3 · DeFi</div>
+            <div style="color: var(--text-secondary); font-size: 12px;">DeFi, LST</div>
+            <div style="text-align: right; color: var(--red); font-family: monospace; font-weight: 700;">$-1.71M</div>
+        </div><div class="layer-row">
+            <div class="layer-tag">L4 · Infra</div>
+            <div style="color: var(--text-secondary); font-size: 12px;">INFRA, DEPIN, RWA</div>
+            <div style="text-align: right; color: var(--green); font-family: monospace; font-weight: 700;">+$21.16M</div>
+        </div><div class="layer-row">
+            <div class="layer-tag">L5 · Applications</div>
+            <div style="color: var(--text-secondary); font-size: 12px;">GAMING, AI_AGENTS, MEME</div>
+            <div style="text-align: right; color: var(--red); font-family: monospace; font-weight: 700;">$-0.86M</div>
+        </div></div>
+</section>
+
+<!-- §6 Catalyst Timeline -->
+<section class="report-section">
+  <h2>§6 · Catalyst Timeline · Next 30-180 Days</h2>
+  <ul class="catalyst-list"><li class="catalyst-item high">
+            <strong>~2026 Q4</strong> · Starknet v0.15 mainnet upgrade — <span style="color: var(--text-muted);">Ключевой catalyst для STRK thesis</span>
+        </li><li class="catalyst-item high">
+            <strong>~2027</strong> · ETH L2 fee compression cycle — <span style="color: var(--text-muted);">STRK positioning как cheaper alternative</span>
+        </li><li class="catalyst-item med">
+            <strong>ongoing</strong> · RWA sector expansion — <span style="color: var(--text-muted);">LINK/ONDO benefit</span>
+        </li><li class="catalyst-item med">
+            <strong>ongoing</strong> · ETH staking yield compression — <span style="color: var(--text-muted);">ETHFI/LDO leverage yield play</span>
+        </li></ul><p style="font-size: 11px; color: var(--text-muted); margin-top: 12px;">⚠ Catalyst timeline пока manual · auto-extraction из news feed на следующей итерации.</p>
+</section>
+
+<!-- §7 Weighted Confidence Scores -->
+<section class="report-section">
+  <h2>§7 · Weighted Confidence Scores</h2>
+  <div class="confidence-bar">
+            <div class="conf-name">STRK Entry Readiness</div>
+            <div class="conf-bar-track"><div class="conf-bar-fill" style="width: 0%; background: var(--red);"></div></div>
+            <div class="conf-value">0%</div>
+        </div><div class="confidence-bar">
+            <div class="conf-name">Alt-Cycle Certainty</div>
+            <div class="conf-bar-track"><div class="conf-bar-fill" style="width: 85%; background: var(--green);"></div></div>
+            <div class="conf-value">85%</div>
+        </div><div class="confidence-bar">
+            <div class="conf-name">Rally Confluence</div>
+            <div class="conf-bar-track"><div class="conf-bar-fill" style="width: 33%; background: var(--red);"></div></div>
+            <div class="conf-value">33%</div>
+        </div><div class="confidence-bar">
+            <div class="conf-name">Dry Powder Available</div>
+            <div class="conf-bar-track"><div class="conf-bar-fill" style="width: 75%; background: var(--green);"></div></div>
+            <div class="conf-value">75%</div>
+        </div><div class="confidence-bar">
+            <div class="conf-name">Utility Sector Health</div>
+            <div class="conf-bar-track"><div class="conf-bar-fill" style="width: 100%; background: var(--green);"></div></div>
+            <div class="conf-value">100%</div>
+        </div><div class="alert-box ax-info" style="margin-top: 16px;">
+        <strong>Weighted Overall:</strong> <span style="color: var(--yellow); font-size: 18px; font-weight: 700;">50%</span>
+    </div>
+</section>
+
+<!-- §8 Systemic Dominance Map -->
+<section class="report-section">
+  <h2>§8 · Systemic Dominance Map</h2>
+  <div class="dominance-map"><div class="dom-cell">
+            <div class="dom-name">BTC Dominance</div>
+            <div style="font-size: 20px; font-weight: 700;">56.7%</div>
+            <div class="dom-desc">Market share of BTC</div>
+        </div><div class="dom-cell">
+            <div class="dom-name">ETH Dominance</div>
+            <div style="font-size: 20px; font-weight: 700;">10.1%</div>
+            <div class="dom-desc">Market share of ETH</div>
+        </div><div class="dom-cell">
+                <div class="dom-name">INFRA Sector</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--green);">+$10.6M</div>
+                <div class="dom-desc">Top inflow sector</div>
+            </div><div class="dom-cell">
+                <div class="dom-name">RWA Sector</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--green);">+$10.5M</div>
+                <div class="dom-desc">Top inflow sector</div>
+            </div><div class="dom-cell">
+                <div class="dom-name">LST Sector</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--green);">+$0.3M</div>
+                <div class="dom-desc">Top inflow sector</div>
+            </div></div>
+</section>
+
+<!-- §9 Beneficiaries + Weakest Links -->
+<section class="report-section">
+  <h2>§9 · Beneficiaries & Weakest Links</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"><div><div class="stat-label" style="margin-bottom: 8px;">🟢 Beneficiaries</div><div class="layer-row" style="margin-bottom: 4px;">
+            <div class="layer-tag">LINK</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">RWA · +12.5%</div>
+            <div style="text-align: right; color: var(--green); font-family: monospace; font-weight: 700;">+$10.6M</div>
+        </div><div class="layer-row" style="margin-bottom: 4px;">
+            <div class="layer-tag">ETHFI</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">LST · +27.1%</div>
+            <div style="text-align: right; color: var(--green); font-family: monospace; font-weight: 700;">+$0.3M</div>
+        </div></div><div><div class="stat-label" style="margin-bottom: 8px;">🔴 Weakest Links</div><div class="layer-row" style="margin-bottom: 4px;">
+            <div class="layer-tag">PEPE</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">MEME · 0.0%</div>
+            <div style="text-align: right; color: var(--red); font-family: monospace; font-weight: 700;">$-0.55M</div>
+        </div></div></div>
+</section>
+
+<!-- §10 Structural Inevitability Matrix -->
+<section class="report-section">
+  <h2>§10 · Structural Inevitability Matrix</h2>
+  <div class="layer-grid"><div class="layer-row">
+            <div class="layer-tag" style="color: var(--green);">HIGH</div>
+            <div>
+                <strong>L2 fee compression</strong><br>
+                <span style="font-size: 11px; color: var(--text-muted);">ETH мейн стал expensive · rollups need throughput → Ecosystem shifts to modular scaling</span>
+            </div>
+            <div></div>
+        </div><div class="layer-row">
+            <div class="layer-tag" style="color: var(--green);">HIGH</div>
+            <div>
+                <strong>RWA tokenization</strong><br>
+                <span style="font-size: 11px; color: var(--text-muted);">Traditional finance rails need on-chain → Trillion+ market opportunity</span>
+            </div>
+            <div></div>
+        </div><div class="layer-row">
+            <div class="layer-tag" style="color: var(--yellow);">MED</div>
+            <div>
+                <strong>LST fragmentation</strong><br>
+                <span style="font-size: 11px; color: var(--text-muted);">ETH staking too concentrated → Diversification demand</span>
+            </div>
+            <div></div>
+        </div><div class="layer-row">
+            <div class="layer-tag" style="color: var(--yellow);">MED</div>
+            <div>
+                <strong>AI × crypto agents</strong><br>
+                <span style="font-size: 11px; color: var(--text-muted);">AI economy needs crypto rails → Speculative near-term, real long-term</span>
+            </div>
+            <div></div>
+        </div></div>
+</section>
+
+<!-- §11 Risk Engine + Invalidation -->
+<section class="report-section">
+  <h2>§11 · Risk Engine + Invalidation</h2>
+  <div class="risk-row"><div><strong>STRK bearish trend:</strong> 28/30d bearish · watching for reversal signal</div></div><div class="risk-row"><div><strong>Dune monthly BEARISH_BREAKDOWN:</strong> может углубиться в STRONG_BEARISH_BREAKDOWN · thesis breach if paired with STRONG_DISTRIBUTION on CEX</div></div><div class="alert-box ax-info" style="margin-top: 12px;">
+        <strong>Thesis invalidation trigger:</strong> Одновременное появление 3+ из следующих →
+        STRONG_BEARISH_BREAKDOWN (29+/30d) + STRONG_DISTRIBUTION on CEX + utility sectors в net outflow + MEME season >4w
+    </div>
+</section>
+
+<!-- §12 Human Context Layer -->
+<section class="report-section">
+  <h2>§12 · Human Context Layer</h2>
+  <div class="alert-box ax-info">
+        <strong>Xenia thesis:</strong> STRK как замена ETH-функции (ZK L2 bottleneck). Асимметричная премия за bottleneck к 2027-28.
+        Стратегия "1+3": long-term STRK + tactical rotation в utility STRONG_BUY активы (LINK/ETHFI/MORPHO).
+    </div>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 12px;">
+        Horizon: 2-5 years · Hold period: months, not weeks · Trigger frame: phase transitions (accumulation → markup → distribution)
+    </p>
+    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+        FULL RUN cadence: weekly Mondays 09:00 MSK · on-demand при significant market events.
+    </p>
+</section>
+
+<div class="footer">
+  FULL RUN R10 · Generated 2026-08-19T19:35:16Z · <a href="https://github.com/krol4ixa85/STRK_Engine">GitHub</a>
+</div>
+
+</div>
+</body>
+</html>
