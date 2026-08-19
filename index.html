@@ -905,7 +905,7 @@ function renderStrkDetails(snap) {
   const strk = snap.strk_status;
   const trigList = (snap.re_entry_triggers && snap.re_entry_triggers.trigger_list) || [];
   let html = `
-    <div class="detail-row"><span class="detail-key">Цена</span><span class="detail-val">${strk.strk_price ? '$' + Number(strk.strk_price).toFixed(4) : 'n/a'}</span></div>
+    <div class="detail-row"><span class="detail-key">Цена</span><span class="detail-val">${(strk.strk_price ? '$' + Number(strk.strk_price).toFixed(4) : (strkPriceData && strkPriceData.usd ? '$' + strkPriceData.usd.toFixed(4) + ' <span style="color: var(--text-muted); font-size: 10px;">(CoinGecko)</span>' : 'n/a'))}</span></div>
     <div class="detail-row"><span class="detail-key">Фаза Wyckoff</span><span class="detail-val">${strk.wyckoff_phase || 'n/a'}</span></div>
     <div class="detail-row"><span class="detail-key">Dune monthly</span><span class="detail-val">${strk.dune_monthly_signal || 'n/a'}${strk.bearish_30d !== undefined ? ' · ' + strk.bearish_30d + '/30d' : ''}</span></div>
     <div class="detail-row"><span class="detail-key">CEX flow</span><span class="detail-val">${strk.cex_signal || 'n/a'}</span></div>
@@ -1706,6 +1706,20 @@ function renderAltCycleDetail(data) {
   const age = ago(data.generated_at);
   document.getElementById('altcycle-snapshot-age').textContent = `Обновлено ${age.text}`;
 }
+
+async function fetchStrkPrice() {
+  try {
+    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=starknet&vs_currencies=usd&include_24hr_change=true&include_7d_change=true';
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data.starknet || null;
+  } catch(e) {
+    console.warn('[STRK Price] fetch failed:', e);
+    return null;
+  }
+}
+
 async function loadAll(manual = false) {
   const btn = document.getElementById('refresh-btn');
   const badge = document.getElementById('last-update');
@@ -1719,12 +1733,13 @@ async function loadAll(manual = false) {
       fetchJSONL(FILES.whaleAlerts),
       fetchJSON(FILES.news), fetchJSON(FILES.confluence),
     ]);
-    // Wrap each render в try/catch — одна ошибка не должна ломать всё
+    const strkPrice = await fetchStrkPrice();
+        // Wrap each render в try/catch — одна ошибка не должна ломать всё
     const safeRender = (name, fn) => {
       try { fn(); } catch(e) { console.error('[' + name + '] render error:', e); }
     };
     // v4: renderHero disabled (replaced by Overview Panel)
-    safeRender('StrkDetails', () => renderStrkDetails(lab));
+    safeRender('StrkDetails', () => renderStrkDetails(lab, strkPrice));
     safeRender('Signals', () => renderSignals(momentum));
     safeRender('Precision', () => renderPrecision(precision));
     safeRender('Rotation', () => renderRotation(rotation));
@@ -1738,9 +1753,9 @@ async function loadAll(manual = false) {
     safeRender('Confluence', () => renderConfluence(confluence));
     
     // v4 · Overview Panel + decision-layer renderers
-    safeRender('OverviewStrk', () => renderOverviewStrk(lab, confluence));
+    safeRender('OverviewStrk', () => renderOverviewStrk(lab, confluence, strkPrice));
     safeRender('StrkPhaseAction', () => renderStrkPhaseAction(lab, confluence));
-    safeRender('StrkLIQ', () => renderStrkLIQ(lab, confluence, netflow));
+    safeRender('StrkLIQ', () => renderStrkLIQ(lab, confluence, netflow, strkPrice));
     safeRender('OverviewRotation', () => renderOverviewRotation(lab, momentum, rotation));
     safeRender('RotationSummary', () => renderRotationSummary(lab, momentum, rotation));
     safeRender('OverviewMacro', () => renderOverviewMacro(altcycle, stables, funding));
@@ -1763,7 +1778,7 @@ setInterval(() => loadAll(false), AUTO_REFRESH_MS);
 // v4 · Overview Panel Renderers
 // ============================================================
 
-function renderOverviewStrk(labData, confluenceData) {
+function renderOverviewStrk(labData, confluenceData, strkPriceData) {
   const statusEl = document.getElementById('overview-strk-status');
   const detailEl = document.getElementById('overview-strk-detail');
   if (!statusEl) return;
@@ -1777,10 +1792,13 @@ function renderOverviewStrk(labData, confluenceData) {
     verdict = labData.strk_status.verdict || verdict;
   }
   
+  const priceStr = (strkPriceData && strkPriceData.usd) ? ` · $${strkPriceData.usd.toFixed(4)}` : '';
+  const priceChStr = (strkPriceData && strkPriceData.usd_24h_change != null) ? ` (${strkPriceData.usd_24h_change >= 0 ? '+' : ''}${strkPriceData.usd_24h_change.toFixed(1)}%)` : '';
+  
   if (verdict === 'STILL_ACCUMULATION' || verdict.includes('ACCUM')) {
     statusEl.textContent = '⏸ STILL_ACCUMULATION';
     statusEl.style.color = 'var(--text-bright)';
-    detailEl.textContent = `Триггеры ${triggersHit}/${triggersTotal} · Ждём confluence для входа`;
+    detailEl.textContent = `Триггеры ${triggersHit}/${triggersTotal}${priceStr}${priceChStr}`;
   } else if (verdict.includes('READY') || verdict.includes('ENTER') || verdict.includes('MARKUP')) {
     statusEl.textContent = '🟢 ' + verdict.replace(/_/g, ' ');
     statusEl.style.color = 'var(--green)';
@@ -2178,141 +2196,191 @@ function renderMacroEssentials(altCycleData, sectorFlowData, momentumData) {
 }
 
 
-function renderStrkLIQ(labData, confluenceData, sectorFlowData) {
-  const whatEl = document.getElementById('liq-what');
-  const entryEl = document.getElementById('liq-entry');
-  const sizeEl = document.getElementById('liq-size');
-  const invEl = document.getElementById('liq-invalidation');
-  const monitorEl = document.getElementById('liq-monitor');
-  if (!whatEl) return;
-  
-  // Extract data
-  let phase = 'ACCUMULATION';
-  let verdict = 'STILL_ACCUMULATION';
-  let triggersHit = 0;
-  let triggersTotal = 4;
-  let duneSignal = 'UNKNOWN';
-  let cexSignal = 'UNKNOWN';
-  let strkFlow = null;
-  let strkPriceCh = null;
-  
-  if (labData && labData.strk_status) {
-    phase = labData.strk_status.wyckoff_phase || phase;
-    verdict = labData.strk_status.verdict || verdict;
-    triggersHit = labData.strk_status.triggers_hit || 0;
-    triggersTotal = labData.strk_status.triggers_total || 4;
-    duneSignal = labData.strk_status.dune_monthly_signal || duneSignal;
-    cexSignal = labData.strk_status.cex_signal || cexSignal;
-  }
-  
-  // Find STRK in sector flow (L2 sector)
-  if (sectorFlowData && Array.isArray(sectorFlowData.rows)) {
-    const strkRow = sectorFlowData.rows.find(r => r.token === 'STRK');
-    if (strkRow) {
-      strkFlow = strkRow.net_flow_m_usd;
-      strkPriceCh = strkRow.price_change_7d_pct;
+function renderStrkLIQ(labData, confluenceData, sectorFlowData, strkPriceData) {
+  try {
+    const whatEl = document.getElementById('liq-what');
+    const entryEl = document.getElementById('liq-entry');
+    const sizeEl = document.getElementById('liq-size');
+    const invEl = document.getElementById('liq-invalidation');
+    const monitorEl = document.getElementById('liq-monitor');
+    if (!whatEl) { console.warn('[LIQ] #liq-what missing'); return; }
+    
+    // ==== Extract data safely ====
+    let phase = 'ACCUMULATION';
+    let verdict = 'STILL_ACCUMULATION';
+    let triggersHit = 0;
+    let triggersTotal = 4;
+    let duneSignal = null;
+    let cexSignal = null;
+    let bearish30d = null;
+    let strkFlow = null;
+    let strkPriceCh = null;
+    let strkTxCount = null;
+    
+    if (labData && labData.strk_status) {
+      const ss = labData.strk_status;
+      phase = ss.wyckoff_phase || phase;
+      verdict = ss.verdict || verdict;
+      triggersHit = ss.triggers_hit || 0;
+      triggersTotal = ss.triggers_total || 4;
+      duneSignal = ss.dune_monthly_signal || null;
+      cexSignal = ss.cex_signal || null;
+      bearish30d = ss.bearish_30d != null ? ss.bearish_30d : null;
     }
-  }
-  
-  // ==== WHAT'S HAPPENING (2-4 sentences) ====
-  let whatParts = [];
-  whatParts.push(`Фаза: <strong>${phase}</strong> (${triggersHit}/${triggersTotal} триггеров для смены)`);
-  if (duneSignal !== 'UNKNOWN') {
-    const duneReadable = duneSignal.replace(/_/g, ' ').toLowerCase();
-    whatParts.push(`Dune monthly: <strong>${duneReadable}</strong>`);
-  }
-  if (cexSignal !== 'UNKNOWN') {
-    const cexReadable = cexSignal.replace(/_/g, ' ').toLowerCase();
-    whatParts.push(`CEX flow: <strong>${cexReadable}</strong>`);
-  }
-  if (strkPriceCh !== null && strkFlow !== null) {
-    const priceSign = strkPriceCh >= 0 ? '+' : '';
-    const flowSign = strkFlow >= 0 ? '+' : '';
-    whatParts.push(`За 7d: цена ${priceSign}${strkPriceCh.toFixed(1)}%, netflow ${flowSign}$${strkFlow.toFixed(2)}M`);
-  }
-  whatEl.innerHTML = whatParts.join(' · ');
-  
-  // ==== NEW ENTRY / SIZE ====
-  let entry = 'NO', entryColor = 'var(--red)';
-  let size = '$0', sizeColor = 'var(--text-muted)';
-  
-  if (verdict === 'STILL_ACCUMULATION' || phase === 'ACCUMULATION') {
-    if (triggersHit >= 3) {
-      entry = 'READY';
+    
+    // Find STRK in sector flow (L2 sector)
+    if (sectorFlowData && Array.isArray(sectorFlowData.rows)) {
+      const strkRow = sectorFlowData.rows.find(function(r) { return r && r.token === 'STRK'; });
+      if (strkRow) {
+        strkFlow = (strkRow.net_flow_m_usd != null) ? strkRow.net_flow_m_usd : null;
+        strkPriceCh = (strkRow.price_change_7d_pct != null) ? strkRow.price_change_7d_pct : null;
+        strkTxCount = strkRow.tx_count || null;
+      }
+    }
+    
+    // ==== WHAT'S HAPPENING ====
+    const whatParts = [];
+    whatParts.push('Фаза Wyckoff: <strong>' + phase + '</strong> (' + triggersHit + '/' + triggersTotal + ' триггеров для смены)');
+    if (duneSignal) {
+      const readable = duneSignal.replace(/_/g, ' ').toLowerCase();
+      whatParts.push('Dune monthly: <strong>' + readable + '</strong>' + (bearish30d ? ' (' + bearish30d + '/30d bearish)' : ''));
+    }
+    if (cexSignal) {
+      whatParts.push('CEX flow: <strong>' + cexSignal.replace(/_/g, ' ').toLowerCase() + '</strong>');
+    }
+    // 7d STRK activity
+    const activityParts = [];
+    if (strkPriceCh != null) {
+      const sign = strkPriceCh >= 0 ? '+' : '';
+      activityParts.push('цена ' + sign + strkPriceCh.toFixed(1) + '%');
+    }
+    if (strkFlow != null) {
+      const sign = strkFlow >= 0 ? '+' : '';
+      activityParts.push('netflow ' + sign + '$' + strkFlow.toFixed(2) + 'M');
+    }
+    if (strkTxCount != null) {
+      activityParts.push(strkTxCount.toLocaleString() + ' tx');
+    }
+    if (activityParts.length > 0) {
+      whatParts.push('За 7d L2: ' + activityParts.join(', '));
+    }
+    // Add current price
+    if (strkPriceData && strkPriceData.usd) {
+      const price = strkPriceData.usd;
+      const ch24h = strkPriceData.usd_24h_change;
+      const chStr = ch24h != null ? ' (' + (ch24h >= 0 ? '+' : '') + ch24h.toFixed(2) + '% 24h)' : '';
+      whatParts.unshift('<strong style="color: var(--orange-strong);">STRK $' + price.toFixed(4) + chStr + '</strong>');
+    }
+    whatEl.innerHTML = whatParts.join(' · ');
+    
+    // ==== NEW ENTRY / SIZE ====
+    let entry = 'NO', entryColor = 'var(--red)';
+    let size = '$0', sizeColor = 'var(--text-muted)';
+    let action = 'STAY FLAT';
+    
+    if (verdict === 'STILL_ACCUMULATION' || phase === 'ACCUMULATION') {
+      if (triggersHit >= 3) {
+        entry = 'READY';
+        entryColor = 'var(--yellow)';
+        size = '25%';
+        sizeColor = 'var(--yellow)';
+        action = 'PREPARE ENTRY';
+      } else {
+        entry = 'NO';
+        entryColor = 'var(--red)';
+        size = '$0';
+        sizeColor = 'var(--text-muted)';
+        action = 'STAY FLAT · rotate capital';
+      }
+    } else if (phase === 'SPRING' || phase === 'SOS') {
+      entry = 'SMALL';
       entryColor = 'var(--yellow)';
-      size = '25%';
+      size = '25-50%';
       sizeColor = 'var(--yellow)';
-    } else {
-      entry = 'NO';
+      action = 'ENTER PARTIAL';
+    } else if (phase === 'MARKUP') {
+      entry = 'FULL';
+      entryColor = 'var(--green)';
+      size = '75-100%';
+      sizeColor = 'var(--green)';
+      action = 'FULL POSITION + trailing';
+    } else if (phase === 'DISTRIBUTION') {
+      entry = 'TRIM';
       entryColor = 'var(--red)';
-      size = '$0';
-      sizeColor = 'var(--text-muted)';
+      size = 'reduce → 25%';
+      sizeColor = 'var(--red)';
+      action = 'TRIM / EXIT';
+    } else if (phase === 'MARKDOWN') {
+      entry = 'STAY OUT';
+      entryColor = 'var(--red)';
+      size = '0%';
+      sizeColor = 'var(--red)';
+      action = 'CASH / BTC';
     }
-  } else if (phase === 'SPRING' || phase === 'SOS') {
-    entry = 'SMALL';
-    entryColor = 'var(--yellow)';
-    size = '25-50%';
-    sizeColor = 'var(--yellow)';
-  } else if (phase === 'MARKUP') {
-    entry = 'FULL';
-    entryColor = 'var(--green)';
-    size = '75-100%';
-    sizeColor = 'var(--green)';
-  } else if (phase === 'DISTRIBUTION') {
-    entry = 'TRIM';
-    entryColor = 'var(--red)';
-    size = 'reduce to 25%';
-    sizeColor = 'var(--red)';
-  } else if (phase === 'MARKDOWN') {
-    entry = 'STAY OUT';
-    entryColor = 'var(--red)';
-    size = '0%';
-    sizeColor = 'var(--red)';
+    
+    if (entryEl) {
+      entryEl.textContent = entry;
+      entryEl.style.color = entryColor;
+      if (entryEl.parentElement && entryEl.parentElement.style) {
+        entryEl.parentElement.style.borderLeftColor = entryColor;
+      }
+    }
+    if (sizeEl) {
+      sizeEl.textContent = size;
+      sizeEl.style.color = sizeColor;
+      if (sizeEl.parentElement && sizeEl.parentElement.style) {
+        sizeEl.parentElement.style.borderLeftColor = sizeColor;
+      }
+    }
+    
+    // ==== INVALIDATION ====
+    let inv = '';
+    if (phase === 'ACCUMULATION') {
+      const parts = ['Thesis breach если <strong>одновременно</strong>:'];
+      parts.push('• Dune monthly → STRONG_BEARISH_BREAKDOWN (29+/30d)');
+      parts.push('• CEX flow → STRONG_DISTRIBUTION');
+      parts.push('• L2 sector netflow ускоряется вниз');
+      parts.push('→ актив идёт в MARKDOWN, не MARKUP. <strong>Пересмотреть тезис.</strong>');
+      inv = parts.join('<br>');
+    } else if (phase === 'SPRING') {
+      inv = 'Возврат ниже spring low + volume drop → <strong>false breakout</strong>. Выйти немедленно.';
+    } else if (phase === 'MARKUP') {
+      inv = 'Закрытие ниже 20 EMA + volume drop >30% + отток из L2 → <strong>markup завершается</strong>. Начать trim.';
+    } else if (phase === 'DISTRIBUTION') {
+      inv = 'Пробой нового ATH с volume surge >2x → возможно <strong>false distribution</strong> → перейти в MARKUP.';
+    } else if (phase === 'MARKDOWN') {
+      inv = 'Change of character: higher low + volume surge + CEX INFLOW → возможно <strong>дно</strong>, watch mode.';
+    }
+    if (invEl) invEl.innerHTML = inv;
+    
+    // ==== MONITOR ====
+    let monitorItems = [];
+    if (phase === 'ACCUMULATION') {
+      monitorItems.push('<strong>Wyckoff phase</strong> (ждём смены на SPRING/MARKUP)');
+      monitorItems.push('<strong>Dune monthly</strong> (сейчас ' + (duneSignal || '?') + ', ждём BULLISH или стабильный ACC)');
+      monitorItems.push('<strong>CEX flow</strong> (сейчас ' + (cexSignal || '?') + ', ждём ACCUMULATION или neutral)');
+      monitorItems.push('<strong>Activity WoW</strong> (нужно ≥+10% для triggera)');
+      monitorItems.push('<strong>L2 sector netflow</strong> (сейчас отрицательный, ждём разворот вверх)');
+      monitorItems.push('<strong>bearish_30d</strong> (сейчас ' + (bearish30d != null ? bearish30d : '?') + '/30, watching 25→20)');
+    } else if (phase === 'SPRING') {
+      monitorItems.push('Volume confirmation на breakout');
+      monitorItems.push('Follow-through 2-3 дня без возврата');
+    } else if (phase === 'MARKUP') {
+      monitorItems.push('Volume expansion на новые highs');
+      monitorItems.push('Pullback quality (higher lows)');
+      monitorItems.push('CEX outflow (whales докупают)');
+    } else if (phase === 'DISTRIBUTION') {
+      monitorItems.push('Sign of Weakness — свечи с высоким объёмом вниз');
+      monitorItems.push('CEX INFLOW усиливается');
+      monitorItems.push('Long crowded становится YES');
+    }
+    if (monitorEl) monitorEl.innerHTML = monitorItems.map(function(m) { return '• ' + m; }).join('<br>');
+    
+  } catch(e) {
+    console.error('[LIQ] Uncaught error:', e);
+    const whatEl = document.getElementById('liq-what');
+    if (whatEl) whatEl.innerHTML = '<span style="color: var(--red);">Ошибка рендеринга: ' + e.message + '</span>';
   }
-  
-  entryEl.textContent = entry;
-  entryEl.style.color = entryColor;
-  entryEl.parentElement.style.borderLeftColor = entryColor;
-  sizeEl.textContent = size;
-  sizeEl.style.color = sizeColor;
-  sizeEl.parentElement.style.borderLeftColor = sizeColor;
-  
-  // ==== INVALIDATION ====
-  let inv = '';
-  if (phase === 'ACCUMULATION') {
-    inv = `Если <strong>BEARISH_BREAKDOWN усилится</strong> (>29/30d bearish) + CEX flow пойдёт в STRONG_DISTRIBUTION → thesis под угрозой. Актив может пойти в MARKDOWN вниз, не вверх.`;
-  } else if (phase === 'SPRING') {
-    inv = `Возврат ниже spring low + volume drop → false breakout. Выйти немедленно.`;
-  } else if (phase === 'MARKUP') {
-    inv = `Закрытие ниже 20 EMA + volume drop >30% + отток из L2 → markup завершается. Начать trim.`;
-  } else if (phase === 'DISTRIBUTION') {
-    inv = `Пробой нового ATH с volume surge >2x → возможно false distribution → перейти в MARKUP.`;
-  } else if (phase === 'MARKDOWN') {
-    inv = `Change of character: higher low + volume surge + CEX INFLOW → возможно дно, watch mode.`;
-  }
-  invEl.innerHTML = inv;
-  
-  // ==== MONITOR ====
-  let monitor = [];
-  if (phase === 'ACCUMULATION') {
-    monitor.push('Wyckoff phase (ждём MARKUP/SPRING)');
-    monitor.push('Dune monthly (ждём BULLISH или ACCUMULATION стабильный)');
-    monitor.push('CEX flow (ждём ACCUMULATION или neutral)');
-    monitor.push('Activity WoW % (нужно ≥+10%)');
-    monitor.push('L2 sector netflow (сейчас отрицательный)');
-  } else if (phase === 'SPRING') {
-    monitor.push('Volume confirmation на breakout');
-    monitor.push('Follow-through 2-3 дня');
-  } else if (phase === 'MARKUP') {
-    monitor.push('Volume expansion на новые high');
-    monitor.push('Pullback quality (higher low)');
-    monitor.push('CEX outflow (whales докупают)');
-  } else if (phase === 'DISTRIBUTION') {
-    monitor.push('Sign of Weakness — свечи с большими объёмами вниз');
-    monitor.push('CEX INFLOW усиливается');
-    monitor.push('Long crowded становится YES');
-  }
-  monitorEl.innerHTML = monitor.map(m => `• ${m}`).join('<br>');
 }
 
 
