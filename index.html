@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#fafaf9">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="#fafaf9" name="theme-color"/>
 <title>STRK LAB · Rotation Dashboard</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+<link href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🧪&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 :root {
   --bg: #fafaf9;
@@ -390,174 +391,153 @@ tr:hover td { background: var(--bg-subtle); }
 </style>
 </head>
 <body>
+<div class="quick-nav">
+<a class="nav-strk" href="#section-strk">🎯 STRK</a>
+<a class="nav-rotation" href="#section-rotation">🔄 Rotation</a>
+<a class="nav-macro" href="#section-macro">🌍 Macro</a>
+</div>
 <div class="container">
+<div id="overview-panel" style="margin: 24px 0 16px 0; padding: 20px; background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); border-radius: 16px; border: 1px solid var(--border);">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+<div id="overview-strk" style="padding: 14px; background: rgba(255,153,0,0.06); border-radius: 10px; border-left: 4px solid var(--orange, #FF9900);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">🎯 STRK · твой актив</div>
+<div id="overview-strk-status" style="font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Loading...</div>
+<div id="overview-strk-detail" style="font-size: 12px; color: var(--text-secondary);"></div>
+<a href="#section-strk" style="display: inline-block; margin-top: 8px; font-size: 10px; color: var(--orange-strong, #B7791F); text-decoration: none; font-weight: 600;">↓ Подробнее</a>
+</div>
+<div id="overview-rotation" style="padding: 14px; background: rgba(46,160,67,0.06); border-radius: 10px; border-left: 4px solid var(--green, #2EA043);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">🔄 Rotation · где деньги</div>
+<div id="overview-rotation-status" style="font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Loading...</div>
+<div id="overview-rotation-detail" style="font-size: 12px; color: var(--text-secondary);"></div>
+<a href="#section-rotation" style="display: inline-block; margin-top: 8px; font-size: 10px; color: var(--green, #2EA043); text-decoration: none; font-weight: 600;">↓ Подробнее</a>
+</div>
+<div id="overview-macro" style="padding: 14px; background: rgba(88,166,255,0.06); border-radius: 10px; border-left: 4px solid #58a6ff;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">🌍 Macro · тезис</div>
+<div id="overview-macro-status" style="font-size: 16px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Loading...</div>
+<div id="overview-macro-detail" style="font-size: 12px; color: var(--text-secondary);"></div>
+<a href="#section-macro" style="display: inline-block; margin-top: 8px; font-size: 10px; color: #58a6ff; text-decoration: none; font-weight: 600;">↓ Подробнее</a>
+</div>
+</div>
+<div id="overview-alert" style="margin-top: 14px; padding: 12px; background: var(--orange-bg); border-radius: 8px; border-left: 3px solid var(--orange, #FF9900); font-size: 13px; color: var(--text-bright);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">💡 Что делать сегодня</div>
+<div id="overview-todo">Loading...</div>
+</div>
+</div>
 
 <header class="header">
-  <div class="header-left">
-    <h1>🧪 STRK LAB</h1>
-    <span class="badge" id="last-update">Loading...</span>
-  </div>
-  <div class="header-actions">
-    <button class="btn" onclick="loadAll(true)" id="refresh-btn">↻ Обновить</button>
-  </div>
+<div class="header-left">
+<h1>🧪 STRK LAB</h1>
+<span class="badge" id="last-update">Loading...</span>
+</div>
+<div class="header-actions">
+<button class="btn" id="refresh-btn" onclick="loadAll(true)">↻ Обновить</button>
+</div>
 </header>
-
 <div class="hero" id="hero-container">
-  <div class="hero-block state-neutral"><div class="hero-label">🌍 Рынок</div><div class="hero-verdict">Loading...</div></div>
-  <div class="hero-block state-neutral"><div class="hero-label">💰 Капитал</div><div class="hero-verdict">Loading...</div></div>
-  <div class="hero-block state-neutral"><div class="hero-label">📍 STRK</div><div class="hero-verdict">Loading...</div></div>
+<div class="hero-block state-neutral"><div class="hero-label">🌍 Рынок</div><div class="hero-verdict">Loading...</div></div>
+<div class="hero-block state-neutral"><div class="hero-label">💰 Капитал</div><div class="hero-verdict">Loading...</div></div>
+<div class="hero-block state-neutral"><div class="hero-label">📍 STRK</div><div class="hero-verdict">Loading...</div></div>
 </div>
-
 <div id="action-banner-container"></div>
-
 <div class="cards-grid">
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">📍 STRK · детали</div>
-      <div class="card-subtitle" id="strk-snapshot-age"></div>
-    </div>
-    <div id="strk-details-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">📊 Точность сигналов</div>
-      <div class="card-subtitle">Backtest measurement</div>
-    </div>
-    <div class="layman-intro">Здесь честно измеряется — из 100 сигналов STRONG_BUY сколько раз цена реально выросла +3% за 7 дней. Пока данных мало, цифры появятся через 1-2 недели.</div>
-    <div id="precision-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">🔄 События ротации</div>
-      <div class="card-subtitle">7 дней</div>
-    </div>
-    <div class="layman-intro">Когда токен появляется/исчезает из STRONG_BUY — это события ротации капитала между секторами.</div>
-    <div id="rotation-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card card-wide card-full">
-    <div class="card-header">
-      <div class="card-title">🟢 Активные сигналы</div>
-      <div class="card-subtitle" id="momentum-snapshot-age"></div>
-    </div>
-    <div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
-    <div id="signals-content" class="loading">Loading...</div>
-  </div>
-
-
-  <!-- TVL by Chain (DeFiLlama) -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">🏦 TVL по chains</div>
-      <div class="card-subtitle" id="tvl-snapshot-age"></div>
-    </div>
-    <div class="layman-intro">
-      TVL (Total Value Locked) = сколько денег заперто в DeFi этого blockchain. Растёт TVL = ecosystem растёт. Крупнейший рост = там основной flow капитала.
-    </div>
-    <div id="tvl-content" class="loading">Loading...</div>
-  </div>
-
-  <!-- Funding Rates -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">📊 Funding Rates</div>
-      <div class="card-subtitle" id="funding-snapshot-age"></div>
-    </div>
-    <div class="layman-intro">
-      Funding rate = плата за держать позицию в perpetual futures. Высокая LONG funding (>30% APR) = много jinovcov, риск short squeeze. Обратное для SHORT.
-    </div>
-    <div id="funding-content" class="loading">Loading...</div>
-  </div>
-
-  <!-- Stables (Dry Powder) -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">💵 Стейблы · Dry Powder</div>
-      <div class="card-subtitle" id="stables-snapshot-age"></div>
-    </div>
-    <div class="layman-intro">
-      Общая капитализация стейблов = "сухой порох" рынка (деньги ждут). 
-      <strong>Если растёт >0.5% в неделю</strong> = накопление кэша (bearish setup — люди уходят из риска). 
-      <strong>Если падает >0.5% в неделю</strong> = capital deployment (bullish — деньги входят в риск). 
-      <strong>>10% dominance</strong> = много pow'а для будущего входа.
-    </div>
-    <div id="stables-content" class="loading">Loading...</div>
-  </div>
-
-  <!-- Top Movers 24h -->
-  <div class="card card-wide">
-    <div class="card-header">
-      <div class="card-title">🚀 Топ движения 24h</div>
-      <div class="card-subtitle">Top gainers/losers</div>
-    </div>
-    <div class="layman-intro">
-      Топ токены по 24h price change среди major coins (mcap >$100M). Отфильтровано от шума мелких токенов. Крупные движения = momentum candidates.
-    </div>
-    <div id="movers-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">🐳 Whale Alerts</div>
-      <div class="card-subtitle">Weekly · via Dune</div>
-    </div>
-    <div class="layman-intro">
-      Отслеживаем крупных holders (Whale/Shark/Dolphin) для 5 tokens (STRK + STRONG_BUY + EXITED). Alerts когда holder входит/выходит или меняет позицию >50%.
-    </div>
-    <div id="whale-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card card-wide card-full">
-    <div class="card-header">
-      <div class="card-title">💰 Куда идёт капитал · sector rotation</div>
-      <div class="card-subtitle" id="sector-flow-age">Loading...</div>
-    </div>
-    <div class="layman-intro">
-      Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
-    </div>
-    <div id="sector-flow-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">📰 News Feed</div>
-      <div class="card-subtitle" id="news-age">Loading...</div>
-    </div>
-    <div class="layman-intro">
-      RSS aggregation (CoinDesk, CoinTelegraph, Decrypt). Смотрим <strong>signal breakdown</strong>: positive/negative sentiment. Пока фильтр STRK-only — впереди расширение на categories (regulations, RWA, ZK).
-    </div>
-    <div id="news-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">🚦 Confluence Gate</div>
-      <div class="card-subtitle" id="confluence-age">Loading...</div>
-    </div>
-    <div class="layman-intro">
-      Композитный signal из <strong>9 факторов</strong> (Wyckoff, whale, CVD, funding, cross-token и др). Rally / Crash scores > 5 → чёткий signal. Если оба low → WAIT.
-    </div>
-    <div id="confluence-content" class="loading">Loading...</div>
-  </div>
-
-  <div class="card card-full">
-    <div class="card-header">
-      <div class="card-title">🌍 Alt-Cycle Compass · подробно</div>
-      <div class="card-subtitle" id="altcycle-snapshot-age"></div>
-    </div>
-    <div class="layman-intro">Крипто-рынок движется циклами: деньги перетекают из стейблов → BTC → ETH → крупные альты → мемы → обратно. Понимание где мы = понимание что покупать/продавать.</div>
-    <div id="altcycle-detail-content" class="loading">Loading...</div>
-  </div>
+<!-- TVL by Chain (DeFiLlama) -->
+<!-- Funding Rates -->
+<!-- Stables (Dry Powder) -->
+<!-- Top Movers 24h -->
 </div>
-
 <footer class="footer">
   STRK LAB · Portfolio Rotation Compass · <a href="https://github.com/krol4ixa85/STRK_Engine" target="_blank">GitHub</a> · Auto-refresh каждые 5 мин
 </footer>
-
+<div style="position: relative;">
+<div class="section-anchor" id="section-strk"></div>
+</div>
+<div class="section-divider section-strk">
+<div style="flex: 1;">
+<div class="section-title">🎯 STRK · MISSION CONTROL</div>
+<div class="section-subtitle">Готов ли STRK к полному входу? Триггеры / фазы / composite signal</div>
+</div>
+<div class="section-badge">Level 1 · твой актив</div>
+</div>
+<div class="cards-grid" id="cards-strk" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+<div class="card">
+<div class="card-header">
+<div class="card-title">📍 STRK · детали</div>
+<div class="card-subtitle" id="strk-snapshot-age"></div>
+</div>
+<div class="loading" id="strk-details-content">Loading...</div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">🚦 Confluence Gate</div>
+<div class="card-subtitle" id="confluence-age">Loading...</div>
+</div>
+<div class="layman-intro">
+      Композитный signal из <strong>9 факторов</strong> (Wyckoff, whale, CVD, funding, cross-token и др). Rally / Crash scores &gt; 5 → чёткий signal. Если оба low → WAIT.
+    </div>
+<div class="loading" id="confluence-content">Loading...</div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">📊 Точность сигналов</div>
+<div class="card-subtitle">Backtest measurement</div>
+</div>
+<div class="layman-intro">Здесь честно измеряется — из 100 сигналов STRONG_BUY сколько раз цена реально выросла +3% за 7 дней. Пока данных мало, цифры появятся через 1-2 недели.</div>
+<div class="loading" id="precision-content">Loading...</div>
+</div></div>
+<div style="position: relative;">
+<div class="section-anchor" id="section-rotation"></div>
+</div>
+<div class="section-divider section-rotation">
+<div style="flex: 1;">
+<div class="section-title">🔄 UTILITY ROTATION</div>
+<div class="section-subtitle">Где припарковать капитал пока STRK не готов. Смотрим STRONG_BUY / потоки / whale movement</div>
+</div>
+<div class="section-badge">Level 2 · тактика</div>
+</div>
+<div class="cards-grid" id="cards-rotation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+<div class="card card-wide card-full">
+<div class="card-header">
+<div class="card-title">🟢 Активные сигналы</div>
+<div class="card-subtitle" id="momentum-snapshot-age"></div>
+</div>
+<div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
+<div class="loading" id="signals-content">Loading...</div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">🔄 События ротации</div>
+<div class="card-subtitle">7 дней</div>
+</div>
+<div class="layman-intro">Когда токен появляется/исчезает из STRONG_BUY — это события ротации капитала между секторами.</div>
+<div class="loading" id="rotation-content">Loading...</div>
+</div><div class="card card-wide card-full">
+<div class="card-header">
+<div class="card-title">💰 Куда идёт капитал · sector rotation</div>
+<div class="card-subtitle" id="sector-flow-age">Loading...</div>
+</div>
+<div class="layman-intro">
+      Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
+    </div>
+<div class="loading" id="sector-flow-content">Loading...</div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">🐳 Whale Alerts</div>
+<div class="card-subtitle">Weekly · via Dune</div>
+</div>
+<div class="layman-intro">
+      Отслеживаем крупных holders (Whale/Shark/Dolphin) для 5 tokens (STRK + STRONG_BUY + EXITED). Alerts когда holder входит/выходит или меняет позицию &gt;50%.
+    </div>
+<div class="loading" id="whale-content">Loading...</div>
+</div></div>
+<div style="position: relative;">
+<div class="section-anchor" id="section-macro"></div>
+</div>
+<div class="section-divider section-macro">
+<div style="flex: 1;">
+<div class="section-title">🌍 MACRO CONTEXT</div>
+<div class="section-subtitle">Тезис ещё в силе? Куда идёт крипто-рынок, макро-циклы, нарративы</div>
+</div>
+<div class="section-badge">Level 3 · background</div>
 </div>
 
+</div>
 <script>
 const GITHUB_REPO = 'krol4ixa85/STRK_Engine';
 const GITHUB_BRANCH = 'main';
@@ -1285,6 +1265,13 @@ function renderNews(newsData) {
 
 function renderConfluence(confluenceData) {
   const el = document.getElementById('confluence-content');
+    
+    // v4 · Overview Panel renderers
+    safeRender('renderOverviewStrk', renderOverviewStrk, [lab, confluence]);
+    safeRender('renderOverviewRotation', renderOverviewRotation, [lab, momentum, rotation]);
+    safeRender('renderOverviewMacro', renderOverviewMacro, [altCycle, stables, funding]);
+    safeRender('renderOverviewTodo', renderOverviewTodo, [lab, confluence, momentum]);
+
   if (!el) return;
   if (!confluenceData) {
     el.innerHTML = '<div class="empty">Confluence gate data не загружен</div>';
@@ -1586,6 +1573,172 @@ async function loadAll(manual = false) {
 }
 loadAll();
 setInterval(() => loadAll(false), AUTO_REFRESH_MS);
+
+
+// ============================================================
+// v4 · Overview Panel Renderers
+// ============================================================
+
+function renderOverviewStrk(labData, confluenceData) {
+  const statusEl = document.getElementById('overview-strk-status');
+  const detailEl = document.getElementById('overview-strk-detail');
+  if (!statusEl) return;
+  
+  // Из LAB data берём STRK phase status
+  let phaseStatus = 'ACCUMULATION';
+  let progressText = '';
+  
+  if (labData && labData.assets) {
+    const strk = labData.assets.STRK || labData.assets.strk;
+    if (strk) {
+      const signal = strk.signal || strk.momentum_signal || 'UNKNOWN';
+      const streak = strk.streak_days || 0;
+      phaseStatus = signal.replace(/_/g, ' ');
+      if (streak > 0) progressText = 'Streak: ' + streak + 'd';
+    }
+  }
+  
+  // Из Confluence — итоговый signal
+  if (confluenceData) {
+    const signal = confluenceData.signal || 'NO_SIGNAL';
+    const rally = confluenceData.rally_score || 0;
+    const crash = confluenceData.crash_score || 0;
+    
+    if (signal === 'NO_SIGNAL' || signal === 'LIVE_BONUS') {
+      statusEl.textContent = '⏸ STILL_ACCUMULATION';
+      statusEl.style.color = 'var(--text-bright)';
+      detailEl.textContent = 'Триггеры ' + rally + '/9 · Ждём confluence для входа';
+    } else if (signal.includes('RALLY')) {
+      statusEl.textContent = '🟢 ' + signal.replace(/_/g, ' ');
+      statusEl.style.color = 'var(--green)';
+      detailEl.textContent = 'Rally ' + rally + '/9 · Проверить триггеры для входа';
+    } else if (signal.includes('CRASH')) {
+      statusEl.textContent = '🔴 ' + signal.replace(/_/g, ' ');
+      statusEl.style.color = 'var(--red)';
+      detailEl.textContent = 'Crash ' + crash + '/9 · Держать flat';
+    } else {
+      statusEl.textContent = signal;
+    }
+  } else {
+    statusEl.textContent = phaseStatus;
+    detailEl.textContent = progressText;
+  }
+}
+
+function renderOverviewRotation(labData, momentumData, rotationData) {
+  const statusEl = document.getElementById('overview-rotation-status');
+  const detailEl = document.getElementById('overview-rotation-detail');
+  if (!statusEl) return;
+  
+  let strongBuyCount = 0;
+  let strongBuyTokens = [];
+  let divergenceCount = 0;
+  
+  // Из momentum/lab data — считаем STRONG_BUY
+  const dataSource = momentumData || labData;
+  if (dataSource && dataSource.assets) {
+    for (const [token, data] of Object.entries(dataSource.assets)) {
+      if (token === 'STRK') continue; // exclude STRK
+      const signal = data.signal || data.momentum_signal || '';
+      if (signal.includes('STRONG_BUY') || signal === 'STRONG_BUY') {
+        strongBuyCount++;
+        strongBuyTokens.push(token);
+      }
+      if (signal.includes('DIVERGENCE') || signal === 'DIVERGENCE_WARN') {
+        divergenceCount++;
+      }
+    }
+  }
+  
+  if (strongBuyCount > 0) {
+    statusEl.textContent = '🟢 ' + strongBuyCount + ' STRONG_BUY';
+    statusEl.style.color = 'var(--green)';
+    detailEl.textContent = strongBuyTokens.slice(0, 3).join(', ') + (divergenceCount > 0 ? ' · ⚠ ' + divergenceCount + ' DIVERGENCE' : '');
+  } else if (divergenceCount > 0) {
+    statusEl.textContent = '⚠ Watch mode';
+    statusEl.style.color = 'var(--yellow)';
+    detailEl.textContent = divergenceCount + ' активов в DIVERGENCE — риск';
+  } else {
+    statusEl.textContent = 'Нет активных сигналов';
+    statusEl.style.color = 'var(--text-muted)';
+    detailEl.textContent = 'Держать stables · watch';
+  }
+}
+
+function renderOverviewMacro(altCycleData, stablesData, fundingData) {
+  const statusEl = document.getElementById('overview-macro-status');
+  const detailEl = document.getElementById('overview-macro-detail');
+  if (!statusEl) return;
+  
+  // Компоненты
+  let regime = null;
+  let details = [];
+  
+  if (altCycleData) {
+    // Alt-cycle phase
+    const phase = altCycleData.current_phase || altCycleData.phase || '';
+    if (phase) regime = phase.replace(/_/g, ' ');
+  }
+  
+  if (stablesData && stablesData.dry_powder) {
+    const dp = stablesData.dry_powder;
+    if (dp === 'CONCENTRATED') details.push('Dry powder concentrated');
+    else if (dp === 'DISTRIBUTED') details.push('Capital deployed');
+  }
+  
+  if (fundingData && fundingData.market_average !== undefined) {
+    const avgFunding = fundingData.market_average;
+    if (Math.abs(avgFunding) < 0.01) details.push('Funding neutral');
+  }
+  
+  if (regime) {
+    statusEl.textContent = regime;
+    if (regime.includes('ACCUMULATION') || regime.includes('EARLY')) {
+      statusEl.style.color = 'var(--green)';
+    } else if (regime.includes('DISTRIBUTION') || regime.includes('TOP')) {
+      statusEl.style.color = 'var(--red)';
+    }
+  } else {
+    statusEl.textContent = 'Loading...';
+  }
+  
+  detailEl.textContent = details.join(' · ') || 'Тезис в силе';
+}
+
+function renderOverviewTodo(labData, confluenceData, momentumData) {
+  const el = document.getElementById('overview-todo');
+  if (!el) return;
+  
+  const parts = [];
+  
+  // STRK часть
+  if (confluenceData) {
+    const rally = confluenceData.rally_score || 0;
+    const signal = confluenceData.signal || 'NO_SIGNAL';
+    if (signal === 'NO_SIGNAL' || signal === 'LIVE_BONUS') {
+      parts.push('НЕ входить в STRK (триггеры ' + rally + '/9)');
+    } else if (signal.includes('RALLY')) {
+      parts.push('⚡ STRK · проверить входы (' + signal + ')');
+    }
+  }
+  
+  // Rotation
+  const dataSource = momentumData || labData;
+  if (dataSource && dataSource.assets) {
+    let sb = [];
+    for (const [token, data] of Object.entries(dataSource.assets)) {
+      if (token === 'STRK') continue;
+      const sig = data.signal || data.momentum_signal || '';
+      if (sig.includes('STRONG_BUY')) sb.push(token);
+    }
+    if (sb.length > 0) {
+      parts.push('Держать: ' + sb.slice(0, 3).join(', '));
+    }
+  }
+  
+  el.textContent = parts.length > 0 ? parts.join(' · ') : 'Watch mode — держать stables';
+}
+
 </script>
 </body>
 </html>
