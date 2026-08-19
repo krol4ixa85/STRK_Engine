@@ -1,62 +1,62 @@
 {
-  "ts": "2026-08-18T21:53:08.798783+00:00",
+  "ts": "2026-08-19T07:26:56.907817+00:00",
   "long_exit": {
     "level": "WARNING",
-    "active_count": 1,
+    "active_count": 2,
     "triggers": [
       {
         "id": "L1",
         "name": "CEX flow flip → distribution",
-        "active": false,
-        "evidence": "bearish streak 1 days (was bullish 0)"
+        "active": true,
+        "evidence": "bearish streak 2 days (was bullish 0)"
       },
       {
         "id": "L2",
         "name": "SMART cohort distributing",
         "active": true,
-        "evidence": "SMART 24h net -2.07M STRK (threshold -0.5M)"
+        "evidence": "SMART 24h net -2.18M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=0.53"
+        "evidence": "price_up_3d=False, vol_ratio=0.58"
       },
       {
         "id": "L4",
         "name": "Funding crowded long (flush risk)",
         "active": false,
-        "evidence": "funding APR -3.288%, long_crowded=False"
+        "evidence": "funding APR -0.127%, long_crowded=False"
       }
     ]
   },
   "short_exit": {
     "level": "WARNING",
-    "active_count": 1,
+    "active_count": 2,
     "triggers": [
       {
         "id": "S1",
         "name": "CEX flow flip → accumulation",
         "active": false,
-        "evidence": "bullish streak 0 days (was bearish 1)"
+        "evidence": "bullish streak 0 days (was bearish 2)"
       },
       {
         "id": "S2",
         "name": "SMART cohort accumulating",
         "active": false,
-        "evidence": "SMART 24h net -2.07M STRK"
+        "evidence": "SMART 24h net -2.18M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": true,
-        "evidence": "RSI 29.82, vol_ratio 0.53"
+        "evidence": "RSI 34.2, vol_ratio 0.58"
       },
       {
         "id": "S4",
         "name": "Funding crowded short (squeeze risk)",
-        "active": false,
-        "evidence": "funding APR -3.288%, short_crowded=False"
+        "active": true,
+        "evidence": "funding APR -0.127%, short_crowded=True"
       }
     ]
   },

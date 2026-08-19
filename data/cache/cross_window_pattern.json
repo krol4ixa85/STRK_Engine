@@ -1,64 +1,64 @@
 {
-  "as_of": "2026-08-18T21:51:49.912680+00:00",
+  "as_of": "2026-08-19T07:25:22.699685+00:00",
   "dist_7d": {
     "label": "7d",
-    "total_transfers": 2799,
-    "unique_recipients": 853,
+    "total_transfers": 2776,
+    "unique_recipients": 842,
     "counts": {
-      "MICRO": 489,
-      "SMALL": 219,
-      "MEDIUM": 106,
-      "LARGE": 39
+      "MICRO": 478,
+      "SMALL": 222,
+      "MEDIUM": 100,
+      "LARGE": 42
     },
     "amounts_strk": {
-      "MICRO": 1110827.27,
-      "SMALL": 7964879.03,
-      "MEDIUM": 41492806.84,
-      "LARGE": 252467802.4
+      "MICRO": 1078376.56,
+      "SMALL": 7734103.59,
+      "MEDIUM": 38639408.04,
+      "LARGE": 366479383.95
     },
-    "ratio_smallamt_over_largeamt": 0.0359,
-    "large_receiver_count": 39,
-    "total_distributed_strk": 303036315.55
+    "ratio_smallamt_over_largeamt": 0.024,
+    "large_receiver_count": 42,
+    "total_distributed_strk": 413931272.14
   },
   "dist_14d": {
     "label": "14d",
-    "total_transfers": 5809,
-    "unique_recipients": 1328,
+    "total_transfers": 5865,
+    "unique_recipients": 1339,
     "counts": {
-      "MICRO": 762,
-      "SMALL": 327,
-      "MEDIUM": 160,
+      "MICRO": 766,
+      "SMALL": 332,
+      "MEDIUM": 162,
       "LARGE": 79
     },
     "amounts_strk": {
-      "MICRO": 1796909.14,
-      "SMALL": 11522812.58,
-      "MEDIUM": 58818928.28,
-      "LARGE": 730313529.0
+      "MICRO": 1785828.43,
+      "SMALL": 11694732.6,
+      "MEDIUM": 60817497.22,
+      "LARGE": 837805324.17
     },
-    "ratio_smallamt_over_largeamt": 0.0182,
+    "ratio_smallamt_over_largeamt": 0.0161,
     "large_receiver_count": 79,
-    "total_distributed_strk": 802452179.0
+    "total_distributed_strk": 912103382.42
   },
   "dist_30d": {
     "label": "30d",
-    "total_transfers": 11757,
-    "unique_recipients": 2509,
+    "total_transfers": 11755,
+    "unique_recipients": 2477,
     "counts": {
-      "MICRO": 1463,
-      "SMALL": 603,
-      "MEDIUM": 268,
-      "LARGE": 175
+      "MICRO": 1470,
+      "SMALL": 598,
+      "MEDIUM": 254,
+      "LARGE": 155
     },
     "amounts_strk": {
-      "MICRO": 3242466.34,
-      "SMALL": 20407596.57,
-      "MEDIUM": 98313164.61,
-      "LARGE": 2268060070.35
+      "MICRO": 3254852.21,
+      "SMALL": 20053108.07,
+      "MEDIUM": 89736930.18,
+      "LARGE": 2214107924.46
     },
-    "ratio_smallamt_over_largeamt": 0.0104,
-    "large_receiver_count": 175,
-    "total_distributed_strk": 2390023297.87
+    "ratio_smallamt_over_largeamt": 0.0105,
+    "large_receiver_count": 155,
+    "total_distributed_strk": 2327152814.91
   },
   "watchlist_growth": {
     "accepted_7d": 0,
@@ -68,9 +68,21 @@
   },
   "watchlist_balance": {
     "watchlist_count": 3,
-    "total_balance_strk": 163024189.76
+    "total_balance_strk": 162267581.0
   },
   "patterns_detected": [
+    {
+      "pattern": "SQUEEZE_SETUP",
+      "signal": "BULLISH_CONTRARIAN",
+      "confidence": "MEDIUM",
+      "conditions_met": {
+        "short_crowded": true,
+        "not_bearish_btc": true,
+        "auto_accepted_recent": false,
+        "funding_extreme_or_neg": true
+      },
+      "reason": "Short-crowded (-11.3% min funding) + 0 new holders 7d + BTC not extreme down. Squeeze fuel accumulating."
+    },
     {
       "pattern": "DISTRIBUTION_PHASE",
       "signal": "BEARISH",
@@ -81,19 +93,19 @@
         "long_crowded_or_positive_extreme": false,
         "btc_down": true
       },
-      "reason": "79 LARGE recipients 14d, ratio 0.018 declining, funding +3.2% ann. Active distribution."
+      "reason": "79 LARGE recipients 14d, ratio 0.016 declining, funding +2.7% ann. Active distribution."
     }
   ],
   "primary_pattern": {
-    "pattern": "DISTRIBUTION_PHASE",
-    "signal": "BEARISH",
+    "pattern": "SQUEEZE_SETUP",
+    "signal": "BULLISH_CONTRARIAN",
     "confidence": "MEDIUM",
     "conditions_met": {
-      "many_large_recipients": true,
-      "shape_worsening": true,
-      "long_crowded_or_positive_extreme": false,
-      "btc_down": true
+      "short_crowded": true,
+      "not_bearish_btc": true,
+      "auto_accepted_recent": false,
+      "funding_extreme_or_neg": true
     },
-    "reason": "79 LARGE recipients 14d, ratio 0.018 declining, funding +3.2% ann. Active distribution."
+    "reason": "Short-crowded (-11.3% min funding) + 0 new holders 7d + BTC not extreme down. Squeeze fuel accumulating."
   }
 }
