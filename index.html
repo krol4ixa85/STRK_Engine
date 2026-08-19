@@ -478,7 +478,10 @@ tr:hover td { background: var(--bg-subtle); }
       <div class="card-subtitle" id="stables-snapshot-age"></div>
     </div>
     <div class="layman-intro">
-      Общая капитализация стейблов = "сухой порох" рынка (деньги ждут). Растёт = деньги ждут входа (bullish setup). Падает = деньги в риске (late cycle).
+      Общая капитализация стейблов = "сухой порох" рынка (деньги ждут). 
+      <strong>Если растёт >0.5% в неделю</strong> = накопление кэша (bearish setup — люди уходят из риска). 
+      <strong>Если падает >0.5% в неделю</strong> = capital deployment (bullish — деньги входят в риск). 
+      <strong>>10% dominance</strong> = много pow'а для будущего входа.
     </div>
     <div id="stables-content" class="loading">Loading...</div>
   </div>
@@ -518,6 +521,7 @@ const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRAN
 const FILES = {
   lab: 'data/cache/strk_lab_report.json',
   momentum: 'data/cache/dune_sector_momentum.json',
+  netflow: 'data/cache/dune_sector_netflow.json',        // NEW: sector-level flow
   precision: 'data/cache/lab_signals_summary.json',
   rotation: 'data/history/rotation_alerts.jsonl',
   altcycle: 'data/cache/alt_cycle.json',
@@ -526,6 +530,10 @@ const FILES = {
   stables: 'data/cache/stables_signal.json',
   duneext: 'data/cache/dune_extended.json',
   whaleAlerts: 'data/history/whale_holdings_alerts.jsonl',
+  news: 'data/cache/news_aggregator.json',              // NEW: RSS feed
+  confluence: 'data/cache/confluence_gate.json',        // NEW: 9-factor gate
+  composite: 'data/cache/composite_signal_v2.json',     // NEW: overall verdict
+  technical: 'data/cache/technical_momentum.json',      // NEW: TA momentum
 };
 const AUTO_REFRESH_MS = 5 * 60 * 1000;
 
@@ -908,11 +916,52 @@ function renderStables(data) {
   };
   const info = signalMap[signal] || signalMap.UNKNOWN;
 
+  // Action-oriented recommendations по signal
+  const actionsMap = {
+    'HIGH_DRY_POWDER': {
+      icon: '💰',
+      action: 'Держать позиции в STRONG_BUY tokens',
+      watch: 'Watch: снижение >0.5% в неделю = risk-on triggered',
+      warning: 'Ещё не эйфория — не фиксировать пока',
+    },
+    'ELEVATED_DRY_POWDER': {
+      icon: '📊',
+      action: 'Selective позиции в качественных альтах',
+      watch: 'Watch: направление изменения (растёт/падает)',
+      warning: 'Умеренный buffer — осторожность',
+    },
+    'BALANCED': {
+      icon: '⚖',
+      action: 'Стандартное портфельное поведение',
+      watch: 'Watch: пробитие 5% или 10% dominance',
+      warning: 'Нейтральный setup',
+    },
+    'LOW_DRY_POWDER': {
+      icon: '⚠️',
+      action: 'Начать частичную фиксацию прибыли',
+      watch: 'Watch: если dominance начнёт расти = топ близко',
+      warning: 'Late-cycle: капитал уже в риске',
+    },
+    'CRITICALLY_LOW': {
+      icon: '🚨',
+      action: 'ФИКСИРОВАТЬ ПРИБЫЛЬ',
+      watch: 'Топ формируется — dominance растёт',
+      warning: 'Эйфория близка к пику',
+    },
+  };
+  const action = actionsMap[signal] || actionsMap.BALANCED;
+  
   let html = `
     <div style="text-align: center; padding: 16px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
       <div style="font-size: 28px; font-weight: 700; color: ${info.color}; font-family: monospace;">${dominance.toFixed(1)}%</div>
       <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Доминирование стейблов</div>
       <div style="font-size: 12px; color: ${info.color}; margin-top: 8px; font-weight: 600;">${info.label}</div>
+    </div>
+    <div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--orange);">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; font-weight: 600;">${action.icon} Что делать сейчас</div>
+      <div style="font-size: 13px; color: var(--text-bright); font-weight: 600; margin-bottom: 8px;">${action.action}</div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">👁 ${action.watch}</div>
+      <div style="font-size: 11px; color: var(--text-secondary);">💡 ${action.warning}</div>
     </div>
     <div class="detail-row"><span class="detail-key">Всего стейблов</span><span class="detail-val">$${(total/1e9).toFixed(1)}B</span></div>
     <div class="detail-row"><span class="detail-key">% от crypto mcap</span><span class="detail-val">${dominance.toFixed(2)}%</span></div>
@@ -1032,6 +1081,178 @@ function renderWhaleAlerts(alerts) {
   el.innerHTML = html;
 }
 
+
+
+function renderSectorFlow(netflowData) {
+  const el = document.getElementById('sector-flow-content');
+  if (!netflowData || !netflowData.rows || netflowData.rows.length === 0) {
+    el.innerHTML = '<div class="empty">Sector netflow data не загружен</div>';
+    return;
+  }
+
+  // Aggregate by sector
+  const bySector = {};
+  for (const r of netflowData.rows) {
+    const sector = r.sector || r.category || 'Unknown';
+    const flow = parseFloat(r.net_flow_m_usd || r.netflow_usd || r.net_flow || 0);
+    if (!bySector[sector]) bySector[sector] = { flow: 0, tokens: [] };
+    bySector[sector].flow += flow;
+    if (r.token) bySector[sector].tokens.push(r.token);
+  }
+
+  const sorted = Object.entries(bySector)
+    .sort((a, b) => b[1].flow - a[1].flow)
+    .filter(([_, d]) => Math.abs(d.flow) > 0.01);
+
+  if (sorted.length === 0) {
+    el.innerHTML = '<div class="empty">Нет активных потоков</div>';
+    return;
+  }
+
+  const maxAbs = Math.max(...sorted.map(([_, d]) => Math.abs(d.flow)));
+
+  let html = '<div style="display: flex; flex-direction: column; gap: 6px;">';
+  for (const [sector, data] of sorted) {
+    const isPos = data.flow >= 0;
+    const barWidth = Math.abs(data.flow / maxAbs) * 100;
+    const color = isPos ? 'var(--green)' : 'var(--red)';
+    const bg = isPos ? 'var(--green-bg)' : 'var(--red-bg)';
+    const uniqueTokens = [...new Set(data.tokens)].slice(0, 4).join(', ');
+    
+    html += `
+      <div style="display: grid; grid-template-columns: 90px 1fr 120px; gap: 12px; align-items: center;">
+        <div style="font-weight: 600; font-size: 12px; color: var(--text-bright); font-family: monospace;">${sector}</div>
+        <div style="position: relative; height: 24px; background: ${bg}; border-radius: 4px; overflow: hidden;">
+          <div style="position: absolute; ${isPos ? 'left: 0' : 'right: 0'}; top: 0; height: 100%; width: ${barWidth}%; background: ${color}; opacity: 0.35;"></div>
+          <div style="position: absolute; left: 8px; top: 4px; font-size: 10px; color: var(--text-muted); font-family: monospace;">${uniqueTokens || '—'}</div>
+        </div>
+        <div style="text-align: right; font-family: monospace; font-weight: 600; color: ${color}; font-size: 12px;">
+          ${isPos ? '+' : ''}${data.flow.toFixed(2)}M
+        </div>
+      </div>`;
+  }
+  html += '</div>';
+
+  // Add interpretation
+  const topInflow = sorted[0];
+  const topOutflow = sorted[sorted.length - 1];
+  if (topInflow && topOutflow && topInflow[1].flow > 0 && topOutflow[1].flow < 0) {
+    html += `<div style="margin-top: 14px; padding: 10px; background: var(--orange-bg); border-radius: 6px; border-left: 3px solid var(--orange); font-size: 12px;">
+      <strong>Направление:</strong> капитал перетекает <strong>из ${topOutflow[0]}</strong> (${topOutflow[1].flow.toFixed(1)}M) <strong>в ${topInflow[0]}</strong> (+${topInflow[1].flow.toFixed(1)}M)
+    </div>`;
+  }
+
+  el.innerHTML = html;
+  const age = ago(netflowData.collected_at || netflowData.generated_at);
+  document.getElementById('sector-flow-age').textContent = 'Обновлено ' + age.text;
+}
+
+function renderNews(newsData) {
+  const el = document.getElementById('news-content');
+  if (!newsData) {
+    el.innerHTML = '<div class="empty">News data не загружен</div>';
+    return;
+  }
+
+  const signal = newsData.overall_signal || 'NEUTRAL';
+  const strkCount = newsData.strk_news_count || 0;
+  const recent = newsData.recent_news || newsData.strk_news || [];
+  const breakdown = newsData.breakdown || {};
+
+  const signalColors = {
+    POSITIVE_CATALYST: { c: 'var(--green)', bg: 'var(--green-bg)', label: 'Bullish катализатор' },
+    POSITIVE: { c: 'var(--green)', bg: 'var(--green-bg)', label: 'Позитивный' },
+    NEUTRAL: { c: 'var(--text-muted)', bg: 'var(--bg-subtle)', label: 'Нейтральный' },
+    NEGATIVE: { c: 'var(--red)', bg: 'var(--red-bg)', label: 'Негативный' },
+  };
+  const info = signalColors[signal] || signalColors.NEUTRAL;
+
+  let html = `
+    <div style="text-align: center; padding: 12px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
+      <div style="font-size: 16px; font-weight: 700; color: ${info.c};">${info.label}</div>
+      <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${strkCount} STRK-related · 7 дней</div>
+    </div>
+  `;
+
+  if (breakdown && Object.keys(breakdown).length > 0) {
+    html += '<div style="display: flex; gap: 6px; margin-bottom: 12px; font-size: 11px; font-family: monospace;">';
+    if (breakdown.positive) html += `<span class="pos">✓ ${breakdown.positive} POS</span>`;
+    if (breakdown.negative) html += `<span class="neg">✗ ${breakdown.negative} NEG</span>`;
+    if (breakdown.catalyst) html += `<span style="color: var(--orange-strong); font-weight: 700;">⚡ ${breakdown.catalyst} CAT</span>`;
+    if (breakdown.neutral) html += `<span class="muted">· ${breakdown.neutral} NEU</span>`;
+    html += '</div>';
+  }
+
+  if (recent && recent.length > 0) {
+    html += '<div style="display: flex; flex-direction: column; gap: 6px;">';
+    for (const item of recent.slice(0, 5)) {
+      const sentiment = (item.sentiment || item.classification || 'NEUTRAL').toUpperCase();
+      const sColor = sentiment.includes('POS') ? 'var(--green)' : sentiment.includes('NEG') ? 'var(--red)' : 'var(--text-muted)';
+      const title = (item.title || item.headline || '').substring(0, 90);
+      const src = item.source || '';
+      const dt = (item.published || item.date || '').substring(0, 16);
+      html += `<div style="padding: 8px; background: var(--bg-subtle); border-left: 3px solid ${sColor}; border-radius: 4px;">
+        <div style="font-size: 12px; color: var(--text-bright); margin-bottom: 3px;">${title}</div>
+        <div style="font-size: 10px; color: var(--text-muted); font-family: monospace;">${src} · ${dt}</div>
+      </div>`;
+    }
+    html += '</div>';
+  } else {
+    html += '<div style="text-align: center; padding: 16px; color: var(--text-muted); font-size: 12px;">Нет STRK-related новостей за 7d</div>';
+  }
+  
+  html += '<div style="margin-top: 12px; padding: 10px; background: var(--yellow-bg); border-radius: 6px; font-size: 11px; color: var(--yellow);">💡 Планируется: topic filters (regulations, tokenization, zk-privacy, RWA)</div>';
+
+  el.innerHTML = html;
+  const age = ago(newsData.generated_at);
+  document.getElementById('news-age').textContent = 'Обновлено ' + age.text;
+}
+
+function renderConfluence(confluenceData) {
+  const el = document.getElementById('confluence-content');
+  if (!confluenceData) {
+    el.innerHTML = '<div class="empty">Confluence gate data не загружен</div>';
+    return;
+  }
+
+  const rally = confluenceData.rally_score || 0;
+  const crash = confluenceData.crash_score || 0;
+  const gateStatus = confluenceData.gate_status || confluenceData.signal || 'NO_SIGNAL';
+  
+  const statusMap = {
+    'RALLY_CONFIRMED': { c: 'var(--green)', bg: 'var(--green-bg)', label: 'RALLY подтверждён', icon: '🟢' },
+    'CRASH_CONFIRMED': { c: 'var(--red)', bg: 'var(--red-bg)', label: 'CRASH подтверждён', icon: '🔴' },
+    'NO_SIGNAL': { c: 'var(--text-muted)', bg: 'var(--bg-subtle)', label: 'WAIT · нет сигнала', icon: '⏸' },
+    'RALLY_WATCH': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'RALLY watching', icon: '👁' },
+    'CRASH_WATCH': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'CRASH watching', icon: '👁' },
+  };
+  const info = statusMap[gateStatus] || statusMap.NO_SIGNAL;
+
+  let html = `
+    <div style="text-align: center; padding: 12px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
+      <div style="font-size: 20px; font-weight: 700; color: ${info.c};">${info.icon} ${info.label}</div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <div style="text-align: center; padding: 12px; background: var(--green-bg); border-radius: 8px;">
+        <div style="font-size: 24px; font-weight: 700; color: var(--green); font-family: monospace;">${rally}/9</div>
+        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Rally score</div>
+      </div>
+      <div style="text-align: center; padding: 12px; background: var(--red-bg); border-radius: 8px;">
+        <div style="font-size: 24px; font-weight: 700; color: var(--red); font-family: monospace;">${crash}/9</div>
+        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Crash score</div>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 11px; color: var(--text-secondary);">
+      Threshold: <strong>≥5</strong> для confirmation · 9 факторов: Wyckoff, whale, CVD, funding, event, cross-token, tech momentum, cex flow, concentration
+    </div>
+  `;
+
+  el.innerHTML = html;
+  const age = ago(confluenceData.generated_at || confluenceData.as_of);
+  document.getElementById('confluence-age').textContent = 'Обновлено ' + age.text;
+}
+
+
 function renderAltCycleDetail(data) {
   const el = document.getElementById('altcycle-detail-content');
   if (!data) { el.innerHTML = '<div class="empty">Данные не собраны</div>'; return; }
@@ -1074,11 +1295,12 @@ async function loadAll(manual = false) {
   if (manual) { btn.textContent = 'Loading...'; btn.disabled = true; }
   badge.className = 'badge'; badge.textContent = 'Загрузка...';
   try {
-    const [lab, momentum, precision, rotation, altcycle, tvl, funding, stables, whaleAlerts] = await Promise.all([
-      fetchJSON(FILES.lab), fetchJSON(FILES.momentum), fetchJSON(FILES.precision),
+    const [lab, momentum, netflow, precision, rotation, altcycle, tvl, funding, stables, whaleAlerts, news, confluence] = await Promise.all([
+      fetchJSON(FILES.lab), fetchJSON(FILES.momentum), fetchJSON(FILES.netflow), fetchJSON(FILES.precision),
       fetchJSONL(FILES.rotation), fetchJSON(FILES.altcycle),
       fetchJSON(FILES.defillama), fetchJSON(FILES.funding), fetchJSON(FILES.stables),
       fetchJSONL(FILES.whaleAlerts),
+      fetchJSON(FILES.news), fetchJSON(FILES.confluence),
     ]);
     renderHero(altcycle, lab);
     renderStrkDetails(lab);
@@ -1090,6 +1312,9 @@ async function loadAll(manual = false) {
     renderStables(stables);
     renderMovers(funding);
     renderWhaleAlerts(whaleAlerts);
+    renderSectorFlow(netflow);       // NEW
+    renderNews(news);                 // NEW
+    renderConfluence(confluence);     // NEW
     renderAltCycleDetail(altcycle);
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
