@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-19T19:41:20.066302+00:00",
-  "valid_until": "2026-08-26T19:41:20.066302+00:00",
+  "as_of": "2026-08-19T20:14:04.202087+00:00",
+  "valid_until": "2026-08-26T20:14:04.202087+00:00",
   "current_state": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase B · building base",
     "confidence": "HIGH",
-    "price": 0.0236,
+    "price": 0.0237,
     "btc_cycle": "NEUTRAL",
-    "btc_price": 68293.5,
+    "btc_price": 68712.4,
     "short_crowded": true,
     "long_crowded": false,
     "days_to_next_unlock": 26,
     "next_unlock_strk": 64000000,
-    "cex_flow_signal": "INSUFFICIENT_DATA"
+    "cex_flow_signal": "MILD_DISTRIBUTION"
   },
   "scenarios": [
     {
       "type": "BASE",
       "label": "Продолжение accumulation",
-      "probability_pct": 65,
+      "probability_pct": 58,
       "price_range": [
         0.0218,
-        0.026
+        0.0261
       ],
       "timeframe_days": 14,
       "narrative": "Продолжение аккумуляции в диапазоне. Крупные покупают на dip, розница пассивна.",
@@ -31,28 +31,28 @@
     {
       "type": "BULL",
       "label": "Positive shock / squeeze",
-      "probability_pct": 19,
+      "probability_pct": 17,
       "price_range": [
-        0.0248,
+        0.0249,
         0.0331
       ],
       "timeframe_days": 7,
       "narrative": "Short squeeze rally. Все шорты в панике закрываются, funding -11% signals fuel.",
       "catalyst": "Trigger: BTC breaks +3% в 24ч, или positive STRK news (partnership, upgrade).",
-      "position_hint": "Long only above $0.0248 with stop $0.0224. Size small."
+      "position_hint": "Long only above $0.0249 with stop $0.0225. Size small."
     },
     {
       "type": "BEAR",
       "label": "Negative shock / markdown",
-      "probability_pct": 16,
+      "probability_pct": 24,
       "price_range": [
-        0.0212,
-        0.0229
+        0.0178,
+        0.0218
       ],
       "timeframe_days": 14,
-      "narrative": "Ограниченная коррекция в тренде.",
-      "catalyst": "Trigger: broader crypto sell-off.",
-      "position_hint": "Short only below $0.0229 with stop $0.0248. Or reduce longs."
+      "narrative": "Cascade breakdown. CEX inflows + unlock 64M через 26d вызывают sell pressure.",
+      "catalyst": "Trigger: break BELOW $0.0222 + volume spike. Или BTC уходит под $60k.",
+      "position_hint": "Short only below $0.0218 with stop $0.0249. Or reduce longs."
     }
   ]
 }
