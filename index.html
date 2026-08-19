@@ -423,7 +423,6 @@ tr:hover td { background: var(--bg-subtle); }
 <div id="overview-todo">Loading...</div>
 </div>
 </div>
-
 <header class="header">
 <div class="header-left">
 <h1>🧪 STRK LAB</h1>
@@ -433,12 +432,6 @@ tr:hover td { background: var(--bg-subtle); }
 <button class="btn" id="refresh-btn" onclick="loadAll(true)">↻ Обновить</button>
 </div>
 </header>
-<div class="hero" id="hero-container">
-<div class="hero-block state-neutral"><div class="hero-label">🌍 Рынок</div><div class="hero-verdict">Loading...</div></div>
-<div class="hero-block state-neutral"><div class="hero-label">💰 Капитал</div><div class="hero-verdict">Loading...</div></div>
-<div class="hero-block state-neutral"><div class="hero-label">📍 STRK</div><div class="hero-verdict">Loading...</div></div>
-</div>
-<div id="action-banner-container"></div>
 <div class="cards-grid">
 <!-- TVL by Chain (DeFiLlama) -->
 <!-- Funding Rates -->
@@ -463,6 +456,11 @@ tr:hover td { background: var(--bg-subtle); }
 <div class="card-header">
 <div class="card-title">📍 STRK · детали</div>
 <div class="card-subtitle" id="strk-snapshot-age"></div>
+</div>
+<div id="strk-phase-action" style="margin: 12px 0; padding: 12px; background: var(--orange-bg); border-radius: 8px; border-left: 4px solid var(--orange);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">📋 Phase → Action</div>
+<div id="strk-phase-action-content" style="font-size: 14px; font-weight: 700; color: var(--text-bright);">Loading...</div>
+<div id="strk-invalidation" style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; font-style: italic;"></div>
 </div>
 <div class="loading" id="strk-details-content">Loading...</div>
 </div><div class="card">
@@ -497,6 +495,14 @@ tr:hover td { background: var(--bg-subtle); }
 <div class="card-header">
 <div class="card-title">🟢 Активные сигналы</div>
 <div class="card-subtitle" id="momentum-snapshot-age"></div>
+</div>
+<div id="rotation-summary" style="margin: 12px 0; padding: 12px; background: linear-gradient(135deg, rgba(46,160,67,0.06), rgba(46,160,67,0.02)); border-radius: 8px; border-left: 4px solid var(--green);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🎯 Rotation Summary · что делать</div>
+<div id="rotation-summary-content" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+<div id="rot-hold" style="color: var(--green); font-weight: 600;">HOLD: Loading...</div>
+<div id="rot-watch" style="color: var(--yellow); font-weight: 600;">WATCH: Loading...</div>
+<div id="rot-exited" style="color: var(--red); font-weight: 600;">EXITED: Loading...</div>
+</div>
 </div>
 <div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
 <div class="loading" id="signals-content">Loading...</div>
@@ -536,7 +542,101 @@ tr:hover td { background: var(--bg-subtle); }
 </div>
 <div class="section-badge">Level 3 · background</div>
 </div>
+<div class="cards-grid" id="cards-macro" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;"><div id="macro-details" style="grid-column: 1 / -1; display: none;">
+<div id="macro-details-inner" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+<div class="card">
+<div class="card-header">
+<div>
+<div class="card-title">🏦 TVL по chains</div>
+</div>
+<div class="card-meta"><span id="tvl-age">—</span></div>
+</div>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+    TVL (Total Value Locked) = сколько денег заперто в DeFi этого blockchain. Растёт TVL = ecosystem растёт.
+  </div>
+<div id="tvl-content"></div>
+</div><div class="card">
+<div class="card-header">
+<div>
+<div class="card-title">📊 Funding Rates</div>
+</div>
+<div class="card-meta"><span id="funding-age">—</span></div>
+</div>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+    Funding rate = плата за держать позицию в perpetual futures. Высокая LONG funding = много jinovcov.
+  </div>
+<div id="funding-content"></div>
+</div><div class="card">
+<div class="card-header">
+<div>
+<div class="card-title">💵 Стейблы · Dry Powder</div>
+</div>
+<div class="card-meta"><span id="stables-age">—</span></div>
+</div>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+    Общая капитализация стейблов = "сухой порох" рынка. Растёт = накопление кэша (bearish). Падает = capital deployment (bullish).
+  </div>
+<div id="stables-content"></div>
+</div><div class="card">
+<div class="card-header">
+<div>
+<div class="card-title">🚀 Топ движения 24h</div>
+</div>
+<div class="card-meta"><span id="movers-age">—</span></div>
+</div>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+    Топ токены по 24h price change среди major coins (mcap &gt;$100M).
+  </div>
+<div id="movers-content"></div>
+</div><div class="card">
+<div class="card-header">
+<div>
+<div class="card-title">📰 News Feed</div>
+</div>
+<div class="card-meta"><span id="news-age">—</span></div>
+</div>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+    RSS aggregation. Смотрим signal breakdown: positive/negative sentiment.
+  </div>
+<div id="news-content"></div>
+</div><div class="card">
+<div class="card-header">
+<div>
+<div class="card-title">🌍 Alt-Cycle Compass · подробно</div>
+</div>
+<div class="card-meta"><span id="altcycle-detail-age">—</span></div>
+</div>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+    Крипто-рынок движется циклами: деньги перетекают из стейблов → BTC → ETH → крупные альты → мемы → обратно.
+  </div>
+<div id="altcycle-detail-content"></div>
+</div></div>
+</div><div id="macro-details-toggle" onclick="toggleMacroDetails()" style="grid-column: 1 / -1; padding: 10px 16px; background: var(--bg-subtle); border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; border: 1px dashed var(--border);">
+  ▼ Подробности: TVL · Funding · Stables · Movers · News · Alt-cycle detail
+</div><div id="macro-essentials" style="grid-column: 1 / -1; padding: 16px; background: linear-gradient(135deg, rgba(88,166,255,0.06), rgba(88,166,255,0.02)); border-radius: 12px; border-left: 4px solid #58a6ff; margin-bottom: 12px;">
+<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 12px;">🌍 Macro Essentials · thesis check</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+<div style="padding: 10px; background: white; border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Alt-cycle phase</div>
+<div id="macro-ess-cycle" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">Loading...</div>
+</div>
+<div style="padding: 10px; background: white; border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Capital flow</div>
+<div id="macro-ess-flow" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">Loading...</div>
+</div>
+<div style="padding: 10px; background: white; border-radius: 8px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Thesis status</div>
+<div id="macro-ess-thesis" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">Loading...</div>
+</div>
+</div>
+</div>
 
+
+
+
+
+
+</div>
 </div>
 <script>
 const GITHUB_REPO = 'krol4ixa85/STRK_Engine';
@@ -690,6 +790,8 @@ function strkVerdict(labSnap) {
   };
 }
 function renderHero(altcycle, labSnap) {
+  const container = document.getElementById('hero-container');
+  if (!container) return; // v4: replaced by Overview Panel
   const market = marketVerdict(altcycle);
   const capital = capitalFlowVerdict(altcycle);
   const strk = strkVerdict(labSnap);
@@ -740,6 +842,7 @@ function renderHero(altcycle, labSnap) {
 }
 function renderActionBanner(market, capital, strk) {
   const container = document.getElementById('action-banner-container');
+  if (!container) return; // v4: replaced by Overview Panel
   let action = '', icon = '💡', bgClass = '';
   if (strk.state === 'green' && market.state !== 'red') {
     action = `<span class="recommendation-action">Рассмотреть вход в STRK.</span> Триггеры сработали, рынок не против. Проверь свой technical setup и R/R.`;
@@ -1267,10 +1370,6 @@ function renderConfluence(confluenceData) {
   const el = document.getElementById('confluence-content');
     
     // v4 · Overview Panel renderers
-    safeRender('renderOverviewStrk', renderOverviewStrk, [lab, confluence]);
-    safeRender('renderOverviewRotation', renderOverviewRotation, [lab, momentum, rotation]);
-    safeRender('renderOverviewMacro', renderOverviewMacro, [altCycle, stables, funding]);
-    safeRender('renderOverviewTodo', renderOverviewTodo, [lab, confluence, momentum]);
 
   if (!el) return;
   if (!confluenceData) {
@@ -1549,7 +1648,7 @@ async function loadAll(manual = false) {
     const safeRender = (name, fn) => {
       try { fn(); } catch(e) { console.error('[' + name + '] render error:', e); }
     };
-    safeRender('Hero', () => renderHero(altcycle, lab));
+    // v4: renderHero disabled (replaced by Overview Panel)
     safeRender('StrkDetails', () => renderStrkDetails(lab));
     safeRender('Signals', () => renderSignals(momentum));
     safeRender('Precision', () => renderPrecision(precision));
@@ -1562,6 +1661,15 @@ async function loadAll(manual = false) {
     safeRender('SectorFlow', () => renderSectorFlow(netflow));
     safeRender('News', () => renderNews(news));
     safeRender('Confluence', () => renderConfluence(confluence));
+    
+    // v4 · Overview Panel + decision-layer renderers
+    safeRender('OverviewStrk', () => renderOverviewStrk(lab, confluence));
+    safeRender('StrkPhaseAction', () => renderStrkPhaseAction(lab, confluence));
+    safeRender('OverviewRotation', () => renderOverviewRotation(lab, momentum, rotation));
+    safeRender('RotationSummary', () => renderRotationSummary(lab, momentum, rotation));
+    safeRender('OverviewMacro', () => renderOverviewMacro(altcycle, stables, funding));
+    safeRender('MacroEssentials', () => renderMacroEssentials(altcycle, netflow, momentum));
+    safeRender('OverviewTodo', () => renderOverviewTodo(lab, confluence, momentum, rotation, altcycle));
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
@@ -1705,38 +1813,289 @@ function renderOverviewMacro(altCycleData, stablesData, fundingData) {
   detailEl.textContent = details.join(' · ') || 'Тезис в силе';
 }
 
-function renderOverviewTodo(labData, confluenceData, momentumData) {
+function renderOverviewTodo(labData, confluenceData, momentumData, rotationData, altCycleData) {
   const el = document.getElementById('overview-todo');
   if (!el) return;
   
-  const parts = [];
-  
-  // STRK часть
+  // ==== LINE 1 · STRK ====
+  let strkLine = 'STRK: —';
+  let strkColor = 'var(--text-muted)';
   if (confluenceData) {
     const rally = confluenceData.rally_score || 0;
+    const crash = confluenceData.crash_score || 0;
     const signal = confluenceData.signal || 'NO_SIGNAL';
+    
+    // Count triggers from strk-details data
+    let triggersHit = 0, triggersTotal = 4;
+    if (labData && labData.strk_triggers) {
+      triggersHit = labData.strk_triggers.hit || 0;
+      triggersTotal = labData.strk_triggers.total || 4;
+    } else {
+      // Fallback estimate from confluence
+      triggersHit = rally >= 5 ? 3 : rally >= 3 ? 2 : rally >= 2 ? 1 : 0;
+    }
+    
     if (signal === 'NO_SIGNAL' || signal === 'LIVE_BONUS') {
-      parts.push('НЕ входить в STRK (триггеры ' + rally + '/9)');
+      strkLine = `STRK: WAIT (${triggersHit}/${triggersTotal}) — полный вход рано`;
+      strkColor = 'var(--text-muted)';
     } else if (signal.includes('RALLY')) {
-      parts.push('⚡ STRK · проверить входы (' + signal + ')');
+      strkLine = `STRK: ENTER (${rally}/9 rally) — checking triggers`;
+      strkColor = 'var(--green)';
+    } else if (signal.includes('CRASH')) {
+      strkLine = `STRK: STAY OUT (${crash}/9 crash) — thesis at risk`;
+      strkColor = 'var(--red)';
     }
   }
   
-  // Rotation
+  // ==== LINE 2 · ROTATION ====
+  let rotationLine = 'Rotation: —';
+  let rotationColor = 'var(--text-muted)';
   const dataSource = momentumData || labData;
   if (dataSource && dataSource.assets) {
-    let sb = [];
+    let hold = [], watch = [], exited = [];
     for (const [token, data] of Object.entries(dataSource.assets)) {
       if (token === 'STRK') continue;
       const sig = data.signal || data.momentum_signal || '';
-      if (sig.includes('STRONG_BUY')) sb.push(token);
+      const streak = data.streak_days || 0;
+      
+      if (sig.includes('STRONG_BUY') || sig === 'STRONG_BUY') {
+        if (streak >= 5) hold.push(token);
+        else watch.push(token + ' (' + streak + 'd)');
+      } else if (sig.includes('EXITED') || sig === 'EXIT_STRONG_BUY') {
+        exited.push(token);
+      }
     }
-    if (sb.length > 0) {
-      parts.push('Держать: ' + sb.slice(0, 3).join(', '));
+    
+    // Check rotation events for recent exits
+    if (rotationData && rotationData.events) {
+      for (const ev of rotationData.events.slice(0, 5)) {
+        if (ev.type === 'EXIT_STRONG_BUY' || (ev.transition && ev.transition.includes('EXIT'))) {
+          const tok = ev.token || ev.asset;
+          if (tok && !exited.includes(tok)) exited.push(tok);
+        }
+      }
+    }
+    
+    const parts = [];
+    if (hold.length > 0) parts.push(`HOLD ${hold.join(', ')}`);
+    if (watch.length > 0) parts.push(`WATCH ${watch.join(', ')}`);
+    if (exited.length > 0) parts.push(`EXITED ${exited.slice(0, 2).join(', ')}`);
+    
+    rotationLine = 'Rotation: ' + (parts.length > 0 ? parts.join(' · ') : 'no active');
+    if (hold.length > 0) rotationColor = 'var(--green)';
+    else if (watch.length > 0) rotationColor = 'var(--yellow)';
+  }
+  
+  // ==== LINE 3 · MACRO ====
+  let macroLine = 'Macro: —';
+  let macroColor = 'var(--text-muted)';
+  if (altCycleData) {
+    const phase = (altCycleData.current_phase || altCycleData.phase || '').toString();
+    const thesisRisk = (phase.includes('DISTRIBUTION') || phase.includes('MEME') || phase.includes('TOP'));
+    
+    if (thesisRisk) {
+      macroLine = 'Macro: thesis AT RISK — capital rotating to speculation';
+      macroColor = 'var(--red)';
+    } else if (phase.includes('ACCUMULATION') || phase.includes('EARLY')) {
+      macroLine = 'Macro: thesis OK — accumulation phase intact';
+      macroColor = 'var(--green)';
+    } else {
+      macroLine = 'Macro: thesis holding — ' + (phase.replace(/_/g, ' ') || 'neutral');
+      macroColor = 'var(--text-secondary)';
     }
   }
   
-  el.textContent = parts.length > 0 ? parts.join(' · ') : 'Watch mode — держать stables';
+  // ==== RENDER ====
+  el.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 13px;">
+      <div style="color: ${strkColor}; font-weight: 600;">${strkLine}</div>
+      <div style="color: ${rotationColor}; font-weight: 600;">${rotationLine}</div>
+      <div style="color: ${macroColor}; font-weight: 600;">${macroLine}</div>
+    </div>
+  `;
+}
+
+
+function renderStrkPhaseAction(labData, confluenceData) {
+  const el = document.getElementById('strk-phase-action-content');
+  const invEl = document.getElementById('strk-invalidation');
+  if (!el) return;
+  
+  let phase = 'ACCUMULATION';
+  let action = 'NOT FULL SIZE — держать в utility rotation';
+  let invalidation = 'Invalidation: если BEARISH_BREAKDOWN + CEX DISTRIBUTION одновременно → thesis under review';
+  let color = 'var(--text-bright)';
+  
+  if (labData && labData.strk) {
+    phase = labData.strk.wyckoff_phase || labData.strk.phase || phase;
+  }
+  
+  if (confluenceData) {
+    const signal = confluenceData.signal || 'NO_SIGNAL';
+    const rally = confluenceData.rally_score || 0;
+    
+    if (phase === 'ACCUMULATION') {
+      action = 'NOT FULL SIZE — держать в utility rotation, ждать confluence';
+      invalidation = 'Invalidation: BEARISH_BREAKDOWN + CEX DISTRIBUTION → выход из накопления вниз (thesis breach)';
+    } else if (phase === 'SPRING' || phase === 'SOS') {
+      action = 'ENTER SMALL SIZE — spring подтверждён, малая позиция OK';
+      invalidation = 'Invalidation: возврат ниже spring low → false breakout';
+      color = 'var(--yellow)';
+    } else if (phase === 'MARKUP') {
+      action = 'FULL POSITION — trailing stop, add on pullback';
+      invalidation = 'Invalidation: закрытие ниже 20 EMA + volume drop → markup завершается';
+      color = 'var(--green)';
+    } else if (phase === 'DISTRIBUTION') {
+      action = 'TRIM / EXIT — не добавлять, фиксировать';
+      invalidation = 'Invalidation: пробой нового high с volume → новая markup phase';
+      color = 'var(--red)';
+    } else if (phase === 'MARKDOWN') {
+      action = 'STAY OUT — в кэш/BTC, ждать accumulation';
+      invalidation = 'Invalidation: change of character (higher low + volume) → possible bottom';
+      color = 'var(--red)';
+    }
+  }
+  
+  el.style.color = color;
+  el.textContent = phase + ' → ' + action;
+  invEl.textContent = invalidation;
+}
+
+
+function renderRotationSummary(labData, momentumData, rotationEventsData) {
+  const holdEl = document.getElementById('rot-hold');
+  const watchEl = document.getElementById('rot-watch');
+  const exitedEl = document.getElementById('rot-exited');
+  if (!holdEl) return;
+  
+  let hold = [], watchTrim = [], exited = [];
+  
+  const dataSource = momentumData || labData;
+  if (dataSource && dataSource.assets) {
+    for (const [token, data] of Object.entries(dataSource.assets)) {
+      if (token === 'STRK') continue;
+      const sig = data.signal || data.momentum_signal || '';
+      const streak = data.streak_days || 0;
+      const confidence = data.confidence || '';
+      
+      if (sig.includes('STRONG_BUY') || sig === 'STRONG_BUY') {
+        if (streak >= 5) {
+          hold.push(`${token} (${streak}d)`);
+        } else {
+          watchTrim.push(`${token} (${streak}d, new)`);
+        }
+      } else if (sig === 'DIVERGENCE' || sig.includes('DIVERGENCE')) {
+        watchTrim.push(`${token} (DIVERGENCE — trim candidate)`);
+      }
+    }
+  }
+  
+  // Recent exits from rotation events
+  if (rotationEventsData && rotationEventsData.events) {
+    for (const ev of rotationEventsData.events.slice(0, 5)) {
+      const type = ev.type || ev.transition || '';
+      const tok = ev.token || ev.asset;
+      const when = ev.timestamp || ev.date || '';
+      if ((type === 'EXIT_STRONG_BUY' || type.includes('EXIT')) && tok) {
+        // Format date
+        let dateStr = '';
+        try {
+          if (when) {
+            const d = new Date(when);
+            const days = Math.floor((Date.now() - d.getTime()) / (1000*60*60*24));
+            dateStr = days === 0 ? 'today' : days + 'd ago';
+          }
+        } catch(e) {}
+        exited.push(`${tok}${dateStr ? ' (' + dateStr + ')' : ''}`);
+      }
+    }
+  }
+  
+  // Render
+  holdEl.innerHTML = `🟢 <strong>HOLD:</strong> ${hold.length > 0 ? hold.join(', ') : 'нет стабильных STRONG_BUY'}`;
+  watchEl.innerHTML = `🟡 <strong>WATCH / trim:</strong> ${watchTrim.length > 0 ? watchTrim.join(', ') : '—'}`;
+  exitedEl.innerHTML = `🔴 <strong>EXITED recently:</strong> ${exited.length > 0 ? exited.slice(0, 3).join(', ') : '—'}`;
+}
+
+
+function toggleMacroDetails() {
+  const details = document.getElementById('macro-details');
+  const toggle = document.getElementById('macro-details-toggle');
+  if (!details || !toggle) return;
+  const isHidden = details.style.display === 'none';
+  details.style.display = isHidden ? 'block' : 'none';
+  toggle.innerHTML = isHidden 
+    ? '▲ Скрыть подробности'
+    : '▼ Подробности: TVL · Funding · Stables · Movers · News · Alt-cycle detail';
+}
+
+function renderMacroEssentials(altCycleData, sectorFlowData, momentumData) {
+  const cycleEl = document.getElementById('macro-ess-cycle');
+  const flowEl = document.getElementById('macro-ess-flow');
+  const thesisEl = document.getElementById('macro-ess-thesis');
+  if (!cycleEl) return;
+  
+  // ==== Alt-cycle phase ====
+  if (altCycleData) {
+    const phase = (altCycleData.current_phase || altCycleData.phase || 'UNKNOWN').toString();
+    cycleEl.textContent = phase.replace(/_/g, ' ');
+    if (phase.includes('EARLY') || phase.includes('ACCUMULATION')) {
+      cycleEl.style.color = 'var(--green)';
+    } else if (phase.includes('DISTRIBUTION') || phase.includes('TOP') || phase.includes('MEME')) {
+      cycleEl.style.color = 'var(--red)';
+    } else {
+      cycleEl.style.color = 'var(--text-bright)';
+    }
+  }
+  
+  // ==== Capital flow ====
+  if (sectorFlowData && sectorFlowData.sectors) {
+    // Find biggest inflow + outflow sectors
+    const sectors = Object.entries(sectorFlowData.sectors);
+    sectors.sort((a, b) => (b[1].net_flow_usd || 0) - (a[1].net_flow_usd || 0));
+    if (sectors.length >= 2) {
+      const inflow = sectors[0][0];
+      const outflow = sectors[sectors.length - 1][0];
+      flowEl.textContent = `→ ${inflow} · ← ${outflow}`;
+      flowEl.style.color = 'var(--text-bright)';
+    }
+  } else if (sectorFlowData && sectorFlowData.direction) {
+    flowEl.textContent = sectorFlowData.direction;
+  }
+  
+  // ==== Thesis status ====
+  let thesisScore = 0;
+  let thesisNote = 'holding';
+  
+  if (altCycleData) {
+    const phase = (altCycleData.current_phase || '').toString();
+    if (phase.includes('EARLY') || phase.includes('ACCUMULATION')) thesisScore += 2;
+    else if (phase.includes('DISTRIBUTION') || phase.includes('MEME')) thesisScore -= 2;
+  }
+  
+  // Check if utility sectors (INFRA/RWA/LST) are inflowing (validates thesis)
+  if (sectorFlowData && sectorFlowData.sectors) {
+    const utilitySectors = ['INFRA', 'RWA', 'LST'];
+    let utilityInflow = 0;
+    for (const s of utilitySectors) {
+      const data = sectorFlowData.sectors[s];
+      if (data && data.net_flow_usd > 0) utilityInflow++;
+    }
+    if (utilityInflow >= 2) thesisScore += 1;
+  }
+  
+  if (thesisScore >= 2) {
+    thesisEl.textContent = '✓ OK';
+    thesisEl.style.color = 'var(--green)';
+    thesisNote = 'accumulation phase + utility inflow';
+  } else if (thesisScore <= -2) {
+    thesisEl.textContent = '⚠ AT RISK';
+    thesisEl.style.color = 'var(--red)';
+    thesisNote = 'distribution / meme season';
+  } else {
+    thesisEl.textContent = '~ holding';
+    thesisEl.style.color = 'var(--yellow)';
+  }
 }
 
 </script>
