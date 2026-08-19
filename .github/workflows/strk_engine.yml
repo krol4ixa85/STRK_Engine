@@ -364,35 +364,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: strk-signal
+          # Bulletproof: upload ВСЕ data/ (cache + history + reports).
+          # Раньше list был partial → LAB/alt_cycle/funding/etc не попадали в артефакт,
+          # даже когда реально создавались. Теперь всё видно в скачанном ZIP.
           path: |
-            data/cache/composite_signal_v2.json
-            data/cache/agent_input.json
-            data/cache/cross_window_pattern.json
-            data/cache/whale_analysis.json
-            data/cache/cohort_tracker.json
-            data/cache/wyckoff_phase.json
-            data/cache/interpretation.json
-            data/cache/concentration_metrics.json
-            data/cache/effort_result.json
-            data/cache/cvd_analysis.json
-            data/cache/cex_flow.json
-            data/cache/technical_momentum.json
-            data/cache/scenario_analysis.json
-            data/cache/scenarios/
-            data/cache/decision_log.json
-            data/cache/liquidity_shift.json
-            data/cache/ekubo_flow.json
-            data/cache/endur_lst_flow.json
-            data/cache/native_staking_flow.json
-            data/cache/covert_flow_signal.json
-            data/cache/shadow_calibration.json
-            data/cache/discord_monitor_state.json
-            data/cache/starknet_discord.json
-            data/cache/whale_monitor_state.json
-            data/cache/bridge_activity.json
-            data/history/shadow_votes.jsonl
-            data/history/all_history.jsonl
-            data/history/alerts.jsonl
+            data/cache/
+            data/history/
+            data/reports/
             data/dashboards/
             data/graphs/
-            data/reports/
+          if-no-files-found: warn
+          retention-days: 30
