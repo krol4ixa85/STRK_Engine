@@ -1214,68 +1214,7 @@ function renderMovers(data) {
   }
 
   let html = '<div style="display: grid; grid-template-columns: 1fr; gap: 12px;">';
-  html += '<style>@media(min-width: 640px) { #movers-content > div { grid-template-columns: 1fr 1fr !important; } }
-    /* v5.0 · View switcher */
-    body.view-strk .section-rotation-wrap,
-    body.view-strk .section-macro-wrap { display: none !important; }
-    body.view-rotation .section-strk-wrap,
-    body.view-rotation .section-macro-wrap { display: none !important; }
-    body.view-macro .section-strk-wrap,
-    body.view-macro .section-rotation-wrap { display: none !important; }
-    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-strk-wrap,
-    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-rotation-wrap,
-    body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-macro-wrap { display: block; }
-    
-    .breadcrumb {
-      max-width: 1200px;
-      margin: 8px auto 16px;
-      padding: 10px 16px;
-      background: var(--bg-subtle);
-      border-radius: 8px;
-      display: none;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-    }
-    body.view-strk .breadcrumb,
-    body.view-rotation .breadcrumb,
-    body.view-macro .breadcrumb { display: flex; }
-    .breadcrumb-home {
-      color: var(--orange-strong, #B7791F);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background: rgba(255,153,0,0.08);
-    }
-    .breadcrumb-home:hover { background: rgba(255,153,0,0.15); }
-    .breadcrumb-current {
-      color: var(--text-bright);
-      font-weight: 700;
-    }
-    .breadcrumb-sep { color: var(--text-muted); }
-    
-    /* Cards clickable */
-    .overview-card-clickable {
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .overview-card-clickable:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .overview-card-clickable .card-arrow {
-      display: inline-block;
-      transition: transform 0.2s;
-      opacity: 0.5;
-      margin-left: 4px;
-    }
-    .overview-card-clickable:hover .card-arrow {
-      transform: translateX(3px);
-      opacity: 1;
-    }
-
-</style>';
+  html += '<style>@media(min-width: 640px) { #movers-content > div { grid-template-columns: 1fr 1fr !important; } }</style>';
 
   // Gainers
   html += '<div><div class="hero-label" style="color: var(--green); margin-bottom: 8px;">🟢 Топ рост 24h</div><div class="table-wrapper"><table>';
