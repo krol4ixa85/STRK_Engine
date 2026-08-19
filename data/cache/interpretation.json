@@ -1,44 +1,44 @@
 {
-  "as_of": "2026-08-19T21:05:51.886071+00:00",
+  "as_of": "2026-08-19T22:38:51.151852+00:00",
   "context_snapshot": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase B · building base",
-    "wyckoff_conf": "HIGH",
-    "price": 0.02419,
+    "wyckoff_conf": "MEDIUM",
+    "price": 0.02408,
     "high_14d": 0.02647,
     "low_14d": 0.02221,
-    "slope_3d": 3.78,
-    "slope_accel": 3.01,
-    "vol_ratio_3d": 0.64,
-    "rsi": 61.58,
-    "pct_from_high": -8.61,
-    "pct_from_low": 8.91,
+    "slope_3d": 3.3,
+    "slope_accel": 2.54,
+    "vol_ratio_3d": 0.67,
+    "rsi": 60.47,
+    "pct_from_high": -9.03,
+    "pct_from_low": 8.42,
     "funding_apr": 0,
     "funding_min_7d": -11.33,
     "short_crowded": true,
     "long_crowded": false,
-    "hhi": 0.052,
+    "hhi": 0.0469,
     "entropy": 5,
     "large_receivers_14d": 0,
-    "top5_share": 42.43,
+    "top5_share": 39.18,
     "cex_signal": "MILD_DISTRIBUTION",
     "cex_net_7d": 0,
     "cex_consecutive": 0,
     "effort_signal": "NEUTRAL",
     "cvd_signal": "NEUTRAL",
-    "event_signal": "POSITIVE_CATALYST",
-    "event_bull": 7,
-    "event_bear": 1,
-    "sector_signal": "SECTOR_MOMENTUM",
-    "strk_alpha_7d": -3.49,
+    "event_signal": "HIGH_VOL_WINDOW",
+    "event_bull": 5,
+    "event_bear": 4,
+    "sector_signal": "STRK_UNDERPERFORMING",
+    "strk_alpha_7d": -5.2,
     "days_to_unlock": 26,
     "unlock_amount": 64000000,
     "supply_30d": 64000000,
-    "btc_price": 69310.0,
+    "btc_price": 69254.4,
     "btc_cycle": "NEUTRAL",
-    "btc_dist200": 0.43
+    "btc_dist200": 0.35
   },
-  "patterns_matched": 1,
+  "patterns_matched": 2,
   "interpretation": {
     "primary": {
       "name": "ACCUMULATION_BASE",
@@ -46,7 +46,7 @@
       "confidence": 75,
       "direction": "NEUTRAL_TO_BULLISH",
       "hypothesis": "Крупные тихо аккумулируют. Розница пассивна. Volatility сжимается.",
-      "narrative": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.6× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
+      "narrative": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.7× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
       "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0265 на volume expansion 1.5×+.",
       "triggers_watch": [
         "Break ABOVE $0.0265 on volume 1.5×+ = SOS, markup starts",
@@ -55,9 +55,23 @@
       ],
       "invalidation": "Если цена уйдёт ниже $0.0222 без быстрого возврата — фаза продлевается или переходит в markdown."
     },
-    "secondary": null,
+    "secondary": {
+      "name": "SECTOR_ROTATION_OUT",
+      "label": "L2 sector rotation OUT of STRK",
+      "confidence": 70,
+      "direction": "BEARISH_MID",
+      "hypothesis": "STRK alpha -5.2% vs L2 sector — деньги уходят из STRK специфически, не broad L2 weakness.",
+      "narrative": "STRK 7d показывает -5.2% относительно L2 сектора. Это не macro — это STRK-специфический sell-off. ARB, OP, ZK ведут себя иначе. Причины обычно: (a) upcoming supply pressure, (b) narrative shift, (c) whale distribution.",
+      "position_hint": "Long STRK здесь — против тренда сектора. Wait либо для sector rotation IN, либо для capitulation setup.",
+      "triggers_watch": [
+        "STRK alpha 7d > +2% = rotation reversal",
+        "CEX flow flip OUTFLOW",
+        "Positive catalyst (upgrade, partnership, listing)"
+      ],
+      "invalidation": "Alpha 7d flip to positive + BTC UP cycle = rotation IN, паттерн сброшен."
+    },
     "tertiary": null,
-    "summary": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.6× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
+    "summary": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.7× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
     "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0265 на volume expansion 1.5×+.",
     "triggers": [
       "Break ABOVE $0.0265 on volume 1.5×+ = SOS, markup starts",
@@ -73,7 +87,7 @@
       "confidence": 75,
       "direction": "NEUTRAL_TO_BULLISH",
       "hypothesis": "Крупные тихо аккумулируют. Розница пассивна. Volatility сжимается.",
-      "narrative": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.6× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
+      "narrative": "Phase B — building phase. Цена в узком range 0.0222-0.0265. Volume 0.7× среднего — сухо. Funding +0.0% почти нейтральный. CEX flow: MILD_DISTRIBUTION. Обычно фаза длится 2-8 недель до подтверждения markup.",
       "position_hint": "Wait. Не входить пока не увидим Sign of Strength (SOS): пробой выше $0.0265 на volume expansion 1.5×+.",
       "triggers_watch": [
         "Break ABOVE $0.0265 on volume 1.5×+ = SOS, markup starts",
@@ -81,6 +95,21 @@
         "CEX flow flip to OUTFLOW 3+ days = whales accumulating too"
       ],
       "invalidation": "Если цена уйдёт ниже $0.0222 без быстрого возврата — фаза продлевается или переходит в markdown."
+    },
+    {
+      "name": "SECTOR_ROTATION_OUT",
+      "label": "L2 sector rotation OUT of STRK",
+      "confidence": 70,
+      "direction": "BEARISH_MID",
+      "hypothesis": "STRK alpha -5.2% vs L2 sector — деньги уходят из STRK специфически, не broad L2 weakness.",
+      "narrative": "STRK 7d показывает -5.2% относительно L2 сектора. Это не macro — это STRK-специфический sell-off. ARB, OP, ZK ведут себя иначе. Причины обычно: (a) upcoming supply pressure, (b) narrative shift, (c) whale distribution.",
+      "position_hint": "Long STRK здесь — против тренда сектора. Wait либо для sector rotation IN, либо для capitulation setup.",
+      "triggers_watch": [
+        "STRK alpha 7d > +2% = rotation reversal",
+        "CEX flow flip OUTFLOW",
+        "Positive catalyst (upgrade, partnership, listing)"
+      ],
+      "invalidation": "Alpha 7d flip to positive + BTC UP cycle = rotation IN, паттерн сброшен."
     }
   ]
 }

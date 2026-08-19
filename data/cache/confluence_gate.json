@@ -1,38 +1,39 @@
 {
-  "as_of": "2026-08-19T21:05:51.067661+00:00",
-  "signal": "RALLY_HIGH_CONFLUENCE",
-  "confidence": "HIGH",
-  "summary": "STRONG RALLY SETUP - 6 independent checks agree",
-  "action": "Consider LONG on break above $0.0262 with stop $0.0222",
-  "rally_score": 6,
-  "crash_score": 1,
+  "as_of": "2026-08-19T22:38:49.745077+00:00",
+  "signal": "CRASH_MEDIUM",
+  "confidence": "MEDIUM",
+  "summary": "Partial crash signals (4/9+)",
+  "action": "STAY FLAT",
+  "rally_score": 3,
+  "crash_score": 4,
   "checks": {
-    "on_chain_ok": true,
-    "price_up_3d": true,
-    "accelerating": true,
-    "vol_expanding": false,
-    "not_distributing_cex": true,
-    "events_supportive": true,
-    "strong_off_chain_bull": true
+    "on_chain_distribution": false,
+    "price_down_3d": false,
+    "not_bouncing": true,
+    "cex_distribution": false,
+    "not_extreme_short": false,
+    "events_bearish": true,
+    "liquidity_shift_bearish": true,
+    "strk_underperforming_l2_sector": true
   },
   "inputs_used": {
     "wyckoff_phase": "ACCUMULATION",
     "technical_signal": "NEUTRAL",
-    "slope_3d_pct": 3.78,
-    "slope_accel_pct": 3.01,
-    "vol_ratio_3d": 0.64,
-    "rsi": 61.58,
-    "pct_from_high": -8.61,
-    "pct_from_low": 8.91,
+    "slope_3d_pct": 3.3,
+    "slope_accel_pct": 2.54,
+    "vol_ratio_3d": 0.67,
+    "rsi": 60.47,
+    "pct_from_high": -9.03,
+    "pct_from_low": 8.42,
     "short_crowded": true,
     "long_crowded": false,
     "cex_signal": "NEUTRAL",
-    "event_signal": "POSITIVE_CATALYST",
-    "event_bullish": 7,
-    "event_bearish": 1,
+    "event_signal": "HIGH_VOL_WINDOW",
+    "event_bullish": 5,
+    "event_bearish": 4,
     "liquidity_shift_direction": "EXTRACTING",
     "bridge_activity_signal": "LOW_ACTIVITY",
-    "cross_token_alpha_7d_pct": -3.49
+    "cross_token_alpha_7d_pct": -5.2
   },
   "voter_wire_v1": {
     "status": "LIVE_BONUS",
@@ -40,7 +41,7 @@
     "bonuses_active": {
       "liquidity_shift": true,
       "bridge_activity": true,
-      "cross_token": false
+      "cross_token": true
     },
     "thresholds": {
       "liquidity_shift_rally_values": [
