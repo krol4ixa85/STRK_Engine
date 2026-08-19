@@ -1,13 +1,13 @@
 {
-  "as_of": "2026-08-19T10:28:33.189906+00:00",
-  "valid_until": "2026-08-26T10:28:33.189906+00:00",
+  "as_of": "2026-08-19T14:24:38.665882+00:00",
+  "valid_until": "2026-08-26T14:24:38.665882+00:00",
   "current_state": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase A · initial demand",
     "confidence": "HIGH",
-    "price": 0.0226,
-    "btc_cycle": "DOWN",
-    "btc_price": 64369.5,
+    "price": 0.0228,
+    "btc_cycle": "DOWN_REVERSING",
+    "btc_price": 65421.6,
     "short_crowded": true,
     "long_crowded": false,
     "days_to_next_unlock": 26,
@@ -18,10 +18,10 @@
     {
       "type": "BASE",
       "label": "Продолжение accumulation",
-      "probability_pct": 61,
+      "probability_pct": 58,
       "price_range": [
         0.0218,
-        0.0249
+        0.0251
       ],
       "timeframe_days": 14,
       "narrative": "Продолжение аккумуляции в диапазоне. Крупные покупают на dip, розница пассивна.",
@@ -31,20 +31,20 @@
     {
       "type": "BULL",
       "label": "Positive shock / squeeze",
-      "probability_pct": 13,
+      "probability_pct": 17,
       "price_range": [
-        0.0237,
+        0.0239,
         0.0331
       ],
       "timeframe_days": 7,
-      "narrative": "Short squeeze rally. Все шорты в панике закрываются, funding -11% signals fuel. BTC в down-cycle снижает вероятность.",
+      "narrative": "Short squeeze rally. Все шорты в панике закрываются, funding -11% signals fuel.",
       "catalyst": "Trigger: BTC breaks +3% в 24ч, или positive STRK news (partnership, upgrade).",
-      "position_hint": "Long only above $0.0237 with stop $0.0215. Size small."
+      "position_hint": "Long only above $0.0239 with stop $0.0217. Size small."
     },
     {
       "type": "BEAR",
       "label": "Negative shock / markdown",
-      "probability_pct": 26,
+      "probability_pct": 24,
       "price_range": [
         0.0178,
         0.0218
@@ -52,7 +52,7 @@
       "timeframe_days": 14,
       "narrative": "Cascade breakdown. CEX inflows + unlock 64M через 26d вызывают sell pressure.",
       "catalyst": "Trigger: break BELOW $0.0222 + volume spike. Или BTC уходит под $60k.",
-      "position_hint": "Short only below $0.0218 with stop $0.0237. Or reduce longs."
+      "position_hint": "Short only below $0.0218 with stop $0.0239. Or reduce longs."
     }
   ]
 }
