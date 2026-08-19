@@ -1,16 +1,140 @@
 {
-  "as_of": "2026-08-19T19:40:59.006361+00:00",
+  "as_of": "2026-08-19T20:07:44.456003+00:00",
   "window_hours": 168,
-  "total_transactions": 0,
-  "inflow_count": 0,
-  "outflow_count": 0,
-  "rebalance_count": 0,
-  "days_data": [],
+  "total_transactions": 154,
+  "inflow_count": 73,
+  "outflow_count": 77,
+  "rebalance_count": 4,
+  "days_data": [
+    {
+      "day": "2026-08-12",
+      "inflow_strk": 7014773.69,
+      "outflow_strk": 840894.2,
+      "rebalance_strk": 0,
+      "net_strk": -6173879.49,
+      "net_direction": "BEARISH",
+      "inflow_count": 2,
+      "outflow_count": 2
+    },
+    {
+      "day": "2026-08-13",
+      "inflow_strk": 23668438.74,
+      "outflow_strk": 21473328.42,
+      "rebalance_strk": 10323020.56,
+      "net_strk": -2195110.32,
+      "net_direction": "BEARISH",
+      "inflow_count": 13,
+      "outflow_count": 20
+    },
+    {
+      "day": "2026-08-14",
+      "inflow_strk": 3672809.79,
+      "outflow_strk": 4383429.61,
+      "rebalance_strk": 0,
+      "net_strk": 710619.82,
+      "net_direction": "NEUTRAL",
+      "inflow_count": 4,
+      "outflow_count": 8
+    },
+    {
+      "day": "2026-08-15",
+      "inflow_strk": 11978673.64,
+      "outflow_strk": 3879756.92,
+      "rebalance_strk": 0,
+      "net_strk": -8098916.73,
+      "net_direction": "BEARISH",
+      "inflow_count": 8,
+      "outflow_count": 5
+    },
+    {
+      "day": "2026-08-16",
+      "inflow_strk": 7178976.95,
+      "outflow_strk": 7380464.02,
+      "rebalance_strk": 0,
+      "net_strk": 201487.07,
+      "net_direction": "NEUTRAL",
+      "inflow_count": 13,
+      "outflow_count": 9
+    },
+    {
+      "day": "2026-08-17",
+      "inflow_strk": 5079716.27,
+      "outflow_strk": 6878738.26,
+      "rebalance_strk": 5082431.2,
+      "net_strk": 1799021.99,
+      "net_direction": "BULLISH",
+      "inflow_count": 9,
+      "outflow_count": 13
+    },
+    {
+      "day": "2026-08-18",
+      "inflow_strk": 6509447.68,
+      "outflow_strk": 3989292.6,
+      "rebalance_strk": 5000176.46,
+      "net_strk": -2520155.08,
+      "net_direction": "BEARISH",
+      "inflow_count": 11,
+      "outflow_count": 10
+    },
+    {
+      "day": "2026-08-19",
+      "inflow_strk": 69332943.92,
+      "outflow_strk": 2266398.29,
+      "rebalance_strk": 0,
+      "net_strk": -67066545.63,
+      "net_direction": "BEARISH",
+      "inflow_count": 13,
+      "outflow_count": 10
+    }
+  ],
   "classification": {
-    "signal": "INSUFFICIENT_DATA",
-    "confidence": "NONE",
-    "interpretation": "No CEX flow data available"
+    "signal": "MILD_DISTRIBUTION",
+    "confidence": "MEDIUM",
+    "interpretation": "4/7 days net inflow, -77.2M STRK — mild distribution",
+    "stats": {
+      "days_analyzed": 7,
+      "bullish_days": 1,
+      "bearish_days": 4,
+      "neutral_days": 2,
+      "consecutive_bullish": 0,
+      "consecutive_bearish": 2,
+      "total_net_strk": -77169598.88,
+      "total_inflow_strk": 127421006.99,
+      "total_outflow_strk": 50251408.12
+    }
   },
-  "top_inflows": [],
-  "top_outflows": []
+  "top_inflows": [
+    {
+      "amount": 62199920.0,
+      "to_cex": "MEXC_2",
+      "from": "0xca1a1b9bed1120a06dcf0adf9f52194e92ccea1c"
+    },
+    {
+      "amount": 16300000.0,
+      "to_cex": "Coinbase_1",
+      "from": "0x55ccb545d767203fe023c7847f1cae2aa24820b8"
+    },
+    {
+      "amount": 6415780.665015975,
+      "to_cex": "Coinbase_1",
+      "from": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
+    }
+  ],
+  "top_outflows": [
+    {
+      "amount": 13987923.543145867,
+      "from_cex": "Coinbase_1",
+      "to": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
+    },
+    {
+      "amount": 1499976.0,
+      "from_cex": "Binance_16",
+      "to": "0x943c3aff26f795c670b82b6559f03a407cc1b591"
+    },
+    {
+      "amount": 1191377.0,
+      "from_cex": "Binance_16",
+      "to": "0xf84cf6dfc260b37e58936fc5bd38a55ad00b851a"
+    }
+  ]
 }

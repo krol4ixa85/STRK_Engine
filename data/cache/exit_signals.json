@@ -1,14 +1,14 @@
 {
-  "ts": "2026-08-19T19:41:32.703939+00:00",
+  "ts": "2026-08-19T20:08:13.940793+00:00",
   "long_exit": {
-    "level": "NEUTRAL",
-    "active_count": 0,
+    "level": "WARNING",
+    "active_count": 1,
     "triggers": [
       {
         "id": "L1",
         "name": "CEX flow flip → distribution",
-        "active": false,
-        "evidence": "bearish streak 0 days (was bullish 0)"
+        "active": true,
+        "evidence": "bearish streak 2 days (was bullish 0)"
       },
       {
         "id": "L2",
@@ -20,7 +20,7 @@
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=0.68"
+        "evidence": "price_up_3d=False, vol_ratio=0.62"
       },
       {
         "id": "L4",
@@ -38,7 +38,7 @@
         "id": "S1",
         "name": "CEX flow flip → accumulation",
         "active": false,
-        "evidence": "bullish streak 0 days (was bearish 0)"
+        "evidence": "bullish streak 0 days (was bearish 2)"
       },
       {
         "id": "S2",
@@ -50,7 +50,7 @@
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 56.73, vol_ratio 0.68"
+        "evidence": "RSI 55.98, vol_ratio 0.62"
       },
       {
         "id": "S4",
