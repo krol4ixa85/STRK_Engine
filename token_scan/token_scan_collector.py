@@ -154,17 +154,64 @@ def aggregate_metrics(weekly_rows):
     price_90 = find_close(weekly_rows, 90)
     price_180 = weekly_rows[0].get('close_price') if weekly_rows else None
     
-    # Phase verdict
-    if netflow_180 > 0 and streak >= 8:
-        verdict = 'LONG_ACCUMULATION'
-    elif netflow_180 > 0 and streak >= 4:
+    # ============================================================
+    # WYCKOFF PHASE DETECTION v2 (smarter)
+    # ============================================================
+    
+    all_flows = [r.get('net_flow_m_usd', 0) or 0 for r in weekly_rows]
+    positive_flows = [f for f in all_flows if f > 0]
+    median_positive = sorted(positive_flows)[len(positive_flows)//2] if positive_flows else 0
+    sos_threshold = max(5.0, median_positive * 3)
+    
+    sos_events = []
+    for i, r in enumerate(weekly_rows):
+        flow = r.get('net_flow_m_usd', 0) or 0
+        if flow >= sos_threshold:
+            sos_events.append({'week': r.get('week'), 'flow_m_usd': flow, 'index': i})
+    
+    negative_flows = [abs(f) for f in all_flows if f < 0]
+    median_negative = sorted(negative_flows)[len(negative_flows)//2] if negative_flows else 0
+    dist_threshold = max(5.0, median_negative * 3)
+    
+    dist_events = []
+    for i, r in enumerate(weekly_rows):
+        flow = r.get('net_flow_m_usd', 0) or 0
+        if abs(flow) >= dist_threshold and flow < 0:
+            dist_events.append({'week': r.get('week'), 'flow_m_usd': flow, 'index': i})
+    
+    recent_8w = weekly_rows[-8:] if len(weekly_rows) >= 8 else weekly_rows
+    recent_netflow = sum(r.get('net_flow_m_usd', 0) or 0 for r in recent_8w)
+    recent_positive = sum(1 for r in recent_8w if (r.get('net_flow_m_usd', 0) or 0) > 0)
+    
+    recent_4w = weekly_rows[-4:] if len(weekly_rows) >= 4 else weekly_rows
+    recent_4w_flow = sum(r.get('net_flow_m_usd', 0) or 0 for r in recent_4w)
+    
+    price_90d_change = 0
+    if price_now and price_90:
+        price_90d_change = ((price_now - price_90) / price_90) * 100
+    
+    recent_sos = [e for e in sos_events if e['index'] >= len(weekly_rows) - 8]
+    recent_dist = [e for e in dist_events if e['index'] >= len(weekly_rows) - 8]
+    
+    # Verdict logic (Wyckoff-informed)
+    if len(recent_dist) >= 2 and recent_4w_flow < -10 and price_90d_change < -10:
+        verdict = 'DISTRIBUTION_ACTIVE'
+    elif netflow_180 < -20 and recent_4w_flow < 0 and streak == 0:
+        verdict = 'MARKDOWN'
+    elif len(recent_sos) >= 2 and netflow_180 > 0:
+        verdict = 'LATE_ACCUMULATION_OR_MARKUP'
+    elif len(recent_sos) >= 1 and recent_netflow > 5:
+        verdict = 'MID_ACCUMULATION_STRONG'
+    elif streak >= 4 and netflow_180 > 0:
         verdict = 'MID_ACCUMULATION'
-    elif netflow_180 > 0 and streak >= 1:
+    elif streak >= 1 and recent_netflow > 0:
         verdict = 'EARLY_ACCUMULATION'
-    elif netflow_180 < 0 and streak == 0:
-        verdict = 'DISTRIBUTION_OR_MARKDOWN'
+    elif pct_positive >= 45 and netflow_180 > 0 and price_90d_change > -15:
+        verdict = 'ACCUMULATION_PHASE_B'
+    elif netflow_180 < 0 and pct_positive < 40:
+        verdict = 'WEAKENING'
     else:
-        verdict = 'MIXED_OR_NEUTRAL'
+        verdict = 'MIXED_OR_NEUTRAL' 
     
     return {
         'netflow_30d_usd': netflow_30,
@@ -184,6 +231,13 @@ def aggregate_metrics(weekly_rows):
         'price_30d_ago': price_30,
         'price_90d_ago': price_90,
         'price_180d_ago': price_180,
+        'price_90d_change_pct': round(price_90d_change, 2),
+        'sos_events': sos_events,
+        'dist_events': dist_events,
+        'recent_sos_count': len(recent_sos),
+        'recent_dist_count': len(recent_dist),
+        'recent_8w_netflow_m_usd': round(recent_netflow, 2),
+        'recent_4w_netflow_m_usd': round(recent_4w_flow, 2),
     }
 
 # ============================================================
