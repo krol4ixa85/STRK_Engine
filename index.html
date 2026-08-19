@@ -692,11 +692,20 @@ function fmtInt(n) {
   if (n === null || n === undefined || isNaN(n)) return 'n/a';
   return Number(n).toLocaleString('ru-RU');
 }
+// v4: список файлов которые ожидаемо отсутствуют — silent 404
+const OPTIONAL_FILES = ['whale_holdings_alerts.jsonl'];
+
 async function fetchJSON(path) {
   const url = `${BASE_URL}/${path}?t=${Math.floor(Date.now() / 60000)}`;
+  const isOptional = OPTIONAL_FILES.some(f => path.includes(f));
   try {
     const r = await fetch(url);
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) {
+      if (isOptional && r.status === 404) {
+        return null; // silent for expected missing files
+      }
+      throw new Error(`HTTP ${r.status}`);
+    }
     return await r.json();
   } catch (e) { return null; }
 }
@@ -795,7 +804,6 @@ function renderHero(altcycle, labSnap) {
   const market = marketVerdict(altcycle);
   const capital = capitalFlowVerdict(altcycle);
   const strk = strkVerdict(labSnap);
-  const container = document.getElementById('hero-container');
   const cycleSteps = [
     { num: 1, name: 'Стейблы', icon: '💵' }, { num: 2, name: 'BTC', icon: '₿' },
     { num: 3, name: 'ETH', icon: 'Ξ' }, { num: 4, name: 'Альты', icon: '🚀' },
