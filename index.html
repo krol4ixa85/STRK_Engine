@@ -947,7 +947,7 @@ function renderActionBanner(market, capital, strk) {
   }
   container.innerHTML = `<div class="recommendation-banner ${bgClass}"><div class="recommendation-icon">${icon}</div><div class="recommendation-text">${action}</div></div>`;
 }
-function renderStrkDetails(snap) {
+function renderStrkDetails(snap, strkPriceData) {
   const el = document.getElementById('strk-details-content');
   if (!snap || !snap.strk_status) { el.innerHTML = '<div class="error">Нет данных</div>'; return; }
   const strk = snap.strk_status;
@@ -1072,7 +1072,7 @@ function renderTVL(data) {
 
   el.innerHTML = html;
   const age = ago(data.generated_at);
-  document.getElementById('tvl-snapshot-age').textContent = 'Обновлено ' + age.text;
+  const _tvlAge = document.getElementById('tvl-snapshot-age') || document.getElementById('tvl-age'); if (_tvlAge) _tvlAge.textContent = 'Обновлено ' + age.text;
 }
 
 function renderFunding(data) {
@@ -1117,7 +1117,7 @@ function renderFunding(data) {
 
   el.innerHTML = html;
   const age = ago(data.generated_at);
-  document.getElementById('funding-snapshot-age').textContent = 'Обновлено ' + age.text;
+  const _fundAge = document.getElementById('funding-snapshot-age') || document.getElementById('funding-age'); if (_fundAge) _fundAge.textContent = 'Обновлено ' + age.text;
 }
 
 function renderStables(data) {
@@ -1199,7 +1199,7 @@ function renderStables(data) {
 
   el.innerHTML = html;
   const age = ago(data.generated_at);
-  document.getElementById('stables-snapshot-age').textContent = 'Обновлено ' + age.text;
+  const _stblAge = document.getElementById('stables-snapshot-age') || document.getElementById('stables-age'); if (_stblAge) _stblAge.textContent = 'Обновлено ' + age.text;
 }
 
 function renderMovers(data) {
@@ -1752,7 +1752,7 @@ function renderAltCycleDetail(data) {
   html += '</div></div>';
   el.innerHTML = html;
   const age = ago(data.generated_at);
-  document.getElementById('altcycle-snapshot-age').textContent = `Обновлено ${age.text}`;
+  const _acAge = document.getElementById('altcycle-snapshot-age') || document.getElementById('altcycle-detail-age'); if (_acAge) _acAge.textContent = `Обновлено ${age.text}`;
 }
 
 async function fetchStrkPrice() {
