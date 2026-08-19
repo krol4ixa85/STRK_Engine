@@ -1,64 +1,45 @@
 {
-  "as_of": "2026-08-19T21:05:00.783040+00:00",
+  "as_of": "2026-08-19T22:38:04.412227+00:00",
   "dist_7d": {
     "label": "7d",
-    "total_transfers": 2972,
-    "unique_recipients": 897,
+    "total_transfers": 3014,
+    "unique_recipients": 905,
     "counts": {
-      "MICRO": 524,
-      "SMALL": 222,
-      "MEDIUM": 105,
-      "LARGE": 46
+      "MICRO": 523,
+      "SMALL": 225,
+      "MEDIUM": 109,
+      "LARGE": 48
     },
     "amounts_strk": {
-      "MICRO": 1162707.1,
-      "SMALL": 8181127.91,
-      "MEDIUM": 41558457.08,
-      "LARGE": 382025066.95
+      "MICRO": 1163016.02,
+      "SMALL": 8260500.24,
+      "MEDIUM": 42284684.38,
+      "LARGE": 421818780.4
     },
-    "ratio_smallamt_over_largeamt": 0.0245,
-    "large_receiver_count": 46,
-    "total_distributed_strk": 432927359.03
+    "ratio_smallamt_over_largeamt": 0.0223,
+    "large_receiver_count": 48,
+    "total_distributed_strk": 473526981.04
   },
-  "dist_14d": {
-    "label": "14d",
-    "total_transfers": 6016,
-    "unique_recipients": 1380,
-    "counts": {
-      "MICRO": 789,
-      "SMALL": 346,
-      "MEDIUM": 165,
-      "LARGE": 80
-    },
-    "amounts_strk": {
-      "MICRO": 1819833.47,
-      "SMALL": 12076670.84,
-      "MEDIUM": 62845829.52,
-      "LARGE": 778916555.56
-    },
-    "ratio_smallamt_over_largeamt": 0.0178,
-    "large_receiver_count": 80,
-    "total_distributed_strk": 855658889.38
-  },
+  "dist_14d": null,
   "dist_30d": {
     "label": "30d",
-    "total_transfers": 12005,
-    "unique_recipients": 2512,
+    "total_transfers": 12073,
+    "unique_recipients": 2527,
     "counts": {
-      "MICRO": 1496,
-      "SMALL": 601,
-      "MEDIUM": 257,
-      "LARGE": 158
+      "MICRO": 1505,
+      "SMALL": 605,
+      "MEDIUM": 258,
+      "LARGE": 159
     },
     "amounts_strk": {
-      "MICRO": 3292667.84,
-      "SMALL": 20026231.41,
-      "MEDIUM": 91274847.26,
-      "LARGE": 2231847225.52
+      "MICRO": 3314307.94,
+      "SMALL": 20177613.23,
+      "MEDIUM": 91370019.3,
+      "LARGE": 2286054384.42
     },
-    "ratio_smallamt_over_largeamt": 0.0104,
-    "large_receiver_count": 158,
-    "total_distributed_strk": 2346440972.02
+    "ratio_smallamt_over_largeamt": 0.0103,
+    "large_receiver_count": 159,
+    "total_distributed_strk": 2400916324.89
   },
   "watchlist_growth": {
     "accepted_7d": 0,
@@ -68,7 +49,7 @@
   },
   "watchlist_balance": {
     "watchlist_count": 3,
-    "total_balance_strk": 79868728.81
+    "total_balance_strk": 79752145.57
   },
   "patterns_detected": [
     {
@@ -82,18 +63,6 @@
         "funding_extreme_or_neg": true
       },
       "reason": "Short-crowded (-11.3% min funding) + 0 new holders 7d + BTC not extreme down. Squeeze fuel accumulating."
-    },
-    {
-      "pattern": "SUSTAINED_ACCUMULATION",
-      "signal": "BULLISH",
-      "confidence": "MEDIUM",
-      "conditions_met": {
-        "watchlist_growing": false,
-        "shape_improving_or_stable": true,
-        "btc_supportive": true,
-        "sufficient_holders": true
-      },
-      "reason": "0 new holders 14d, ~79.9M STRK watched, BTC NEUTRAL. Sustained accumulation base."
     }
   ],
   "primary_pattern": {

@@ -1,21 +1,11 @@
 {
-  "as_of": "2026-08-19T21:05:31.263052+00:00",
+  "as_of": "2026-08-19T22:38:31.199967+00:00",
   "window_hours": 168,
-  "total_transactions": 154,
-  "inflow_count": 74,
-  "outflow_count": 76,
+  "total_transactions": 155,
+  "inflow_count": 73,
+  "outflow_count": 78,
   "rebalance_count": 4,
   "days_data": [
-    {
-      "day": "2026-08-12",
-      "inflow_strk": 598993.02,
-      "outflow_strk": 241901.18,
-      "rebalance_strk": 0,
-      "net_strk": -357091.85,
-      "net_direction": "NEUTRAL",
-      "inflow_count": 1,
-      "outflow_count": 1
-    },
     {
       "day": "2026-08-13",
       "inflow_strk": 23668438.74,
@@ -79,18 +69,18 @@
     {
       "day": "2026-08-19",
       "inflow_strk": 70045968.53,
-      "outflow_strk": 2266398.29,
+      "outflow_strk": 53155471.9,
       "rebalance_strk": 0,
-      "net_strk": -67779570.23,
+      "net_strk": -16890496.63,
       "net_direction": "BEARISH",
       "inflow_count": 15,
-      "outflow_count": 10
+      "outflow_count": 13
     }
   ],
   "classification": {
     "signal": "MILD_DISTRIBUTION",
     "confidence": "MEDIUM",
-    "interpretation": "4/7 days net inflow, -77.9M STRK — mild distribution",
+    "interpretation": "4/7 days net inflow, -27.0M STRK — mild distribution",
     "stats": {
       "days_analyzed": 7,
       "bullish_days": 1,
@@ -98,9 +88,9 @@
       "neutral_days": 2,
       "consecutive_bullish": 0,
       "consecutive_bearish": 2,
-      "total_net_strk": -77882623.48,
+      "total_net_strk": -26993549.88,
       "total_inflow_strk": 128134031.6,
-      "total_outflow_strk": 50251408.12
+      "total_outflow_strk": 101140481.73
     }
   },
   "top_inflows": [
@@ -122,19 +112,19 @@
   ],
   "top_outflows": [
     {
+      "amount": 26392519.292791598,
+      "from_cex": "MEXC_2",
+      "to": "0x07885aa8b5c4bb41a1060ab202c545b7557fffdd"
+    },
+    {
+      "amount": 20628720.7566534,
+      "from_cex": "MEXC_2",
+      "to": "0x8bc6d616a6f7b1917de7f44262789d72688d5b0d"
+    },
+    {
       "amount": 13987923.543145867,
       "from_cex": "Coinbase_1",
       "to": "0x689a5fbff803de8bbb1c840ca973fd8637e15356"
-    },
-    {
-      "amount": 1499976.0,
-      "from_cex": "Binance_16",
-      "to": "0x943c3aff26f795c670b82b6559f03a407cc1b591"
-    },
-    {
-      "amount": 1191377.0,
-      "from_cex": "Binance_16",
-      "to": "0xf84cf6dfc260b37e58936fc5bd38a55ad00b851a"
     }
   ]
 }
