@@ -1293,7 +1293,10 @@ function renderConfluence(confluenceData) {
 
   const rally = confluenceData.rally_score || 0;
   const crash = confluenceData.crash_score || 0;
-  const gateStatus = confluenceData.gate_status || confluenceData.signal || 'NO_SIGNAL';
+  const signal = confluenceData.signal || 'NO_SIGNAL';
+  const confidence = confluenceData.confidence || '';
+  const summary = confluenceData.summary || '';
+  const action = confluenceData.action || '';
   
   const statusMap = {
     'RALLY_CONFIRMED': { c: 'var(--green)', bg: 'var(--green-bg)', label: 'RALLY подтверждён', icon: '🟢' },
@@ -1302,12 +1305,8 @@ function renderConfluence(confluenceData) {
     'RALLY_WATCH': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'RALLY watching', icon: '👁' },
     'CRASH_WATCH': { c: 'var(--yellow)', bg: 'var(--yellow-bg)', label: 'CRASH watching', icon: '👁' },
   };
-  const info = statusMap[gateStatus] || statusMap.NO_SIGNAL;
+  const info = statusMap[signal] || statusMap.NO_SIGNAL;
 
-  const action = confluenceData.action || '';
-  const summary = confluenceData.summary || '';
-  const confidence = confluenceData.confidence || '';
-  
   let html = `
     <div style="text-align: center; padding: 12px; background: ${info.bg}; border-radius: 8px; margin-bottom: 12px;">
       <div style="font-size: 20px; font-weight: 700; color: ${info.c};">${info.icon} ${info.label}</div>
@@ -1315,7 +1314,7 @@ function renderConfluence(confluenceData) {
     </div>
     ${summary ? '<div style="padding: 8px; background: var(--bg-subtle); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary);">💬 ' + summary + '</div>' : ''}
     ${action ? '<div style="padding: 8px; background: var(--orange-bg); border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-bright); border-left: 3px solid var(--orange);"><strong>🎯 Action:</strong> ' + action + '</div>' : ''}
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
       <div style="text-align: center; padding: 12px; background: var(--green-bg); border-radius: 8px;">
         <div style="font-size: 24px; font-weight: 700; color: var(--green); font-family: monospace;">${rally}/9</div>
         <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Rally score</div>
@@ -1325,10 +1324,65 @@ function renderConfluence(confluenceData) {
         <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Crash score</div>
       </div>
     </div>
-    <div style="margin-top: 12px; font-size: 11px; color: var(--text-secondary);">
-      Threshold: <strong>≥5</strong> для confirmation · 9 факторов: Wyckoff, whale, CVD, funding, event, cross-token, tech momentum, cex flow, concentration
-    </div>
   `;
+
+  // Детализация всех input factors — что реально в шкале
+  const inputs = confluenceData.inputs_used || {};
+  if (Object.keys(inputs).length > 0) {
+    html += '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">';
+    html += '<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 600;">📊 Факторы · актуальные значения</div>';
+    
+    // Interpret каждого фактора
+    const factorRules = {
+      'wyckoff_phase': { good: ['ACCUMULATION', 'MARKUP'], bad: ['DISTRIBUTION', 'MARKDOWN'], label: 'Wyckoff phase' },
+      'technical_signal': { good: ['BULLISH'], bad: ['BEARISH'], label: 'Technical' },
+      'slope_3d_pct': { goodOp: (v) => v > 1, badOp: (v) => v < -2, label: 'Slope 3d %', suffix: '%' },
+      'slope_accel_pct': { goodOp: (v) => v > 0, badOp: (v) => v < -3, label: 'Slope accel', suffix: '%' },
+      'vol_ratio_3d': { goodOp: (v) => v > 1.5, badOp: (v) => v < 0.7, label: 'Volume ratio 3d', suffix: 'x' },
+      'rsi': { goodOp: (v) => v > 55 && v < 70, badOp: (v) => v < 30 || v > 80, label: 'RSI' },
+      'pct_from_high': { goodOp: (v) => v > -5, badOp: (v) => v < -30, label: 'От максимума', suffix: '%' },
+      'pct_from_low': { goodOp: (v) => v < 3, badOp: (v) => v > 30, label: 'От минимума', suffix: '%' },
+      'short_crowded': { good: [true], bad: [false], label: 'Shorts crowded' },
+      'long_crowded': { good: [false], bad: [true], label: 'Longs crowded' },
+      'cex_signal': { good: ['ACCUMULATION', 'BULLISH'], bad: ['DISTRIBUTION', 'BEARISH'], label: 'CEX flow' },
+      'event_signal': { good: ['BULLISH', 'SLIGHT_BULLISH', 'STRONG_BULLISH'], bad: ['BEARISH', 'STRONG_BEARISH'], label: 'Event signal' },
+      'event_bullish': { goodOp: (v) => v >= 3, badOp: (v) => v <= 0, label: 'Bullish events' },
+      'event_bearish': { goodOp: (v) => v <= 1, badOp: (v) => v >= 3, label: 'Bearish events' },
+      'liquidity_shift_direction': { good: ['LOCKING_UP', 'ROTATING_TO_STAKE', 'STAKE_INFLOW', 'LP_ADDING'], bad: ['EXTRACTING', 'ROTATING_TO_DEX', 'STAKE_OUTFLOW', 'LP_REMOVING'], label: 'Liquidity shift' },
+      'bridge_activity_signal': { good: ['NET_INFLOW', 'STRONG_INFLOW', 'HIGH_ACTIVITY_INFLOW'], bad: ['NET_OUTFLOW', 'STRONG_OUTFLOW', 'DISTRIBUTION'], label: 'Bridge activity' },
+      'cross_token_alpha_7d_pct': { goodOp: (v) => v >= 5, badOp: (v) => v <= -5, label: 'Cross-token alpha 7d', suffix: '%' },
+    };
+    
+    html += '<div style="display: flex; flex-direction: column; gap: 4px;">';
+    for (const [key, value] of Object.entries(inputs)) {
+      const rule = factorRules[key] || { label: key, good: [], bad: [] };
+      const label = rule.label || key;
+      const suffix = rule.suffix || '';
+      
+      let verdict = 'NEUTRAL';
+      let color = 'var(--text-muted)';
+      let bg = 'var(--bg-subtle)';
+      let icon = '⚪';
+      
+      // Determine verdict
+      if (rule.goodOp && rule.goodOp(value)) { verdict = 'BULL'; color = 'var(--green)'; bg = 'var(--green-bg)'; icon = '🟢'; }
+      else if (rule.badOp && rule.badOp(value)) { verdict = 'BEAR'; color = 'var(--red)'; bg = 'var(--red-bg)'; icon = '🔴'; }
+      else if (rule.good && rule.good.includes(value)) { verdict = 'BULL'; color = 'var(--green)'; bg = 'var(--green-bg)'; icon = '🟢'; }
+      else if (rule.bad && rule.bad.includes(value)) { verdict = 'BEAR'; color = 'var(--red)'; bg = 'var(--red-bg)'; icon = '🔴'; }
+      
+      // Format value
+      let displayValue = value;
+      if (typeof value === 'number') displayValue = value.toFixed(2) + suffix;
+      else if (typeof value === 'boolean') displayValue = value ? 'YES' : 'NO';
+      
+      html += `<div style="display: grid; grid-template-columns: 130px 100px 1fr; gap: 8px; padding: 5px 8px; background: ${bg}; border-radius: 4px; font-size: 11px; align-items: center;">
+        <div style="color: var(--text-bright); font-weight: 600;">${icon} ${label}</div>
+        <div style="text-align: right; color: ${color}; font-family: monospace; font-weight: 700;">${displayValue}</div>
+        <div style="text-align: right; color: ${color}; font-size: 10px; font-family: monospace;">${verdict}</div>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
 
   el.innerHTML = html;
   const age = safeAge(confluenceData.generated_at || confluenceData.as_of);
