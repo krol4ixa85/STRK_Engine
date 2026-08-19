@@ -1,0 +1,169 @@
+{
+  "generated_at": "2026-08-19T08:24:36.453178+00:00",
+  "cache_files": {
+    "LAB report": {
+      "status": "ok",
+      "age_hours": 0.19680628249999998,
+      "size_kb": 1.9755859375,
+      "path": "data/cache/strk_lab_report.json"
+    },
+    "Prev LAB (для delta)": {
+      "status": "ok",
+      "age_hours": 11.50860876,
+      "size_kb": 1.9755859375,
+      "path": "data/cache/strk_lab_report_prev.json"
+    },
+    "Sector momentum": {
+      "status": "ok",
+      "age_hours": 22.929429032222224,
+      "size_kb": 10.0166015625,
+      "path": "data/cache/dune_sector_momentum.json"
+    },
+    "Sector netflow": {
+      "status": "ok",
+      "age_hours": 22.933483203055555,
+      "size_kb": 7.404296875,
+      "path": "data/cache/dune_sector_netflow.json"
+    },
+    "Backtest summary": {
+      "status": "ok",
+      "age_hours": 0.19666136388888888,
+      "size_kb": 0.7490234375,
+      "path": "data/cache/lab_signals_summary.json"
+    },
+    "Alt-cycle compass": {
+      "status": "ok",
+      "age_hours": 1.0244346319444444,
+      "size_kb": 7.4482421875,
+      "path": "data/cache/alt_cycle.json"
+    },
+    "DeFiLlama TVL": {
+      "status": "ok",
+      "age_hours": 1.0211310755555556,
+      "size_kb": 4.9677734375,
+      "path": "data/cache/defillama_tvl.json"
+    },
+    "Funding rates": {
+      "status": "ok",
+      "age_hours": 0.24741735166666665,
+      "size_kb": 15.3603515625,
+      "path": "data/cache/funding_signals.json"
+    },
+    "Stables signal": {
+      "status": "ok",
+      "age_hours": 0.24732835527777777,
+      "size_kb": 1.9013671875,
+      "path": "data/cache/stables_signal.json"
+    },
+    "Dune extended": {
+      "status": "missing",
+      "age_hours": null,
+      "size_kb": 0,
+      "path": "data/cache/dune_extended.json"
+    },
+    "Weekly summary": {
+      "status": "ok",
+      "age_hours": 0.19663972000000002,
+      "size_kb": 1.5283203125,
+      "path": "data/cache/weekly_summary.json"
+    },
+    "Rotation state": {
+      "status": "ok",
+      "age_hours": 0.038708402580685086,
+      "size_kb": 1.3046875,
+      "path": "data/cache/rotation_tracker_state.json"
+    }
+  },
+  "history_files": {
+    "LAB signals log": {
+      "status": "ok",
+      "lines": 9,
+      "size_kb": 3.3681640625
+    },
+    "Rotation alerts": {
+      "status": "ok",
+      "lines": 4,
+      "size_kb": 0.7216796875
+    },
+    "Cohort snapshots": {
+      "status": "ok",
+      "lines": 126,
+      "size_kb": 131.2529296875
+    },
+    "Shadow votes": {
+      "status": "ok",
+      "lines": 256,
+      "size_kb": 319.0791015625
+    }
+  },
+  "scripts_compile": {
+    "daily_digest.py": {
+      "status": "ok"
+    },
+    "strk_lab.py": {
+      "status": "ok"
+    },
+    "weekly_summary.py": {
+      "status": "ok"
+    },
+    "collectors/dune_collector.py": {
+      "status": "ok"
+    },
+    "collectors/dune_sector_collector.py": {
+      "status": "ok"
+    },
+    "collectors/alt_cycle_collector.py": {
+      "status": "ok"
+    },
+    "collectors/defillama_collector.py": {
+      "status": "ok"
+    },
+    "collectors/funding_collector.py": {
+      "status": "ok"
+    },
+    "collectors/stables_collector.py": {
+      "status": "ok"
+    },
+    "collectors/dune_extended_collector.py": {
+      "status": "ok"
+    },
+    "detectors/rotation_tracker.py": {
+      "status": "ok"
+    },
+    "detectors/lab_signals_recorder.py": {
+      "status": "ok"
+    },
+    "detectors/lab_signals_verifier.py": {
+      "status": "ok"
+    }
+  },
+  "pipeline_issues": [],
+  "methodology_checks": [
+    {
+      "check": "onchain_veto",
+      "status": "ok"
+    },
+    {
+      "check": "purged_walk_forward",
+      "status": "ok"
+    },
+    {
+      "check": "liquidity_floor",
+      "status": "ok"
+    },
+    {
+      "check": "playbook",
+      "status": "ok"
+    }
+  ],
+  "data_sources_working": 5,
+  "data_sources_total": 7,
+  "summary": {
+    "cache_ok": 11,
+    "cache_total": 12,
+    "scripts_ok": 13,
+    "scripts_total": 13,
+    "methodology_ok": 4,
+    "sources_ok": 5
+  }
+}
