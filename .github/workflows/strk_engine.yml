@@ -31,7 +31,6 @@ on:
           - backtest
           - baseline
           - lab
-          - baseline
           - token_scan_weekly
           - token_scan_daily
           - full_run
@@ -156,7 +155,7 @@ jobs:
       # Cost: ~25 credits per token × 5 = ~125/week = ~500/mo. Fits в Free tier.
       #
       # Weekly cron trigger внутри скрипта — safe даже если workflow runs daily
-      # (просто skip если < 7 days с last run).
+      # (просто skip если < 7 дней с last run).
       - name: Whale holdings collector (weekly)
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *' || github.event.schedule == '0 12 * * 0'
         env:
@@ -506,3 +505,28 @@ jobs:
           curl -s "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -d "chat_id=${CHAT_ID}" \
             -d "text=${MSG}" || true
+
+  # ============================================================
+  # STRK SCENARIOS · генерирует сценарии для бота
+  # ============================================================
+  strk_scenarios:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '30 8,20 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'lab')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate STRK scenarios
+        run: python3 scenarios/strk_scenarios.py
+      - name: Commit scenarios
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/strk_scenarios.json
+          git diff --cached --quiet || git commit -m "chore: scenarios [skip ci]"
+          git push
