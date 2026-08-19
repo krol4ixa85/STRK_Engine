@@ -1,0 +1,73 @@
+name: FULL RUN (Weekly Deep Report)
+
+# ============================================================
+# FULL RUN Level 4 · 12-section deep report generator
+# 
+# Runs every Monday 06:00 UTC = 09:00 MSK
+# (after LAB refresh at 08:30 UTC ensures fresh data)
+# 
+# Also runs on-demand via workflow_dispatch
+# ============================================================
+
+on:
+  schedule:
+    # Monday 06:00 UTC = 09:00 MSK · Weekly FULL RUN
+    - cron: '0 6 * * 1'
+  
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Explicit run ID (e.g. R10, R11) or leave blank for auto'
+        required: false
+        default: ''
+
+jobs:
+  full_run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Prepare directories
+        run: mkdir -p reports
+      
+      - name: Generate FULL RUN
+        run: |
+          if [ -n "${{ github.event.inputs.run_id }}" ]; then
+            python3 full_run/generate_full_run.py --run-id ${{ github.event.inputs.run_id }}
+          else
+            python3 full_run/generate_full_run.py
+          fi
+      
+      - name: Commit report
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add reports/
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: FULL RUN weekly report [skip ci]"
+            git push || (git pull --rebase && git push) || echo "Push failed"
+          fi
+      
+      - name: Telegram notify
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          RUN_ID=$(ls -1 reports/FULL_RUN_R*.html 2>/dev/null | sed 's/.*FULL_RUN_\(R[0-9]*\).*/\1/' | sort -V | tail -1)
+          if [ -z "$RUN_ID" ]; then RUN_ID="latest"; fi
+          MSG="📊 FULL RUN ${RUN_ID} готов%0A%0Ahttps://krol4ixa85.github.io/STRK_Engine/reports/latest.html"
+          curl -s "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MSG}" \
+            -d "parse_mode=HTML" || echo "Telegram send failed"
