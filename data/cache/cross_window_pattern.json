@@ -1,8 +1,8 @@
 {
-  "as_of": "2026-08-19T14:23:51.955045+00:00",
+  "as_of": "2026-08-19T14:36:05.155490+00:00",
   "dist_7d": {
     "label": "7d",
-    "total_transfers": 2781,
+    "total_transfers": 2783,
     "unique_recipients": 854,
     "counts": {
       "MICRO": 497,
@@ -11,38 +11,38 @@
       "LARGE": 42
     },
     "amounts_strk": {
-      "MICRO": 1122808.15,
+      "MICRO": 1123247.15,
       "SMALL": 7745589.11,
       "MEDIUM": 37747174.61,
-      "LARGE": 362554268.88
+      "LARGE": 362704265.25
     },
     "ratio_smallamt_over_largeamt": 0.0245,
     "large_receiver_count": 42,
-    "total_distributed_strk": 409169840.75
+    "total_distributed_strk": 409320276.12
   },
   "dist_14d": {
     "label": "14d",
-    "total_transfers": 5904,
-    "unique_recipients": 1352,
+    "total_transfers": 5906,
+    "unique_recipients": 1353,
     "counts": {
       "MICRO": 777,
-      "SMALL": 337,
+      "SMALL": 338,
       "MEDIUM": 160,
       "LARGE": 78
     },
     "amounts_strk": {
-      "MICRO": 1821461.62,
-      "SMALL": 11720007.7,
-      "MEDIUM": 59420551.89,
-      "LARGE": 827768668.11
+      "MICRO": 1821900.62,
+      "SMALL": 11744698.14,
+      "MEDIUM": 59424174.19,
+      "LARGE": 827457898.43
     },
     "ratio_smallamt_over_largeamt": 0.0164,
     "large_receiver_count": 78,
-    "total_distributed_strk": 900730689.32
+    "total_distributed_strk": 900448671.37
   },
   "dist_30d": {
     "label": "30d",
-    "total_transfers": 11845,
+    "total_transfers": 11847,
     "unique_recipients": 2482,
     "counts": {
       "MICRO": 1481,
@@ -51,14 +51,14 @@
       "LARGE": 155
     },
     "amounts_strk": {
-      "MICRO": 3282553.97,
-      "SMALL": 19984892.94,
-      "MEDIUM": 88485690.49,
-      "LARGE": 2216633593.91
+      "MICRO": 3281359.82,
+      "SMALL": 19986664.75,
+      "MEDIUM": 88486141.27,
+      "LARGE": 2216779230.14
     },
     "ratio_smallamt_over_largeamt": 0.0105,
     "large_receiver_count": 155,
-    "total_distributed_strk": 2328386731.29
+    "total_distributed_strk": 2328533395.98
   },
   "watchlist_growth": {
     "accepted_7d": 0,
@@ -84,16 +84,16 @@
       "reason": "Short-crowded (-11.3% min funding) + 0 new holders 7d + BTC not extreme down. Squeeze fuel accumulating."
     },
     {
-      "pattern": "DISTRIBUTION_PHASE",
-      "signal": "BEARISH",
+      "pattern": "SUSTAINED_ACCUMULATION",
+      "signal": "BULLISH",
       "confidence": "MEDIUM",
       "conditions_met": {
-        "many_large_recipients": true,
-        "shape_worsening": true,
-        "long_crowded_or_positive_extreme": false,
-        "btc_down": true
+        "watchlist_growing": false,
+        "shape_improving_or_stable": true,
+        "btc_supportive": true,
+        "sufficient_holders": true
       },
-      "reason": "78 LARGE recipients 14d, ratio 0.016 declining, funding +2.9% ann. Active distribution."
+      "reason": "0 new holders 14d, ~161.9M STRK watched, BTC DOWN_REVERSING. Sustained accumulation base."
     }
   ],
   "primary_pattern": {
