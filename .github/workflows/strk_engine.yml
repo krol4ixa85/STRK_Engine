@@ -784,3 +784,28 @@ jobs:
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: market regime [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
+  # ============================================================
+  # VERSION UPDATE · auto-bump on every push (for cache busting)
+  # Generates VERSION.txt with unix timestamp → invalidates browser cache
+  # ============================================================
+  version_update:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate VERSION.txt with commit info
+        run: |
+          echo "$(date +%s)-$(git rev-parse --short HEAD)" > VERSION.txt
+          echo "Deployed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> VERSION.txt
+          echo "Commit: $(git rev-parse --short HEAD)" >> VERSION.txt
+          cat VERSION.txt
+      - name: Commit VERSION.txt
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add VERSION.txt
+          git diff --cached --quiet && echo "No version change" || git commit -m "chore: bump VERSION [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
