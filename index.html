@@ -3363,12 +3363,20 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector] = await Promise.all([
+  const [health, funding, scan, sector, news] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
     _loadCache('dune_sector_netflow.json'),
+    _loadCache('surf_events.json'),
   ]);
+
+  // Новости по этому токену — нужны детектору противоречий.
+  // Модуль News ниже рисует их сам, здесь мы их только считаем.
+  const tokenNews = (news && news.per_asset_top && news.per_asset_top[token]) || [];
+  const newsSizeDown = tokenNews.filter(e =>
+    e && e.action_hint && e.action_hint.field === 'SIZE' && e.action_hint.action === 'down');
+  const newsFomo = tokenNews.filter(e => e && e.fomo_risk);
 
   let html = '';
 
@@ -3529,12 +3537,50 @@ async function renderModalIntelligence(token) {
   }
 
   // ── 5 · СЕКТОР ─────────────────────────────────────────────
-  if (sector && Array.isArray(sector.sectors) && sector.sectors.length) {
-    const top = sector.sectors.slice(0, 3).map(s => s.sector || s.name).filter(Boolean);
-    if (top.length) {
-      html += `<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">💰 Куда идёт капитал</div>
-      <div style="font-size: 12px; color: var(--text-secondary);">Лидируют по притоку: ${top.join(' · ')}</div>`;
+  // Формат dune_sector_netflow: columns + rows, одна строка на пару
+  // сектор×токен. Один токен может числиться в нескольких секторах
+  // (LINK одновременно RWA и INFRA), поэтому берём все его строки.
+  if (sector && Array.isArray(sector.rows) && sector.rows.length) {
+    const mine = sector.rows.filter(r => r && r.token === token);
+    const bySector = {};
+    for (const r of sector.rows) {
+      if (!r || !r.sector) continue;
+      bySector[r.sector] = (bySector[r.sector] || 0) + (r.net_flow_m_usd || 0);
     }
+    const ranked = Object.entries(bySector).sort((a, b) => b[1] - a[1]);
+
+    html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">💰 Сектор</div>';
+    html += '<div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">';
+
+    if (mine.length) {
+      for (const r of mine) {
+        const rank = ranked.findIndex(x => x[0] === r.sector) + 1;
+        const col = (r.net_flow_m_usd || 0) >= 0 ? 'var(--green)' : 'var(--red)';
+        html += `<div style="display: flex; justify-content: space-between; padding: 3px 0;">
+          <span style="color: var(--text-secondary);">${r.sector} · ${rank} место из ${ranked.length}</span>
+          <span style="font-weight: 700; color: ${col};">${(r.net_flow_m_usd || 0) >= 0 ? '+' : ''}$${(r.net_flow_m_usd || 0).toFixed(2)}M</span>
+        </div>`;
+      }
+      // заполняем верхнюю карточку Sector Health, она пустовала
+      const best = mine[0];
+      const shEl = document.getElementById('scanner-sector-health');
+      if (shEl && best) {
+        shEl.textContent = best.direction === 'BUY_PRESSURE' ? 'Приток' :
+                           best.direction === 'SELL_PRESSURE' ? 'Отток' : (best.direction || '—');
+        shEl.style.color = best.direction === 'BUY_PRESSURE' ? 'var(--green)' :
+                           best.direction === 'SELL_PRESSURE' ? 'var(--red)' : 'var(--text-bright)';
+        const hint = document.getElementById('scanner-sector-hint');
+        if (hint) hint.textContent = mine.map(r => r.sector).join(' · ') +
+          ' · ' + (best.net_flow_pct >= 0 ? '+' : '') + best.net_flow_pct + '% нетто';
+      }
+    } else {
+      html += '<div style="font-size: 12px; color: var(--text-muted);">Токена нет в срезе по секторам.</div>';
+    }
+
+    const top3 = ranked.slice(0, 3).map(([s, v]) => `${s} ${v >= 0 ? '+' : ''}$${v.toFixed(1)}M`);
+    html += `<div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.06);">
+      Лидеры по притоку: ${top3.join(' · ')}
+    </div></div>`;
   }
 
   // ── 6 · ДЕТЕКТОР ПРОТИВОРЕЧИЙ ──────────────────────────────
@@ -3565,6 +3611,33 @@ async function renderModalIntelligence(token) {
     conflicts.push({
       level: 'warn',
       text: 'Накопление на споте, но в бессрочных контрактах перекос в лонги — толпа уже стоит в ту же сторону. Риск каскада вниз выше обычного.'
+    });
+  }
+
+  // Новости против вердикта — самое важное расхождение.
+  // Вердикт может говорить «докупать», пока классификатор новостей
+  // на тех же данных требует резать размер. Раньше эти два блока
+  // просто стояли рядом и молчали друг о друге.
+  const actionText = (document.getElementById('scanner-action-content') || {}).textContent || '';
+  const actionSaysBuy = /докупать|докупить|ENTRY OK|часть позиции|добавля/i.test(actionText);
+
+  if (newsSizeDown.length && actionSaysBuy) {
+    const worst = newsSizeDown[0];
+    conflicts.push({
+      level: 'warn',
+      text: `Совет сверху говорит докупать, а новости требуют обратного: ${newsSizeDown.length} событий типа «${worst.type}» с рекомендацией урезать размер на 25-50%. Потоки и новостной фон смотрят в разные стороны — если входишь, то меньшим размером.`
+    });
+  } else if (newsSizeDown.length) {
+    conflicts.push({
+      level: 'info',
+      text: `${newsSizeDown.length} новостных событий рекомендуют уменьшить размер позиции. Учти при расчёте объёма.`
+    });
+  }
+
+  if (newsFomo.length >= 2 && verdictBullish) {
+    conflicts.push({
+      level: 'warn',
+      text: `${newsFomo.length} новостей помечены как FOMO-риск — заголовки разгоняют ожидания роста. Совпадение бычьего вердикта с волной хайпа чаще встречается на локальных вершинах, чем в начале движения.`
     });
   }
 
@@ -3755,34 +3828,88 @@ async function loadTokenScanCache(token) {
 }
 
 
-function requestTokenRefresh(token) {
-  const btn = event.target;
-  const originalText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '⏳ Отправка запроса...';
-  
-  // Build GitHub Actions dispatch URL (user needs Personal Access Token, so open manually)
-  const actionsUrl = 'https://github.com/krol4ixa85/STRK_Engine/actions/workflows/strk_engine.yml';
-  
-  // Show instructions modal
-  const instructions = `Как обновить cache для ${token}:\n\n` +
-    `1. Открой GitHub Actions (сейчас откроется)\n` +
-    `2. Клик "Run workflow" (справа сверху)\n` +
-    `3. Выбери mode: token_scan_force_all\n` +
-    `4. Клик зелёный "Run workflow"\n` +
-    `5. Ждать 15-20 минут\n` +
-    `6. Обнови dashboard (Ctrl+F5)\n\n` +
-    `Или запусти daily_token_scan (быстрее, только STRONG_BUY+DIVERGENCE)`;
-  
-  if (confirm(instructions + '\n\nОткрыть Actions?')) {
-    window.open(actionsUrl, '_blank');
+// ═══════════════════════════════════════════════════════════════
+// Точечный скан Dune по одному токену через Worker.
+//
+// Старая версия открывала GitHub и советовала token_scan_force_all —
+// это ~700 кредитов Dune за нажатие при бюджете 4000/мес. Заменено на
+// mode token_scan_single: 5-25 кредитов, только запрошенный токен.
+//
+// НАСТРОЙКА: подставь адрес своего воркера lab-bot ниже.
+// PIN хранится в браузере, спрашивается один раз. Сам PIN лежит в
+// переменных воркера — в этот файл он не попадает.
+// ═══════════════════════════════════════════════════════════════
+const SCAN_ENDPOINT = 'https://lab-bot.krol4ixa85.workers.dev/scan';
+
+function _scanPin() {
+  let pin = null;
+  try { pin = localStorage.getItem('strk_scan_pin'); } catch (e) {}
+  if (!pin) {
+    pin = prompt('PIN для запуска скана (задан в переменных воркера как SCAN_PIN):');
+    if (!pin) return null;
+    try { localStorage.setItem('strk_scan_pin', pin); } catch (e) {}
   }
-  
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.innerHTML = originalText;
-  }, 2000);
+  return pin;
 }
+
+async function requestTokenRefresh(token) {
+  const btn = (typeof event !== 'undefined' && event && event.target) ? event.target : null;
+  const original = btn ? btn.innerHTML : '';
+  const setBtn = (t, disabled) => {
+    if (!btn) return;
+    btn.innerHTML = t;
+    btn.disabled = !!disabled;
+  };
+
+  const pin = _scanPin();
+  if (!pin) return;
+
+  setBtn('⏳ Запускаю скан…', true);
+
+  try {
+    const r = await fetch(SCAN_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Scan-Pin': pin },
+      body: JSON.stringify({ token }),
+    });
+
+    let data = {};
+    try { data = await r.json(); } catch (e) {}
+
+    if (r.status === 403) {
+      try { localStorage.removeItem('strk_scan_pin'); } catch (e) {}
+      alert('PIN не подошёл. Нажми кнопку ещё раз и введи заново.');
+      setBtn(original, false);
+      return;
+    }
+
+    if (r.status === 429) {
+      alert('Скан отклонён лимитом:\n\n' + (data.error || 'слишком часто'));
+      setBtn(original, false);
+      return;
+    }
+
+    if (!r.ok || !data.ok) {
+      alert('Не удалось запустить скан:\n\n' + (data.error || ('HTTP ' + r.status)) +
+            '\n\nЗапасной путь: отправь боту /scan ' + token);
+      setBtn(original, false);
+      return;
+    }
+
+    setBtn('✓ Скан ' + token + ' запущен', true);
+    alert('Скан ' + token + ' запущен.\n\n' +
+          'Dune считает 26 недель потоков, обычно 2-4 минуты.\n' +
+          'Использовано сегодня: ' + data.used_today + ' из ' + data.daily_limit + '.\n\n' +
+          'Через несколько минут открой актив заново — данные подтянутся.');
+
+  } catch (e) {
+    alert('Воркер недоступен: ' + e + '\n\n' +
+          'Проверь адрес в SCAN_ENDPOINT внутри index.html.\n' +
+          'Запасной путь: отправь боту /scan ' + token);
+    setBtn(original, false);
+  }
+}
+
 
 function renderDuneEnhancedScan(scan) {
   // Override rotation-based verdict with Dune-based (more accurate)
@@ -3887,7 +4014,7 @@ function renderDuneEnhancedScan(scan) {
   const flowEl = document.getElementById('scanner-netflow');
   flowEl.textContent = flow30Str;
   flowEl.style.color = netflow30 > 500000 ? 'var(--green)' : netflow30 < -500000 ? 'var(--red)' : 'var(--text-bright)';
-  document.getElementById('scanner-netflow-hint').textContent = '30d · 90d: $' + (netflow90/1e6).toFixed(1) + 'M · 180d: $' + (netflow180/1e6).toFixed(1) + 'M';
+  document.getElementById('scanner-netflow-hint').textContent = '90d: $' + (netflow90/1e6).toFixed(1) + 'M · 180d: $' + (netflow180/1e6).toFixed(1) + 'M';
   
   // Price change
   if (priceNow && price180) {
@@ -4037,12 +4164,12 @@ document.addEventListener('keydown', function(e) {
 <div id="scanner-duration-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
 </div>
 <div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px;">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">💰 Net Flow 7d</div>
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">💰 Чистый приток 30d</div>
 <div id="scanner-netflow" style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">—</div>
 <div id="scanner-netflow-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
 </div>
 <div style="padding: 12px; background: var(--bg-subtle); border-radius: 8px;">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">📈 Price 7d</div>
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">📈 Цена 30d</div>
 <div id="scanner-price" style="font-size: 20px; font-weight: 700; color: var(--text-bright); margin-top: 4px;">—</div>
 <div id="scanner-price-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
 </div>
