@@ -1,15 +1,22 @@
 {
-  "as_of": "2026-08-20T12:53:47.265263+00:00",
+  "as_of": "2026-08-20T13:04:39.627959+00:00",
   "phase_used": "ACCUMULATION",
   "hold_tokens": [
     "LINK",
     "ETHFI"
   ],
+  "priority_tokens": [
+    "STRK",
+    "MORPHO",
+    "ETHFI",
+    "LINK",
+    "ONDO"
+  ],
   "sources": {
     "surf_used": true,
-    "surf_articles": 10,
+    "surf_articles": 50,
     "rss_articles": 85,
-    "rss_feeds_count": 10
+    "rss_feeds_count": 6
   },
   "events": [
     {
@@ -38,7 +45,7 @@
         "exploited",
         "drain"
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-9c4da1d3",
@@ -55,7 +62,7 @@
       "published": "2026-08-19T14:25:49+00:00",
       "fomo_risk": false,
       "score": 0.643,
-      "route": "macro",
+      "route": "home",
       "action_hint": {
         "field": "SIZE",
         "action": "down",
@@ -64,7 +71,7 @@
       "matched_keywords": [
         "unlock"
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-3e439bfc",
@@ -79,7 +86,7 @@
       "published": "2026-08-18T21:42:33+00:00",
       "fomo_risk": false,
       "score": 0.643,
-      "route": "macro",
+      "route": "home",
       "action_hint": {
         "field": "SIZE",
         "action": "down",
@@ -88,7 +95,85 @@
       "matched_keywords": [
         "unlock"
       ],
-      "surf_sentiment": null
+      "query_context": ""
+    },
+    {
+      "id": "surf-c52c1d87",
+      "assets": [
+        "LINK"
+      ],
+      "type": "security",
+      "severity": "high",
+      "summary": "Can Chainlink turn this CCIP migration wave into a stronger LINK rally?",
+      "source_class": "surf_cited",
+      "source_name": "AMBCRYPTO",
+      "source_type": "surf",
+      "url": "https://ambcrypto.com/can-chainlink-turn-this-ccip-migration-wave-into-a-stronger-link-rally/",
+      "published": 1779337839,
+      "fomo_risk": true,
+      "score": 0.561,
+      "route": "macro",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down",
+        "layman_ru": "\u26a0 SECURITY \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+      },
+      "matched_keywords": [
+        "exploit"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-4da156f5",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "regulation",
+      "severity": "medium",
+      "summary": "ONDO Jumps as SEC Ends Biden-Era Probe",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
+      "source_type": "surf",
+      "url": "https://thedefiant.io/news/defi/ondo-jumps-as-sec-ends-biden-era-probe",
+      "published": 1765222619,
+      "fomo_risk": false,
+      "score": 0.524,
+      "route": "macro",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "sec "
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-21c9d55a",
+      "assets": [
+        "STRK"
+      ],
+      "type": "unlock",
+      "severity": "high",
+      "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
+      "published": 1763722829,
+      "fomo_risk": true,
+      "score": 0.505,
+      "route": "macro",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "add_watch_item",
+        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f STRK \u0432 accumulation \u2014 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 MONITOR, \u043d\u0435 \u0432\u0445\u043e\u0434\u0438\u0442\u044c"
+      },
+      "matched_keywords": [
+        "unlock"
+      ],
+      "query_context": "general"
     },
     {
       "id": "rss-984cc9e5",
@@ -114,7 +199,7 @@
       "matched_keywords": [
         "sec "
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-55510f78",
@@ -138,34 +223,382 @@
       "matched_keywords": [
         "sec "
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
-      "id": "surf-21fbe741",
+      "id": "surf-70b1ab26",
       "assets": [
-        "BTC",
-        "DOGE"
+        "STRK"
       ],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Elon Musk&#8217;s New Favorite Cryptocurrency: Is It DOGE or BTC USD?",
-      "source_class": "surf_cited",
-      "source_name": "99BITCOINS",
+      "summary": "Starknet Becomes First Rollup To Deploy Native Staking",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
       "source_type": "surf",
-      "url": "https://99bitcoins.com/news/altcoins/elon-musks-new-favorite-cryptocurrency-is-it-doge-or-btc-usd/",
-      "published": 1762172180,
+      "url": "https://thedefiant.io/news/defi/starknet-becomes-first-rollup-to-deploy-native-staking",
+      "published": 1732626480,
       "fomo_risk": false,
-      "score": 0.321,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launched",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-423b296d",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Testnet - 11 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:ca2f6c7be094b:0-starknet-strk-starknet-v0-14-1-testnet-11-nov-2025/",
+      "published": 1761562824,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0.",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-c2e69194",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Mainnet - 25 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:e9ceace3c094b:0-starknet-strk-starknet-v0-14-1-mainnet-25-nov-2025/",
+      "published": 1761562824,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-42c0895c",
+      "assets": [
+        "MORPHO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Morpho rolls out Midnight for fixed term lending on Base",
+      "source_class": "surf_cited",
+      "source_name": "CRYPTODOTNEWS",
+      "source_type": "surf",
+      "url": "https://crypto.news/morpho-rolls-out-midnight-for-fixed-term-lending-on-base/",
+      "published": 1784647422,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launches",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-503af407",
+      "assets": [
+        "MORPHO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Morpho launches fixed-rate lending protocol Midnight on Base to expand onchain credit markets",
+      "source_class": "tier1_news",
+      "source_name": "THEBLOCK",
+      "source_type": "surf",
+      "url": "https://www.theblock.co/post/409062/morpho-midnight-fixed-rate-lending-protocol-base-onchain-credit-markets",
+      "published": 1784638800,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launches",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-e1ec57da",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "partnership",
+      "severity": "high",
+      "summary": "Ondo Finance's $185M Tokenized U.S. Treasury Offering Joins the XRP Ledger",
+      "source_class": "tier1_news",
+      "source_name": "COINDESK",
+      "source_type": "surf",
+      "url": "https://coindesk.com/business/2025/01/28/ondo-finance-s-usd185m-tokenized-u-s-treasury-offering-joins-the-xrp-ledger",
+      "published": 1738069200,
+      "fomo_risk": false,
+      "score": 0.262,
       "route": "archive",
       "action_hint": {
         "field": "thesis_alive",
         "action": "noted",
-        "layman_ru": "Upgrade \u2014 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis, \u043d\u043e \u041d\u0415 NEW_ENTRY"
+        "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "joins"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-5c551b00",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Solana launches Starknet token STRK",
+      "source_class": "aggregator",
+      "source_name": "CHAINCATCHER",
+      "source_type": "surf",
+      "url": "https://www.chaincatcher.com/en/article/2237826",
+      "published": 1768522847,
+      "fomo_risk": false,
+      "score": 0.243,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launches",
+        "launched",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-65270f88",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Privacy Perps - 01 Dec 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:2271a2986094b:0-starknet-strk-privacy-perps-01-dec-2025/",
+      "published": 1763031634,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-5dd8b892",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - V0.14.2 Mainnet Upgrade - 20 April 2026",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:a717435e6094b:0-starknet-strk-v0-14-2-mainnet-upgrade-20-april-2026/",
+      "published": 1776704432,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-223d3a08",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet successfully deploys STRK staking infrastructure on mainnet",
+      "source_class": "surf_cited",
+      "source_name": "COINNESS",
+      "source_type": "surf",
+      "url": "https://coinness.com/en/news/1112523",
+      "published": 1732523456,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-bbee69f9",
+      "assets": [
+        "ETHFI"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Ether.fi to launch DeFi neobank and U.S. cash card",
+      "source_class": "surf_cited",
+      "source_name": "COINNESS",
+      "source_type": "surf",
+      "url": "https://coinness.com/en/news/1126614",
+      "published": 1745500334,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
         "launch"
       ],
-      "surf_sentiment": null
+      "query_context": "general"
+    },
+    {
+      "id": "surf-d7f45543",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Ondo Finance now supports 24/7 conversions between OUSG and PYUSD",
+      "source_class": "surf_cited",
+      "source_name": "COINNESS",
+      "source_type": "surf",
+      "url": "https://coinness.com/en/news/1128359",
+      "published": 1747313880,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launches",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-d8c3add5",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Ondo Finance Announces Launch of RWA Tokenization Platform Ondo Global Markets",
+      "source_class": "surf_cited",
+      "source_name": "PANEWS",
+      "source_type": "surf",
+      "url": "https://www.panewslab.com/en/articles/wwheei43",
+      "published": 1738756126,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-211d4a42",
+      "assets": [
+        "LINK"
+      ],
+      "type": "partnership",
+      "severity": "medium",
+      "summary": "Mountain Protocol Integrates Chainlink CCIP for USDM Stablecoin",
+      "source_class": "surf_cited",
+      "source_name": "BEINCRYPTO",
+      "source_type": "surf",
+      "url": "https://beincrypto.com/mountain-protocol-integrates-chainlink-ccip/",
+      "published": 1729229562,
+      "fomo_risk": false,
+      "score": 0.183,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "integration"
+      ],
+      "query_context": "general"
     },
     {
       "id": "rss-d7af419d",
@@ -181,17 +614,17 @@
       "url": "https://cointelegraph.com/news/bitcoincom-integrates-uae-registered-usdu-stablecoin-into-self-custodial-wallet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
       "published": "2026-08-19T20:33:51+00:00",
       "fomo_risk": false,
-      "score": 0.143,
+      "score": 0.167,
       "route": "archive",
       "action_hint": {
         "field": "thesis_alive",
         "action": "noted",
-        "layman_ru": "Partnership \u2014 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis, \u043d\u043e \u041d\u0415 NEW_ENTRY"
+        "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
         "integration"
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-29fe79cb",
@@ -217,7 +650,160 @@
       "matched_keywords": [
         "treasury"
       ],
-      "surf_sentiment": null
+      "query_context": ""
+    },
+    {
+      "id": "surf-409aaa84",
+      "assets": [
+        "ETHFI"
+      ],
+      "type": "partnership",
+      "severity": "medium",
+      "summary": "ETHFI Price Today: Upbit KRW Listing Causes 20% Spike as Arthur Hayes Accumulates",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinpedia:2fddeae65094b:0-ethfi-price-today-upbit-krw-listing-causes-20-spike-as-arthur-hayes-accumulates/",
+      "published": 1773917702,
+      "fomo_risk": true,
+      "score": 0.092,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "listing",
+        "listed on"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-def1a602",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "funding",
+      "severity": "high",
+      "summary": "Ondo Invests $25 Million in Figure&#8217;s YLDS to Enhance Tokenized Treasury Fund",
+      "source_class": "surf_cited",
+      "source_name": "BITCOINCOM",
+      "source_type": "surf",
+      "url": "https://news.bitcoin.com/ondo-invests-25-million-in-figures-ylds-to-enhance-tokenized-treasury-fund/",
+      "published": 1764102906,
+      "fomo_risk": true,
+      "score": 0.07,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Funding \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "treasury"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-dc85ac66",
+      "assets": [
+        "EIGEN",
+        "ETH",
+        "ETHFI"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Ethereum Liquid Restaking Sector Slumps as Incentives Dry Up",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
+      "source_type": "surf",
+      "url": "https://thedefiant.io/news/defi/ethereum-liquid-restaking-sector-slumps-as-incentives-dry-up",
+      "published": 1747486740,
+      "fomo_risk": false,
+      "score": 0.056,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-eba5f44a",
+      "assets": [
+        "ETHFI"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Ether.fi pitches buybacks for ETHFI stakers",
+      "source_class": "tier1_news",
+      "source_name": "COINTELEGRAPH",
+      "source_type": "surf",
+      "url": "https://cointelegraph.com/news/ether-fi-proposes-native-token-buybacks",
+      "published": 1734382377,
+      "fomo_risk": false,
+      "score": 0.056,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-e659843c",
+      "assets": [
+        "BTC",
+        "EIGEN",
+        "ETHFI"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "DeFi TVL nears 2021 highs on liquid restaking, Bitcoin L2s",
+      "source_class": "tier1_news",
+      "source_name": "COINTELEGRAPH",
+      "source_type": "surf",
+      "url": "https://cointelegraph.com/news/defi-tvl-nears-2021-highs-liquid-staking-bitcoin-layer-2s",
+      "published": 1733777337,
+      "fomo_risk": false,
+      "score": 0.056,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-225e4293",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "ONDO Crypto Will Lead RWA Bull Run: Why ONDO Could Be Best Crypto to Buy",
+      "source_class": "surf_cited",
+      "source_name": "99BITCOINS",
+      "source_type": "surf",
+      "url": "https://99bitcoins.com/news/presales/ondo-crypto-will-lead-rwa-bull-run-why-ondo-could-be-best-crypto-to-buy/",
+      "published": 1741007551,
+      "fomo_risk": false,
+      "score": 0.056,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
     },
     {
       "id": "rss-c15bb126",
@@ -241,7 +827,7 @@
         "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-66128e95",
@@ -265,7 +851,7 @@
         "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-d019151a",
@@ -289,7 +875,7 @@
         "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-72c9ba16",
@@ -313,7 +899,7 @@
         "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-7c832e5c",
@@ -337,7 +923,7 @@
         "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-91f164d0",
@@ -363,22 +949,144 @@
       "matched_keywords": [
         "treasury"
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
-      "id": "surf-439999e5",
+      "id": "surf-73035995",
       "assets": [
-        "BTC",
-        "ETH"
+        "ONDO"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Ondo Finance invests $25 million in Figure to promote the OUSG stablecoin",
+      "source_class": "aggregator",
+      "source_name": "CHAINCATCHER",
+      "source_type": "surf",
+      "url": "https://www.chaincatcher.com/en/article/2223460",
+      "published": 1763993588,
+      "fomo_risk": false,
+      "score": 0.033,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-548c80c1",
+      "assets": [
+        "ETH",
+        "ETHFI"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Can we escape DeFi\u2019s Ouroboros? Bridging real-yield in 2025",
+      "source_class": "surf_cited",
+      "source_name": "CRYPTOSLATE",
+      "source_type": "surf",
+      "url": "https://cryptoslate.com/can-we-escape-defis-ouroboros-bridging-real-yield-in-2025/",
+      "published": 1740258002,
+      "fomo_risk": true,
+      "score": 0.028,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-9c08e565",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Ondo Finance Dominates RWA Tokenization: 2025 Boom or Bust?",
+      "source_class": "surf_cited",
+      "source_name": "BLOCKFLOW",
+      "source_type": "surf",
+      "url": "https://www.blockflow.news/news/detail/1563/Ondo-Finance-Dominates-RWA-Tokenization-2025-Boom-or-Bust",
+      "published": 1747713719,
+      "fomo_risk": true,
+      "score": 0.028,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-fdbdfed6",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "funding",
+      "severity": "low",
+      "summary": "Ondo Finance\u2019s Strategic $6.1M ONDO Deposit to Coinbase Sparks Intense Market Scrutiny",
+      "source_class": "surf_cited",
+      "source_name": "BITCOINWORLD",
+      "source_type": "surf",
+      "url": "https://bitcoinworld.co.in/ondo-finance-ondo-coinbase-deposit/",
+      "published": 1771894812,
+      "fomo_risk": true,
+      "score": 0.028,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "treasury"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-bcc17822",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Ondo: RWA leader&#39;s product line, competitors and token valuation analysis",
+      "source_class": "surf_cited",
+      "source_name": "ODAILY",
+      "source_type": "surf",
+      "url": "https://www.odaily.news/en/post/5203717",
+      "published": 1747619868,
+      "fomo_risk": true,
+      "score": 0.028,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-e89174e2",
+      "assets": [
+        "MORPHO"
       ],
       "type": "narrative",
       "severity": "low",
-      "summary": "Trump's Son: Stop Shorting BTC and ETH, or You'll Get Rekt",
-      "source_class": "surf_cited",
-      "source_name": "BLOCKBEATS",
+      "summary": "Morpho Unveils Fixed-Rate Protocol Morpho Midnight",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
       "source_type": "surf",
-      "url": "https://en.theblockbeats.news/flash/306578",
-      "published": 1754701590,
+      "url": "https://thedefiant.io/news/defi/morpho-unveils-fixed-rate-protocol-morpho-midnight",
+      "published": 1776178728,
       "fomo_risk": false,
       "score": 0.022,
       "route": "archive",
@@ -388,90 +1096,23 @@
         "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": "general"
     },
     {
-      "id": "rss-1a68940d",
-      "assets": [],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "GSR\u2019s Baehr says tokenized fixed income could play key role in institutional collateral",
-      "source_class": "tier1_news",
-      "source_name": "TheBlock",
-      "source_type": "rss",
-      "url": "https://www.theblock.co/news/business/2026-08-20-gsr-baehr-tokenized-institutional-collateral-412302",
-      "published": "2026-08-20T10:08:12+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-30f02a35",
-      "assets": [],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "OCC races to finalize GENIUS Act stablecoin rules by November",
-      "source_class": "tier1_news",
-      "source_name": "TheBlock",
-      "source_type": "rss",
-      "url": "https://www.theblock.co/news/regulation/2026-08-19-occ-races-to-finalize-genius-act-stablecoin-rules-by-november-412240",
-      "published": "2026-08-19T17:03:52+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-57e5d09c",
-      "assets": [],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Injective becomes SEC-registered transfer agent as it expands tokenization push",
-      "source_class": "tier1_news",
-      "source_name": "TheBlock",
-      "source_type": "rss",
-      "url": "https://www.theblock.co/news/regulation/2026-08-19-injective-becomes-sec-registered-transfer-agent-expands-tokenization-push-412225",
-      "published": "2026-08-19T16:24:24+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-01cd819a",
+      "id": "surf-e40a4c64",
       "assets": [
-        "ETH",
         "LINK"
       ],
       "type": "narrative",
       "severity": "low",
-      "summary": "Ethereum engineering firm Nethermind leaves LayerZero verifier role for Chainlink",
-      "source_class": "tier1_news",
-      "source_name": "TheBlock",
-      "source_type": "rss",
-      "url": "https://www.theblock.co/news/ecosystems/2026-08-19-nethermind-layerzero-chainlink-412226",
-      "published": "2026-08-19T16:01:13+00:00",
+      "summary": "Chainlink (LINK) - Kraken & CCIP - 14 May 2026",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:c1126a600094b:0-chainlink-link-kraken-ccip-14-may-2026/",
+      "published": 1778778042,
       "fomo_risk": false,
-      "score": 0.02,
+      "score": 0.022,
       "route": "archive",
       "action_hint": {
         "field": "MONITOR",
@@ -479,155 +1120,13 @@
         "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
       },
       "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-d303cc9b",
-      "assets": [],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Bitwise CIO sees potential for 10-100x blockchain transaction growth as AI agents meet tokenized markets",
-      "source_class": "tier1_news",
-      "source_name": "TheBlock",
-      "source_type": "rss",
-      "url": "https://www.theblock.co/news/ecosystems/2026-08-19-bitwise-cio-sees-potential-for-10-100x-blockchain-transaction-growth-as-ai-agents-meet-tokenized-markets-412196",
-      "published": "2026-08-19T11:32:48+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [
-        "ai agents"
-      ],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-3a749cf0",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Fed liquidity promises, dollar weakness could determine bitcoin's next move",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/daybook-us/2026/08/20/fed-liquidity-promises-dollar-weakness-could-determine-bitcoin-s-next-move",
-      "published": "2026-08-20T11:31:10+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-4fc4003f",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Bitcoin rally sparks debate whether Clarity Act is already priced in",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/markets/2026/08/20/crypto-s-bottom-is-near-as-ai-hype-fades-okx-europe-ceo-says",
-      "published": "2026-08-20T10:47:35+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-92dfefb8",
-      "assets": [],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Elon Musk's X is exploring stablecoins to pay influencers and content providers",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/business/2026/08/20/elon-musk-s-x-is-exploring-stablecoins-to-pay-influencers-and-content-providers",
-      "published": "2026-08-20T09:40:25+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-418b8372",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Bitcoin hits $72,000 as Strategy and Coinbase continue rally",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/markets/2026/08/20/bitcoin-approaches-usd72-000-as-strategy-and-coinbase-continue-rally",
-      "published": "2026-08-20T09:25:03+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
-    },
-    {
-      "id": "rss-d392a10b",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Bitcoin briefly hits $70,000 for the first time since June. Here is why",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/markets/2026/08/19/bitcoin-briefly-hits-usd70-000-for-the-first-time-since-june-here-is-why",
-      "published": "2026-08-19T22:26:01+00:00",
-      "fomo_risk": false,
-      "score": 0.02,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "surf_sentiment": null
+      "query_context": "general"
     }
   ],
   "route_counts": {
-    "home": 1,
-    "macro": 4,
-    "archive": 31
+    "home": 3,
+    "macro": 10,
+    "archive": 60
   },
   "home_events": [
     {
@@ -656,10 +1155,8 @@
         "exploited",
         "drain"
       ],
-      "surf_sentiment": null
-    }
-  ],
-  "macro_events": [
+      "query_context": ""
+    },
     {
       "id": "rss-9c4da1d3",
       "assets": [
@@ -675,7 +1172,7 @@
       "published": "2026-08-19T14:25:49+00:00",
       "fomo_risk": false,
       "score": 0.643,
-      "route": "macro",
+      "route": "home",
       "action_hint": {
         "field": "SIZE",
         "action": "down",
@@ -684,7 +1181,7 @@
       "matched_keywords": [
         "unlock"
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-3e439bfc",
@@ -699,7 +1196,7 @@
       "published": "2026-08-18T21:42:33+00:00",
       "fomo_risk": false,
       "score": 0.643,
-      "route": "macro",
+      "route": "home",
       "action_hint": {
         "field": "SIZE",
         "action": "down",
@@ -708,7 +1205,87 @@
       "matched_keywords": [
         "unlock"
       ],
-      "surf_sentiment": null
+      "query_context": ""
+    }
+  ],
+  "macro_events": [
+    {
+      "id": "surf-c52c1d87",
+      "assets": [
+        "LINK"
+      ],
+      "type": "security",
+      "severity": "high",
+      "summary": "Can Chainlink turn this CCIP migration wave into a stronger LINK rally?",
+      "source_class": "surf_cited",
+      "source_name": "AMBCRYPTO",
+      "source_type": "surf",
+      "url": "https://ambcrypto.com/can-chainlink-turn-this-ccip-migration-wave-into-a-stronger-link-rally/",
+      "published": 1779337839,
+      "fomo_risk": true,
+      "score": 0.561,
+      "route": "macro",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down",
+        "layman_ru": "\u26a0 SECURITY \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+      },
+      "matched_keywords": [
+        "exploit"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-4da156f5",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "regulation",
+      "severity": "medium",
+      "summary": "ONDO Jumps as SEC Ends Biden-Era Probe",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
+      "source_type": "surf",
+      "url": "https://thedefiant.io/news/defi/ondo-jumps-as-sec-ends-biden-era-probe",
+      "published": 1765222619,
+      "fomo_risk": false,
+      "score": 0.524,
+      "route": "macro",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "sec "
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-21c9d55a",
+      "assets": [
+        "STRK"
+      ],
+      "type": "unlock",
+      "severity": "high",
+      "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
+      "published": 1763722829,
+      "fomo_risk": true,
+      "score": 0.505,
+      "route": "macro",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "add_watch_item",
+        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f STRK \u0432 accumulation \u2014 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 MONITOR, \u043d\u0435 \u0432\u0445\u043e\u0434\u0438\u0442\u044c"
+      },
+      "matched_keywords": [
+        "unlock"
+      ],
+      "query_context": "general"
     },
     {
       "id": "rss-984cc9e5",
@@ -734,7 +1311,7 @@
       "matched_keywords": [
         "sec "
       ],
-      "surf_sentiment": null
+      "query_context": ""
     },
     {
       "id": "rss-55510f78",
@@ -758,8 +1335,794 @@
       "matched_keywords": [
         "sec "
       ],
-      "surf_sentiment": null
+      "query_context": ""
+    },
+    {
+      "id": "surf-70b1ab26",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet Becomes First Rollup To Deploy Native Staking",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
+      "source_type": "surf",
+      "url": "https://thedefiant.io/news/defi/starknet-becomes-first-rollup-to-deploy-native-staking",
+      "published": 1732626480,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launched",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-423b296d",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Testnet - 11 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:ca2f6c7be094b:0-starknet-strk-starknet-v0-14-1-testnet-11-nov-2025/",
+      "published": 1761562824,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0.",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-c2e69194",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Mainnet - 25 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:e9ceace3c094b:0-starknet-strk-starknet-v0-14-1-mainnet-25-nov-2025/",
+      "published": 1761562824,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-42c0895c",
+      "assets": [
+        "MORPHO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Morpho rolls out Midnight for fixed term lending on Base",
+      "source_class": "surf_cited",
+      "source_name": "CRYPTODOTNEWS",
+      "source_type": "surf",
+      "url": "https://crypto.news/morpho-rolls-out-midnight-for-fixed-term-lending-on-base/",
+      "published": 1784647422,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launches",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-503af407",
+      "assets": [
+        "MORPHO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Morpho launches fixed-rate lending protocol Midnight on Base to expand onchain credit markets",
+      "source_class": "tier1_news",
+      "source_name": "THEBLOCK",
+      "source_type": "surf",
+      "url": "https://www.theblock.co/post/409062/morpho-midnight-fixed-rate-lending-protocol-base-onchain-credit-markets",
+      "published": 1784638800,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "launches",
+        "launch"
+      ],
+      "query_context": "general"
     }
   ],
-  "methodology_version": "4.0"
+  "per_asset_counts": {
+    "BTC": 19,
+    "ETH": 5,
+    "LINK": 11,
+    "ONDO": 10,
+    "STRK": 10,
+    "MORPHO": 4,
+    "ETHFI": 9,
+    "EIGEN": 2,
+    "OP": 1,
+    "UNI": 1
+  },
+  "per_asset_top": {
+    "LINK": [
+      {
+        "id": "surf-c52c1d87",
+        "assets": [
+          "LINK"
+        ],
+        "type": "security",
+        "severity": "high",
+        "summary": "Can Chainlink turn this CCIP migration wave into a stronger LINK rally?",
+        "source_class": "surf_cited",
+        "source_name": "AMBCRYPTO",
+        "source_type": "surf",
+        "url": "https://ambcrypto.com/can-chainlink-turn-this-ccip-migration-wave-into-a-stronger-link-rally/",
+        "published": 1779337839,
+        "fomo_risk": true,
+        "score": 0.561,
+        "route": "macro",
+        "action_hint": {
+          "field": "SIZE",
+          "action": "down",
+          "layman_ru": "\u26a0 SECURITY \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+        },
+        "matched_keywords": [
+          "exploit"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-85abaf63",
+        "assets": [
+          "LINK"
+        ],
+        "type": "security",
+        "severity": "medium",
+        "summary": "Crisis of Confidence: 14 Protocols Exit or Suspend Bridging With LayerZero in 48 Hours",
+        "source_class": "surf_cited",
+        "source_name": "BITCOINWORLD",
+        "source_type": "surf",
+        "url": "https://bitcoinworld.co.in/layerzero-bridge-protocols-exit-suspend/",
+        "published": 1778293511,
+        "fomo_risk": true,
+        "score": 0.393,
+        "route": "macro",
+        "action_hint": {
+          "field": "SIZE",
+          "action": "down",
+          "layman_ru": "\u26a0 SECURITY \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+        },
+        "matched_keywords": [
+          "security incident"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-118ee1bf",
+        "assets": [
+          "LINK"
+        ],
+        "type": "regulation",
+        "severity": "high",
+        "summary": "Chainlink ETF Approved \u2014 Is LINK on Track for a Break Toward $30?",
+        "source_class": "surf_cited",
+        "source_name": "BITZO",
+        "source_type": "surf",
+        "url": "https://bitzo.com/2025/12/chainlink-etf-approved-is-link-on-track-for-a-break-toward-30",
+        "published": 1764676754,
+        "fomo_risk": true,
+        "score": 0.374,
+        "route": "macro",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "watch",
+          "layman_ru": "\u26a1 Regulatory event high \u2014 \u043c\u0430\u043a\u0440\u043e impact"
+        },
+        "matched_keywords": [
+          "etf approv"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-211d4a42",
+        "assets": [
+          "LINK"
+        ],
+        "type": "partnership",
+        "severity": "medium",
+        "summary": "Mountain Protocol Integrates Chainlink CCIP for USDM Stablecoin",
+        "source_class": "surf_cited",
+        "source_name": "BEINCRYPTO",
+        "source_type": "surf",
+        "url": "https://beincrypto.com/mountain-protocol-integrates-chainlink-ccip/",
+        "published": 1729229562,
+        "fomo_risk": false,
+        "score": 0.183,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "integration"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-e40a4c64",
+        "assets": [
+          "LINK"
+        ],
+        "type": "narrative",
+        "severity": "low",
+        "summary": "Chainlink (LINK) - Kraken & CCIP - 14 May 2026",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:c1126a600094b:0-chainlink-link-kraken-ccip-14-may-2026/",
+        "published": 1778778042,
+        "fomo_risk": false,
+        "score": 0.022,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      }
+    ],
+    "ONDO": [
+      {
+        "id": "surf-4da156f5",
+        "assets": [
+          "ONDO"
+        ],
+        "type": "regulation",
+        "severity": "medium",
+        "summary": "ONDO Jumps as SEC Ends Biden-Era Probe",
+        "source_class": "tier1_news",
+        "source_name": "THEDEFIANT",
+        "source_type": "surf",
+        "url": "https://thedefiant.io/news/defi/ondo-jumps-as-sec-ends-biden-era-probe",
+        "published": 1765222619,
+        "fomo_risk": false,
+        "score": 0.524,
+        "route": "macro",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [
+          "sec "
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-e1ec57da",
+        "assets": [
+          "ONDO"
+        ],
+        "type": "partnership",
+        "severity": "high",
+        "summary": "Ondo Finance's $185M Tokenized U.S. Treasury Offering Joins the XRP Ledger",
+        "source_class": "tier1_news",
+        "source_name": "COINDESK",
+        "source_type": "surf",
+        "url": "https://coindesk.com/business/2025/01/28/ondo-finance-s-usd185m-tokenized-u-s-treasury-offering-joins-the-xrp-ledger",
+        "published": 1738069200,
+        "fomo_risk": false,
+        "score": 0.262,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "joins"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-d7f45543",
+        "assets": [
+          "ONDO"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Ondo Finance now supports 24/7 conversions between OUSG and PYUSD",
+        "source_class": "surf_cited",
+        "source_name": "COINNESS",
+        "source_type": "surf",
+        "url": "https://coinness.com/en/news/1128359",
+        "published": 1747313880,
+        "fomo_risk": true,
+        "score": 0.206,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launches",
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-d8c3add5",
+        "assets": [
+          "ONDO"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Ondo Finance Announces Launch of RWA Tokenization Platform Ondo Global Markets",
+        "source_class": "surf_cited",
+        "source_name": "PANEWS",
+        "source_type": "surf",
+        "url": "https://www.panewslab.com/en/articles/wwheei43",
+        "published": 1738756126,
+        "fomo_risk": true,
+        "score": 0.206,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-def1a602",
+        "assets": [
+          "ONDO"
+        ],
+        "type": "funding",
+        "severity": "high",
+        "summary": "Ondo Invests $25 Million in Figure&#8217;s YLDS to Enhance Tokenized Treasury Fund",
+        "source_class": "surf_cited",
+        "source_name": "BITCOINCOM",
+        "source_type": "surf",
+        "url": "https://news.bitcoin.com/ondo-invests-25-million-in-figures-ylds-to-enhance-tokenized-treasury-fund/",
+        "published": 1764102906,
+        "fomo_risk": true,
+        "score": 0.07,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Funding \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [
+          "treasury"
+        ],
+        "query_context": "general"
+      }
+    ],
+    "STRK": [
+      {
+        "id": "surf-21c9d55a",
+        "assets": [
+          "STRK"
+        ],
+        "type": "unlock",
+        "severity": "high",
+        "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
+        "published": 1763722829,
+        "fomo_risk": true,
+        "score": 0.505,
+        "route": "macro",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "add_watch_item",
+          "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f STRK \u0432 accumulation \u2014 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 MONITOR, \u043d\u0435 \u0432\u0445\u043e\u0434\u0438\u0442\u044c"
+        },
+        "matched_keywords": [
+          "unlock"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-70b1ab26",
+        "assets": [
+          "STRK"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Starknet Becomes First Rollup To Deploy Native Staking",
+        "source_class": "tier1_news",
+        "source_name": "THEDEFIANT",
+        "source_type": "surf",
+        "url": "https://thedefiant.io/news/defi/starknet-becomes-first-rollup-to-deploy-native-staking",
+        "published": 1732626480,
+        "fomo_risk": false,
+        "score": 0.412,
+        "route": "macro",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launched",
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-423b296d",
+        "assets": [
+          "STRK"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Starknet (STRK) - Starknet V0.14.1 Testnet - 11 Nov 2025",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:ca2f6c7be094b:0-starknet-strk-starknet-v0-14-1-testnet-11-nov-2025/",
+        "published": 1761562824,
+        "fomo_risk": false,
+        "score": 0.412,
+        "route": "macro",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "mainnet",
+          "v0.",
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-c2e69194",
+        "assets": [
+          "STRK"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Starknet (STRK) - Starknet V0.14.1 Mainnet - 25 Nov 2025",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:e9ceace3c094b:0-starknet-strk-starknet-v0-14-1-mainnet-25-nov-2025/",
+        "published": 1761562824,
+        "fomo_risk": false,
+        "score": 0.412,
+        "route": "macro",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "mainnet",
+          "v0."
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-5c551b00",
+        "assets": [
+          "STRK"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Solana launches Starknet token STRK",
+        "source_class": "aggregator",
+        "source_name": "CHAINCATCHER",
+        "source_type": "surf",
+        "url": "https://www.chaincatcher.com/en/article/2237826",
+        "published": 1768522847,
+        "fomo_risk": false,
+        "score": 0.243,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launches",
+          "launched",
+          "launch"
+        ],
+        "query_context": "general"
+      }
+    ],
+    "MORPHO": [
+      {
+        "id": "surf-42c0895c",
+        "assets": [
+          "MORPHO"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Morpho rolls out Midnight for fixed term lending on Base",
+        "source_class": "surf_cited",
+        "source_name": "CRYPTODOTNEWS",
+        "source_type": "surf",
+        "url": "https://crypto.news/morpho-rolls-out-midnight-for-fixed-term-lending-on-base/",
+        "published": 1784647422,
+        "fomo_risk": false,
+        "score": 0.412,
+        "route": "macro",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launches",
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-503af407",
+        "assets": [
+          "MORPHO"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Morpho launches fixed-rate lending protocol Midnight on Base to expand onchain credit markets",
+        "source_class": "tier1_news",
+        "source_name": "THEBLOCK",
+        "source_type": "surf",
+        "url": "https://www.theblock.co/post/409062/morpho-midnight-fixed-rate-lending-protocol-base-onchain-credit-markets",
+        "published": 1784638800,
+        "fomo_risk": false,
+        "score": 0.412,
+        "route": "macro",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launches",
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-e89174e2",
+        "assets": [
+          "MORPHO"
+        ],
+        "type": "narrative",
+        "severity": "low",
+        "summary": "Morpho Unveils Fixed-Rate Protocol Morpho Midnight",
+        "source_class": "tier1_news",
+        "source_name": "THEDEFIANT",
+        "source_type": "surf",
+        "url": "https://thedefiant.io/news/defi/morpho-unveils-fixed-rate-protocol-morpho-midnight",
+        "published": 1776178728,
+        "fomo_risk": false,
+        "score": 0.022,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-561c1b61",
+        "assets": [
+          "MORPHO"
+        ],
+        "type": "narrative",
+        "severity": "low",
+        "summary": "An address suffered a $2.6 million attack and was preempted by c0ffeebabe.eth",
+        "source_class": "surf_cited",
+        "source_name": "PANEWS",
+        "source_type": "surf",
+        "url": "https://www.panewslab.com/en/articles/uvktqa6t",
+        "published": 1744353935,
+        "fomo_risk": true,
+        "score": 0.011,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      }
+    ],
+    "ETHFI": [
+      {
+        "id": "surf-bbee69f9",
+        "assets": [
+          "ETHFI"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Ether.fi to launch DeFi neobank and U.S. cash card",
+        "source_class": "surf_cited",
+        "source_name": "COINNESS",
+        "source_type": "surf",
+        "url": "https://coinness.com/en/news/1126614",
+        "published": 1745500334,
+        "fomo_risk": true,
+        "score": 0.206,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-409aaa84",
+        "assets": [
+          "ETHFI"
+        ],
+        "type": "partnership",
+        "severity": "medium",
+        "summary": "ETHFI Price Today: Upbit KRW Listing Causes 20% Spike as Arthur Hayes Accumulates",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinpedia:2fddeae65094b:0-ethfi-price-today-upbit-krw-listing-causes-20-spike-as-arthur-hayes-accumulates/",
+        "published": 1773917702,
+        "fomo_risk": true,
+        "score": 0.092,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "listing",
+          "listed on"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-dc85ac66",
+        "assets": [
+          "EIGEN",
+          "ETH",
+          "ETHFI"
+        ],
+        "type": "narrative",
+        "severity": "high",
+        "summary": "Ethereum Liquid Restaking Sector Slumps as Incentives Dry Up",
+        "source_class": "tier1_news",
+        "source_name": "THEDEFIANT",
+        "source_type": "surf",
+        "url": "https://thedefiant.io/news/defi/ethereum-liquid-restaking-sector-slumps-as-incentives-dry-up",
+        "published": 1747486740,
+        "fomo_risk": false,
+        "score": 0.056,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-eba5f44a",
+        "assets": [
+          "ETHFI"
+        ],
+        "type": "narrative",
+        "severity": "high",
+        "summary": "Ether.fi pitches buybacks for ETHFI stakers",
+        "source_class": "tier1_news",
+        "source_name": "COINTELEGRAPH",
+        "source_type": "surf",
+        "url": "https://cointelegraph.com/news/ether-fi-proposes-native-token-buybacks",
+        "published": 1734382377,
+        "fomo_risk": false,
+        "score": 0.056,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-e659843c",
+        "assets": [
+          "BTC",
+          "EIGEN",
+          "ETHFI"
+        ],
+        "type": "narrative",
+        "severity": "high",
+        "summary": "DeFi TVL nears 2021 highs on liquid restaking, Bitcoin L2s",
+        "source_class": "tier1_news",
+        "source_name": "COINTELEGRAPH",
+        "source_type": "surf",
+        "url": "https://cointelegraph.com/news/defi-tvl-nears-2021-highs-liquid-staking-bitcoin-layer-2s",
+        "published": 1733777337,
+        "fomo_risk": false,
+        "score": 0.056,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      }
+    ]
+  },
+  "methodology_version": "5.0"
 }
