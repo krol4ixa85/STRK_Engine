@@ -737,12 +737,16 @@ jobs:
           python-version: '3.11'
       - name: Run Interpretation Layer
         run: python3 interpretation/interpretation_layer.py
-      - name: Commit interpretation.json
+      - name: Commit unified_reading.json
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
-          [ -f data/cache/interpretation.json ] && git add data/cache/interpretation.json || echo "no interpretation.json"
-          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: interpretation layer [skip ci]"
+          # unified_reading.json — выход interpretation/interpretation_layer.py.
+          # Раньше оба скрипта писали в interpretation.json и затирали друг
+          # друга; interpretation.json остаётся за старым детектором,
+          # его читает daily_digest.
+          [ -f data/cache/unified_reading.json ] && git add data/cache/unified_reading.json || echo "no unified_reading.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: unified reading [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
