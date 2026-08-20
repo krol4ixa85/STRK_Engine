@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-19T23:01:35.986659+00:00",
+  "as_of": "2026-08-20T04:26:26.435738+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 9,
-      "total_usd": 2436741.0,
-      "net_usd_delta_24h": -6235.0,
-      "net_strk_delta_24h": -2757854.0,
+      "total_usd": 2453719.0,
+      "net_usd_delta_24h": -5956.0,
+      "net_strk_delta_24h": -2498111.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
-      "tvl_strk_now": 137305961.0,
-      "tvl_usd_now": 5951104,
+      "tvl_strk_now": 137280034.0,
+      "tvl_usd_now": 5903536,
       "apy_pct": 6.57,
-      "strk_delta_24h": -315536.0,
-      "strk_delta_7d": 3124309.0,
-      "pct_24h": -0.23,
-      "pct_7d": 2.33,
+      "strk_delta_24h": -32120.0,
+      "strk_delta_7d": 1750784.0,
+      "pct_24h": -0.02,
+      "pct_7d": 1.29,
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-19T23:01:35.950324+00:00",
+      "as_of": "2026-08-20T04:26:26.395275+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -30,18 +30,18 @@
   },
   "derived": {
     "total_stake_strk": null,
-    "endur_lst_tvl_strk": 137305961.0,
+    "endur_lst_tvl_strk": 137280034.0,
     "pure_native_stake_strk": null,
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -315536.0,
-    "lp_delta_24h_strk": -2757854.0,
-    "stake_signal": "NEGATIVE",
+    "stake_delta_24h_strk": -32120.0,
+    "lp_delta_24h_strk": -2498111.0,
+    "stake_signal": "STABLE",
     "lp_signal": "NEGATIVE"
   },
-  "overall_direction": "EXTRACTING",
-  "layman": "Отток и из стейкинга, и из DEX-пулов. Ликвидность уходит из экосистемы — распределительный сигнал.",
+  "overall_direction": "LP_REMOVING",
+  "layman": "Отток из DEX-пулов, стейкинг без движения. LP выводят капитал — тонкие книги ближе.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5
