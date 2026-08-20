@@ -32,6 +32,11 @@ on:
     # Funding per token · КАЖДЫЕ 30 МИНУТ. Источник OKX public — бесплатно,
     # ноль кредитов Hive и Dune. Единственный модуль такой частоты.
     - cron: '*/30 * * * *'
+    # Force-all скан всех токенов · раз в 2 недели, суббота 03:00 UTC (~700 кредитов Dune)
+    - cron: '0 3 */14 * *'
+    # Архивариус · снимок + дельты + ретеншн. Ежедневно 03:50 UTC,
+    # через 20 мин после force-скана и за 10 мин до daily_token_scan.
+    - cron: '50 3 * * *'
     # Decision Engine · единственный автор решений. Считает через 5 минут
     # после market_regime, чтобы читать уже свежий режим рынка.
     - cron: '27 0,6,12,18 * * *'
@@ -70,6 +75,7 @@ on:
           - token_scan_single
           - decision_engine
           - decision_verify
+          - archivist
           - full_run
       token:
         description: 'Токен для token_scan_single (например LINK). Для других режимов игнорируется.'
@@ -494,7 +500,12 @@ jobs:
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   force_all_token_scan:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_force_all'
+    # Раз в две недели, суббота 03:00 UTC. Не еженедельно: полный форс
+    # стоит ~700 кредитов Dune, при бюджете 4000/мес еженедельный прогон
+    # съедал бы 3000 и не оставлял места ни daily-скану, ни composite.
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 3 */14 * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_force_all')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -505,16 +516,24 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install dune-client requests
+      - name: Budget gate
+        id: gate
+        run: python3 scripts/dune_budget.py --check force_all_token_scan
       - name: FORCE refresh ALL tokens (ignore freshness cache)
+        if: steps.gate.outputs.allowed == 'true'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
         run: python3 token_scan/token_scan_collector.py --force
+      - name: Register Dune spend
+        if: steps.gate.outputs.allowed == 'true'
+        run: python3 scripts/dune_budget.py --spend force_all_token_scan
       - name: Commit cache
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
+          [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
           git diff --cached --quiet || git commit -m "chore: FORCE all token scan refresh [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
@@ -784,6 +803,35 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # ARCHIVIST · снимок истории, дельты к прошлому снимку, ретеншн.
+  # Сжимает снимки старше 60 дней, удаляет архивы старше 180.
+  # Только локальные файлы — 0 кредитов, 0 внешних запросов.
+  # ============================================================
+  archivist:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '50 3 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'archivist')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Snapshot, deltas, retention
+        run: python3 scripts/archivist.py
+      - name: Commit history
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/history/token_scan 2>/dev/null || true
+          [ -f data/cache/token_scan_deltas.json ] && git add data/cache/token_scan_deltas.json || echo "no deltas"
+          [ -f data/cache/archive_status.json ] && git add data/cache/archive_status.json || echo "no status"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: archivist snapshot + deltas [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
