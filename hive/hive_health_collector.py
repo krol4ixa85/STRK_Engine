@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-hive_health_collector.py · v1.0 · 20.08.2026
+hive_health_collector.py · v1.1 · 20.08.2026
 STRK ENGINE · Hive Intelligence integration
 
 ЗАЧЕМ ЭТОТ ФАЙЛ СУЩЕСТВУЕТ
@@ -104,19 +104,23 @@ UNIVERSE = {
 # Токены без собственного ERC-20 контракта — holders не запрашиваем
 NO_CONTRACT = {"BTC", "ETH", "SOL"}
 
-# CoinGecko platform id -> Hive/GeckoTerminal network id
+# CoinGecko platform id -> chain id для moralis_get_token_holders.
+# Moralis поддерживает только EVM. Starknet и Solana держателей не отдадут —
+# для них holders помечается SKIPPED, а не молча пустым.
 NETWORK_MAP = {
     "ethereum": "eth",
     "arbitrum-one": "arbitrum",
     "optimistic-ethereum": "optimism",
     "base": "base",
-    "polygon-pos": "polygon_pos",
+    "polygon-pos": "polygon",
     "binance-smart-chain": "bsc",
-    "starknet": "starknet",
-    "solana": "solana",
 }
+MORALIS_CHAINS = {"eth", "polygon", "bsc", "arbitrum", "base", "optimism",
+                  "avalanche", "linea", "cronos", "gnosis", "monad", "sei"}
 
-PREFERRED_PLATFORMS = ["ethereum", "arbitrum-one", "base", "optimistic-ethereum", "starknet", "solana"]
+CONTRACTS_FILE = os.path.join(CACHE_DIR, "hive_contracts.json")
+
+PREFERRED_PLATFORMS = ["ethereum", "arbitrum-one", "base", "optimistic-ethereum"]
 
 
 # ─────────────────────────────────────────────────────────────
@@ -208,10 +212,20 @@ class HiveClient:
             body = r.json()
             batch = body.get("data", [])
             tools.extend(batch)
-            cursor = (body.get("meta") or body).get("next_cursor") or body.get("cursor")
+            # next_cursor и has_more лежат на ВЕРХНЕМ уровне ответа,
+            # не внутри meta. Из-за этого v1.0 остановилась на 250 из 607.
+            cursor = body.get("next_cursor")
             pages += 1
-            if not cursor or not batch:
+            if not body.get("has_more") or not cursor or not batch:
                 break
+            time.sleep(0.4)
+        total = None
+        try:
+            total = body.get("meta", {}).get("total")
+        except Exception:
+            pass
+        if total:
+            print(f"  (каталог сообщает total={total}, получено {len(tools)})")
         return tools
 
     def call(self, tool, args, retries=3):
@@ -277,29 +291,75 @@ class HiveClient:
 # БЕСПЛАТНЫЙ РЕЗОЛВ АДРЕСОВ (CoinGecko, 0 кредитов Hive)
 # ─────────────────────────────────────────────────────────────
 
-def resolve_contract(cg_id):
-    """Возвращает (network_id, address) или (None, None)."""
+def _load_contracts():
+    try:
+        with open(CONTRACTS_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_contracts(d):
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(CONTRACTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(d, f, indent=2)
+
+
+def resolve_contract(cg_id, cache):
+    """
+    Возвращает (chain, address) или (None, None).
+
+    Адреса токенов не меняются, поэтому результат кэшируется навсегда
+    в data/cache/hive_contracts.json. В прогоне 20.08 шесть токенов
+    (OP, AAVE, PENDLE, LDO, EIGEN, UNI) не разрешились из-за rate limit
+    бесплатного CoinGecko — с кэшем эта проблема возникает один раз,
+    а не на каждом прогоне.
+    """
+    hit = cache.get(cg_id)
+    if hit:
+        return hit.get("chain"), hit.get("address")
+
     url = f"https://api.coingecko.com/api/v3/coins/{cg_id}"
     params = {
         "localization": "false", "tickers": "false", "market_data": "false",
         "community_data": "false", "developer_data": "false", "sparkline": "false",
     }
-    try:
-        r = requests.get(url, params=params, timeout=20)
+
+    platforms = None
+    for attempt in range(1, 4):
+        try:
+            r = requests.get(url, params=params, timeout=20)
+        except requests.RequestException:
+            time.sleep(5 * attempt)
+            continue
+        if r.status_code == 429:
+            time.sleep(15 * attempt)   # CoinGecko free: щедрая пауза
+            continue
         if r.status_code != 200:
             return None, None
-        platforms = r.json().get("platforms", {}) or {}
-    except Exception:
+        try:
+            platforms = r.json().get("platforms", {}) or {}
+        except ValueError:
+            return None, None
+        break
+
+    if platforms is None:
         return None, None
 
     for p in PREFERRED_PLATFORMS:
         addr = platforms.get(p)
-        if addr and str(addr).strip():
-            return NETWORK_MAP.get(p, p), str(addr).strip()
+        if addr and str(addr).strip() and p in NETWORK_MAP:
+            chain, address = NETWORK_MAP[p], str(addr).strip()
+            cache[cg_id] = {"chain": chain, "address": address}
+            _save_contracts(cache)
+            return chain, address
 
     for p, addr in platforms.items():
         if addr and str(addr).strip() and p in NETWORK_MAP:
-            return NETWORK_MAP[p], str(addr).strip()
+            chain, address = NETWORK_MAP[p], str(addr).strip()
+            cache[cg_id] = {"chain": chain, "address": address}
+            _save_contracts(cache)
+            return chain, address
 
     return None, None
 
@@ -307,6 +367,26 @@ def resolve_contract(cg_id):
 # ─────────────────────────────────────────────────────────────
 # MUST #19 · ГЛУБИНА НА 2%
 # ─────────────────────────────────────────────────────────────
+
+_PRICES_CACHE = {}
+
+
+def _volume_24h(symbol):
+    """Суточный оборот из hive_prices.json — бесплатно, файл уже есть."""
+    global _PRICES_CACHE
+    if not _PRICES_CACHE:
+        try:
+            with open(os.path.join(CACHE_DIR, "hive_prices.json"), encoding="utf-8") as f:
+                _PRICES_CACHE = json.load(f).get("prices", {}) or {"__empty__": True}
+        except Exception:
+            _PRICES_CACHE = {"__empty__": True}
+    row = _PRICES_CACHE.get(symbol) or {}
+    v = row.get("volume_24h")
+    try:
+        return float(v) if v else None
+    except (TypeError, ValueError):
+        return None
+
 
 def collect_depth(hive, symbol, cg_id):
     """
@@ -355,13 +435,26 @@ def collect_depth(hive, symbol, cg_id):
     venues.sort(key=lambda v: v["up_usd"] + v["down_usd"], reverse=True)
     total = up_total + down_total
 
-    # Порог из MUST #19: чем меньше $ двигает цену на 2%, тем тоньше рынок
-    if total < 50_000:
-        grade = "THIN"
-    elif total < 250_000:
-        grade = "MEDIUM"
+    # v1.1 · оценка стала ОТНОСИТЕЛЬНОЙ.
+    # В прогоне 20.08 абсолютные пороги дали DEEP всем пятнадцати токенам —
+    # от STRK ($6.4M) до BTC ($591M). Такая шкала не различает ничего.
+    # Осмысленно сравнивать глубину с суточным оборотом: сколько процентов
+    # дневного объёма нужно, чтобы сдвинуть цену на 2%.
+    vol24 = _volume_24h(symbol)
+    ratio = round(total / vol24 * 100, 2) if vol24 else None
+
+    if ratio is None:
+        grade = "UNGRADED"
+        note = "нет объёма 24ч — запусти hive_prices, оценка появится"
+    elif ratio < 2:
+        grade = "THIN"          # книга тонкая относительно оборота
+        note = "стакан тонкий относительно оборота — проскальзывание вероятно"
+    elif ratio < 10:
+        grade = "NORMAL"
+        note = "обычное соотношение глубины и оборота"
     else:
         grade = "DEEP"
+        note = "глубокий стакан — вход крупным размером безопасен"
 
     return {
         "status": "OK",
@@ -369,6 +462,9 @@ def collect_depth(hive, symbol, cg_id):
         "cost_to_move_2pct_down_usd": round(down_total),
         "total_2pct_depth_usd": round(total),
         "depth_grade": grade,
+        "depth_pct_of_24h_volume": ratio,
+        "volume_24h_usd": vol24,
+        "grade_note": note,
         "venues_counted": len(venues),
         "top_venues": venues[:5],
     }
@@ -378,36 +474,80 @@ def collect_depth(hive, symbol, cg_id):
 # MUST #18 · КОНЦЕНТРАЦИЯ ДЕРЖАТЕЛЕЙ
 # ─────────────────────────────────────────────────────────────
 
-def collect_holders(hive, symbol, network, address):
-    data, err = hive.call("get_token_top_holders", {
-        "network": network,
-        "address": address,
-        "holders": "20",
+def collect_holders(hive, symbol, chain, address):
+    """
+    v1.1: перешли на moralis_get_token_holders.
+
+    Почему не get_token_top_holders (v1.0): его описание не документирует
+    форму ответа ("use get_api_endpoint_schema"), и в прогоне 20.08 он
+    вернул структуру, которую парсер не распознал — шесть вызовов
+    списали кредиты и дали NO_DATA.
+
+    У moralis_get_token_holders форма объявлена явно:
+      result[] с полями address, balance, usd_value,
+      percentage_relative_to_total_supply
+    """
+    if chain not in MORALIS_CHAINS:
+        return {"status": "SKIPPED",
+                "reason": f"сеть {chain} не поддерживается провайдером держателей"}
+
+    data, err = hive.call("moralis_get_token_holders", {
+        "token_address": address,
+        "chain": chain,
+        "limit": 20,
+        "order": "DESC",
     })
     if err:
         return {"status": "ERROR", "error": err}
 
-    holders = data.get("holders", data) if isinstance(data, dict) else data
-    if not isinstance(holders, list) or not holders:
-        return {"status": "NO_DATA"}
+    holders = None
+    if isinstance(data, dict):
+        for key in ("result", "holders", "data", "items"):
+            if isinstance(data.get(key), list):
+                holders = data[key]
+                break
+    elif isinstance(data, list):
+        holders = data
+
+    if not holders:
+        keys = list(data)[:8] if isinstance(data, dict) else type(data).__name__
+        return {"status": "NO_DATA", "response_keys": keys}
 
     def pct(h):
-        for k in ("percentage", "percent", "share", "pct", "balance_percentage"):
-            if h.get(k) is not None:
+        for k in ("percentage_relative_to_total_supply", "percentage",
+                  "percent", "share", "pct"):
+            v = h.get(k)
+            if v is not None:
                 try:
-                    return float(h[k])
+                    return float(v)
                 except (TypeError, ValueError):
                     pass
         return None
 
-    shares = [p for p in (pct(h) for h in holders if isinstance(h, dict)) if p is not None]
-    if not shares:
-        return {"status": "NO_PCT_FIELD", "holders_returned": len(holders)}
+    rows = []
+    for h in holders:
+        if not isinstance(h, dict):
+            continue
+        p = pct(h)
+        if p is None:
+            continue
+        rows.append({
+            "address": h.get("address") or h.get("owner_address"),
+            "pct": round(p, 4),
+            "usd_value": h.get("usd_value"),
+            "label": h.get("owner_address_label") or h.get("label"),
+            "is_contract": h.get("is_contract"),
+        })
 
+    if not rows:
+        sample = holders[0] if isinstance(holders[0], dict) else {}
+        return {"status": "NO_PCT_FIELD",
+                "holders_returned": len(holders),
+                "sample_keys": list(sample)[:10]}
+
+    shares = [r["pct"] for r in rows]
     top10 = round(sum(shares[:10]), 2)
-    top1 = round(shares[0], 2)
 
-    # Порог из MUST #18
     if top10 > 60:
         grade = "HIGH_CONCENTRATION"
     elif top10 > 35:
@@ -417,13 +557,14 @@ def collect_holders(hive, symbol, network, address):
 
     return {
         "status": "OK",
-        "network": network,
+        "chain": chain,
         "address": address,
-        "top1_pct": top1,
+        "top1_pct": round(shares[0], 2),
         "top10_pct": top10,
         "top20_pct": round(sum(shares[:20]), 2),
         "concentration_grade": grade,
-        "holders_analysed": len(shares),
+        "holders_analysed": len(rows),
+        "top_holders": rows[:10],
     }
 
 
@@ -459,6 +600,10 @@ def run(dry_run=False, only=None):
         print("   Прогон отменён, чтобы не оставить данные наполовину собранными.")
         return
 
+    contracts = _load_contracts()
+    if contracts:
+        print(f"  ℹ контрактов в кэше: {len(contracts)} (CoinGecko не дёргаем)\n")
+
     results = {}
     for i, (symbol, cg_id) in enumerate(tokens.items(), 1):
         print(f"[{i}/{len(tokens)}] {symbol}")
@@ -468,7 +613,9 @@ def run(dry_run=False, only=None):
         entry["depth"] = collect_depth(hive, symbol, cg_id)
         d = entry["depth"]
         if d["status"] == "OK":
-            print(f"   глубина 2%: ${d['total_2pct_depth_usd']:,} · {d['depth_grade']}")
+            r = d.get("depth_pct_of_24h_volume")
+            print(f"   глубина 2%: ${d['total_2pct_depth_usd']:,} · {d['depth_grade']}"
+                  + (f" ({r}% от объёма 24ч)" if r is not None else ""))
         else:
             print(f"   глубина: {d['status']} {d.get('error', '')}")
             if d.get("error") in ("budget_exhausted", "auth: ключ отсутствует или отозван"):
@@ -479,12 +626,12 @@ def run(dry_run=False, only=None):
         if symbol in NO_CONTRACT:
             entry["holders"] = {"status": "SKIPPED", "reason": "нет ERC-20 контракта"}
         else:
-            network, address = resolve_contract(cg_id)  # бесплатно
+            chain, address = resolve_contract(cg_id, contracts)  # бесплатно + кэш
             if not address:
                 entry["holders"] = {"status": "NO_CONTRACT_RESOLVED"}
                 print("   holders: контракт не разрешён через CoinGecko")
             else:
-                entry["holders"] = collect_holders(hive, symbol, network, address)
+                entry["holders"] = collect_holders(hive, symbol, chain, address)
                 h = entry["holders"]
                 if h["status"] == "OK":
                     print(f"   топ-10: {h['top10_pct']}% · {h['concentration_grade']}")
