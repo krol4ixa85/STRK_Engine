@@ -586,6 +586,28 @@ tr:hover td { background: var(--bg-subtle); }
 </div>
 
 
+
+<!-- NEWS IMPACT (Type A · #3) -->
+<div class="section-news-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🔔 News Impact · что двигает рынок
+    </div>
+    <div class="section-header-desc">
+      Автоклассификация новостей по активам. Показывает WHY произошло движение (не только WHAT).
+      Защита от blind spots — если signal есть, но news подтверждают bearish → не входить.
+    </div>
+    <div class="level-label">Level 1 · news</div>
+  </div>
+
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.02), rgba(239, 68, 68, 0.02)); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 12px;">
+    <div id="news-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+      Loading news impact...
+    </div>
+  </div>
+</div>
+
+
 <div class="section-rotation-wrap"><div style="position: relative;">
 <div class="section-anchor" id="section-rotation"></div>
 </div><div class="section-divider section-rotation">
@@ -1739,6 +1761,104 @@ function renderConfluence(confluenceData) {
 }
 
 
+async function renderNewsImpact() {
+  const container = document.getElementById('news-content');
+  if (!container) return;
+  
+  try {
+    const url = `${BASE_URL}/data/cache/news_impact.json?t=${Math.floor(Date.now() / 60000)}`;
+    const r = await fetch(url);
+    if (!r.ok) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">📰 News impact будет доступен после запуска workflow. Модуль недавно добавлен.</div>';
+      return;
+    }
+    const data = await r.json();
+    
+    const perAsset = data.per_asset || {};
+    const criticalAlerts = data.critical_alerts || [];
+    const topBullish = data.top_bullish_articles || [];
+    const topBearish = data.top_bearish_articles || [];
+    
+    let html = '';
+    
+    // Header stats
+    html += `
+      <div style="padding: 12px 16px; background: rgba(139, 92, 246, 0.06); border-radius: 8px; margin-bottom: 8px;">
+        <div style="font-size: 12px; color: var(--text-secondary);">
+          <strong>Отсканировано:</strong> ${data.total_articles_scanned} новостей из 5 источников · <strong>Relevant:</strong> ${data.relevant_articles} · <strong>Активов упомянуто:</strong> ${data.assets_with_news}
+        </div>
+      </div>
+    `;
+    
+    // Critical alerts (high severity)
+    if (criticalAlerts.length > 0) {
+      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin-top: 8px;">🚨 Critical Alerts</div>`;
+      for (const alert of criticalAlerts.slice(0, 5)) {
+        const isBull = alert.action.includes('BUY') || alert.action.includes('POSITIVE');
+        const color = isBull ? 'var(--green)' : 'var(--red)';
+        const bg = isBull ? 'rgba(46, 160, 67, 0.08)' : 'rgba(203, 45, 45, 0.08)';
+        html += `
+          <div style="padding: 12px 14px; background: ${bg}; border-left: 4px solid ${color}; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+              <div style="font-weight: 700; color: ${color}; font-size: 14px;">${alert.asset} · ${alert.action.replace(/_/g, ' ')}</div>
+              ${alert.whales && alert.whales.length > 0 ? `<div style="font-size: 11px; color: var(--text-muted);">🐋 ${alert.whales.join(', ')}</div>` : ''}
+            </div>
+            <div style="font-size: 12px; color: var(--text-secondary);">${alert.layman}</div>
+          </div>
+        `;
+      }
+    }
+    
+    // Per-asset breakdown (top 5 by activity)
+    const assetsSorted = Object.entries(perAsset).sort((a, b) => Math.abs(b[1].net_score) - Math.abs(a[1].net_score));
+    if (assetsSorted.length > 0) {
+      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin-top: 12px;">📊 Per-Asset News Score (top 5)</div>`;
+      for (const [asset, data] of assetsSorted.slice(0, 5)) {
+        const isBull = data.net_score > 2;
+        const isBear = data.net_score < -2;
+        const color = isBull ? 'var(--green)' : isBear ? 'var(--red)' : 'var(--text-muted)';
+        const scoreStr = (data.net_score >= 0 ? '+' : '') + data.net_score;
+        html += `
+          <details style="padding: 10px 14px; background: var(--bg-subtle); border-radius: 6px; border-left: 3px solid ${color};">
+            <summary style="cursor: pointer; display: flex; justify-content: space-between;">
+              <span><strong>${asset}</strong> · ${data.bullish_articles.length} bull / ${data.bearish_articles.length} bear · <span style="color: ${color};">${scoreStr}</span></span>
+              <span style="font-size: 11px; color: var(--text-muted);">${data.overall_action.replace(/_/g, ' ')}</span>
+            </summary>
+            <div style="margin-top: 10px; font-size: 12px;">
+              <div style="color: var(--text-secondary); margin-bottom: 8px;">${data.overall_layman}</div>
+              ${data.bearish_articles.slice(0, 3).map(a => `
+                <div style="padding: 6px 8px; background: rgba(203, 45, 45, 0.05); border-left: 2px solid var(--red); border-radius: 3px; margin-bottom: 4px;">
+                  <div style="font-size: 11px; color: var(--text);">🔴 <a href="${a.link}" target="_blank" style="color: var(--red); text-decoration: none;">${a.title.substring(0, 90)}</a></div>
+                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${a.source} · ${a.action_hint.replace(/_/g, ' ')}</div>
+                </div>
+              `).join('')}
+              ${data.bullish_articles.slice(0, 3).map(a => `
+                <div style="padding: 6px 8px; background: rgba(46, 160, 67, 0.05); border-left: 2px solid var(--green); border-radius: 3px; margin-bottom: 4px;">
+                  <div style="font-size: 11px; color: var(--text);">🟢 <a href="${a.link}" target="_blank" style="color: var(--green); text-decoration: none;">${a.title.substring(0, 90)}</a></div>
+                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${a.source} · ${a.action_hint.replace(/_/g, ' ')}</div>
+                </div>
+              `).join('')}
+            </div>
+          </details>
+        `;
+      }
+    }
+    
+    // Footer with last update
+    if (data.computed_at) {
+      const dt = new Date(data.computed_at);
+      const ageMin = Math.floor((Date.now() - dt.getTime()) / 60000);
+      const ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ago`;
+      html += `<div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 6px;">Обновлено ${ageStr}</div>`;
+    }
+    
+    container.innerHTML = html;
+  } catch(e) {
+    console.error('[News] render error:', e);
+    container.innerHTML = '<div style="color: var(--red);">Ошибка загрузки news impact</div>';
+  }
+}
+
 async function renderScenarios() {
   const container = document.getElementById('scenarios-content');
   if (!container) return;
@@ -1937,6 +2057,7 @@ async function loadAll(manual = false) {
     safeRender('OverviewTodo', () => renderOverviewTodo(lab, confluence, momentum, rotation, altcycle));
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
   safeRender('Scenarios', () => renderScenarios());
+  safeRender('NewsImpact', () => renderNewsImpact());
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
     badge.textContent = `● Live · ${now}`;
