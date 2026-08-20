@@ -294,40 +294,53 @@ def fetch_token_scan(token, dune_client, query_id):
         params=[QueryParameter.text_type(name='token', value=token.upper())]
     )
     
-    try:
-        result = dune_client.run_query(query)
-        rows = result.result.rows if result.result else []
-        
-        if not rows:
-            print(f'  ⚠ {token}: no weekly data (empty result)')
+    # v2.1 · retry с экспоненциальным бэкоффом при 429 (too many requests).
+    # Раньше падало сразу — а Dune 429 очень часто ловит при одновременном
+    # запуске нескольких job. Ждём и повторяем, дан бюджет ~90 сек всего.
+    import time
+    max_attempts = 4
+    for attempt in range(1, max_attempts + 1):
+        try:
+            result = dune_client.run_query(query)
+            rows = result.result.rows if result.result else []
+            
+            if not rows:
+                print(f'  ⚠ {token}: no weekly data (empty result)')
+                return None
+            
+            # Aggregate in Python
+            metrics = aggregate_metrics(rows)
+            
+            return {
+                'collected_at': datetime.now(timezone.utc).isoformat(),
+                'query_id': str(query_id),
+                'execution_id': getattr(result, 'execution_id', None),
+                'token': token.upper(),
+                'weeks_returned': len(rows),
+                **metrics,
+                # 26 weekly buckets for chart
+                'weekly_history': [
+                    {
+                        'week': r.get('week') or (r.get('week_start') or '')[:10],
+                        'net_flow_m_usd': r.get('net_flow_m_usd', 0),
+                        'buy_volume_m_usd': r.get('buy_volume_m_usd', 0),
+                        'sell_volume_m_usd': r.get('sell_volume_m_usd', 0),
+                        'close_price': r.get('close_price', 0),
+                        'tx_count': r.get('tx_count', 0),
+                    }
+                    for r in rows
+                ]
+            }
+        except Exception as e:
+            msg = str(e)
+            is_429 = '429' in msg or 'too many' in msg.lower()
+            if is_429 and attempt < max_attempts:
+                wait = 15 * attempt  # 15s, 30s, 45s — суммарно ~90 сек
+                print(f'  ⏳ {token}: Dune rate-limit (attempt {attempt}/{max_attempts}), жду {wait} сек...')
+                time.sleep(wait)
+                continue
+            print(f'  ❌ {token}: {e}')
             return None
-        
-        # Aggregate in Python
-        metrics = aggregate_metrics(rows)
-        
-        return {
-            'collected_at': datetime.now(timezone.utc).isoformat(),
-            'query_id': str(query_id),
-            'execution_id': getattr(result, 'execution_id', None),
-            'token': token.upper(),
-            'weeks_returned': len(rows),
-            **metrics,
-            # 26 weekly buckets for chart
-            'weekly_history': [
-                {
-                    'week': r.get('week') or (r.get('week_start') or '')[:10],
-                    'net_flow_m_usd': r.get('net_flow_m_usd', 0),
-                    'buy_volume_m_usd': r.get('buy_volume_m_usd', 0),
-                    'sell_volume_m_usd': r.get('sell_volume_m_usd', 0),
-                    'close_price': r.get('close_price', 0),
-                    'tx_count': r.get('tx_count', 0),
-                }
-                for r in rows
-            ]
-        }
-    except Exception as e:
-        print(f'  ❌ {token}: {e}')
-        return None
 
 # ============================================================
 # MAIN
