@@ -58,6 +58,15 @@ env:
 
 jobs:
   composite:
+    # Запускается ТОЛЬКО на digest schedule ИЛИ явно mode: digest/liq/run/backtest/baseline/lab
+    if: >
+      (github.event_name == 'schedule' && 
+        (github.event.schedule == '0 8,14,20 * * *' 
+         || github.event.schedule == '30 8,20 * * *'
+         || github.event.schedule == '0 21 * * 0'
+         || github.event.schedule == '0 0 * * 0'))
+      || (github.event_name == 'workflow_dispatch' 
+        && contains(fromJson('["digest","liq","run","backtest","baseline","lab"]'), github.event.inputs.mode))
     runs-on: ubuntu-latest
     permissions:
       contents: write
