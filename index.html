@@ -708,7 +708,10 @@ body > * {
 <div class="section-title">🎯 STRK · MISSION CONTROL</div>
 <div class="section-subtitle">Готов ли STRK к полному входу? Триггеры / фазы / composite signal</div>
 </div>
+<div style="display: flex; align-items: center; gap: 10px;">
+<a href="javascript:void(0)" onclick="openDurationScanner('STRK')" style="padding: 7px 14px; background: rgba(46,160,67,0.10); color: var(--green); border: 1px solid rgba(46,160,67,0.35); border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap;">🔬 Решение по STRK</a>
 <div class="section-badge">Level 1 · твой актив</div>
+</div>
 </div><div class="cards-grid" id="cards-strk" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
 <div class="card">
 <div class="card-header">
@@ -3372,6 +3375,139 @@ async function _loadCache(name) {
   } catch { return null; }
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// РЕШЕНИЕ · синтез слоёв в одно действие
+//
+// Проблема, которую решает этот блок: коллекторов и детекторов много,
+// каждый отвечает честно, но вместе они не отвечают на вопрос
+// «что делать». Читатель вынужден складывать десять чисел в голове.
+//
+// Логика построена вокруг ФАЗЫ, потому что торгуем мы фазы.
+// Фаза задаёт базовое действие, остальные слои только КОРРЕКТИРУЮТ
+// размер и добавляют условия. Ни один слой не может в одиночку
+// перевернуть решение — кроме жёстких стопов (распределение, veto).
+//
+// Правила прописаны явно и не подкреплены бэктестом. Это структура
+// для дисциплины, а не измеренное преимущество.
+// ═══════════════════════════════════════════════════════════════
+
+function buildDecision(ctx) {
+  const { flowRead, conflicts, newsSizeDown, newsFomo, depth, holders,
+          funding, unifiedVerdict, regime } = ctx;
+
+  const notes = [];        // почему так
+  const triggers = [];     // что должно случиться для входа
+  const invalidations = buildInvalidations(ctx);
+  let sizePct = 0;         // % от плановой позиции
+  let action = 'ЖДАТЬ';
+  let color = 'var(--text-secondary)';
+
+  // ── ШАГ 1 · База от фазы ──────────────────────────────────
+  const stage = flowRead ? flowRead.stage : null;
+
+  if (!stage) {
+    return {
+      action: 'НЕТ ДАННЫХ',
+      color: 'var(--text-muted)',
+      sizePct: 0,
+      headline: 'Скан Dune по токену не загружен',
+      notes: ['Без структуры потока решение не строится. Нажми «Обновить сейчас» выше.'],
+      triggers: [], invalidations: [],
+    };
+  }
+
+  if (/Распределение/.test(stage)) {
+    action = 'НЕ ВХОДИТЬ';
+    color = 'var(--red)';
+    sizePct = 0;
+    notes.push('Фаза распределения — крупные выходят. Вход против этого потока исторически самый дорогой.');
+  } else if (/Ранняя стадия/.test(stage)) {
+    action = 'ВХОД ЧАСТЬЮ';
+    color = 'var(--green)';
+    sizePct = 33;
+    notes.push('Ранняя фаза: приток свежий, но не подтверждён временем. Пробная часть позиции, остальное — по подтверждению.');
+  } else if (/Зрелое накопление/.test(stage)) {
+    action = 'ВХОД ЧАСТЬЮ';
+    color = 'var(--green)';
+    sizePct = 66;
+    notes.push('Зрелое накопление: спрос держится много недель подряд. Основная часть позиции оправдана.');
+  } else if (/Поздняя стадия/.test(stage)) {
+    action = 'ВХОД ЧАСТЬЮ';
+    color = '#F59E0B';
+    sizePct = 50;
+    notes.push('Поздняя фаза: разрешение близко, но и риск запоздать выше. Половина размера.');
+  } else {
+    action = 'ЖДАТЬ';
+    color = 'var(--text-secondary)';
+    sizePct = 0;
+    notes.push('Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.');
+  }
+
+  // ── ШАГ 2 · Корректировки размера ─────────────────────────
+  if (sizePct > 0 && newsSizeDown.length) {
+    const cut = Math.min(50, newsSizeDown.length * 25);
+    sizePct = Math.round(sizePct * (1 - cut / 100));
+    notes.push(`Новости срезали размер на ${cut}%: ${newsSizeDown.length} событий требуют уменьшить экспозицию.`);
+  }
+
+  if (sizePct > 0 && depth && depth.depth_grade === 'THIN') {
+    sizePct = Math.round(sizePct * 0.5);
+    notes.push('Стакан тонкий относительно оборота — размер урезан вдвое, иначе проскальзывание съест край.');
+  }
+
+  if (sizePct > 0 && holders && holders.concentration_grade === 'HIGH_CONCENTRATION') {
+    const contracts = (holders.top_holders || []).filter(x => x.is_contract).length;
+    if (contracts < 3) {
+      sizePct = Math.round(sizePct * 0.75);
+      notes.push('Высокая концентрация у живых кошельков — размер урезан на четверть.');
+    } else {
+      notes.push('Концентрация высокая, но верх занят контрактами проекта — как риск не считаем.');
+    }
+  }
+
+  // ── ШАГ 3 · Жёсткие стопы ─────────────────────────────────
+  if (unifiedVerdict && /FALSE_RALLY|AVOID|EXIT/i.test(unifiedVerdict.verdict || '')) {
+    action = 'НЕ ВХОДИТЬ';
+    color = 'var(--red)';
+    sizePct = 0;
+    notes.push(`Общая картина ставит вето: ${unifiedVerdict.verdict}. Это перекрывает сигнал фазы.`);
+  }
+
+  const hardConflicts = conflicts.filter(c => c.level === 'warn').length;
+  if (sizePct > 0 && hardConflicts >= 3) {
+    action = 'ЖДАТЬ';
+    color = '#F59E0B';
+    sizePct = 0;
+    notes.push(`${hardConflicts} серьёзных расхождения между слоями. Когда столько сигналов спорят, дешевле подождать ясности, чем угадывать.`);
+  }
+
+  // ── ШАГ 4 · Что переведёт в вход ──────────────────────────
+  if (flowRead) {
+    if (flowRead.streak === 0) triggers.push('Появится серия из 2+ недель подряд с притоком');
+    if (flowRead.pos < 65) triggers.push(`Доля недель с притоком вырастет с ${flowRead.pos.toFixed(0)}% до 65%+`);
+    if (flowRead.sos8 === 0) triggers.push('Появится сигнал силы (SOS) в 8-недельном окне');
+  }
+  if (newsSizeDown.length) triggers.push('Новостной фон перестанет требовать урезания размера');
+  if (newsFomo.length >= 2) triggers.push('Волна FOMO-заголовков спадёт');
+
+  return { action, color, sizePct, notes, triggers, invalidations,
+           headline: stage };
+}
+
+function buildInvalidations(ctx) {
+  const out = [];
+  const { flowRead, scan } = ctx;
+  if (scan && scan.price_now) {
+    out.push(`Цена уйдёт ниже уровня последней недели с притоком — структура сломана`);
+  }
+  if (flowRead) {
+    out.push('Появится сигнал распределения (Dist) в 8-недельном окне');
+    out.push('Месячный приток станет отрицательным');
+  }
+  return out;
+}
+
 async function renderModalIntelligence(token) {
   const el = document.getElementById('scanner-intel-content');
   if (!el) return;
@@ -3685,6 +3821,53 @@ async function renderModalIntelligence(token) {
     });
   }
 
+  // ── СИНТЕЗ · один ответ вместо десяти слоёв ────────────────
+  const decision = buildDecision({
+    flowRead, conflicts, newsSizeDown, newsFomo, scan,
+    depth: (h && h.depth) || null,
+    holders: (h && h.holders) || null,
+    funding: f || null,
+    unifiedVerdict: uv || null,
+  });
+
+  let decisionHtml = `
+    <div style="padding: 16px; background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.45)); border: 2px solid ${decision.color}; border-radius: 10px; margin-bottom: 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+        <div style="font-size: 20px; font-weight: 800; color: ${decision.color};">${decision.action}</div>
+        ${decision.sizePct > 0
+          ? `<div style="font-size: 13px; color: var(--text-secondary);">размер <strong style="color: ${decision.color}; font-size: 17px;">${decision.sizePct}%</strong> от плановой позиции</div>`
+          : '<div style="font-size: 13px; color: var(--text-muted);">позицию не открываем</div>'}
+      </div>
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Фаза: ${decision.headline}</div>
+      <div style="margin-top: 10px;">`;
+
+  for (const n of decision.notes) {
+    decisionHtml += `<div style="font-size: 12px; color: var(--text-secondary); padding: 3px 0; line-height: 1.5;">· ${n}</div>`;
+  }
+  decisionHtml += '</div>';
+
+  if (decision.triggers.length) {
+    decisionHtml += `<div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.08);">
+      <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px;">Что переведёт в полноценный вход</div>`;
+    for (const t of decision.triggers) {
+      decisionHtml += `<div style="font-size: 12px; color: var(--text-secondary); padding: 2px 0;">☐ ${t}</div>`;
+    }
+    decisionHtml += '</div>';
+  }
+
+  if (decision.invalidations.length) {
+    decisionHtml += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.08);">
+      <div style="font-size: 10px; font-weight: 700; color: var(--red); text-transform: uppercase; margin-bottom: 5px;">Что отменяет идею</div>`;
+    for (const iv of decision.invalidations) {
+      decisionHtml += `<div style="font-size: 12px; color: var(--text-secondary); padding: 2px 0;">✕ ${iv}</div>`;
+    }
+    decisionHtml += '</div>';
+  }
+
+  decisionHtml += `<div style="margin-top: 10px; font-size: 10px; color: var(--text-muted); line-height: 1.4;">
+    Правила заданы явно и на истории не проверены. Это дисциплина принятия решения, а не измеренное преимущество.
+  </div></div>`;
+
   let conflictHtml = '';
   if (conflicts.length) {
     conflictHtml += `<div style="margin-bottom: 14px; padding: 12px; background: rgba(245, 158, 11, 0.08); border-left: 4px solid #F59E0B; border-radius: 6px;">
@@ -3700,7 +3883,7 @@ async function renderModalIntelligence(token) {
     </div>`;
   }
 
-  html = conflictHtml + html;
+  html = decisionHtml + conflictHtml + html;
 
   el.innerHTML = html;
 }
