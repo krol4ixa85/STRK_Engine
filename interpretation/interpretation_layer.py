@@ -538,9 +538,24 @@ def main():
         'sources_loaded': [k for k, v in signals.items() if v],
     }
     
-    output_path = CACHE_DIR / 'interpretation.json'
-    with open(output_path, 'w') as f:
-        json.dump(output, f, indent=2, default=str)
+    # ВАЖНО · имя файла изменено с interpretation.json на unified_reading.json.
+    #
+    # Причина: в data/cache/interpretation.json писали ДВА разных скрипта:
+    #   scripts/detectors/interpretation_layer.py — старый, 10 паттернов Wyckoff,
+    #       его читает scripts/daily_digest.py (ключ interpretation.primary)
+    #   interpretation/interpretation_layer.py — этот, unified reading,
+    #       его читает дашборд (ключи context_summary_ru, coherence_score,
+    #       per_asset_verdicts, unified_action_today, what_to_watch)
+    #
+    # Старый запускается внутри composite и отрабатывает позже, поэтому
+    # затирал результат нового. Дашборд получал чужую схему и рисовал
+    # пустой блок Unified Reading.
+    #
+    # Файлы разведены. Старый скрипт не тронут — daily_digest продолжает
+    # работать как работал.
+    output_path = CACHE_DIR / 'unified_reading.json'
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(output, f, indent=2, default=str, ensure_ascii=False)
     print(f'\n✓ Written: {output_path}')
 
 if __name__ == '__main__':
