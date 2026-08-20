@@ -1,13 +1,572 @@
-# ============================================================
-# ADD THIS JOB TO strk_engine.yml (после weekly_token_scan)
-# 
-# STRK-specific scanner via AVNU (Starknet native DEX)
-# Runs daily 06:30 UTC = 09:30 MSK
-# ============================================================
+name: STRK Engine Automation
 
+on:
+  schedule:
+    # Основной digest 3 раза в день (08:00 / 14:00 / 20:00 UTC)
+    - cron: '0 8,14,20 * * *'
+    # LAB режим — 2 раза в сутки (утро 08:30 UTC = 11:30 MSK, вечер 20:30 UTC = 23:30 MSK)
+    # Cache queries обновляются 2 раза, credits использование в бюджете Analyst tier
+    - cron: '30 8,20 * * *'
+    # Weekly LAB summary — воскресенье 21:00 UTC = 00:00 MSK понедельника
+    - cron: '0 21 * * 0'
+    # Еженедельный backtest: воскресенье 00:00 UTC = 03:00 MSK
+    - cron: '0 0 * * 0'
+    # v5.2 · Weekly full token scan — понедельник 05:00 UTC = 08:00 MSK
+    - cron: '0 5 * * 1'
+    # v5.2 · Daily STRONG_BUY token refresh — каждый день 04:00 UTC = 07:00 MSK
+    - cron: '0 4 * * *'
+    # v5.2 · Weekly FULL RUN Level 4 — понедельник 06:00 UTC = 09:00 MSK
+    - cron: '0 6 * * 1'
+    # v5.4 · STRK AVNU daily scan — каждый день 03:30 UTC = 06:30 MSK
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Delivery mode'
+        required: true
+        default: 'digest'
+        type: choice
+        options:
+          - digest
+          - liq
+          - run
+          - backtest
+          - baseline
+          - lab
+          - token_scan_weekly
+          - token_scan_daily
+          - token_scan_force_all
+          - strk_avnu
+          - full_run
+
+# Global env — все шаги видят все секреты
+env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  STARKSCAN_API_KEY: ${{ secrets.STARKSCAN_API_KEY }}
+  DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+  DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  STARKNET_ANNOUNCEMENTS_CHANNEL_ID: ${{ secrets.STARKNET_ANNOUNCEMENTS_CHANNEL_ID }}
+  # Squeeze bot (@strk_dynamic3_bot) — отдельный стрим
+  SQUEEZE_BOT_TOKEN: ${{ secrets.SQUEEZE_BOT_TOKEN }}
+  SQUEEZE_CHAT_ID: ${{ secrets.SQUEEZE_CHAT_ID }}
+  STRICT_NO_TRADING: 'true'
+
+jobs:
+  composite:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests urllib3
+
+      - name: Prepare directories
+        run: mkdir -p data/history data/cache data/reports data/validation data/dashboards data/graphs
+
+      # ============================================================
+      # STAGE 1 · MASTER COLLECTORS (all in one script)
+      # ============================================================
+      - name: Run all collectors (master entry)
+        run: |
+          if [ -f scripts/collectors/run_all_collectors.py ]; then
+            python3 scripts/collectors/run_all_collectors.py
+          else
+            echo "::warning::scripts/collectors/run_all_collectors.py NOT FOUND - fallback: skip collectors"
+          fi
+
+      # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
+      # Cache 20h daily / 6d weekly / 5d monthly / 24h cex_flow — economy на free tier.
+      # Тихо skipped если DUNE_API_KEY не установлен.
+      - name: Dune collector · Starknet stats
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_DAILY: ${{ secrets.DUNE_QUERY_ID_DAILY }}
+          DUNE_QUERY_ID_WEEKLY: ${{ secrets.DUNE_QUERY_ID_WEEKLY }}
+          DUNE_QUERY_ID_MONTHLY: ${{ secrets.DUNE_QUERY_ID_MONTHLY }}
+          DUNE_QUERY_ID_CEX_FLOW: ${{ secrets.DUNE_QUERY_ID_CEX_FLOW }}
+        run: python3 scripts/collectors/dune_collector.py || true
+
+      # STAGE 1.55 · SECTOR ROTATION COLLECTOR (для LAB режима)
+      # Запускается ТОЛЬКО при mode=lab или cron 08:30 UTC
+      # Экономим Analyst tier credits — не qazhe run
+      - name: Dune sector collector (LAB)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_SECTOR_NETFLOW: ${{ secrets.DUNE_QUERY_ID_SECTOR_NETFLOW }}
+          DUNE_QUERY_ID_SECTOR_MOMENTUM: ${{ secrets.DUNE_QUERY_ID_SECTOR_MOMENTUM }}
+        run: python3 scripts/collectors/dune_sector_collector.py || true
+
+      # STAGE 1.56 · ALT-CYCLE COLLECTOR (macro compass)
+      # Собирает BTC.D + ETH/BTC + TOTAL3 из CoinGecko (free API).
+      # Определяет текущую phase alt-cycle (CASH/BTC/ETH/ALT/EUPHORIA/DIST).
+      # Cache 4h → запускается на every run, но реально API calls ~6x/day.
+      # Показывается в dashboard как top-level macro context.
+      - name: Alt-cycle collector (macro compass)
+        run: python3 scripts/collectors/alt_cycle_collector.py || true
+
+      # STAGE 1.57 · DEFILLAMA COLLECTOR (TVL по chains)
+      # Free API, показывает где реально капитал сидит в DeFi.
+      # Cache 6h.
+      - name: DeFiLlama collector (TVL)
+        run: python3 scripts/collectors/defillama_collector.py || true
+
+      # STAGE 1.58 · FUNDING COLLECTOR (perpetual funding rates)
+      # CoinGecko derivatives — funding для major tokens + top gainers/losers.
+      # Cache 30 min.
+      - name: Funding collector (perp funding)
+        run: python3 scripts/collectors/funding_collector.py || true
+
+      # STAGE 1.59 · STABLES COLLECTOR (dry powder tracking)
+      # Общий marketcap стейблов = "сухой порох" рынка.
+      # Cache 4h.
+      - name: Stables collector (dry powder)
+        run: python3 scripts/collectors/stables_collector.py || true
+
+      # STAGE 1.60 · DUNE EXTENDED (DISABLED · queries too heavy)
+      # Fork community dashboards хорошая идея но:
+      # - Whale movements query cost > tier limit → HTTP 402 Payment Required
+      # - Failed executions still charge credits (~500+ credits за попытку)
+      # - Community queries не оптимизированы для API polling
+      #
+      # Оставлено закомментированным. Разкомментируй когда:
+      # 1. Найдёшь LEGKOVESные queries (< 100 credits/execute)
+      # 2. Или напишешь свои custom SQL (можно контролировать cost)
+      # 3. Или мигрируешь на Plus tier ($390/mo)
+      #
+      # Пока используются свободные data sources (defillama, coingecko).
+      # Whale monitoring покрывается existing whale_monitor.py.
+      #
+      # - name: Dune extended collector (forked queries) [DISABLED]
+      #   env:
+      #     DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+      #     DUNE_QUERY_ID_WHALES_24H: ${{ secrets.DUNE_QUERY_ID_WHALES_24H }}
+      #     DUNE_QUERY_ID_STARKNET_DAU: ${{ secrets.DUNE_QUERY_ID_STARKNET_DAU }}
+      #     DUNE_QUERY_ID_STARKNET_NEW_WALLETS: ${{ secrets.DUNE_QUERY_ID_STARKNET_NEW_WALLETS }}
+      #   run: python3 scripts/collectors/dune_extended_collector.py || true
+
+      # STAGE 1.65 · WHALE HOLDINGS COLLECTOR (weekly cadence, smart selection)
+      # Использует твою параметризованную query 8374340 через API.
+      # Cadence: weekly (внутри скрипта проверяется MIN_INTERVAL_HOURS=168).
+      # Tokens: STRK (always) + STRONG_BUY current + recently EXITED (max 5 per run).
+      # Cost: ~25 credits per token × 5 = ~125/week = ~500/mo. Fits в Free tier.
+      #
+      # Weekly cron trigger внутри скрипта — safe даже если workflow runs daily
+      # (просто skip если < 7 дней с last run).
+      - name: Whale holdings collector (weekly)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *' || github.event.schedule == '0 12 * * 0'
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_WHALE_HOLDINGS: ${{ secrets.DUNE_QUERY_ID_WHALE_HOLDINGS }}
+          WHALE_HOLDINGS_MAX_TOKENS: "5"
+          WHALE_HOLDINGS_MIN_INTERVAL_HOURS: "168"
+        run: python3 scripts/collectors/whale_holdings_collector.py || true
+
+      # STAGE 1.99 · SYSTEM HEALTH AUDIT
+      # Проверяет что все collectors/detectors/pipeline работают.
+      # Сохраняет data/cache/system_health.json для dashboard.
+      # Запускается на every workflow run (быстро — только read операции).
+      - name: System health audit
+        run: python3 scripts/audit_system.py || true
+
+      # STAGE 1.56 · ROTATION TRACKER (детектор изменений в LAB signals)
+      # Читает snapshot от strk_lab.py (data/cache/strk_lab_report.json)
+      # → alert в @Lab_sector_bot при NEW_STRONG_BUY / DIVERGENCE_WARN / EXIT / CONFIRMED_HOLD_3D
+      # Запускается ПОСЛЕ strk_lab.py — поэтому лучше в step после LAB (STAGE 8.5)
+
+      # STAGE 1.6 · CEX FLOW ALERT (detect DISTRIBUTION → ACCUMULATION transitions)
+      # Читает existing cex_flow.json (обновляется в STAGE 1 через Etherscan).
+      # Real-time каждый час — реагирует на flip, без Dune credits.
+      # Alert в @strk_dynamic3_bot с dedup 24h.
+      - name: CEX flow alert detector
+        run: python3 scripts/detectors/cex_flow_alert.py || true
+
+      # ============================================================
+      # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
+      # ============================================================
+      - name: Liquidity shift chain (ekubo + endur + native staking + shift)
+        run: |
+          python3 scripts/collectors/ekubo_flow.py || true
+          python3 scripts/collectors/endur_lst_flow.py || true
+          python3 scripts/collectors/native_staking_flow.py || true
+          python3 scripts/detectors/liquidity_shift.py || true
+
+      # ============================================================
+      # STAGE 3 · ORCHESTRATOR (flow map from edges)
+      # ============================================================
+      - name: Orchestrator (flow map)
+        run: python3 scripts/orchestrator.py || true
+
+      # ============================================================
+      # STAGE 4 · DETECTORS
+      # ============================================================
+      - name: Auto-discovery
+        run: python3 scripts/detectors/auto_discovery.py || true
+
+      # Watchlist notifier — только при mode=digest (не спамить при каждом cron)
+      # Так лента WATCH? синхронизируется с daily heartbeat, не с каждым LIQ/RUN
+      - name: Watchlist notifier (WATCH? candidates)
+        if: github.event.inputs.mode == 'digest' || github.event.schedule == '0 18 * * *' || github.event_name == 'schedule' && github.event.schedule == '0 18 * * *'
+        run: python3 scripts/detectors/watchlist_notifier.py || true
+
+      - name: Cross-window pattern
+        run: python3 scripts/detectors/cross_window_pattern.py || true
+
+      - name: Auto-decision layer
+        run: python3 scripts/detectors/decision_layer.py || true
+
+      # ⚡ Composite v2 (main brain) — writes composite_signal_v2.json
+      - name: Composite detector v2 (main brain)
+        env:
+          COMPOSITE_SILENT: 'true'
+        run: python3 scripts/detectors/composite_detector_v2.py || true
+
+      - name: Wyckoff phase
+        run: python3 scripts/detectors/wyckoff_phase.py || true
+
+      - name: Event calendar
+        run: python3 scripts/detectors/event_calendar.py || true
+
+      - name: Concentration metrics
+        run: python3 scripts/detectors/concentration_metrics.py || true
+
+      # ⚡ Bridge activity — writes bridge_activity.json
+      - name: Bridge activity
+        run: python3 scripts/detectors/bridge_activity.py || true
+
+      - name: Effort/result
+        run: python3 scripts/detectors/effort_result.py || true
+
+      - name: CVD analysis
+        run: python3 scripts/detectors/cvd_analysis.py || true
+
+      - name: CEX flow analysis
+        run: python3 scripts/detectors/cex_flow.py || true
+
+      - name: Technical momentum
+        run: python3 scripts/detectors/technical_momentum.py || true
+
+      - name: Cross-token correlation
+        run: python3 scripts/detectors/cross_token_correlation.py || true
+
+      - name: News aggregator
+        run: python3 scripts/detectors/news_aggregator.py || true
+
+      - name: Twitter nitter
+        run: python3 scripts/detectors/twitter_nitter.py || true
+
+      - name: Event layer
+        run: python3 scripts/detectors/event_layer.py || true
+
+      - name: Confluence Gate (multi-signal decision)
+        run: python3 scripts/detectors/confluence_gate.py || true
+
+      # STAGE 5 · SHADOW LAYER
+      - name: Shadow postmortem
+        run: python3 scripts/detectors/shadow_postmortem.py || true
+      - name: Shadow voter
+        env:
+          STRK_RUN_ID: shadow_${{ github.run_id }}
+        run: python3 scripts/detectors/shadow_voter.py || true
+
+      # STAGE 6 · COVERT FLOW + HISTORY
+      - name: Covert flow detector
+        run: python3 scripts/detectors/covert_flow_detector.py || true
+      - name: History postmortem
+        run: python3 scripts/history_postmortem.py || true
+      - name: History accumulator
+        env:
+          STRK_RUN_ID: hist_${{ github.run_id }}_${{ github.run_number }}
+        run: python3 scripts/history_accumulator.py || true
+
+      # STAGE 7 · SYNTHESIS
+      - name: Interpretation layer
+        run: python3 scripts/detectors/interpretation_layer.py || true
+      - name: Scenario engine
+        run: python3 scripts/scenario_engine.py || true
+      - name: Cohort tracker
+        run: python3 scripts/detectors/cohort_tracker.py || true
+      - name: Whale auto-analysis
+        run: python3 scripts/detectors/whale_auto_analysis.py || true
+
+      # STAGE 7.5 · SQUEEZE DETECTION (отдельный стрим в @strk_dynamic3_bot)
+      - name: Squeeze detector (compute state)
+        run: python3 scripts/detectors/squeeze_detector.py || true
+
+      - name: Squeeze notifier (alert to @strk_dynamic3_bot)
+        run: python3 scripts/detectors/squeeze_notifier.py || true
+
+      # STAGE 7.6 · DYNAMIC EXIT SIGNALS (для активных squeeze positions)
+      - name: Dynamic exit signals
+        run: python3 scripts/detectors/dynamic_exit_signals.py || true
+
+      # STAGE 7.9 · WEEKLY BACKTEST (только воскресенье 00:00 UTC или mode=backtest)
+      - name: Weekly backtest
+        if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
+        run: python3 scripts/weekly_backtest.py || true
+
+      # STAGE 7.95 · BASELINE ANALYSIS (mode=baseline)
+      - name: Install baseline deps
+        if: github.event.inputs.mode == 'baseline'
+        run: pip install pandas numpy ccxt pyarrow
+
+      - name: STRK baseline analysis
+        if: github.event.inputs.mode == 'baseline'
+        run: python3 scripts/strk_baseline_analysis.py || true
+
+      # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
+      - name: Generate RUN report (HTML)
+        run: python3 scripts/run_report.py || true
+
+      # STAGE 8.5 · LAB REPORT (Portfolio Rotation Compass)
+      # Отправляется в @Lab_sector_bot (не @STRK_GUARDIAN_BOT)
+      # Запускается при cron 08:30 UTC или ручном mode=lab
+      # ВАЖНО: сохраняет data/cache/strk_lab_report.json для rotation_tracker
+      - name: STRK LAB · Portfolio Rotation report
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/strk_lab.py || true
+
+      # STAGE 8.6 · ROTATION TRACKER (детектор изменений от LAB snapshot)
+      # Запускается после LAB чтобы прочитать свежий strk_lab_report.json
+      # Alert в @Lab_sector_bot при: NEW_STRONG_BUY, DIVERGENCE_WARN, EXIT, CONFIRMED_HOLD_3D
+      - name: Rotation tracker (LAB signals changes)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/detectors/rotation_tracker.py || true
+
+      # STAGE 8.7 · BACKTEST · RECORDER (записывает STRONG_BUY signals для measurement)
+      # Каждый LAB run пишет currently STRONG_BUY tokens → lab_signals.jsonl (PENDING)
+      # Через 7 дней verifier закрывает и считает HIT/MISS/NEUTRAL.
+      - name: LAB signals recorder (backtest data collection)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        run: python3 scripts/detectors/lab_signals_recorder.py || true
+
+      # STAGE 8.8 · BACKTEST · VERIFIER (закрывает PENDING старше 7d + строит summary)
+      # Reads current prices from momentum snapshot, updates records, writes summary.
+      # Worker /check <TOKEN> читает summary для показа реальной precision.
+      - name: LAB signals verifier (close PENDING, build summary)
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        run: python3 scripts/detectors/lab_signals_verifier.py || true
+
+      # STAGE 8.9 · WEEKLY SUMMARY (воскресенье 21:00 UTC = 00:00 MSK понедельника)
+      # Аггрегирует 7 дней LAB активности → отчёт в @Lab_sector_bot
+      # Также обновляет data/cache/weekly_summary.json для команды /week
+      - name: Weekly LAB summary
+        if: github.event.schedule == '0 21 * * 0' || github.event.inputs.mode == 'lab'
+        env:
+          TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/weekly_summary.py || true
+
+      # STAGE 9 · SEND (MODE = digest | liq | run)
+      # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
+      - name: Send Telegram delivery
+        if: github.event.schedule != '0 0 * * 0' && github.event.schedule != '30 8,20 * * *' && github.event.schedule != '0 21 * * 0' && github.event.inputs.mode != 'backtest' && github.event.inputs.mode != 'baseline' && github.event.inputs.mode != 'lab'
+        env:
+          MODE: ${{ github.event.inputs.mode || 'digest' }}
+        run: |
+          echo "=== Delivery MODE=$MODE ==="
+          python3 scripts/daily_digest.py || echo "delivery failed"
+
+      # STAGE 10 · PERSISTENCE (bulletproof — commits ALL data/ changes)
+      - name: Commit state files
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          # git add -A подхватывает и modified и untracked — новые jsonl файлы
+          # (discovery_candidates, whale_events, squeeze_alerts) больше не теряются.
+          git add -A data/
+          # --cached — проверяем что реально в staging area
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            echo "=== Changes to commit: ==="
+            git diff --cached --stat
+            git commit -m "chore: state update (mode=${{ github.event.inputs.mode || 'digest' }}) [skip ci]"
+            # retry push с rebase если удалённое было обновлено параллельным run
+            git push || (git pull --rebase && git push) || echo "Push failed"
+          fi
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: strk-signal
+          # Bulletproof: upload ВСЕ data/ (cache + history + reports).
+          # Раньше list был partial → LAB/alt_cycle/funding/etc не попадали в артефакт,
+          # даже когда реально создавались. Теперь всё видно в скачанном ZIP.
+          path: |
+            data/cache/
+            data/history/
+            data/reports/
+            data/dashboards/
+            data/graphs/
+          if-no-files-found: warn
+          retention-days: 30
+
+
+  # ============================================================
+  # v5.2 · TOKEN SCAN (weekly full + daily STRONG_BUY refresh)
+  # ============================================================
+  weekly_token_scan:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 5 * * 1')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_weekly')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dune-client requests
+      - name: Run weekly token scan (all 18 tokens)
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
+        run: python3 token_scan/token_scan_collector.py
+      - name: Commit cache
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/
+          git diff --cached --quiet || git commit -m "chore: weekly token scan cache refresh [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  force_all_token_scan:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_force_all'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dune-client requests
+      - name: FORCE refresh ALL tokens (ignore freshness cache)
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
+        run: python3 token_scan/token_scan_collector.py --force
+      - name: Commit cache
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/
+          git diff --cached --quiet || git commit -m "chore: FORCE all token scan refresh [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  daily_token_scan:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_daily')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dune-client requests
+      - name: Run daily STRONG_BUY token refresh
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
+        run: python3 token_scan/token_scan_collector.py --strong-buy-only
+      - name: Commit cache
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/
+          git diff --cached --quiet || git commit -m "chore: daily STRONG_BUY token scan [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # v5.2 · FULL RUN Level 4 (weekly deep report)
+  # ============================================================
+  full_run:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'full_run')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate FULL RUN
+        run: |
+          mkdir -p reports
+          python3 full_run/generate_full_run.py
+      - name: Commit report
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add reports/
+          git diff --cached --quiet || git commit -m "chore: FULL RUN weekly report [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+      - name: Telegram notify (best-effort)
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          RUN_ID=$(ls reports/FULL_RUN_R*.html 2>/dev/null | sort -V | tail -1 | grep -oE 'R[0-9]+' | head -1)
+          MSG="📊 FULL RUN ${RUN_ID:-новый} готов%0A%0Ahttps://krol4ixa85.github.io/STRK_Engine/reports/latest.html"
+          curl -s "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MSG}" || true
+
+  # ============================================================
+  # STRK SCENARIOS · генерирует сценарии для бота
+  # ============================================================
+  strk_scenarios:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '30 8,20 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'lab')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate STRK scenarios
+        run: python3 scenarios/strk_scenarios.py
+      - name: Commit scenarios
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/strk_scenarios.json
+          git diff --cached --quiet || git commit -m "chore: scenarios [skip ci]"
+          git push
+
+  # ============================================================
+  # v5.4 · STRK-specific Scanner via AVNU (Starknet native DEX)
+  # Daily 03:30 UTC = 06:30 MSK
+  # ============================================================
   strk_avnu_scan:
     if: >
-      (github.event_name == 'schedule' && github.event.schedule == '30 6 * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '30 3 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'strk_avnu')
     runs-on: ubuntu-latest
     permissions:
@@ -19,21 +578,15 @@
           python-version: '3.11'
       - name: Install dependencies
         run: pip install dune-client requests
-      - name: Fetch STRK from AVNU
+      - name: Fetch STRK from AVNU DEX (Starknet)
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_STRK_AVNU: ${{ secrets.DUNE_QUERY_ID_STRK_AVNU }}
         run: python3 token_scan/strk_avnu_collector.py
-      - name: Commit cache
+      - name: Commit STRK.json cache
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/STRK.json
           git diff --cached --quiet || git commit -m "chore: STRK AVNU scan [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
-
-# ALSO ADD:
-# 1. To on.schedule:
-#    - cron: '30 6 * * *'  # STRK AVNU daily
-# 2. To workflow_dispatch options:
-#    - strk_avnu
