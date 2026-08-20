@@ -647,6 +647,25 @@ tr:hover td { background: var(--bg-subtle); }
 <div class="card-title">💰 Куда идёт капитал · sector rotation</div>
 <div class="card-subtitle" id="sector-flow-age">Loading...</div>
 </div>
+
+<!-- MODULE 1+2 · MACRO NARRATIVES + TOTAL PHASE (v6) -->
+<div class="section-global-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🌍 Global Market Context · где мы в цикле
+    </div>
+    <div class="section-header-desc">
+      Macro режим (Fed rates + US10Y + DXY + VIX) + фаза глобального рынка (TOTAL / BTC.D). 
+      Показывает: bull или bear market, risk-on или risk-off.
+    </div>
+    <div class="level-label">Level 1 · macro context</div>
+  </div>
+
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(59, 130, 246, 0.03)); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px;">
+    <div id="global-context-content">Loading global context...</div>
+  </div>
+</div>
+
 <div class="layman-intro">
       Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
     </div>
@@ -1761,6 +1780,165 @@ function renderConfluence(confluenceData) {
 }
 
 
+async function renderGlobalContext() {
+  const container = document.getElementById('global-context-content');
+  if (!container) return;
+  
+  try {
+    // Load both macro sources in parallel
+    const [macroR, totalR] = await Promise.all([
+      fetch(`${BASE_URL}/data/cache/macro_narratives.json?t=${Math.floor(Date.now() / 60000)}`),
+      fetch(`${BASE_URL}/data/cache/total_phase.json?t=${Math.floor(Date.now() / 60000)}`),
+    ]);
+    
+    const macro = macroR.ok ? await macroR.json() : null;
+    const total = totalR.ok ? await totalR.json() : null;
+    
+    if (!macro && !total) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🌍 Global context будет доступен после первого запуска macro_narratives job.</div>';
+      return;
+    }
+    
+    let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">';
+    
+    // === LEFT: MACRO REGIME (Fed/US10Y/DXY/VIX) ===
+    html += '<div style="padding: 16px; background: rgba(255,255,255,0.5); border-radius: 10px;">';
+    html += '<div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">📊 Macro Regime · TradFi</div>';
+    
+    if (macro && macro.regime) {
+      const regime = macro.regime;
+      const regimeColor = regime.regime === 'RISK_ON' ? 'var(--green)' :
+                          regime.regime === 'RISK_OFF' ? 'var(--red)' :
+                          '#F59E0B';
+      html += `
+        <div style="padding: 12px; background: ${regimeColor.replace('var(--', 'rgba(').replace(')', ', 0.1)')}; border-left: 4px solid ${regimeColor}; border-radius: 6px; margin-bottom: 12px;">
+          <div style="font-size: 16px; font-weight: 700; color: ${regimeColor};">${regime.label_ru}</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">${regime.layman_ru}</div>
+          <div style="font-size: 11px; color: ${regimeColor}; margin-top: 6px; font-weight: 600;">→ ${regime.action_ru}</div>
+        </div>
+      `;
+    }
+    
+    // Metric rows
+    if (macro && macro.metrics) {
+      const metricsToShow = [
+        { key: 'fed_rate', icon: '🏦', label: 'Fed Rate' },
+        { key: 'us10y', icon: '📈', label: 'US 10Y' },
+        { key: 'dxy', icon: '💵', label: 'DXY' },
+        { key: 'vix', icon: '😰', label: 'VIX' },
+        { key: 'gold', icon: '🥇', label: 'Gold' },
+      ];
+      
+      for (const m of metricsToShow) {
+        const data = macro.metrics[m.key];
+        if (!data) continue;
+        const dirColor = data.direction === 'rising' ? 'var(--red)' :
+                         data.direction === 'falling' ? 'var(--green)' :
+                         'var(--text-muted)';
+        const dirArrow = data.direction === 'rising' ? '↑' : data.direction === 'falling' ? '↓' : '→';
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 12px;">
+            <span>${m.icon} <strong>${m.label}</strong></span>
+            <span>
+              <span style="font-weight: 700;">${data.current || '?'}</span>
+              <span style="color: ${dirColor}; margin-left: 6px;">${dirArrow} ${data.change_pct >= 0 ? '+' : ''}${data.change_pct}%</span>
+            </span>
+          </div>
+        `;
+      }
+    }
+    
+    html += '</div>';
+    
+    // === RIGHT: TOTAL PHASE (Wyckoff-style crypto market phase) ===
+    html += '<div style="padding: 16px; background: rgba(255,255,255,0.5); border-radius: 10px;">';
+    html += '<div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">🌊 Crypto Market Phase</div>';
+    
+    if (total) {
+      const signal = total.market_signal;
+      const signalColor = signal === 'BULL_MARKET' ? 'var(--green)' :
+                          signal === 'BEAR_MARKET' ? 'var(--red)' :
+                          signal === 'PRE_BULL_ACCUMULATION' ? '#F59E0B' :
+                          signal === 'PRE_BEAR_DISTRIBUTION' ? '#EA580C' :
+                          'var(--text-muted)';
+      const signalIcon = signal === 'BULL_MARKET' ? '🚀' :
+                         signal === 'BEAR_MARKET' ? '🐻' :
+                         signal === 'PRE_BULL_ACCUMULATION' ? '🟡' :
+                         signal === 'PRE_BEAR_DISTRIBUTION' ? '⚠️' : '❓';
+      
+      html += `
+        <div style="padding: 12px; background: ${signalColor.replace('var(--', 'rgba(').replace(')', ', 0.1)')}; border-left: 4px solid ${signalColor}; border-radius: 6px; margin-bottom: 12px;">
+          <div style="font-size: 16px; font-weight: 700; color: ${signalColor};">${signalIcon} ${signal.replace(/_/g, ' ')}</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">${total.market_layman_ru}</div>
+          <div style="font-size: 11px; color: ${signalColor}; margin-top: 6px; font-weight: 600;">→ STRK: ${total.strk_market_impact_ru}</div>
+        </div>
+      `;
+      
+      // Metrics
+      html += `
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 12px;">
+          <span>💰 <strong>TOTAL</strong></span>
+          <span style="font-weight: 700;">$${total.total_mcap_t}T</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 12px;">
+          <span>🟠 <strong>BTC.D</strong></span>
+          <span style="font-weight: 700;">${total.btc_dominance}%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 12px;">
+          <span>🔵 <strong>ETH.D</strong></span>
+          <span style="font-weight: 700;">${total.eth_dominance}%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 12px;">
+          <span>🌈 <strong>TOTAL3</strong> (alts)</span>
+          <span style="font-weight: 700;">${total.total3_dominance}%</span>
+        </div>
+      `;
+      
+      // BTC + ETH phase
+      if (total.btc_phase) {
+        const btcPhaseColor = total.btc_phase.phase === 'MARKUP' ? 'var(--green)' :
+                              total.btc_phase.phase === 'MARKDOWN' ? 'var(--red)' :
+                              total.btc_phase.phase === 'ACCUMULATION' ? '#F59E0B' :
+                              'var(--text-muted)';
+        html += `
+          <div style="padding: 8px 10px; background: rgba(0,0,0,0.03); border-radius: 6px; margin-top: 10px; font-size: 11px;">
+            <strong>BTC:</strong> <span style="color: ${btcPhaseColor}; font-weight: 700;">${total.btc_phase.phase}</span> (${total.btc_phase.change_30d_pct >= 0 ? '+' : ''}${total.btc_phase.change_30d_pct}%/30d)
+          </div>
+        `;
+      }
+      if (total.eth_phase) {
+        const ethPhaseColor = total.eth_phase.phase === 'MARKUP' ? 'var(--green)' :
+                              total.eth_phase.phase === 'MARKDOWN' ? 'var(--red)' :
+                              'var(--text-muted)';
+        html += `
+          <div style="padding: 8px 10px; background: rgba(0,0,0,0.03); border-radius: 6px; margin-top: 6px; font-size: 11px;">
+            <strong>ETH:</strong> <span style="color: ${ethPhaseColor}; font-weight: 700;">${total.eth_phase.phase}</span> (${total.eth_phase.change_30d_pct >= 0 ? '+' : ''}${total.eth_phase.change_30d_pct}%/30d)
+          </div>
+        `;
+      }
+      
+      // BTC.D interpretation
+      html += `<div style="padding: 8px 10px; background: rgba(139, 92, 246, 0.06); border-radius: 6px; margin-top: 10px; font-size: 11px; color: var(--text-secondary);">${total.btc_dom_signal_ru}</div>`;
+    }
+    
+    html += '</div>';
+    html += '</div>';
+    
+    // Footer
+    const dt = macro?.computed_at || total?.computed_at;
+    if (dt) {
+      const ageMin = Math.floor((Date.now() - new Date(dt).getTime()) / 60000);
+      const ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ago`;
+      html += `<div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 8px;">Обновлено ${ageStr}</div>`;
+    }
+    
+    container.innerHTML = html;
+  } catch(e) {
+    console.error('[GlobalContext] error:', e);
+    container.innerHTML = '<div style="color: var(--red);">Ошибка загрузки global context</div>';
+  }
+}
+
 async function renderNewsImpact() {
   const container = document.getElementById('news-content');
   if (!container) return;
@@ -2094,6 +2272,7 @@ async function loadAll(manual = false) {
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
   safeRender('Scenarios', () => renderScenarios());
   safeRender('NewsImpact', () => renderNewsImpact());
+  safeRender('GlobalContext', () => renderGlobalContext());
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
     badge.textContent = `● Live · ${now}`;
