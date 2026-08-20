@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-20T13:04:39.627959+00:00",
+  "as_of": "2026-08-20T18:41:51.897769+00:00",
   "phase_used": "ACCUMULATION",
   "hold_tokens": [
     "LINK",
@@ -7,9 +7,9 @@
   ],
   "priority_tokens": [
     "STRK",
+    "LINK",
     "MORPHO",
     "ETHFI",
-    "LINK",
     "ONDO"
   ],
   "sources": {
@@ -19,6 +19,32 @@
     "rss_feeds_count": 6
   },
   "events": [
+    {
+      "id": "rss-6dc17109",
+      "assets": [
+        "BTC"
+      ],
+      "type": "security",
+      "severity": "high",
+      "summary": "Iranian Hackers Tied to $6 Million Bitcoin Extortion Charged in Massive Cyber Campaign",
+      "source_class": "tier1_news",
+      "source_name": "Decrypt",
+      "source_type": "rss",
+      "url": "https://decrypt.co/376117/iranian-hackers-bitcoin-extortion-charged",
+      "published": "2026-08-20T17:12:43+00:00",
+      "fomo_risk": false,
+      "score": 1.02,
+      "route": "home",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down",
+        "layman_ru": "\u26a0 SECURITY \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+      },
+      "matched_keywords": [
+        "hack"
+      ],
+      "query_context": ""
+    },
     {
       "id": "rss-c0d410a0",
       "assets": [
@@ -60,30 +86,6 @@
       "source_type": "rss",
       "url": "https://thedefiant.io/news/blockchains/gnosis-chain-to-abandon-its-validator-set-and-settle-to-ethereum",
       "published": "2026-08-19T14:25:49+00:00",
-      "fomo_risk": false,
-      "score": 0.643,
-      "route": "home",
-      "action_hint": {
-        "field": "SIZE",
-        "action": "down",
-        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-      },
-      "matched_keywords": [
-        "unlock"
-      ],
-      "query_context": ""
-    },
-    {
-      "id": "rss-3e439bfc",
-      "assets": [],
-      "type": "unlock",
-      "severity": "medium",
-      "summary": "Aligned Details ALIGN Airdrop 20 Months Later",
-      "source_class": "tier1_news",
-      "source_name": "The Defiant (RWA)",
-      "source_type": "rss",
-      "url": "https://thedefiant.io/news/tokens/aligned-details-align-airdrop-still-no-launch-date",
-      "published": "2026-08-18T21:42:33+00:00",
       "fomo_risk": false,
       "score": 0.643,
       "route": "home",
@@ -601,18 +603,18 @@
       "query_context": "general"
     },
     {
-      "id": "rss-d7af419d",
+      "id": "rss-61902dc7",
       "assets": [
-        "BTC"
+        "OP"
       ],
       "type": "partnership",
       "severity": "medium",
-      "summary": "Bitcoin.com integrates UAE-registered US dollar stablecoin into self-custodial wallet",
+      "summary": "Optimism moves 546.9M OP from future airdrops to ecosystem growth fund",
       "source_class": "tier1_news",
       "source_name": "CoinTelegraph",
       "source_type": "rss",
-      "url": "https://cointelegraph.com/news/bitcoincom-integrates-uae-registered-usdu-stablecoin-into-self-custodial-wallet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "published": "2026-08-19T20:33:51+00:00",
+      "url": "https://cointelegraph.com/news/optimism-moves-5469m-op-from-future-airdrops-to-ecosystem-growth-fund?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "published": "2026-08-20T15:43:00+00:00",
       "fomo_risk": false,
       "score": 0.167,
       "route": "archive",
@@ -622,7 +624,7 @@
         "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
-        "integration"
+        "partnership"
       ],
       "query_context": ""
     },
@@ -806,6 +808,32 @@
       "query_context": "general"
     },
     {
+      "id": "rss-b05d7d56",
+      "assets": [
+        "BTC"
+      ],
+      "type": "funding",
+      "severity": "low",
+      "summary": "Treasury buybacks could set up Bitcoin\u2019s next move toward $180,000, says strategist",
+      "source_class": "tier1_news",
+      "source_name": "CoinDesk",
+      "source_type": "rss",
+      "url": "https://www.coindesk.com/markets/2026/08/20/treasury-buybacks-could-set-up-bitcoin-s-next-move-toward-usd180-000",
+      "published": "2026-08-20T16:17:32+00:00",
+      "fomo_risk": false,
+      "score": 0.051,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "treasury"
+      ],
+      "query_context": ""
+    },
+    {
       "id": "rss-c15bb126",
       "assets": [
         "OP"
@@ -854,6 +882,32 @@
       "query_context": ""
     },
     {
+      "id": "rss-42b865c3",
+      "assets": [
+        "BTC"
+      ],
+      "type": "funding",
+      "severity": "low",
+      "summary": "Live updates: Bitcoin extends gains as Bessent suggests more Treasury intervention",
+      "source_class": "tier1_news",
+      "source_name": "CoinDesk",
+      "source_type": "rss",
+      "url": "https://www.coindesk.com/tech/2026/08/20/live-updates-bitcoin-etfs-draw-usd517-million-ether-pulls-usd189-million-in-biggest-inflows-in-months",
+      "published": "2026-08-20T06:21:17+00:00",
+      "fomo_risk": false,
+      "score": 0.051,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "treasury"
+      ],
+      "query_context": ""
+    },
+    {
       "id": "rss-d019151a",
       "assets": [
         "BTC"
@@ -866,6 +920,56 @@
       "source_type": "rss",
       "url": "https://www.coindesk.com/markets/2026/08/20/bearish-crypto-bets-lose-record-usd2-7-billion-as-bitcoin-surges-toward-usd70-000",
       "published": "2026-08-20T04:29:56+00:00",
+      "fomo_risk": false,
+      "score": 0.051,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": ""
+    },
+    {
+      "id": "rss-9ecb5604",
+      "assets": [
+        "BTC"
+      ],
+      "type": "funding",
+      "severity": "low",
+      "summary": "US debt tops $40T stoking debate on what it means for Bitcoin",
+      "source_class": "tier1_news",
+      "source_name": "CoinTelegraph",
+      "source_type": "rss",
+      "url": "https://cointelegraph.com/markets/bitcoin-surges-after-us-debt-crosses-40t?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "published": "2026-08-20T17:43:58+00:00",
+      "fomo_risk": false,
+      "score": 0.051,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [
+        "treasury"
+      ],
+      "query_context": ""
+    },
+    {
+      "id": "rss-3430d8b8",
+      "assets": [
+        "BTC"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Bitcoin miners pour billions into AI as capex outpaces revenue 15-to-1",
+      "source_class": "tier1_news",
+      "source_name": "CoinTelegraph",
+      "source_type": "rss",
+      "url": "https://cointelegraph.com/news/bitcoin-miners-ai-hpc-capex-revenue-2026?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "published": "2026-08-20T16:12:00+00:00",
       "fomo_risk": false,
       "score": 0.051,
       "route": "archive",
@@ -926,29 +1030,27 @@
       "query_context": ""
     },
     {
-      "id": "rss-91f164d0",
+      "id": "rss-af64084d",
       "assets": [
         "BTC"
       ],
-      "type": "funding",
-      "severity": "low",
-      "summary": "Chinese InsurTech Firm Zhibao Adds 2,380 Bitcoin in $154.7M Treasury Pivot",
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Bitcoin Hits Highest Price Since June as $3 Billion in Shorts Liquidated",
       "source_class": "tier1_news",
       "source_name": "Decrypt",
       "source_type": "rss",
-      "url": "https://decrypt.co/375935/china-zhibao-bitcoin-treasury-pivot",
-      "published": "2026-08-19T13:31:04+00:00",
+      "url": "https://decrypt.co/376085/bitcoin-price-high-june-3-billion-shorts-liquidated",
+      "published": "2026-08-20T16:04:04+00:00",
       "fomo_risk": false,
       "score": 0.051,
       "route": "archive",
       "action_hint": {
         "field": "MONITOR",
         "action": "noted",
-        "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
       },
-      "matched_keywords": [
-        "treasury"
-      ],
+      "matched_keywords": [],
       "query_context": ""
     },
     {
@@ -1023,112 +1125,40 @@
       },
       "matched_keywords": [],
       "query_context": "general"
-    },
-    {
-      "id": "surf-fdbdfed6",
-      "assets": [
-        "ONDO"
-      ],
-      "type": "funding",
-      "severity": "low",
-      "summary": "Ondo Finance\u2019s Strategic $6.1M ONDO Deposit to Coinbase Sparks Intense Market Scrutiny",
-      "source_class": "surf_cited",
-      "source_name": "BITCOINWORLD",
-      "source_type": "surf",
-      "url": "https://bitcoinworld.co.in/ondo-finance-ondo-coinbase-deposit/",
-      "published": 1771894812,
-      "fomo_risk": true,
-      "score": 0.028,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [
-        "treasury"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-bcc17822",
-      "assets": [
-        "ONDO"
-      ],
-      "type": "narrative",
-      "severity": "high",
-      "summary": "Ondo: RWA leader&#39;s product line, competitors and token valuation analysis",
-      "source_class": "surf_cited",
-      "source_name": "ODAILY",
-      "source_type": "surf",
-      "url": "https://www.odaily.news/en/post/5203717",
-      "published": 1747619868,
-      "fomo_risk": true,
-      "score": 0.028,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-e89174e2",
-      "assets": [
-        "MORPHO"
-      ],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Morpho Unveils Fixed-Rate Protocol Morpho Midnight",
-      "source_class": "tier1_news",
-      "source_name": "THEDEFIANT",
-      "source_type": "surf",
-      "url": "https://thedefiant.io/news/defi/morpho-unveils-fixed-rate-protocol-morpho-midnight",
-      "published": 1776178728,
-      "fomo_risk": false,
-      "score": 0.022,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-e40a4c64",
-      "assets": [
-        "LINK"
-      ],
-      "type": "narrative",
-      "severity": "low",
-      "summary": "Chainlink (LINK) - Kraken & CCIP - 14 May 2026",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:c1126a600094b:0-chainlink-link-kraken-ccip-14-may-2026/",
-      "published": 1778778042,
-      "fomo_risk": false,
-      "score": 0.022,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [],
-      "query_context": "general"
     }
   ],
   "route_counts": {
     "home": 3,
     "macro": 10,
-    "archive": 60
+    "archive": 64
   },
   "home_events": [
+    {
+      "id": "rss-6dc17109",
+      "assets": [
+        "BTC"
+      ],
+      "type": "security",
+      "severity": "high",
+      "summary": "Iranian Hackers Tied to $6 Million Bitcoin Extortion Charged in Massive Cyber Campaign",
+      "source_class": "tier1_news",
+      "source_name": "Decrypt",
+      "source_type": "rss",
+      "url": "https://decrypt.co/376117/iranian-hackers-bitcoin-extortion-charged",
+      "published": "2026-08-20T17:12:43+00:00",
+      "fomo_risk": false,
+      "score": 1.02,
+      "route": "home",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down",
+        "layman_ru": "\u26a0 SECURITY \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+      },
+      "matched_keywords": [
+        "hack"
+      ],
+      "query_context": ""
+    },
     {
       "id": "rss-c0d410a0",
       "assets": [
@@ -1170,30 +1200,6 @@
       "source_type": "rss",
       "url": "https://thedefiant.io/news/blockchains/gnosis-chain-to-abandon-its-validator-set-and-settle-to-ethereum",
       "published": "2026-08-19T14:25:49+00:00",
-      "fomo_risk": false,
-      "score": 0.643,
-      "route": "home",
-      "action_hint": {
-        "field": "SIZE",
-        "action": "down",
-        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-      },
-      "matched_keywords": [
-        "unlock"
-      ],
-      "query_context": ""
-    },
-    {
-      "id": "rss-3e439bfc",
-      "assets": [],
-      "type": "unlock",
-      "severity": "medium",
-      "summary": "Aligned Details ALIGN Airdrop 20 Months Later",
-      "source_class": "tier1_news",
-      "source_name": "The Defiant (RWA)",
-      "source_type": "rss",
-      "url": "https://thedefiant.io/news/tokens/aligned-details-align-airdrop-still-no-launch-date",
-      "published": "2026-08-18T21:42:33+00:00",
       "fomo_risk": false,
       "score": 0.643,
       "route": "home",
@@ -1475,15 +1481,15 @@
     }
   ],
   "per_asset_counts": {
-    "BTC": 19,
-    "ETH": 5,
+    "BTC": 24,
+    "ETH": 4,
     "LINK": 11,
-    "ONDO": 10,
+    "ONDO": 11,
     "STRK": 10,
     "MORPHO": 4,
     "ETHFI": 9,
+    "OP": 2,
     "EIGEN": 2,
-    "OP": 1,
     "UNI": 1
   },
   "per_asset_top": {
