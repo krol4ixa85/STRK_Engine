@@ -2016,13 +2016,27 @@ async function renderInterpretation() {
   if (!container) return;
   
   try {
-    const url = `${BASE_URL}/data/cache/interpretation.json?v=${CACHE_VERSION}`;
-    const r = await fetch(url);
+    // unified_reading.json — новая схема (context_summary_ru, coherence_score,
+    // per_asset_verdicts). Раньше читали interpretation.json, но в него пишет
+    // ещё и старый детектор Wyckoff-паттернов, который затирал эти данные
+    // своей схемой — отсюда пустой блок.
+    let r = await fetch(`${BASE_URL}/data/cache/unified_reading.json?v=${CACHE_VERSION}`);
+    if (!r.ok) {
+      // Пока новый job не отработал — пробуем старый файл. Если там окажется
+      // схема старого детектора, проверка ниже покажет честное сообщение,
+      // а не пустые поля.
+      r = await fetch(`${BASE_URL}/data/cache/interpretation.json?v=${CACHE_VERSION}`);
+    }
     if (!r.ok) {
       container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🧠 Unified reading будет доступен после первого запуска interpretation job.</div>';
       return;
     }
     const data = await r.json();
+
+    if (!data.context_summary_ru && !(data.per_asset_verdicts || []).length) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🧠 Данные в старом формате. Запусти job <strong>interpretation</strong> — появится unified_reading.json.</div>';
+      return;
+    }
     
     const summary = data.context_summary_ru || '';
     const coherence = data.coherence_score || 0;
@@ -3363,12 +3377,13 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news] = await Promise.all([
+  const [health, funding, scan, sector, news, unified] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
     _loadCache('dune_sector_netflow.json'),
     _loadCache('surf_events.json'),
+    _loadCache('unified_reading.json'),
   ]);
 
   // Новости по этому токену — нужны детектору противоречий.
@@ -3534,6 +3549,21 @@ async function renderModalIntelligence(token) {
     </div>`;
   } else {
     html += '<div style="font-size: 12px; color: var(--text-muted);">Скан по токену не найден.</div>';
+  }
+
+  // ── 4b · ЧТО ГОВОРИТ ОБЩАЯ КАРТИНА ─────────────────────────
+  const uv = unified && Array.isArray(unified.per_asset_verdicts)
+    ? unified.per_asset_verdicts.find(v => v && v.asset === token) : null;
+  if (uv) {
+    const col = uv.signal_color === 'green' ? 'var(--green)'
+              : uv.signal_color === 'red' ? 'var(--red)' : '#F59E0B';
+    const coh = unified.coherence_score;
+    html += `<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">🧠 Общая картина по активу</div>
+    <div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px; border-left: 3px solid ${col};">
+      <div style="font-weight: 700; color: ${col};">${uv.verdict || '—'}</div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">${uv.recommendation_ru || ''}</div>
+      ${typeof coh === 'number' ? `<div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">Согласованность сигналов по рынку: ${coh}%${coh < 50 ? ' — сигналы противоречат друг другу' : ''}</div>` : ''}
+    </div>`;
   }
 
   // ── 5 · СЕКТОР ─────────────────────────────────────────────
