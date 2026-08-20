@@ -1,0 +1,29 @@
+# Cloudflare Pages Cache Rules · STRK LAB Dashboard
+# Docs: https://developers.cloudflare.com/pages/configuration/headers/
+
+# HTML files: NEVER cache (всегда свежий dashboard)
+/*.html
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
+
+# Root path (serves index.html) — same as .html
+/
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
+
+# JSON data files: 30-second cache (freshness + fewer GitHub requests)
+/data/cache/*
+  Cache-Control: public, max-age=30, must-revalidate
+
+# CSS/JS assets: 1-hour cache
+/*.css
+  Cache-Control: public, max-age=3600
+
+/*.js
+  Cache-Control: public, max-age=3600
+
+# Everything else: 5-min default
+/*
+  Cache-Control: public, max-age=300
