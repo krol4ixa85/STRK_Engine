@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-20T18:40:01.676530+00:00",
+  "computed_at": "2026-08-20T18:51:17.315078+00:00",
   "source": "hive_intelligence",
   "endpoint": "https://mcp.hiveintelligence.xyz/api/v1/execute",
   "must_covered": [
@@ -8,9 +8,9 @@
   ],
   "credits": {
     "month": "2026-08",
-    "used_this_month": 21,
+    "used_this_month": 47,
     "budget": 8000,
-    "remaining": 7979,
+    "remaining": 7953,
     "spent_this_run": 27
   },
   "tokens": {
@@ -19,51 +19,133 @@
       "coingecko_id": "starknet",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 2910311,
-        "cost_to_move_2pct_down_usd": 3547171,
-        "total_2pct_depth_usd": 6457483,
+        "cost_to_move_2pct_up_usd": 4541028,
+        "cost_to_move_2pct_down_usd": 4817606,
+        "total_2pct_depth_usd": 9358633,
         "depth_grade": "DEEP",
+        "depth_pct_of_24h_volume": 48.38,
+        "volume_24h_usd": 19345611.393842477,
+        "grade_note": "глубокий стакан — вход крупным размером безопасен",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "STRK/USDT",
-            "up_usd": 1216612,
-            "down_usd": 1688023,
-            "volume_usd": 1166353
+            "up_usd": 2483568,
+            "down_usd": 2676806,
+            "volume_usd": 1170397
           },
           {
             "market": "Hotcoin",
             "pair": "STRK/USDT",
-            "up_usd": 437315,
-            "down_usd": 536638,
-            "volume_usd": 1411737
-          },
-          {
-            "market": "Biconomy.com",
-            "pair": "STRK/USDT",
-            "up_usd": 127909,
-            "down_usd": 127909,
-            "volume_usd": 588860
-          },
-          {
-            "market": "Coinbase Exchange",
-            "pair": "STRK/USD",
-            "up_usd": 86736,
-            "down_usd": 146749,
-            "volume_usd": 476083
+            "up_usd": 556174,
+            "down_usd": 402320,
+            "volume_usd": 1413854
           },
           {
             "market": "Toobit",
             "pair": "STRK/USDT",
-            "up_usd": 117692,
-            "down_usd": 92257,
-            "volume_usd": 235098
+            "up_usd": 148189,
+            "down_usd": 163951,
+            "volume_usd": 234773
+          },
+          {
+            "market": "Coinbase Exchange",
+            "pair": "STRK/USD",
+            "up_usd": 109737,
+            "down_usd": 177297,
+            "volume_usd": 483924
+          },
+          {
+            "market": "OrangeX",
+            "pair": "STRK/USDT",
+            "up_usd": 148847,
+            "down_usd": 137260,
+            "volume_usd": 505826
           }
         ]
       },
       "holders": {
-        "status": "NO_DATA"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0xca14007eff0db1f8135f4c25b34de49ab0d42766",
+        "top1_pct": 36.74,
+        "top10_pct": 67.65,
+        "top20_pct": 73.87,
+        "concentration_grade": "HIGH_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0xce5485cfb26914c5dce00b9baf0580364dafc7a4",
+            "pct": 36.7403,
+            "usd_value": "93875848.928222581744194031",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x10e5756a27486e4f495b438f4b0b627ee4abbf0f",
+            "pct": 11.3422,
+            "usd_value": "28980749.440372273325920105",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x1521f00f0d805b4aefc518d163f7ab84e4dfd68c",
+            "pct": 9.8759,
+            "usd_value": "25234040.202564720064401627",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x798425cb26cb41016d2db92289234ba81dc2dab0",
+            "pct": 2.0387,
+            "usd_value": "5209102.143695065751671791",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 1.9726,
+            "usd_value": "5040129.898789438419044018",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0xfd45b404d60154f8ed8a9326b57fe561fc7fb46c",
+            "pct": 1.8697,
+            "usd_value": "4777268.667707621119916439",
+            "label": "Bithumb: Hot Wallet",
+            "is_contract": false
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 1.1073,
+            "usd_value": "2829242.792268314398825169",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0x0990347290fb830122b1deb1161e06c8cfbfee8a",
+            "pct": 1.0013,
+            "usd_value": "2558531.743965404108166695",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x28c6c06298d514db089934071355e5743bf21d60",
+            "pct": 0.8729,
+            "usd_value": "2230349.272779953666031361",
+            "label": "Binance: Hot Wallet",
+            "is_contract": false
+          },
+          {
+            "address": "0xe42199551e4a3d109c4e6fabc0e6cee2fd133bc4",
+            "pct": 0.833,
+            "usd_value": "2128374.984006423037499189",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "LINK": {
@@ -71,51 +153,133 @@
       "coingecko_id": "chainlink",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 11525412,
-        "cost_to_move_2pct_down_usd": 15168146,
-        "total_2pct_depth_usd": 26693557,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 13113225,
+        "cost_to_move_2pct_down_usd": 17353075,
+        "total_2pct_depth_usd": 30466299,
+        "depth_grade": "NORMAL",
+        "depth_pct_of_24h_volume": 4.48,
+        "volume_24h_usd": 679923340.1075085,
+        "grade_note": "обычное соотношение глубины и оборота",
         "venues_counted": 24,
         "top_venues": [
           {
             "market": "BVOX",
             "pair": "LINK/USDT",
-            "up_usd": 1420635,
-            "down_usd": 4939054,
-            "volume_usd": 11097333
-          },
-          {
-            "market": "Phemex",
-            "pair": "LINK/USDT",
-            "up_usd": 1334388,
-            "down_usd": 1223658,
-            "volume_usd": 12219200
-          },
-          {
-            "market": "P2B",
-            "pair": "LINK/USDT",
-            "up_usd": 1169806,
-            "down_usd": 1304194,
-            "volume_usd": 21798232
+            "up_usd": 2310293,
+            "down_usd": 5155056,
+            "volume_usd": 11059627
           },
           {
             "market": "BTCC",
             "pair": "LINK/USDT",
-            "up_usd": 1052129,
-            "down_usd": 1252285,
-            "volume_usd": 27624660
+            "up_usd": 1980868,
+            "down_usd": 2645635,
+            "volume_usd": 27472065
+          },
+          {
+            "market": "Phemex",
+            "pair": "LINK/USDT",
+            "up_usd": 1310438,
+            "down_usd": 1262805,
+            "volume_usd": 12157781
+          },
+          {
+            "market": "P2B",
+            "pair": "LINK/USDT",
+            "up_usd": 1105395,
+            "down_usd": 1186834,
+            "volume_usd": 21481426
           },
           {
             "market": "Gate",
             "pair": "LINK/USDT",
-            "up_usd": 1165036,
-            "down_usd": 643222,
-            "volume_usd": 16000632
+            "up_usd": 924179,
+            "down_usd": 792224,
+            "volume_usd": 16027468
           }
         ]
       },
       "holders": {
-        "status": "NO_DATA"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+        "top1_pct": 4.09,
+        "top10_pct": 30.5,
+        "top20_pct": 41.29,
+        "concentration_grade": "DISTRIBUTED",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0xbc10f2e862ed4502144c7d632a3459f49dfcdb5e",
+            "pct": 4.0876,
+            "usd_value": "436601343.855890452861785889",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 3.2112,
+            "usd_value": "342996898.799823462963104248",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0xe0b66bfc7344a80152bfec954942e2926a6fca80",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 16",
+            "is_contract": true
+          },
+          {
+            "address": "0x9bbb46637a1df7cadec2afca19c2920cddcc8db8",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 8",
+            "is_contract": true
+          },
+          {
+            "address": "0x8652fb672253607c0061677bdcafb77a324de081",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 10",
+            "is_contract": true
+          },
+          {
+            "address": "0x76287e0f7b107d1c9f8f01d5afac314ea8461a04",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 20",
+            "is_contract": true
+          },
+          {
+            "address": "0x7594eb0ca0a7f313befd59afe9e95c2201a443e4",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 3",
+            "is_contract": true
+          },
+          {
+            "address": "0x5a8e77bc30948cc9a51ae4e042d96e145648bb4c",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 18",
+            "is_contract": true
+          },
+          {
+            "address": "0x0dffd343c2d3460a7ead2797a687304beb394ce0",
+            "pct": 3.0,
+            "usd_value": "320437091.496918737888336182",
+            "label": "Chainlink: Noncirculating Supply 21",
+            "is_contract": true
+          },
+          {
+            "address": "0x157235a3cc6011d9c26a010875c2550246aabcca",
+            "pct": 2.2,
+            "usd_value": "234987200.435659527778625488",
+            "label": "Chainlink: Noncirculating Supply 7",
+            "is_contract": true
+          }
+        ]
       }
     },
     "ETHFI": {
@@ -123,51 +287,133 @@
       "coingecko_id": "ether-fi",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 4904847,
-        "cost_to_move_2pct_down_usd": 4168448,
-        "total_2pct_depth_usd": 9073295,
+        "cost_to_move_2pct_up_usd": 4335661,
+        "cost_to_move_2pct_down_usd": 4463540,
+        "total_2pct_depth_usd": 8799202,
         "depth_grade": "DEEP",
+        "depth_pct_of_24h_volume": 12.47,
+        "volume_24h_usd": 70564015.28309286,
+        "grade_note": "глубокий стакан — вход крупным размером безопасен",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "ETHFI/USDT",
-            "up_usd": 3013118,
-            "down_usd": 1992448,
-            "volume_usd": 3989197
+            "up_usd": 2203838,
+            "down_usd": 2024344,
+            "volume_usd": 4007894
           },
           {
             "market": "Phemex",
             "pair": "ETHFI/USDT",
-            "up_usd": 253791,
-            "down_usd": 333028,
-            "volume_usd": 985822
+            "up_usd": 254755,
+            "down_usd": 322632,
+            "volume_usd": 985512
+          },
+          {
+            "market": "WEEX",
+            "pair": "ETHFI/USDT",
+            "up_usd": 336916,
+            "down_usd": 222173,
+            "volume_usd": 5687564
           },
           {
             "market": "Gate",
             "pair": "ETHFI/USDT",
-            "up_usd": 207095,
-            "down_usd": 163619,
-            "volume_usd": 2328129
-          },
-          {
-            "market": "OKX",
-            "pair": "ETHFI/USDT",
-            "up_usd": 123166,
-            "down_usd": 179675,
-            "volume_usd": 2389017
+            "up_usd": 191714,
+            "down_usd": 180106,
+            "volume_usd": 2329772
           },
           {
             "market": "WhiteBIT",
             "pair": "ETHFI/USDT",
-            "up_usd": 75705,
-            "down_usd": 211238,
-            "volume_usd": 1541282
+            "up_usd": 97616,
+            "down_usd": 252934,
+            "volume_usd": 1542689
           }
         ]
       },
       "holders": {
-        "status": "NO_DATA"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
+        "top1_pct": 17.35,
+        "top10_pct": 65.26,
+        "top20_pct": 76.52,
+        "concentration_grade": "HIGH_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x7a6a41f353b3002751d94118aa7f4935da39bb53",
+            "pct": 17.3455,
+            "usd_value": "93341360.415685743093490601",
+            "label": "Ether.fi: Treasury",
+            "is_contract": true
+          },
+          {
+            "address": "0x86b5780b606940eb59a062aa85a07959518c0161",
+            "pct": 11.1018,
+            "usd_value": "59742082.544842958450317383",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x95bf94e06d5be1000c23cd99968eff414aa4995e",
+            "pct": 10.1696,
+            "usd_value": "54725854.610897019505500793",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xf10873355b209b401262cadc753d654e2b7e41ac",
+            "pct": 5.4613,
+            "usd_value": "29388969.469965741038322449",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 4.4602,
+            "usd_value": "24001662.080176204442977905",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 4.3918,
+            "usd_value": "23633617.650137361139059067",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0xf619ab1f33cdc8a0123e093de92ea4d7399de39f",
+            "pct": 3.593,
+            "usd_value": "19335273.485945094376802444",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xe0080d2f853ecddbd81a643dc10da075df26fd3f",
+            "pct": 3.0599,
+            "usd_value": "16466133.871179895475506783",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x6630ff17cf5357c5f9c3d2a21ac98d2ff1070739",
+            "pct": 2.9056,
+            "usd_value": "15635958.850588737055659294",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x7a93190d436436bbb79fa2c0d24ca93afb59b3fb",
+            "pct": 2.7674,
+            "usd_value": "14892072.017273901030421257",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "MORPHO": {
@@ -175,51 +421,133 @@
       "coingecko_id": "morpho",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 3490995,
-        "cost_to_move_2pct_down_usd": 3226938,
-        "total_2pct_depth_usd": 6717932,
+        "cost_to_move_2pct_up_usd": 2948764,
+        "cost_to_move_2pct_down_usd": 2548798,
+        "total_2pct_depth_usd": 5497561,
         "depth_grade": "DEEP",
+        "depth_pct_of_24h_volume": 17.25,
+        "volume_24h_usd": 31867559.835899625,
+        "grade_note": "глубокий стакан — вход крупным размером безопасен",
         "venues_counted": 25,
         "top_venues": [
           {
-            "market": "OrangeX",
+            "market": "BloFin",
             "pair": "MORPHO/USDT",
-            "up_usd": 188957,
-            "down_usd": 820571,
-            "volume_usd": 896990
+            "up_usd": 510558,
+            "down_usd": 485320,
+            "volume_usd": 414034
           },
           {
             "market": "Toobit",
             "pair": "MORPHO/USDT",
-            "up_usd": 777165,
-            "down_usd": 227649,
-            "volume_usd": 1143993
-          },
-          {
-            "market": "BloFin",
-            "pair": "MORPHO/USDT",
-            "up_usd": 528001,
-            "down_usd": 428899,
-            "volume_usd": 410114
+            "up_usd": 324507,
+            "down_usd": 248815,
+            "volume_usd": 1157380
           },
           {
             "market": "Bitget",
             "pair": "MORPHO/USDT",
-            "up_usd": 277753,
-            "down_usd": 286264,
-            "volume_usd": 298803
+            "up_usd": 270086,
+            "down_usd": 271281,
+            "volume_usd": 300893
           },
           {
-            "market": "WhiteBIT",
+            "market": "Binance",
             "pair": "MORPHO/USDT",
-            "up_usd": 196558,
-            "down_usd": 211415,
-            "volume_usd": 946612
+            "up_usd": 308397,
+            "down_usd": 231056,
+            "volume_usd": 3962792
+          },
+          {
+            "market": "LBank",
+            "pair": "MORPHO/USDT",
+            "up_usd": 256353,
+            "down_usd": 201067,
+            "volume_usd": 534310
           }
         ]
       },
       "holders": {
-        "status": "NO_DATA"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
+        "top1_pct": 39.13,
+        "top10_pct": 64.4,
+        "top20_pct": 71.76,
+        "concentration_grade": "HIGH_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x9d03bb2092270648d7480049d0e58d2fcf0e5123",
+            "pct": 39.1295,
+            "usd_value": "921451097.009051322937011719",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x6abfd6139c7c3cc270ee2ce132e309f59caaf6a2",
+            "pct": 9.0103,
+            "usd_value": "212182676.789719343185424805",
+            "label": "Morpho: Seed Funding",
+            "is_contract": true
+          },
+          {
+            "address": "0x53051ef9e20cb8ad9262b77754b1d95e7b79b281",
+            "pct": 4.2428,
+            "usd_value": "99912092.207633301615715027",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x72b23aebbd4abfc1cea755686710e74c93696fae",
+            "pct": 3.0474,
+            "usd_value": "71761781.049027070403099060",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x3154cf16ccdb4c6d922629664174b904d80f2c35",
+            "pct": 3.0191,
+            "usd_value": "71095718.060098558664321899",
+            "label": "Base: L1 Standard Bridge",
+            "is_contract": true
+          },
+          {
+            "address": "0xab3367145f2069091ab5a04484bed1722e60f0d9",
+            "pct": 2.0958,
+            "usd_value": "49353727.511348322033882141",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x6930926698126aa1fccd59857d2333635971a909",
+            "pct": 1.1781,
+            "usd_value": "27743874.503164697438478470",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x45b9dc999ae70d39ef89711c6c5627deecfc77ec",
+            "pct": 0.9536,
+            "usd_value": "22454970.046395920217037201",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xac31c63b30ef693a3860d5d15acddfe13892627d",
+            "pct": 0.8635,
+            "usd_value": "20334356.952053211629390717",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x5e2b01769d4528efae830aa21c8ce4b104e0a399",
+            "pct": 0.8614,
+            "usd_value": "20284479.348089072853326797",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "ONDO": {
@@ -227,51 +555,133 @@
       "coingecko_id": "ondo-finance",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 6108931,
-        "cost_to_move_2pct_down_usd": 8273641,
-        "total_2pct_depth_usd": 14382572,
+        "cost_to_move_2pct_up_usd": 6895026,
+        "cost_to_move_2pct_down_usd": 8076773,
+        "total_2pct_depth_usd": 14971800,
         "depth_grade": "DEEP",
+        "depth_pct_of_24h_volume": 10.6,
+        "volume_24h_usd": 141277432.7344156,
+        "grade_note": "глубокий стакан — вход крупным размером безопасен",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "Hotcoin",
             "pair": "ONDO/USDT",
-            "up_usd": 1240016,
-            "down_usd": 1629416,
-            "volume_usd": 3068854
+            "up_usd": 1366275,
+            "down_usd": 1714533,
+            "volume_usd": 3070226
           },
           {
             "market": "Deepcoin",
             "pair": "ONDO/USDT",
-            "up_usd": 507032,
-            "down_usd": 1036999,
-            "volume_usd": 2727584
+            "up_usd": 605374,
+            "down_usd": 1006646,
+            "volume_usd": 2735696
           },
           {
             "market": "FameEX",
             "pair": "ONDO/USDT",
-            "up_usd": 461210,
-            "down_usd": 565197,
-            "volume_usd": 2914831
+            "up_usd": 413598,
+            "down_usd": 553986,
+            "volume_usd": 2936072
+          },
+          {
+            "market": "OrangeX",
+            "pair": "ONDO/USDT",
+            "up_usd": 733013,
+            "down_usd": 112982,
+            "volume_usd": 4106787
           },
           {
             "market": "Upbit",
             "pair": "ONDO/KRW",
-            "up_usd": 292954,
-            "down_usd": 502747,
-            "volume_usd": 22149057
-          },
-          {
-            "market": "BloFin",
-            "pair": "ONDO/USDT",
-            "up_usd": 302339,
-            "down_usd": 457633,
-            "volume_usd": 9153147
+            "up_usd": 248196,
+            "down_usd": 543870,
+            "volume_usd": 22201872
           }
         ]
       },
       "holders": {
-        "status": "NO_DATA"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
+        "top1_pct": 54.79,
+        "top10_pct": 70.37,
+        "top20_pct": 75.86,
+        "concentration_grade": "HIGH_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x677fd4ed8ae623f2f625deb2d64f2070e46ca1a1",
+            "pct": 54.7921,
+            "usd_value": "1918561278.897763252258300781",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x460ae5a6666fcb9635ba99b541b31279e5966537",
+            "pct": 6.8972,
+            "usd_value": "241506428.080368489027023315",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xa63eace47618b9677261b09b32e3ca2b5c0a0182",
+            "pct": 2.0496,
+            "usd_value": "71766863.164837867021560669",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 1.9868,
+            "usd_value": "69568799.932345435023307800",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0xd2e6e930e25456ffcd4df0124563cc334f3284f4",
+            "pct": 1.0018,
+            "usd_value": "35079102.256131567060947418",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xac7dc31d7eab8a15267a386151d851c992f14690",
+            "pct": 0.9574,
+            "usd_value": "33522985.180610392242670059",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xf02bb1617b3252ff5cec9a9d1f7bd1a12977833b",
+            "pct": 0.6736,
+            "usd_value": "23585994.673625998198986053",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xe002402ccf13371b6f6cb1eb4b78686030de62b1",
+            "pct": 0.6736,
+            "usd_value": "23585994.673625998198986053",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xc18d0c0e4c608fd5443fb450beeac449670c9b8d",
+            "pct": 0.6736,
+            "usd_value": "23585994.673625998198986053",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xf197c6f2ac14d25ee2789a73e4847732c7f16bc9",
+            "pct": 0.6658,
+            "usd_value": "23313379.338356435298919678",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "ARB": {
@@ -279,51 +689,54 @@
       "coingecko_id": "arbitrum",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 4074981,
-        "cost_to_move_2pct_down_usd": 4947443,
-        "total_2pct_depth_usd": 9022424,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 4519707,
+        "cost_to_move_2pct_down_usd": 4866969,
+        "total_2pct_depth_usd": 9386676,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "ARB/USDT",
-            "up_usd": 1470676,
-            "down_usd": 1804779,
-            "volume_usd": 8960138
+            "up_usd": 1844446,
+            "down_usd": 1718854,
+            "volume_usd": 9039682
           },
           {
             "market": "Toobit",
             "pair": "ARB/USDT",
-            "up_usd": 329419,
-            "down_usd": 343827,
-            "volume_usd": 2837153
+            "up_usd": 355181,
+            "down_usd": 309806,
+            "volume_usd": 2859635
           },
           {
             "market": "CoinW",
             "pair": "ARB/USDT",
-            "up_usd": 251416,
-            "down_usd": 267834,
-            "volume_usd": 4069897
+            "up_usd": 249830,
+            "down_usd": 339757,
+            "volume_usd": 4093096
           },
           {
             "market": "XT.COM",
             "pair": "ARB/USDT",
-            "up_usd": 239857,
-            "down_usd": 250443,
-            "volume_usd": 10719654
+            "up_usd": 238991,
+            "down_usd": 289117,
+            "volume_usd": 10818167
           },
           {
-            "market": "OrangeX",
+            "market": "Hotcoin",
             "pair": "ARB/USDT",
-            "up_usd": 177558,
-            "down_usd": 295813,
-            "volume_usd": 5029207
+            "up_usd": 229436,
+            "down_usd": 258201,
+            "volume_usd": 2349141
           }
         ]
       },
       "holders": {
-        "status": "NO_DATA"
+        "status": "NO_CONTRACT_RESOLVED"
       }
     },
     "OP": {
@@ -331,51 +744,133 @@
       "coingecko_id": "optimism",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 4489224,
-        "cost_to_move_2pct_down_usd": 6051942,
-        "total_2pct_depth_usd": 10541166,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 5200969,
+        "cost_to_move_2pct_down_usd": 5494252,
+        "total_2pct_depth_usd": 10695221,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "OP/USDT",
-            "up_usd": 1364228,
-            "down_usd": 1709563,
-            "volume_usd": 2058546
-          },
-          {
-            "market": "OrangeX",
-            "pair": "OP/USDT",
-            "up_usd": 12079,
-            "down_usd": 733188,
-            "volume_usd": 825819
-          },
-          {
-            "market": "BVOX",
-            "pair": "OP/USDT",
-            "up_usd": 366716,
-            "down_usd": 369468,
-            "volume_usd": 1399023
+            "up_usd": 1512739,
+            "down_usd": 1818030,
+            "volume_usd": 2076561
           },
           {
             "market": "Hotcoin",
             "pair": "OP/USDT",
-            "up_usd": 239769,
-            "down_usd": 486396,
-            "volume_usd": 4147644
+            "up_usd": 555895,
+            "down_usd": 441981,
+            "volume_usd": 4166205
+          },
+          {
+            "market": "BVOX",
+            "pair": "OP/USDT",
+            "up_usd": 362311,
+            "down_usd": 382794,
+            "volume_usd": 1402084
           },
           {
             "market": "LBank",
             "pair": "OP/USDT",
-            "up_usd": 346465,
-            "down_usd": 343431,
-            "volume_usd": 986171
+            "up_usd": 352128,
+            "down_usd": 346570,
+            "volume_usd": 991558
+          },
+          {
+            "market": "Ourbit",
+            "pair": "OP/USDT",
+            "up_usd": 339584,
+            "down_usd": 355581,
+            "volume_usd": 805070
           }
         ]
       },
       "holders": {
-        "status": "NO_CONTRACT_RESOLVED"
+        "status": "OK",
+        "chain": "optimism",
+        "address": "0x4200000000000000000000000000000000000042",
+        "top1_pct": 30.13,
+        "top10_pct": 57.41,
+        "top20_pct": 62.06,
+        "concentration_grade": "MEDIUM_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x2a82ae142b2e62cb7d10b55e323acb1cab663a26",
+            "pct": 30.1293,
+            "usd_value": "121700441.855606198310852051",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x2501c477d0a35545a387aa4a3eee4292a9a8b3f0",
+            "pct": 7.4151,
+            "usd_value": "29951493.014346804469823837",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 5.8005,
+            "usd_value": "23429616.683636743575334549",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x677aa5f635c42ee556a8bb207d1d9ed4ee8a6cca",
+            "pct": 4.4066,
+            "usd_value": "17799445.542167525738477707",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x4928b8f2399281140dbd8ab9e4d12eca9365ca6c",
+            "pct": 3.3062,
+            "usd_value": "13354614.682082792744040489",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xacf32f4e1260636cf1e3066c060c74ad52fe4e9e",
+            "pct": 2.0979,
+            "usd_value": "8474033.982006683945655823",
+            "label": "Optimism: Gnosis Safe Proxy",
+            "is_contract": true
+          },
+          {
+            "address": "0x611f7bf868a6212f871e89f7e44684045ddfb09d",
+            "pct": 1.3963,
+            "usd_value": "5639945.948024015873670578",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xadbf24e9968cdf7792e8823110ae9f104d1b1809",
+            "pct": 1.3746,
+            "usd_value": "5552208.264566125348210335",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xae56aaa3f1d511225d740eda7eb70907626556be",
+            "pct": 0.9865,
+            "usd_value": "3984589.740726770833134651",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x19793c7824be70ec58bb673ca42d2779d12581be",
+            "pct": 0.498,
+            "usd_value": "2011722.440174602204933763",
+            "label": null,
+            "is_contract": true
+          }
+        ]
       }
     },
     "AAVE": {
@@ -383,10 +878,13 @@
       "coingecko_id": "aave",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 13080475,
-        "cost_to_move_2pct_down_usd": 15443995,
-        "total_2pct_depth_usd": 28524470,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 12819284,
+        "cost_to_move_2pct_down_usd": 14557180,
+        "total_2pct_depth_usd": 27376464,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 24,
         "top_venues": [
           {
@@ -394,40 +892,119 @@
             "pair": "AAVE/USDT",
             "up_usd": 2023596,
             "down_usd": 2578356,
-            "volume_usd": 8596387
+            "volume_usd": 8634929
           },
           {
             "market": "BVOX",
             "pair": "AAVE/USDT",
-            "up_usd": 1949444,
-            "down_usd": 2446180,
-            "volume_usd": 24062684
+            "up_usd": 1940938,
+            "down_usd": 2592093,
+            "volume_usd": 24127380
           },
           {
             "market": "Hotcoin",
             "pair": "AAVE/USDT",
-            "up_usd": 1514370,
-            "down_usd": 1876009,
-            "volume_usd": 8644391
+            "up_usd": 1478906,
+            "down_usd": 1824611,
+            "volume_usd": 8683618
           },
           {
             "market": "Hibt",
             "pair": "AAVE/USDT",
-            "up_usd": 1577681,
-            "down_usd": 1613890,
-            "volume_usd": 3876846
+            "up_usd": 1558280,
+            "down_usd": 1369806,
+            "volume_usd": 3890936
           },
           {
             "market": "P2B",
             "pair": "AAVE/USDT",
-            "up_usd": 1314772,
-            "down_usd": 1384225,
-            "volume_usd": 17142021
+            "up_usd": 1313843,
+            "down_usd": 1371957,
+            "volume_usd": 17213352
           }
         ]
       },
       "holders": {
-        "status": "NO_CONTRACT_RESOLVED"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+        "top1_pct": 15.32,
+        "top10_pct": 43.07,
+        "top20_pct": 53.61,
+        "concentration_grade": "MEDIUM_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x4da27a545c0c5b758a6ba100e3a049001de870f5",
+            "pct": 15.3247,
+            "usd_value": "237055683.959067344665527344",
+            "label": "Aave: Staked Aave (stkAAVE)",
+            "is_contract": true
+          },
+          {
+            "address": "0xa700b4eb416be35b2911fd5dee80678ff64ff6c9",
+            "pct": 5.2356,
+            "usd_value": "80989504.680989414453506470",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x494aa25fa055d370424ed9db3839e76ee3e9e945",
+            "pct": 4.9398,
+            "usd_value": "76413056.684390574693679810",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x25f2226b597e8f9514b3f68f00f494cf4f286491",
+            "pct": 3.6059,
+            "usd_value": "55779027.250493481755256653",
+            "label": "Aave: Ecosystem Reserve",
+            "is_contract": true
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 3.125,
+            "usd_value": "48340308.066949516534805298",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 3.125,
+            "usd_value": "48340308.066949516534805298",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503",
+            "pct": 2.5,
+            "usd_value": "38672246.453559614717960358",
+            "label": "Binance: Binance-Peg Tokens",
+            "is_contract": false
+          },
+          {
+            "address": "0xc9480602f77769c7a1e67011edea533bc8ac9fbe",
+            "pct": 2.1734,
+            "usd_value": "33620779.974470041692256927",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x1d48963dd8fada6ab5c2c7b92eba81ecc5030270",
+            "pct": 1.5974,
+            "usd_value": "24709588.773580826818943024",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x46e946468f747d0e563527bd069d4ded731f33a4",
+            "pct": 1.4416,
+            "usd_value": "22300128.971502602100372314",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "PENDLE": {
@@ -435,51 +1012,133 @@
       "coingecko_id": "pendle",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 4910360,
-        "cost_to_move_2pct_down_usd": 5033332,
-        "total_2pct_depth_usd": 9943692,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 5491158,
+        "cost_to_move_2pct_down_usd": 4014489,
+        "total_2pct_depth_usd": 9505648,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "PENDLE/USDT",
-            "up_usd": 1588080,
-            "down_usd": 2299566,
-            "volume_usd": 3615600
+            "up_usd": 1203120,
+            "down_usd": 1180273,
+            "volume_usd": 3612838
           },
           {
             "market": "Hotcoin",
             "pair": "PENDLE/USDT",
-            "up_usd": 645827,
-            "down_usd": 373805,
-            "volume_usd": 4597903
+            "up_usd": 868672,
+            "down_usd": 731425,
+            "volume_usd": 4624542
           },
           {
             "market": "Toobit",
             "pair": "PENDLE/USDT",
-            "up_usd": 424200,
-            "down_usd": 228691,
-            "volume_usd": 2181592
+            "up_usd": 404263,
+            "down_usd": 236223,
+            "volume_usd": 2178254
           },
           {
-            "market": "Ourbit",
+            "market": "LBank",
             "pair": "PENDLE/USDT",
-            "up_usd": 362260,
-            "down_usd": 174783,
-            "volume_usd": 1607467
+            "up_usd": 438604,
+            "down_usd": 197264,
+            "volume_usd": 1554060
           },
           {
-            "market": "BloFin",
+            "market": "OrangeX",
             "pair": "PENDLE/USDT",
-            "up_usd": 269474,
-            "down_usd": 202489,
-            "volume_usd": 3716185
+            "up_usd": 513202,
+            "down_usd": 48840,
+            "volume_usd": 1709512
           }
         ]
       },
       "holders": {
-        "status": "NO_CONTRACT_RESOLVED"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0x808507121b80c02388fad14726482e061b8da827",
+        "top1_pct": 22.67,
+        "top10_pct": 69.63,
+        "top20_pct": 78.14,
+        "concentration_grade": "HIGH_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x4f30a9d41b80ecc5b94306ab4364951ae3170210",
+            "pct": 22.6681,
+            "usd_value": "96200550.855216458439826965",
+            "label": "Pendle Finance: Voting Escrow Pendle",
+            "is_contract": false
+          },
+          {
+            "address": "0x999999999991e178d52cd95afd4b00d066664144",
+            "pct": 12.5392,
+            "usd_value": "53214747.835767783224582672",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 8.0678,
+            "usd_value": "34238815.837704032659530640",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0x8119ec16f0573b7dac7c0cb94eb504fb32456ee1",
+            "pct": 7.4066,
+            "usd_value": "31432702.807988140732049942",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xa3a7b6f88361f48403514059f1f16c8e78d60eec",
+            "pct": 5.88,
+            "usd_value": "24953947.064091768115758896",
+            "label": "Arbitrum: L1 ERC20 Gateway",
+            "is_contract": true
+          },
+          {
+            "address": "0x399be606db281a054e359eb709df9f21e922ec9a",
+            "pct": 5.7261,
+            "usd_value": "24300699.390581209212541580",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x918cf6b16d1426b5aa0edf0492ced1aa89f9659a",
+            "pct": 2.7842,
+            "usd_value": "11815651.384159905835986137",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 1.7809,
+            "usd_value": "7557930.781426141038537025",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0x2081411ed407f2364e5162e641a2db7575ef6f7b",
+            "pct": 1.5154,
+            "usd_value": "6431067.870361947454512119",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x187c9fbf5bd0f266883c03f320260c407c7b4100",
+            "pct": 1.2632,
+            "usd_value": "5360981.721702539362013340",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "LDO": {
@@ -487,51 +1146,133 @@
       "coingecko_id": "lido-dao",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 2813272,
-        "cost_to_move_2pct_down_usd": 2950728,
-        "total_2pct_depth_usd": 5763999,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 3940333,
+        "cost_to_move_2pct_down_usd": 3604274,
+        "total_2pct_depth_usd": 7544607,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "LDO/USDT",
-            "up_usd": 1508073,
-            "down_usd": 1437800,
-            "volume_usd": 1981610
+            "up_usd": 2588276,
+            "down_usd": 2013969,
+            "volume_usd": 2001898
           },
           {
             "market": "P2B",
             "pair": "LDO/USDT",
-            "up_usd": 201955,
-            "down_usd": 430535,
-            "volume_usd": 2023266
+            "up_usd": 247248,
+            "down_usd": 490140,
+            "volume_usd": 2041679
           },
           {
             "market": "Bitget",
             "pair": "LDO/USDT",
-            "up_usd": 205671,
-            "down_usd": 46213,
-            "volume_usd": 574668
+            "up_usd": 205241,
+            "down_usd": 48266,
+            "volume_usd": 575247
           },
           {
             "market": "BloFin",
             "pair": "LDO/USDT",
             "up_usd": 85122,
             "down_usd": 102251,
-            "volume_usd": 488770
+            "volume_usd": 488390
           },
           {
             "market": "LBank",
             "pair": "LDO/USDT",
-            "up_usd": 70082,
-            "down_usd": 89195,
-            "volume_usd": 1150709
+            "up_usd": 54284,
+            "down_usd": 103987,
+            "volume_usd": 1159084
           }
         ]
       },
       "holders": {
-        "status": "NO_CONTRACT_RESOLVED"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+        "top1_pct": 11.48,
+        "top10_pct": 49.74,
+        "top20_pct": 57.5,
+        "concentration_grade": "MEDIUM_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x3e40d73eb977dc6a537af587d48316fee66e9c8c",
+            "pct": 11.4766,
+            "usd_value": "38332679.231934189796447754",
+            "label": "Lido: Treasury",
+            "is_contract": true
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 6.1277,
+            "usd_value": "20467074.066219925880432129",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0x945755de7eac99008c8c57bda96772d50872168b",
+            "pct": 5.0,
+            "usd_value": "16700385.809098757803440094",
+            "label": "Lido: LIDO Vesting Recipient 2",
+            "is_contract": true
+          },
+          {
+            "address": "0x695c388153bea0fbe3e1c049c149bad3bc917740",
+            "pct": 5.0,
+            "usd_value": "16700385.809098757803440094",
+            "label": "Lido: LIDO Vesting Recipient 4",
+            "is_contract": true
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 4.9553,
+            "usd_value": "16551006.411582665517926216",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0xa2dfc431297aee387c05beef507e5335e684fbcd",
+            "pct": 4.583,
+            "usd_value": "15307478.106413094326853752",
+            "label": "Lido: LIDO Vesting Recipient 5",
+            "is_contract": true
+          },
+          {
+            "address": "0x1597d19659f3de52abd475f7d2314dcca29359bd",
+            "pct": 4.5,
+            "usd_value": "15030347.228188881650567055",
+            "label": "Lido: LIDO Vesting Recipient 6",
+            "is_contract": true
+          },
+          {
+            "address": "0x8fa129f87b8a11ee1ca35abd46674f8b66984d4a",
+            "pct": 3.3023,
+            "usd_value": "11029949.230571089312434196",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xb8d83908aab38a159f3da47a59d84db8e1838712",
+            "pct": 3.1119,
+            "usd_value": "10394076.348711334168910980",
+            "label": "Lido: LIDO Vesting Recipient 1",
+            "is_contract": true
+          },
+          {
+            "address": "0x611f7bf868a6212f871e89f7e44684045ddfb09d",
+            "pct": 1.68,
+            "usd_value": "5611341.333953933790326118",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "EIGEN": {
@@ -539,51 +1280,133 @@
       "coingecko_id": "eigenlayer",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 3119742,
-        "cost_to_move_2pct_down_usd": 3512599,
-        "total_2pct_depth_usd": 6632341,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 2563788,
+        "cost_to_move_2pct_down_usd": 3834297,
+        "total_2pct_depth_usd": 6398084,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 25,
         "top_venues": [
           {
             "market": "BTCC",
             "pair": "EIGEN/USDT",
-            "up_usd": 1533952,
-            "down_usd": 1856977,
-            "volume_usd": 1303590
+            "up_usd": 1175319,
+            "down_usd": 2362599,
+            "volume_usd": 1321227
           },
           {
             "market": "Aivora Exchange",
             "pair": "EIGEN/USDT",
-            "up_usd": 340274,
-            "down_usd": 291634,
-            "volume_usd": 2353024
+            "up_usd": 285896,
+            "down_usd": 294651,
+            "volume_usd": 2360325
           },
           {
             "market": "Deepcoin",
             "pair": "EIGEN/USDT",
-            "up_usd": 230048,
-            "down_usd": 166085,
-            "volume_usd": 429356
+            "up_usd": 147283,
+            "down_usd": 178621,
+            "volume_usd": 434329
           },
           {
-            "market": "OrangeX",
+            "market": "CoinW",
             "pair": "EIGEN/USDT",
-            "up_usd": 124636,
-            "down_usd": 156332,
-            "volume_usd": 685742
+            "up_usd": 79108,
+            "down_usd": 89498,
+            "volume_usd": 205091
           },
           {
             "market": "LBank",
             "pair": "EIGEN/USDT",
-            "up_usd": 83969,
-            "down_usd": 100693,
-            "volume_usd": 795576
+            "up_usd": 61263,
+            "down_usd": 92072,
+            "volume_usd": 799860
           }
         ]
       },
       "holders": {
-        "status": "NO_CONTRACT_RESOLVED"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
+        "top1_pct": 9.69,
+        "top10_pct": 39.28,
+        "top20_pct": 45.83,
+        "concentration_grade": "MEDIUM_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x22ec52117ad1af18c70e8921d9c2963b00119d40",
+            "pct": 9.6939,
+            "usd_value": "34077014.979879476130008698",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x34bcf805a503d5151c05cd349699a8ad1767a026",
+            "pct": 6.9815,
+            "usd_value": "24541955.903668243438005447",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
+            "pct": 5.3902,
+            "usd_value": "18948239.319811649620532990",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 3.7992,
+            "usd_value": "13355192.434771338477730751",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0xb8e7ac679a0c99bf6895590846c9371f4e7e1cb1",
+            "pct": 2.8557,
+            "usd_value": "10038719.854077003896236420",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x3de6b6b121282cbe2f46d24f0023e7d59bb6c24e",
+            "pct": 2.6219,
+            "usd_value": "9216583.479975618422031403",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 2.42,
+            "usd_value": "8507069.395792670547962189",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0xd16ef23aec712d6fe1e1f32e0467d4146d9ac781",
+            "pct": 2.3093,
+            "usd_value": "8117722.102668381296098232",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0xd266e9578ec83a4deb9909615ed4c0e10feeb06e",
+            "pct": 1.7804,
+            "usd_value": "6258641.790874344296753407",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x76ec5a0d3632b2133d9f1980903305b62678fbd3",
+            "pct": 1.4306,
+            "usd_value": "5028971.580168833956122398",
+            "label": null,
+            "is_contract": false
+          }
+        ]
       }
     },
     "UNI": {
@@ -591,51 +1414,133 @@
       "coingecko_id": "uniswap",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 11855349,
-        "cost_to_move_2pct_down_usd": 11516881,
-        "total_2pct_depth_usd": 23372230,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 9872167,
+        "cost_to_move_2pct_down_usd": 11542600,
+        "total_2pct_depth_usd": 21414767,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 25,
         "top_venues": [
           {
-            "market": "Hotcoin",
-            "pair": "UNI/USDT",
-            "up_usd": 2292860,
-            "down_usd": 2344953,
-            "volume_usd": 6219798
-          },
-          {
             "market": "BVOX",
             "pair": "UNI/USDT",
-            "up_usd": 2062820,
-            "down_usd": 2123426,
-            "volume_usd": 32913580
+            "up_usd": 1979238,
+            "down_usd": 2059089,
+            "volume_usd": 33106088
+          },
+          {
+            "market": "Hotcoin",
+            "pair": "UNI/USDT",
+            "up_usd": 2018345,
+            "down_usd": 1444005,
+            "volume_usd": 6253019
           },
           {
             "market": "BTCC",
             "pair": "UNI/USDT",
-            "up_usd": 2299933,
-            "down_usd": 1354631,
-            "volume_usd": 14551774
+            "up_usd": 1375997,
+            "down_usd": 1484873,
+            "volume_usd": 14591224
           },
           {
             "market": "DigiFinex",
             "pair": "UNI/USDT",
-            "up_usd": 551382,
-            "down_usd": 838204,
-            "volume_usd": 8739550
+            "up_usd": 557185,
+            "down_usd": 1037038,
+            "volume_usd": 8803226
           },
           {
             "market": "WhiteBIT",
             "pair": "UNI/USDT",
-            "up_usd": 486748,
-            "down_usd": 587201,
-            "volume_usd": 5340586
+            "up_usd": 462721,
+            "down_usd": 618448,
+            "volume_usd": 5445786
           }
         ]
       },
       "holders": {
-        "status": "NO_CONTRACT_RESOLVED"
+        "status": "OK",
+        "chain": "eth",
+        "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+        "top1_pct": 26.72,
+        "top10_pct": 52.02,
+        "top20_pct": 60.26,
+        "concentration_grade": "MEDIUM_CONCENTRATION",
+        "holders_analysed": 20,
+        "top_holders": [
+          {
+            "address": "0x1a9c8182c09f50c8318d769245bea52c32be35bc",
+            "pct": 26.7248,
+            "usd_value": "996511414.197823166847229004",
+            "label": null,
+            "is_contract": true
+          },
+          {
+            "address": "0x000000000000000000000000000000000000dead",
+            "pct": 10.9068,
+            "usd_value": "406690002.763280749320983887",
+            "label": "Burn Address: 0x00...dEaD",
+            "is_contract": false
+          },
+          {
+            "address": "0xf977814e90da44bfa03b6295a0616a897441acec",
+            "pct": 2.4065,
+            "usd_value": "89733060.763529554009437561",
+            "label": "Binance 8",
+            "is_contract": false
+          },
+          {
+            "address": "0x61cb39bece033c5bda281747db1c15cced2096eb",
+            "pct": 2.3047,
+            "usd_value": "85939193.997625589370727539",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+            "pct": 2.2441,
+            "usd_value": "83678040.997740000486373901",
+            "label": "Binance 28",
+            "is_contract": false
+          },
+          {
+            "address": "0x611f7bf868a6212f871e89f7e44684045ddfb09d",
+            "pct": 2.0384,
+            "usd_value": "76006321.016844093799591064",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x5069a64bc6616dec1584ee0500b7813a9b680f7e",
+            "pct": 1.4837,
+            "usd_value": "55325554.977836117148399353",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0xaba63748c4b4def4a3319c3a29fe4829029d926f",
+            "pct": 1.4,
+            "usd_value": "52203043.754494801163673401",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x36ca0abdf3852f00aee7798c7dfb5ead5d3fec2a",
+            "pct": 1.2611,
+            "usd_value": "47024994.828641355037689209",
+            "label": null,
+            "is_contract": false
+          },
+          {
+            "address": "0x090d4613473dee047c3f2706764f49e0821d256e",
+            "pct": 1.2535,
+            "usd_value": "46741720.691687054932117462",
+            "label": "Uniswap: Community Token Distributor",
+            "is_contract": true
+          }
+        ]
       }
     },
     "BTC": {
@@ -643,46 +1548,49 @@
       "coingecko_id": "bitcoin",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 304689831,
-        "cost_to_move_2pct_down_usd": 286722617,
-        "total_2pct_depth_usd": 591412448,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 337547761,
+        "cost_to_move_2pct_down_usd": 308116858,
+        "total_2pct_depth_usd": 645664619,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 24,
         "top_venues": [
           {
+            "market": "Tapbit",
+            "pair": "BTC/USDT",
+            "up_usd": 25579306,
+            "down_usd": 37979577,
+            "volume_usd": 1076170360
+          },
+          {
             "market": "Binance",
             "pair": "BTC/USDT",
-            "up_usd": 27458102,
-            "down_usd": 19041515,
-            "volume_usd": 2788409148
+            "up_usd": 27832348,
+            "down_usd": 19790659,
+            "volume_usd": 2796525422
           },
           {
             "market": "Gate",
             "pair": "BTC/USDT",
-            "up_usd": 20124740,
-            "down_usd": 25920361,
-            "volume_usd": 1472786289
+            "up_usd": 20314874,
+            "down_usd": 27228728,
+            "volume_usd": 1475390991
           },
           {
             "market": "Pionex",
             "pair": "BTC/USDT",
-            "up_usd": 22279348,
-            "down_usd": 21774821,
-            "volume_usd": 5092682634
+            "up_usd": 20825547,
+            "down_usd": 23520459,
+            "volume_usd": 5107367279
           },
           {
-            "market": "WEEX",
+            "market": "DigiFinex",
             "pair": "BTC/USDT",
-            "up_usd": 19160269,
-            "down_usd": 19483616,
-            "volume_usd": 1077697598
-          },
-          {
-            "market": "BTCC",
-            "pair": "BTC/USDT",
-            "up_usd": 16818929,
-            "down_usd": 18027961,
-            "volume_usd": 6691988152
+            "up_usd": 21441300,
+            "down_usd": 15020466,
+            "volume_usd": 1298025304
           }
         ]
       },
@@ -696,46 +1604,49 @@
       "coingecko_id": "ethereum",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 193205538,
-        "cost_to_move_2pct_down_usd": 189181050,
-        "total_2pct_depth_usd": 382386588,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 190988257,
+        "cost_to_move_2pct_down_usd": 189227674,
+        "total_2pct_depth_usd": 380215931,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 24,
         "top_venues": [
           {
             "market": "BVOX",
             "pair": "ETH/USDT",
-            "up_usd": 53776500,
-            "down_usd": 56456560,
-            "volume_usd": 603350752
+            "up_usd": 51215564,
+            "down_usd": 55516698,
+            "volume_usd": 605873635
           },
           {
             "market": "WEEX",
             "pair": "ETH/USDT",
-            "up_usd": 16130048,
-            "down_usd": 15586224,
-            "volume_usd": 1033686956
+            "up_usd": 16439054,
+            "down_usd": 15354025,
+            "volume_usd": 1034622160
           },
           {
             "market": "Pionex",
             "pair": "ETH/USDT",
-            "up_usd": 15489788,
-            "down_usd": 13226387,
-            "volume_usd": 1416590447
+            "up_usd": 13399618,
+            "down_usd": 13457235,
+            "volume_usd": 1421773454
           },
           {
             "market": "KCEX",
             "pair": "ETH/USDT",
-            "up_usd": 7818561,
-            "down_usd": 15201095,
-            "volume_usd": 730097483
+            "up_usd": 13625276,
+            "down_usd": 7377406,
+            "volume_usd": 735768299
           },
           {
             "market": "Toobit",
             "pair": "ETH/USDT",
-            "up_usd": 7532045,
-            "down_usd": 10782077,
-            "volume_usd": 560308843
+            "up_usd": 9926863,
+            "down_usd": 9806045,
+            "volume_usd": 562266537
           }
         ]
       },
@@ -749,46 +1660,49 @@
       "coingecko_id": "solana",
       "depth": {
         "status": "OK",
-        "cost_to_move_2pct_up_usd": 80382146,
-        "cost_to_move_2pct_down_usd": 80585410,
-        "total_2pct_depth_usd": 160967556,
-        "depth_grade": "DEEP",
+        "cost_to_move_2pct_up_usd": 80990085,
+        "cost_to_move_2pct_down_usd": 87045068,
+        "total_2pct_depth_usd": 168035153,
+        "depth_grade": "UNGRADED",
+        "depth_pct_of_24h_volume": null,
+        "volume_24h_usd": null,
+        "grade_note": "нет объёма 24ч — запусти hive_prices, оценка появится",
         "venues_counted": 24,
         "top_venues": [
           {
             "market": "BVOX",
             "pair": "SOL/USDT",
-            "up_usd": 12066340,
-            "down_usd": 10258652,
-            "volume_usd": 119694892
+            "up_usd": 9986525,
+            "down_usd": 9505540,
+            "volume_usd": 119450790
           },
           {
             "market": "Pionex",
             "pair": "SOL/USDT",
-            "up_usd": 7364189,
-            "down_usd": 7232073,
-            "volume_usd": 67928790
+            "up_usd": 7108423,
+            "down_usd": 7997338,
+            "volume_usd": 67660451
           },
           {
             "market": "XT.COM",
             "pair": "SOL/USDT",
-            "up_usd": 4782140,
-            "down_usd": 5590174,
-            "volume_usd": 139395436
+            "up_usd": 5313819,
+            "down_usd": 5310290,
+            "volume_usd": 138996721
           },
           {
             "market": "Deepcoin",
             "pair": "SOL/USDT",
-            "up_usd": 3743223,
-            "down_usd": 5662706,
-            "volume_usd": 323938889
+            "up_usd": 4161663,
+            "down_usd": 6078269,
+            "volume_usd": 323340951
           },
           {
             "market": "Toobit",
             "pair": "SOL/USDT",
-            "up_usd": 4195715,
-            "down_usd": 4688558,
-            "volume_usd": 127644715
+            "up_usd": 4699365,
+            "down_usd": 5115496,
+            "volume_usd": 127421076
           }
         ]
       },
