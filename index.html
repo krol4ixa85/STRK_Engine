@@ -797,7 +797,7 @@ body > * {
   </div>
 
   <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.02), rgba(239, 68, 68, 0.02)); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 12px;">
-    <div id="news-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+    <div id="news-impact-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
       Loading news impact...
     </div>
   </div>
@@ -2303,7 +2303,7 @@ async function renderGlobalContext() {
 }
 
 async function renderNewsImpact() {
-  const container = document.getElementById('news-content');
+  const container = document.getElementById('news-impact-content');
   if (!container) return;
   
   try {
