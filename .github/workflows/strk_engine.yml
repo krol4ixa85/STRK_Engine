@@ -1071,4 +1071,3 @@ jobs:
           git add VERSION.txt
           git diff --cached --quiet && echo "No version change" || git commit -m "chore: bump VERSION [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
-
