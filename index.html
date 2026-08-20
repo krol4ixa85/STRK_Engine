@@ -3445,9 +3445,9 @@ async function renderModalIntelligence(token) {
         for (const r of rows) {
           const tag = r.is_contract ? '<span style="color: #F59E0B;">контракт</span>' : '<span style="color: var(--text-secondary);">кошелёк</span>';
           const addr = r.address ? (r.address.slice(0, 6) + '…' + r.address.slice(-4)) : '—';
-          html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid rgba(0,0,0,0.04);">
-            <span style="font-family: monospace;">${r.label || addr}</span>
-            <span>${r.pct}% · ${tag}</span></div>`;
+          html += `<div style="display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.04);">
+            <span style="font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${r.label || addr}</span>
+            <span style="white-space: nowrap; flex-shrink: 0;"><strong>${r.pct}%</strong> · ${tag}</span></div>`;
         }
         html += '</div>';
       }
@@ -3464,42 +3464,65 @@ async function renderModalIntelligence(token) {
     html += '<div style="font-size: 12px; color: var(--text-muted);">Нет данных. Запусти hive_health.</div>';
   }
 
-  // ── 4 · ГДЕ МЫ ВНУТРИ ФАЗЫ ─────────────────────────────────
-  html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">📐 Где мы внутри фазы</div>';
+  // ── 4 · СТРУКТУРА ПОТОКА · ГДЕ МЫ ВНУТРИ ФАЗЫ ──────────────
+  // v7: убран выдуманный процент прогресса. Он складывал долю
+  // положительных недель за 180 дней с числом SOS за ВСЮ историю,
+  // тогда как вердикт сверху считает SOS за последние 8 недель.
+  // Разные окна давали противоречие: вердикт "середина накопления"
+  // и полоса "поздняя стадия" на одних и тех же данных.
+  html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">📐 Структура потока</div>';
+  let flowRead = null;
   if (scan) {
     const pos = scan.pct_positive_weeks_180d || 0;
     const streak = scan.current_positive_streak_weeks || 0;
-    const sos = (scan.sos_events || []).length;
-    const dist = (scan.dist_events || []).length;
+    const sos8 = scan.recent_sos_count || 0;
+    const dist8 = scan.recent_dist_count || 0;
     const nf30 = scan.netflow_30d_usd || 0;
-    const nf90 = scan.netflow_90d_usd || 0;
+    const nf180 = scan.netflow_180d_usd || 0;
 
-    // Прогресс накопления: доля положительных недель + признаки силы,
-    // минус признаки распределения. Шкала грубая и честно подписана.
-    let progress = Math.round(pos);
-    if (sos > 0) progress = Math.min(95, progress + sos * 8);
-    if (dist > 0) progress = Math.max(5, progress - dist * 10);
+    // Свежесть притока: какая доля полугодового нетто-притока пришлась
+    // на последние 30 дней. Больше 1.0 значит, что раньше был отток,
+    // то есть накопление молодое, а не затянувшееся.
+    const recency = (nf180 > 0) ? (nf30 / nf180) : null;
 
-    const stage = progress < 35 ? 'Ранняя стадия — накопление только началось'
-                : progress < 60 ? 'Середина — процесс идёт, до импульса далеко'
-                : progress < 80 ? 'Поздняя стадия — приближается разрешение'
-                : 'Накопление выглядит завершённым';
+    let stage, stageColor, stageWhy;
+    if (dist8 > 0 && nf30 < 0) {
+      stage = 'Распределение';
+      stageColor = 'var(--red)';
+      stageWhy = 'есть признаки сброса и отток за месяц';
+    } else if (recency !== null && recency > 0.8 && pos < 55) {
+      stage = 'Ранняя стадия · приток свежий';
+      stageColor = 'var(--green)';
+      stageWhy = 'почти весь полугодовой приток пришёлся на последний месяц, до этого картина была нейтральной';
+    } else if (pos >= 65 && streak >= 4) {
+      stage = 'Зрелое накопление';
+      stageColor = 'var(--green)';
+      stageWhy = 'приток идёт стабильно много недель подряд';
+    } else if (sos8 >= 1 && pos >= 55 && streak >= 2) {
+      stage = 'Поздняя стадия · близко к разрешению';
+      stageColor = '#F59E0B';
+      stageWhy = 'устойчивый приток плюс свежие сигналы силы';
+    } else {
+      stage = 'Неопределённая · без явного перевеса';
+      stageColor = 'var(--text-secondary)';
+      stageWhy = 'приток и отток чередуются, устойчивой серии нет';
+    }
+    flowRead = { stage, pos, streak, sos8, dist8, recency };
+
+    const bar = (label, value, hint) => `
+      <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+        <span style="color: var(--text-secondary);">${label}</span>
+        <span style="font-weight: 700;">${value}</span>
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 6px;">${hint}</div>`;
 
     html += `<div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">
-      <div style="height: 10px; background: rgba(0,0,0,0.06); border-radius: 5px; overflow: hidden;">
-        <div style="height: 100%; width: ${progress}%; background: linear-gradient(90deg, #F59E0B, var(--green));"></div>
-      </div>
-      <div style="font-size: 12px; color: var(--text-bright); margin-top: 6px; font-weight: 600;">${stage}</div>
-      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
-        ${pos.toFixed(0)}% недель за полгода были с притоком · серия подряд ${streak} нед ·
-        сигналов силы ${sos} · сигналов распределения ${dist}
-      </div>
-      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
-        Приток за 30 дней ${nf30 >= 0 ? '+' : ''}$${(nf30 / 1e6).toFixed(1)}M · за 90 дней ${nf90 >= 0 ? '+' : ''}$${(nf90 / 1e6).toFixed(1)}M
-      </div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">
-        Шкала оценочная, а не измеренная. Она складывает долю положительных недель и сигналы силы — точность на истории пока не проверена.
-      </div>
+      <div style="font-size: 14px; font-weight: 700; color: ${stageColor}; margin-bottom: 3px;">${stage}</div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px;">${stageWhy}</div>
+      ${bar('Недель с притоком за полгода', pos.toFixed(0) + '%', '50% — это подброс монеты, перевеса нет. Выше 65% — устойчивый спрос.')}
+      ${bar('Серия положительных недель', streak + ' нед', 'Сколько недель подряд деньги заходят без перерыва.')}
+      ${bar('Свежесть притока', recency === null ? '—' : (recency * 100).toFixed(0) + '%', 'Какая часть полугодового притока пришлась на последний месяц. Больше 100% значит, что раньше был отток.')}
+      ${bar('Сигналы за 8 недель', 'сила ' + sos8 + ' · сброс ' + dist8, 'То же окно, что использует вердикт сверху — цифры теперь сходятся.')}
     </div>`;
   } else {
     html += '<div style="font-size: 12px; color: var(--text-muted);">Скан по токену не найден.</div>';
@@ -3513,6 +3536,68 @@ async function renderModalIntelligence(token) {
       <div style="font-size: 12px; color: var(--text-secondary);">Лидируют по притоку: ${top.join(' · ')}</div>`;
     }
   }
+
+  // ── 6 · ДЕТЕКТОР ПРОТИВОРЕЧИЙ ──────────────────────────────
+  // Сигналы из разных слоёв регулярно спорят друг с другом.
+  // Раньше они просто стояли рядом, и читатель сам должен был
+  // заметить расхождение. Теперь расхождения называются вслух.
+  const conflicts = [];
+
+  const verdictText = (document.getElementById('scanner-verdict-label') || {}).textContent || '';
+  const verdictBullish = /ACCUMULATION|MARKUP|🟢|🚀/.test(verdictText);
+
+  if (verdictBullish && flowRead) {
+    if (flowRead.pos < 55 && flowRead.streak === 0) {
+      conflicts.push({
+        level: 'warn',
+        text: `Вердикт сверху опирается на последние 8 недель, а за полгода недель с притоком всего ${flowRead.pos.toFixed(0)}% и серия нулевая. Картина бычья только на коротком окне.`
+      });
+    }
+    if (flowRead.recency !== null && flowRead.recency > 1) {
+      conflicts.push({
+        level: 'info',
+        text: 'Весь полугодовой приток пришёлся на последний месяц — до этого был отток. Накопление молодое, разворот ещё не подтверждён временем.'
+      });
+    }
+  }
+
+  if (f && f.status === 'OK' && verdictBullish && f.bias === 'LONGS_PAY') {
+    conflicts.push({
+      level: 'warn',
+      text: 'Накопление на споте, но в бессрочных контрактах перекос в лонги — толпа уже стоит в ту же сторону. Риск каскада вниз выше обычного.'
+    });
+  }
+
+  if (h && h.depth && h.depth.depth_grade === 'THIN' && verdictBullish) {
+    conflicts.push({
+      level: 'warn',
+      text: 'Стакан тонкий относительно оборота. Даже правильный вход крупным размером даст проскальзывание — режь размер.'
+    });
+  }
+
+  if (f && f.open_interest_usd !== null && f.open_interest_usd !== undefined && f.open_interest_usd < 5e6) {
+    conflicts.push({
+      level: 'info',
+      text: `Открытый интерес всего $${(f.open_interest_usd / 1e6).toFixed(1)}M — деривативов по токену почти нет. Сигналам по фандингу здесь верить слабо.`
+    });
+  }
+
+  let conflictHtml = '';
+  if (conflicts.length) {
+    conflictHtml += `<div style="margin-bottom: 14px; padding: 12px; background: rgba(245, 158, 11, 0.08); border-left: 4px solid #F59E0B; border-radius: 6px;">
+      <div style="font-size: 11px; font-weight: 700; color: #B45309; text-transform: uppercase; margin-bottom: 6px;">⚠ Сигналы расходятся · ${conflicts.length}</div>`;
+    for (const c of conflicts) {
+      const icon = c.level === 'warn' ? '⚠' : 'ℹ';
+      conflictHtml += `<div style="font-size: 12px; color: var(--text-secondary); padding: 4px 0; line-height: 1.5;">${icon} ${c.text}</div>`;
+    }
+    conflictHtml += '</div>';
+  } else {
+    conflictHtml += `<div style="margin-bottom: 14px; padding: 10px; background: rgba(46, 160, 67, 0.07); border-left: 4px solid var(--green); border-radius: 6px; font-size: 12px; color: var(--text-secondary);">
+      ✓ Явных противоречий между слоями не найдено.
+    </div>`;
+  }
+
+  html = conflictHtml + html;
 
   el.innerHTML = html;
 }
