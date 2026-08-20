@@ -32,6 +32,11 @@ on:
     # Funding per token · КАЖДЫЕ 30 МИНУТ. Источник OKX public — бесплатно,
     # ноль кредитов Hive и Dune. Единственный модуль такой частоты.
     - cron: '*/30 * * * *'
+    # Decision Engine · единственный автор решений. Считает через 5 минут
+    # после market_regime, чтобы читать уже свежий режим рынка.
+    - cron: '27 0,6,12,18 * * *'
+    # Decision Engine · проверка прогнозов, срок которых наступил. Раз в сутки.
+    - cron: '40 5 * * *'
     # Hive Health · MUST #18 концентрация держателей + MUST #19 глубина 2%
     # Понедельник 02:00 UTC = 05:00 MSK. В это время не запускается ничего
     # другое — ближайшие соседи 03:30 (strk_avnu) и 04:00 (token_scan_daily).
@@ -63,6 +68,8 @@ on:
           - hive_health_catalog
           - funding_per_token
           - token_scan_single
+          - decision_engine
+          - decision_verify
           - full_run
       token:
         description: 'Токен для token_scan_single (например LINK). Для других режимов игнорируется.'
@@ -777,6 +784,61 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # DECISION ENGINE · единственный автор торговых решений
+  # Читает все кэши, пишет decisions.json + прогноз в append-only лог.
+  # Ни одного внешнего запроса — только локальные файлы. 0 кредитов.
+  # ============================================================
+  decision_engine:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '27 0,6,12,18 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'decision_engine')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build decisions
+        run: python3 scripts/decision_engine.py
+      - name: Commit decisions
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/decisions.json ] && git add data/cache/decisions.json || echo "no decisions.json"
+          [ -f data/history/decision_log.jsonl ] && git add data/history/decision_log.jsonl || echo "no decision_log.jsonl"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: decisions [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # DECISION VERIFY · закрывает прогнозы, у которых наступил срок.
+  # Без этого шага накопленный лог остаётся мёртвым грузом.
+  # ============================================================
+  decision_verify:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '40 5 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'decision_verify')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify past decisions
+        run: python3 scripts/decision_engine.py --verify
+      - name: Commit accuracy
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/history/decision_log.jsonl ] && git add data/history/decision_log.jsonl || echo "no log"
+          [ -f data/cache/decision_accuracy.json ] && git add data/cache/decision_accuracy.json || echo "no accuracy"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: decision accuracy [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
