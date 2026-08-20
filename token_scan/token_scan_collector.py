@@ -94,7 +94,7 @@ def auto_extend_from_lab():
         print(f'  ↑ Auto-added from LAB signals: {", ".join(added)}')
     return added
 
-FRESH_HOURS = 24
+FRESH_HOURS = 6  # уменьшено с 24 для более свежих данных
 STALE_DAYS = 7
 
 # ============================================================
@@ -383,7 +383,11 @@ def main():
         status = cache_status(token)
         print(f'[{token}] cache: {status}')
         
-        if not args.force and status == 'fresh':
+        # Force refresh если: --force, или --strong-buy-only (daily job), 
+        # или single token request (--token X)
+        force_this = args.force or args.strong_buy_only or bool(args.token)
+        
+        if not force_this and status == 'fresh':
             print(f'  ↷ Skip (fresh)')
             skipped += 1
             continue
