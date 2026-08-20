@@ -837,6 +837,37 @@ body > * {
 const GITHUB_REPO = 'krol4ixa85/STRK_Engine';
 const GITHUB_BRANCH = 'main';
 const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}`;
+
+    // ============================================================
+    // CACHE BUSTING · URL versioning system (v6)
+    // Fetches VERSION.txt on each load, uses as cache buster
+    // ============================================================
+    let CACHE_VERSION = String(Math.floor(Date.now() / 60000)); // fallback: minute-based
+    
+    async function initCacheVersion() {
+      try {
+        // Fetch VERSION.txt with NO cache (uncacheable)
+        const r = await fetch(`${BASE_URL}/VERSION.txt?nocache=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        if (r.ok) {
+          const v = (await r.text()).trim();
+          if (v) {
+            CACHE_VERSION = v;
+            console.log('[Cache] Version:', v);
+          }
+        }
+      } catch (e) {
+        console.warn('[Cache] Version fetch failed, using timestamp:', e);
+      }
+    }
+    
+    // Helper: add version param to any URL
+    function cacheBust(url) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}v=${CACHE_VERSION}`;
+    }
 const FILES = {
   lab: 'data/cache/strk_lab_report.json',
   momentum: 'data/cache/dune_sector_momentum.json',
@@ -891,7 +922,7 @@ function fmtInt(n) {
 const OPTIONAL_FILES = ['whale_holdings_alerts.jsonl'];
 
 async function fetchJSON(path) {
-  const url = `${BASE_URL}/${path}?t=${Math.floor(Date.now() / 60000)}`;
+  const url = `${BASE_URL}/${path}?v=${CACHE_VERSION}`;
   const isOptional = OPTIONAL_FILES.some(f => path.includes(f));
   try {
     const r = await fetch(url);
@@ -905,7 +936,7 @@ async function fetchJSON(path) {
   } catch (e) { return null; }
 }
 async function fetchJSONL(path) {
-  const url = `${BASE_URL}/${path}?t=${Math.floor(Date.now() / 60000)}`;
+  const url = `${BASE_URL}/${path}?v=${CACHE_VERSION}`;
   const isOptional = OPTIONAL_FILES && OPTIONAL_FILES.some(f => path.includes(f));
   try {
     const r = await fetch(url);
@@ -1840,7 +1871,7 @@ async function renderMarketRegime() {
   if (!container) return;
   
   try {
-    const url = `${BASE_URL}/data/cache/market_regime.json?t=${Math.floor(Date.now() / 60000)}`;
+    const url = `${BASE_URL}/data/cache/market_regime.json?v=${CACHE_VERSION}`;
     const r = await fetch(url);
     if (!r.ok) {
       container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🎯 Market Regime будет доступен после первого запуска market_regime job.</div>';
@@ -1958,7 +1989,7 @@ async function renderInterpretation() {
   if (!container) return;
   
   try {
-    const url = `${BASE_URL}/data/cache/interpretation.json?t=${Math.floor(Date.now() / 60000)}`;
+    const url = `${BASE_URL}/data/cache/interpretation.json?v=${CACHE_VERSION}`;
     const r = await fetch(url);
     if (!r.ok) {
       container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🧠 Unified reading будет доступен после первого запуска interpretation job.</div>';
@@ -2092,8 +2123,8 @@ async function renderGlobalContext() {
   try {
     // Load both macro sources in parallel
     const [macroR, totalR] = await Promise.all([
-      fetch(`${BASE_URL}/data/cache/macro_narratives.json?t=${Math.floor(Date.now() / 60000)}`),
-      fetch(`${BASE_URL}/data/cache/total_phase.json?t=${Math.floor(Date.now() / 60000)}`),
+      fetch(`${BASE_URL}/data/cache/macro_narratives.json?v=${CACHE_VERSION}`),
+      fetch(`${BASE_URL}/data/cache/total_phase.json?v=${CACHE_VERSION}`),
     ]);
     
     const macro = macroR.ok ? await macroR.json() : null;
@@ -2250,13 +2281,13 @@ async function renderNewsImpact() {
   
   try {
     // v2: use surf_events.json (methodology-compliant)
-    let url = `${BASE_URL}/data/cache/surf_events.json?t=${Math.floor(Date.now() / 60000)}`;
+    let url = `${BASE_URL}/data/cache/surf_events.json?v=${CACHE_VERSION}`;
     let r = await fetch(url);
     let isV2 = true;
     
     if (!r.ok) {
       // Fallback to v1 news_impact.json
-      url = `${BASE_URL}/data/cache/news_impact.json?t=${Math.floor(Date.now() / 60000)}`;
+      url = `${BASE_URL}/data/cache/news_impact.json?v=${CACHE_VERSION}`;
       r = await fetch(url);
       isV2 = false;
       if (!r.ok) {
@@ -2383,7 +2414,7 @@ async function renderScenarios() {
   if (!container) return;
   
   try {
-    const url = `${BASE_URL}/data/cache/strk_scenarios.json?t=${Math.floor(Date.now() / 60000)}`;
+    const url = `${BASE_URL}/data/cache/strk_scenarios.json?v=${CACHE_VERSION}`;
     const r = await fetch(url);
     if (!r.ok) {
       container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">📊 Scenarios будут доступны после следующего workflow run. Модуль недавно добавлен.</div>';
@@ -3281,7 +3312,7 @@ async function renderTokenNewsInModal(token) {
   
   try {
     // Try v5 per-asset news first
-    let url = `${BASE_URL}/data/cache/surf_events.json?t=${Math.floor(Date.now() / 60000)}`;
+    let url = `${BASE_URL}/data/cache/surf_events.json?v=${CACHE_VERSION}`;
     let r = await fetch(url);
     if (!r.ok) {
       container.innerHTML = '<div style="color: var(--text-muted);">News data не доступна</div>';
@@ -3398,7 +3429,7 @@ function openDurationScanner(token) {
 
 async function loadTokenScanCache(token) {
   try {
-    const url = `${BASE_URL}/data/cache/token_scan/${token}.json?t=${Math.floor(Date.now() / 60000)}`;
+    const url = `${BASE_URL}/data/cache/token_scan/${token}.json?v=${CACHE_VERSION}`;
     const r = await fetch(url);
     if (!r.ok) {
       // Cache miss — show notice
