@@ -915,6 +915,7 @@ jobs:
       - name: Scan single token via Dune
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
         run: python3 token_scan/token_scan_collector.py --token ${{ github.event.inputs.token }}
       - name: Commit token scan
         run: |
@@ -1070,4 +1071,3 @@ jobs:
           git add VERSION.txt
           git diff --cached --quiet && echo "No version change" || git commit -m "chore: bump VERSION [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
-
