@@ -62,7 +62,13 @@ on:
           - hive_health
           - hive_health_catalog
           - funding_per_token
+          - token_scan_single
           - full_run
+      token:
+        description: 'Токен для token_scan_single (например LINK). Для других режимов игнорируется.'
+        required: false
+        default: ''
+        type: string
 
 # Global env — все шаги видят все секреты
 env:
@@ -767,6 +773,41 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Token scan · ОДИН токен по требованию (кнопка «Обновить» в модалке)
+  # Dune: ~5-25 кредитов за токен. Только ручной/dispatch запуск.
+  # ============================================================
+  token_scan_single:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_single'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests dune-client
+      - name: Проверка входного токена
+        run: |
+          if [ -z "${{ github.event.inputs.token }}" ]; then
+            echo "::error::Поле token пустое. Укажи символ, например LINK."
+            exit 1
+          fi
+          echo "Сканирую ${{ github.event.inputs.token }}"
+      - name: Scan single token via Dune
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+        run: python3 token_scan/token_scan_collector.py --token ${{ github.event.inputs.token }}
+      - name: Commit token scan
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/ 2>/dev/null || true
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: single token scan ${{ github.event.inputs.token }} [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
