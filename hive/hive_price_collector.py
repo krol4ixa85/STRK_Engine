@@ -61,7 +61,7 @@ TRACKED_TOKENS = {
 # ============================================================
 # HIVE API
 # ============================================================
-HIVE_BASE = 'https://api.hiveintelligence.xyz/v1'
+HIVE_BASE = 'https://mcp.hiveintelligence.xyz/api/v1'  # v2: fixed from docs
 
 def call_hive(tool_name, arguments, api_key):
     """
@@ -79,8 +79,8 @@ def call_hive(tool_name, arguments, api_key):
                 'Content-Type': 'application/json',
             },
             json={
-                'toolName': tool_name,
-                'arguments': arguments,
+                'tool': tool_name,  # v2: docs use 'tool' not 'toolName'
+                'args': arguments,  # v2: docs use 'args' not 'arguments'
             },
             timeout=30
         )
