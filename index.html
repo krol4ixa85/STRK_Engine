@@ -535,157 +535,28 @@ body > * {
 <!-- Stables (Dry Powder) -->
 <!-- Top Movers 24h -->
 </div>
-<footer class="footer">
-  STRK LAB · Portfolio Rotation Compass · <a href="https://github.com/krol4ixa85/STRK_Engine" target="_blank">GitHub</a> · Auto-refresh каждые 5 мин
-</footer>
-<div class="section-strk-wrap"><div style="position: relative;">
-<div class="section-anchor" id="section-strk"></div>
-</div><div class="section-divider section-strk">
-<div style="flex: 1;">
-<div class="section-title">🎯 STRK · MISSION CONTROL</div>
-<div class="section-subtitle">Готов ли STRK к полному входу? Триггеры / фазы / composite signal</div>
-</div>
-<div class="section-badge">Level 1 · твой актив</div>
-</div><div class="cards-grid" id="cards-strk" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
-<div class="card">
-<div class="card-header">
-<div class="card-title">📍 STRK · детали</div>
-<div class="card-subtitle" id="strk-snapshot-age"></div>
-</div>
-<div id="strk-liq-contract" style="margin: 12px 0; padding: 14px; background: linear-gradient(135deg, rgba(255,153,0,0.10), rgba(255,153,0,0.03)); border-radius: 10px; border: 2px solid var(--orange, #FF9900);">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px;">📋 LIQ DECISION CONTRACT · STRK</div>
-<!-- Что происходит -->
-<div style="margin-bottom: 10px;">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">🔍 Что происходит</div>
-<div id="liq-what" style="font-size: 13px; color: var(--text-bright); line-height: 1.4;">Loading...</div>
-</div>
-<!-- Decision row -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-<div style="padding: 10px; background: white; border-radius: 6px; border-left: 3px solid var(--text-muted);">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">NEW ENTRY</div>
-<div id="liq-entry" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">—</div>
-</div>
-<div style="padding: 10px; background: white; border-radius: 6px; border-left: 3px solid var(--text-muted);">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">SIZE</div>
-<div id="liq-size" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">—</div>
-</div>
-</div>
-<!-- Invalidation -->
-<div style="margin-bottom: 10px; padding: 8px; background: rgba(203, 45, 45, 0.05); border-radius: 6px; border-left: 3px solid var(--red);">
-<div style="font-size: 10px; color: var(--red); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">🚨 INVALIDATION</div>
-<div id="liq-invalidation" style="font-size: 12px; color: var(--text-bright); line-height: 1.4;">—</div>
-</div>
-<!-- Monitor -->
-<div style="padding: 8px; background: rgba(88, 166, 255, 0.05); border-radius: 6px; border-left: 3px solid #58a6ff;">
-<div style="font-size: 10px; color: #58a6ff; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">👁 MONITOR · что смотреть завтра</div>
-<div id="liq-monitor" style="font-size: 12px; color: var(--text-bright); line-height: 1.4;">—</div>
-</div>
-</div>
-<div class="loading" id="strk-details-content">Loading...</div>
-</div><div class="card">
-<div class="card-header">
-<div class="card-title">🚦 Confluence Gate</div>
-<div class="card-subtitle" id="confluence-age">Loading...</div>
-</div>
-<div class="layman-intro">
-      Композитный signal из <strong>9 факторов</strong> (Wyckoff, whale, CVD, funding, cross-token и др). Rally / Crash scores &gt; 5 → чёткий signal. Если оба low → WAIT.
-    </div>
-<div class="loading" id="confluence-content">Loading...</div>
-</div><div class="card">
-<div class="card-header">
-<div class="card-title">📊 Точность сигналов</div>
-<div class="card-subtitle">Backtest measurement</div>
-</div>
-<div class="layman-intro">Здесь честно измеряется — из 100 сигналов STRONG_BUY сколько раз цена реально выросла +3% за 7 дней. Пока данных мало, цифры появятся через 1-2 недели.</div>
-<div class="loading" id="precision-content">Loading...</div>
-</div></div></div>
 
-<!-- STRK SCENARIOS (Type A · v1) -->
-<div class="section-scenarios-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+<!-- ===== MAIN SECTIONS · порядок задан физически, CSS order не используется ===== -->
+
+<!-- 0 · MARKET REGIME -->
+<div class="section-regime-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
   <div class="section-header">
     <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
-      🎯 STRK · Сценарии на 2-9 месяцев
+      🎯 Market Regime · где мы находимся
     </div>
     <div class="section-header-desc">
-      Что может случиться с STRK и когда покупать/продавать. 
-      Вероятности рассчитаны на основе триггеров Wyckoff + confluence + macro.
+      Взвешенная оценка по всем модулям (macro 30% + phase 25% + news 20% + stables 15% + funding 10%).
+      Один ответ на вопрос «бычий рынок или медвежий» + что это значит для STRK.
     </div>
-    <div class="level-label">Level 1 · scenarios</div>
+    <div class="level-label">Level 0 · weighted regime</div>
   </div>
 
-  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03)); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px;">
-    <div id="scenarios-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-      Loading scenarios...
-    </div>
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(245, 158, 11, 0.05)); border: 2px solid rgba(16, 185, 129, 0.20); border-radius: 12px;">
+    <div id="market-regime-content">Loading market regime...</div>
   </div>
 </div>
 
-
-
-<!-- NEWS IMPACT (Type A · #3) -->
-<div class="section-news-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
-  <div class="section-header">
-    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
-      🔔 News Impact · что двигает рынок
-    </div>
-    <div class="section-header-desc">
-      Автоклассификация новостей по активам. Показывает WHY произошло движение (не только WHAT).
-      Защита от blind spots — если signal есть, но news подтверждают bearish → не входить.
-    </div>
-    <div class="level-label">Level 1 · news</div>
-  </div>
-
-  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.02), rgba(239, 68, 68, 0.02)); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 12px;">
-    <div id="news-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-      Loading news impact...
-    </div>
-  </div>
-</div>
-
-
-<div class="section-rotation-wrap"><div style="position: relative;">
-<div class="section-anchor" id="section-rotation"></div>
-</div><div class="section-divider section-rotation">
-<div style="flex: 1;">
-<div class="section-title">🔄 UTILITY ROTATION</div>
-<div class="section-subtitle">Где припарковать капитал пока STRK не готов. Смотрим STRONG_BUY / потоки / whale movement</div>
-</div>
-<div class="section-badge">Level 2 · тактика</div>
-</div><div class="cards-grid" id="cards-rotation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
-<div class="card card-wide card-full">
-<div class="card-header">
-<div class="card-title">🟢 Активные сигналы</div>
-<div class="card-subtitle" id="momentum-snapshot-age"></div>
-</div>
-<div id="rotation-summary" style="margin: 12px 0; padding: 12px; background: linear-gradient(135deg, rgba(46,160,67,0.06), rgba(46,160,67,0.02)); border-radius: 8px; border-left: 4px solid var(--green);">
-<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🎯 Rotation Summary · что делать</div>
-<div id="rotation-summary-content" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-<div id="rot-hold" style="color: var(--green); font-weight: 600;">HOLD: Loading...</div>
-<div id="rot-watch" style="color: var(--yellow); font-weight: 600;">WATCH: Loading...</div>
-<div id="rot-exited" style="color: var(--red); font-weight: 600;">EXITED: Loading...</div>
-</div>
-</div>
-<div id="signals-toggle" onclick="toggleSignalsTable()" style="margin-top: 12px; padding: 10px 16px; background: var(--bg-subtle); border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; border: 1px dashed var(--border);">
-  ▼ Показать полную таблицу сигналов (все STRONG_BUY / DIVERGENCE / STRONG_SELL)
-</div>
-<div id="signals-wrapper" style="display: none; margin-top: 12px;"><div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
-<div class="loading" id="signals-content">Loading...</div></div>
-</div><div class="card">
-<div class="card-header">
-<div class="card-title">🔄 События ротации</div>
-<div class="card-subtitle">7 дней</div>
-</div>
-<div class="layman-intro">Когда токен появляется/исчезает из STRONG_BUY — это события ротации капитала между секторами.</div>
-<div class="loading" id="rotation-content">Loading...</div>
-</div><div class="card card-wide card-full">
-<div class="card-header">
-<div class="card-title">💰 Куда идёт капитал · sector rotation</div>
-<div class="card-subtitle" id="sector-flow-age">Loading...</div>
-</div>
-
-<!-- MODULE 1+2 · MACRO NARRATIVES + TOTAL PHASE (v6) -->
-
-<!-- INTERPRETATION LAYER v1 · UNIFIED SIGNAL READING -->
+<!-- 1 · UNIFIED READING -->
 <div class="section-interpretation-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
   <div class="section-header">
     <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
@@ -703,7 +574,7 @@ body > * {
   </div>
 </div>
 
-
+<!-- 2 · GLOBAL MARKET CONTEXT -->
 <div class="section-global-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
   <div class="section-header">
     <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
@@ -721,11 +592,7 @@ body > * {
   </div>
 </div>
 
-<div class="layman-intro">
-      Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
-    </div>
-<div class="loading" id="sector-flow-content">Loading...</div>
-</div></div></div>
+<!-- 3 · MACRO CONTEXT -->
 <div class="section-macro-wrap"><div style="position: relative;">
 <div class="section-anchor" id="section-macro"></div>
 </div><div class="section-divider section-macro">
@@ -832,6 +699,166 @@ body > * {
 </div>
 </div>
 </div></div>
+
+<!-- 4 · STRK MISSION CONTROL -->
+<div class="section-strk-wrap"><div style="position: relative;">
+<div class="section-anchor" id="section-strk"></div>
+</div><div class="section-divider section-strk">
+<div style="flex: 1;">
+<div class="section-title">🎯 STRK · MISSION CONTROL</div>
+<div class="section-subtitle">Готов ли STRK к полному входу? Триггеры / фазы / composite signal</div>
+</div>
+<div class="section-badge">Level 1 · твой актив</div>
+</div><div class="cards-grid" id="cards-strk" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+<div class="card">
+<div class="card-header">
+<div class="card-title">📍 STRK · детали</div>
+<div class="card-subtitle" id="strk-snapshot-age"></div>
+</div>
+<div id="strk-liq-contract" style="margin: 12px 0; padding: 14px; background: linear-gradient(135deg, rgba(255,153,0,0.10), rgba(255,153,0,0.03)); border-radius: 10px; border: 2px solid var(--orange, #FF9900);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px;">📋 LIQ DECISION CONTRACT · STRK</div>
+<!-- Что происходит -->
+<div style="margin-bottom: 10px;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">🔍 Что происходит</div>
+<div id="liq-what" style="font-size: 13px; color: var(--text-bright); line-height: 1.4;">Loading...</div>
+</div>
+<!-- Decision row -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+<div style="padding: 10px; background: white; border-radius: 6px; border-left: 3px solid var(--text-muted);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">NEW ENTRY</div>
+<div id="liq-entry" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">—</div>
+</div>
+<div style="padding: 10px; background: white; border-radius: 6px; border-left: 3px solid var(--text-muted);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">SIZE</div>
+<div id="liq-size" style="font-size: 15px; font-weight: 700; color: var(--text-bright);">—</div>
+</div>
+</div>
+<!-- Invalidation -->
+<div style="margin-bottom: 10px; padding: 8px; background: rgba(203, 45, 45, 0.05); border-radius: 6px; border-left: 3px solid var(--red);">
+<div style="font-size: 10px; color: var(--red); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">🚨 INVALIDATION</div>
+<div id="liq-invalidation" style="font-size: 12px; color: var(--text-bright); line-height: 1.4;">—</div>
+</div>
+<!-- Monitor -->
+<div style="padding: 8px; background: rgba(88, 166, 255, 0.05); border-radius: 6px; border-left: 3px solid #58a6ff;">
+<div style="font-size: 10px; color: #58a6ff; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">👁 MONITOR · что смотреть завтра</div>
+<div id="liq-monitor" style="font-size: 12px; color: var(--text-bright); line-height: 1.4;">—</div>
+</div>
+</div>
+<div class="loading" id="strk-details-content">Loading...</div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">🚦 Confluence Gate</div>
+<div class="card-subtitle" id="confluence-age">Loading...</div>
+</div>
+<div class="layman-intro">
+      Композитный signal из <strong>9 факторов</strong> (Wyckoff, whale, CVD, funding, cross-token и др). Rally / Crash scores &gt; 5 → чёткий signal. Если оба low → WAIT.
+    </div>
+<div class="loading" id="confluence-content">Loading...</div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">📊 Точность сигналов</div>
+<div class="card-subtitle">Backtest measurement</div>
+</div>
+<div class="layman-intro">Здесь честно измеряется — из 100 сигналов STRONG_BUY сколько раз цена реально выросла +3% за 7 дней. Пока данных мало, цифры появятся через 1-2 недели.</div>
+<div class="loading" id="precision-content">Loading...</div>
+</div></div></div>
+
+<!-- 5 · STRK SCENARIOS -->
+<div class="section-scenarios-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🎯 STRK · Сценарии на 2-9 месяцев
+    </div>
+    <div class="section-header-desc">
+      Что может случиться с STRK и когда покупать/продавать. 
+      Вероятности рассчитаны на основе триггеров Wyckoff + confluence + macro.
+    </div>
+    <div class="level-label">Level 1 · scenarios</div>
+  </div>
+
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03)); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px;">
+    <div id="scenarios-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+      Loading scenarios...
+    </div>
+  </div>
+</div>
+
+<!-- 6 · NEWS IMPACT -->
+<div class="section-news-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🔔 News Impact · что двигает рынок
+    </div>
+    <div class="section-header-desc">
+      Автоклассификация новостей по активам. Показывает WHY произошло движение (не только WHAT).
+      Защита от blind spots — если signal есть, но news подтверждают bearish → не входить.
+    </div>
+    <div class="level-label">Level 1 · news</div>
+  </div>
+
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.02), rgba(239, 68, 68, 0.02)); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 12px;">
+    <div id="news-content" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+      Loading news impact...
+    </div>
+  </div>
+</div>
+
+<!-- 7 · UTILITY ROTATION -->
+<div class="section-rotation-wrap"><div style="position: relative;">
+<div class="section-anchor" id="section-rotation"></div>
+</div><div class="section-divider section-rotation">
+<div style="flex: 1;">
+<div class="section-title">🔄 UTILITY ROTATION</div>
+<div class="section-subtitle">Где припарковать капитал пока STRK не готов. Смотрим STRONG_BUY / потоки / whale movement</div>
+</div>
+<div class="section-badge">Level 2 · тактика</div>
+</div><div class="cards-grid" id="cards-rotation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+<div class="card card-wide card-full">
+<div class="card-header">
+<div class="card-title">🟢 Активные сигналы</div>
+<div class="card-subtitle" id="momentum-snapshot-age"></div>
+</div>
+<div id="rotation-summary" style="margin: 12px 0; padding: 12px; background: linear-gradient(135deg, rgba(46,160,67,0.06), rgba(46,160,67,0.02)); border-radius: 8px; border-left: 4px solid var(--green);">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🎯 Rotation Summary · что делать</div>
+<div id="rotation-summary-content" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+<div id="rot-hold" style="color: var(--green); font-weight: 600;">HOLD: Loading...</div>
+<div id="rot-watch" style="color: var(--yellow); font-weight: 600;">WATCH: Loading...</div>
+<div id="rot-exited" style="color: var(--red); font-weight: 600;">EXITED: Loading...</div>
+</div>
+</div>
+<div id="signals-toggle" onclick="toggleSignalsTable()" style="margin-top: 12px; padding: 10px 16px; background: var(--bg-subtle); border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; border: 1px dashed var(--border);">
+  ▼ Показать полную таблицу сигналов (все STRONG_BUY / DIVERGENCE / STRONG_SELL)
+</div>
+<div id="signals-wrapper" style="display: none; margin-top: 12px;"><div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
+<div class="loading" id="signals-content">Loading...</div></div>
+</div><div class="card">
+<div class="card-header">
+<div class="card-title">🔄 События ротации</div>
+<div class="card-subtitle">7 дней</div>
+</div>
+<div class="layman-intro">Когда токен появляется/исчезает из STRONG_BUY — это события ротации капитала между секторами.</div>
+<div class="loading" id="rotation-content">Loading...</div>
+</div><div class="card card-wide card-full">
+<div class="card-header">
+<div class="card-title">💰 Куда идёт капитал · sector rotation</div>
+<div class="card-subtitle" id="sector-flow-age">Loading...</div>
+</div>
+
+<!-- MODULE 1+2 · MACRO NARRATIVES + TOTAL PHASE (v6) -->
+
+<!-- INTERPRETATION LAYER v1 · UNIFIED SIGNAL READING -->
+
+
+<div class="layman-intro">
+      Приток/отток капитала по <strong>секторам за 7 дней</strong>. Положительный net flow = сектор attracting money. Отрицательный = capital exit. Смотрим куда деньги идут в реальном времени.
+    </div>
+<div class="loading" id="sector-flow-content">Loading...</div>
+</div></div></div>
+
+<footer class="footer">
+  STRK LAB · Portfolio Rotation Compass · <a href="https://github.com/krol4ixa85/STRK_Engine" target="_blank">GitHub</a> · Auto-refresh каждые 5 мин
+</footer>
+
 </div>
 <script>
 const GITHUB_REPO = 'krol4ixa85/STRK_Engine';
