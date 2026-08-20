@@ -2,18 +2,23 @@ name: FULL RUN (Weekly Deep Report)
 
 # ============================================================
 # FULL RUN Level 4 · 12-section deep report generator
-# 
-# Runs every Monday 06:00 UTC = 09:00 MSK
-# (after LAB refresh at 08:30 UTC ensures fresh data)
-# 
-# Also runs on-demand via workflow_dispatch
+#
+# РАСПИСАНИЕ УБРАНО 20.08.2026 · причина — дублирование.
+#
+# Точно такая же job full_run живёт внутри strk_engine.yml и стоит
+# на том же cron '0 6 * * 1'. Каждый понедельник в 09:00 MSK
+# запускались ДВА одинаковых генератора отчёта одновременно:
+# они писали в одну папку reports/, конфликтовали на git push
+# и плодили дубли FULL_RUN_R*.html.
+#
+# Плановый прогон остался ровно один — в strk_engine.yml.
+# Этот файл сохранён ради поля run_id: оно позволяет перегенерировать
+# отчёт с конкретным номером (R10, R11), чего нет в strk_engine.
+#
+# Запускать только вручную, когда нужен отчёт с заданным номером.
 # ============================================================
 
 on:
-  schedule:
-    # Monday 06:00 UTC = 09:00 MSK · Weekly FULL RUN
-    - cron: '0 6 * * 1'
-  
   workflow_dispatch:
     inputs:
       run_id:
