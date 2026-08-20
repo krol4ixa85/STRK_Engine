@@ -2786,6 +2786,99 @@ window.addEventListener('DOMContentLoaded', initViewFromHash);
 // ============================================================
 window.STRK_DATA_CACHE = { lab: null, momentum: null, netflow: null, rotation: null };
 
+async function renderTokenNewsInModal(token) {
+  const container = document.getElementById('scanner-news-content');
+  if (!container) return;
+  
+  const upperTok = token.toUpperCase();
+  container.innerHTML = 'Loading news...';
+  
+  try {
+    // Try v5 per-asset news first
+    let url = `${BASE_URL}/data/cache/surf_events.json?t=${Math.floor(Date.now() / 60000)}`;
+    let r = await fetch(url);
+    if (!r.ok) {
+      container.innerHTML = '<div style="color: var(--text-muted);">News data не доступна</div>';
+      return;
+    }
+    const data = await r.json();
+    
+    // v5 has per_asset_top field for detailed breakdown
+    const perAssetTop = data.per_asset_top || {};
+    const perAssetCounts = data.per_asset_counts || {};
+    const tokenEvents = perAssetTop[upperTok] || [];
+    const totalCount = perAssetCounts[upperTok] || 0;
+    
+    // If not in per_asset_top, filter events manually
+    let events = tokenEvents;
+    if (events.length === 0 && data.events) {
+      events = data.events.filter(e => (e.assets || []).includes(upperTok)).slice(0, 5);
+    }
+    
+    if (events.length === 0) {
+      container.innerHTML = `
+        <div style="padding: 12px; text-align: center; color: var(--text-muted); background: rgba(0,0,0,0.02); border-radius: 6px;">
+          📭 Нет свежих news за 48h для <strong>${upperTok}</strong>
+          <div style="font-size: 10px; margin-top: 4px;">Всего events в базе: ${data.route_counts?.home + data.route_counts?.macro + data.route_counts?.archive || 0}</div>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = '';
+    
+    // Summary line
+    html += `
+      <div style="padding: 8px 10px; background: rgba(139, 92, 246, 0.06); border-radius: 6px; margin-bottom: 10px; font-size: 11px; color: var(--text-secondary);">
+        <strong>${totalCount || events.length}</strong> events для ${upperTok} за 48h · phase <strong>${data.phase_used || '?'}</strong>
+      </div>
+    `;
+    
+    // Events (top 5)
+    for (const e of events.slice(0, 5)) {
+      const typeColor = e.type === 'security' ? 'var(--red)' :
+                        e.type === 'unlock' ? '#EA580C' :
+                        e.type === 'regulation' ? '#F59E0B' :
+                        e.type === 'upgrade' ? 'var(--green)' :
+                        e.type === 'roadmap' ? '#8B5CF6' :
+                        e.type === 'partnership' ? '#0EA5E9' :
+                        'var(--text-muted)';
+      const sourceIcon = e.source_type === 'surf' ? '🌊' : '📰';
+      const sourceTag = e.source_class === 'official' ? 'official' :
+                       e.source_class === 'tier1_news' ? 'tier1' :
+                       e.source_class === 'surf_cited' ? 'surf' : e.source_class;
+      const routeColor = e.route === 'home' ? '🚨' : e.route === 'macro' ? '📊' : '📁';
+      
+      html += `
+        <div style="padding: 10px 12px; background: white; border-left: 3px solid ${typeColor}; border-radius: 6px; margin-bottom: 6px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <div style="font-weight: 600; color: ${typeColor}; font-size: 11px; text-transform: uppercase;">
+              ${e.type} / ${e.severity} ${routeColor}
+              ${e.fomo_risk ? '<span style="background: #F59E0B; color: white; padding: 1px 5px; border-radius: 2px; font-size: 9px; margin-left: 4px;">FOMO</span>' : ''}
+            </div>
+            <div style="font-size: 10px; color: var(--text-muted);">${sourceIcon} ${sourceTag} · ${e.score}</div>
+          </div>
+          <div style="font-size: 12px; color: var(--text); margin-bottom: 6px; line-height: 1.4;">
+            <a href="${e.url}" target="_blank" style="color: inherit; text-decoration: underline dotted;">${e.summary.substring(0, 150)}</a>
+          </div>
+          <div style="padding: 6px 8px; background: rgba(0,0,0,0.03); border-radius: 4px; font-size: 11px; color: var(--text-secondary);">
+            <strong style="color: ${typeColor};">${e.action_hint?.field || 'INFO'}:</strong> ${e.action_hint?.layman_ru || 'noted'}
+          </div>
+        </div>
+      `;
+    }
+    
+    if (totalCount > 5) {
+      html += `<div style="text-align: center; font-size: 10px; color: var(--text-muted); margin-top: 6px;">...ещё ${totalCount - 5} events. Смотри в главной секции 🔔 News Impact</div>`;
+    }
+    
+    container.innerHTML = html;
+  } catch(e) {
+    console.error('[TokenNews] render error:', e);
+    container.innerHTML = '<div style="color: var(--red); font-size: 11px;">Ошибка загрузки news</div>';
+  }
+}
+
 function openDurationScanner(token) {
   const modal = document.getElementById('duration-scanner-modal');
   if (!modal) return;
@@ -2812,6 +2905,9 @@ function openDurationScanner(token) {
   
   // Then: try to load Dune scan cache (async)
   loadTokenScanCache(upperTok);
+  
+  // v5: Load per-token news (async, independent)
+  renderTokenNewsInModal(upperTok);
 }
 
 async function loadTokenScanCache(token) {
@@ -3149,6 +3245,11 @@ document.addEventListener('keydown', function(e) {
 <div style="margin-top: 16px; padding: 10px; background: rgba(88, 166, 255, 0.05); border-radius: 6px; border-left: 3px solid #58a6ff; font-size: 11px; color: var(--text-secondary);">
       ℹ Duration Scanner v1 · использует rotation_alerts.jsonl + dune snapshot. Extended history (24 недели netflow) появится когда добавим per-token Dune collector.
     </div>
+<!-- NEWS SECTION (v5 · per-token news classification) -->
+<div id="scanner-news-section" style="margin-top: 20px; padding: 16px; background: rgba(139, 92, 246, 0.04); border-radius: 10px; border-left: 4px solid #8B5CF6;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🔔 News для этого токена</div>
+<div id="scanner-news-content" style="font-size: 12px;">Loading news...</div>
+</div>
 </div>
 </div>
 </body>
