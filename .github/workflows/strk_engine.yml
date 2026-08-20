@@ -25,6 +25,8 @@ on:
     - cron: '15 0,6,12,18 * * *'
     # Interpretation Layer · unified reading, 4x/day (5 min после macro)
     - cron: '20 0,6,12,18 * * *'
+    # Market Regime Calculator · weighted regime, 4x/day (2 min после interpretation)
+    - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
   workflow_dispatch:
@@ -48,6 +50,7 @@ on:
           - news_impact
           - macro_narratives
           - interpretation
+          - market_regime
           - hive_prices
           - full_run
 
@@ -754,5 +757,30 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Market Regime Calculator · weighted regime across all modules
+  # ============================================================
+  market_regime:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '22 0,6,12,18 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'market_regime')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Market Regime Calculator
+        run: python3 interpretation/market_regime.py
+      - name: Commit market_regime.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/market_regime.json ] && git add data/cache/market_regime.json || echo "no market_regime.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: market regime [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
