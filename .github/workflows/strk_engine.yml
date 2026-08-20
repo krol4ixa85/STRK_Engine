@@ -29,6 +29,10 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Hive Health · MUST #18 концентрация держателей + MUST #19 глубина 2%
+    # Понедельник 02:00 UTC = 05:00 MSK. В это время не запускается ничего
+    # другое — ближайшие соседи 03:30 (strk_avnu) и 04:00 (token_scan_daily).
+    - cron: '0 2 * * 1'
   workflow_dispatch:
     inputs:
       mode:
@@ -52,6 +56,8 @@ on:
           - interpretation
           - market_regime
           - hive_prices
+          - hive_health
+          - hive_health_catalog
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -757,6 +763,75 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Hive Health · MUST #18 (концентрация держателей) + MUST #19 (глубина 2%)
+  # Тратит кредиты Hive: 2 на токен, ~30 за прогон. Dune НЕ трогает.
+  # ============================================================
+  hive_health:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 2 * * 1')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hive_health')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Проверка ключа
+        env:
+          HIVE_API_KEY: ${{ secrets.HIVE_API_KEY }}
+        run: |
+          if [ -z "$HIVE_API_KEY" ]; then
+            echo "::error::HIVE_API_KEY не найден в Secrets репозитория"
+            exit 1
+          fi
+          echo "OK, ${#HIVE_API_KEY} символов"
+      - name: Collect token health (MUST 18/19)
+        env:
+          HIVE_API_KEY: ${{ secrets.HIVE_API_KEY }}
+          HIVE_MONTHLY_BUDGET: '8000'
+        run: python3 hive/hive_health_collector.py
+      - name: Commit hive_token_health.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/hive_token_health.json ] && git add data/cache/hive_token_health.json || echo "no hive_token_health.json"
+          [ -f data/cache/hive_credits.json ] && git add data/cache/hive_credits.json || echo "no hive_credits.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive token health MUST18/19 [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Hive Catalog · разведка инструментов. НОЛЬ кредитов, только ручной запуск.
+  # Безопасно жать сколько угодно — GET /api/v1/tools не тарифицируется.
+  # ============================================================
+  hive_health_catalog:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hive_health_catalog'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Показать каталог Hive (0 кредитов)
+        env:
+          HIVE_API_KEY: ${{ secrets.HIVE_API_KEY }}
+        run: python3 hive/hive_health_collector.py --catalog
+      - name: Commit hive_catalog.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/hive_catalog.json ] && git add data/cache/hive_catalog.json || echo "no hive_catalog.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive catalog snapshot [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
