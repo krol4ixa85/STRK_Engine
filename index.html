@@ -2665,7 +2665,10 @@ async function loadTokenScanCache(token) {
       // Cache miss — show notice
       const notice = document.querySelector('#duration-scanner-modal div[style*="background: rgba(88, 166, 255"]');
       if (notice) {
-        notice.innerHTML = 'ℹ Extended Dune scan для <strong>' + token + '</strong> ещё не сгенерирован. Weekly scan runs Mondays 08:00 MSK. Данные ниже — из rotation history.';
+        notice.innerHTML = 'ℹ Extended Dune scan для <strong>' + token + '</strong> ещё не сгенерирован.<br>' +
+        '<span style="font-size: 11px; color: var(--text-muted);">Cache создаётся weekly Mondays 08:00 MSK или daily 07:00 MSK для STRONG_BUY.</span><br>' +
+        '<button onclick="requestTokenRefresh(\'' + token + '\')" style="margin-top: 8px; padding: 6px 12px; background: var(--blue); color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">' +
+        '🔄 Запросить обновление сейчас (GitHub Actions)</button>';
         notice.style.borderLeftColor = '#F59E0B';
         notice.style.background = 'rgba(245, 158, 11, 0.08)';
       }
@@ -2676,6 +2679,36 @@ async function loadTokenScanCache(token) {
   } catch(e) {
     console.warn('[Scanner] cache load failed:', e);
   }
+}
+
+
+function requestTokenRefresh(token) {
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Отправка запроса...';
+  
+  // Build GitHub Actions dispatch URL (user needs Personal Access Token, so open manually)
+  const actionsUrl = 'https://github.com/krol4ixa85/STRK_Engine/actions/workflows/strk_engine.yml';
+  
+  // Show instructions modal
+  const instructions = `Как обновить cache для ${token}:\n\n` +
+    `1. Открой GitHub Actions (сейчас откроется)\n` +
+    `2. Клик "Run workflow" (справа сверху)\n` +
+    `3. Выбери mode: token_scan_force_all\n` +
+    `4. Клик зелёный "Run workflow"\n` +
+    `5. Ждать 15-20 минут\n` +
+    `6. Обнови dashboard (Ctrl+F5)\n\n` +
+    `Или запусти daily_token_scan (быстрее, только STRONG_BUY+DIVERGENCE)`;
+  
+  if (confirm(instructions + '\n\nОткрыть Actions?')) {
+    window.open(actionsUrl, '_blank');
+  }
+  
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }, 2000);
 }
 
 function renderDuneEnhancedScan(scan) {
@@ -2819,7 +2852,11 @@ function renderDuneEnhancedScan(scan) {
   if (notice) {
     const collectedAgo = scan.collected_at ? new Date(scan.collected_at) : null;
     const ageDays = collectedAgo ? Math.floor((Date.now() - collectedAgo.getTime()) / (1000 * 60 * 60 * 24)) : '?';
-    notice.innerHTML = 'ℹ Dune scan · updated ' + ageDays + 'd ago · phase ' + phase + ' · streak ' + streak + 'w';
+    const ageHours = collectedAgo ? Math.floor((Date.now() - collectedAgo.getTime()) / (1000 * 60 * 60)) : null;
+    const ageStr = ageDays > 0 ? ageDays + 'd' : (ageHours !== null ? ageHours + 'h' : '?');
+    const showRefresh = ageHours !== null && ageHours >= 6;
+    notice.innerHTML = 'ℹ Dune scan · updated ' + ageStr + ' ago · phase <strong>' + phase + '</strong> · streak ' + streak + 'w' +
+      (showRefresh ? '<br><button onclick="requestTokenRefresh(\'' + scan.token + '\')" style="margin-top: 8px; padding: 4px 10px; background: rgba(59, 130, 246, 0.1); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 4px; font-size: 11px; cursor: pointer;">🔄 Обновить сейчас</button>' : '');
     notice.style.borderLeftColor = '#58a6ff';
     notice.style.background = 'rgba(88, 166, 255, 0.05)';
   }
