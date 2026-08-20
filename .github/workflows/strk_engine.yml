@@ -25,6 +25,8 @@ on:
     - cron: '15 0,6,12,18 * * *'
     # Interpretation Layer · unified reading, 4x/day (5 min после macro)
     - cron: '20 0,6,12,18 * * *'
+    # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
+    - cron: '25 0,6,12,18 * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -46,6 +48,7 @@ on:
           - news_impact
           - macro_narratives
           - interpretation
+          - hive_prices
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -721,5 +724,35 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/interpretation.json ] && git add data/cache/interpretation.json || echo "no interpretation.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: interpretation layer [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Hive Prices Collector · fix price discrepancy via managed CoinGecko
+  # Uses Hive Intelligence API for reliable price data
+  # ============================================================
+  hive_prices:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '25 0,6,12,18 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hive_prices')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Fetch prices via Hive Intelligence
+        env:
+          HIVE_API_KEY: ${{ secrets.HIVE_API_KEY }}
+        run: python3 hive/hive_price_collector.py
+      - name: Commit hive_prices.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
