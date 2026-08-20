@@ -29,6 +29,9 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Funding per token · КАЖДЫЕ 30 МИНУТ. Источник OKX public — бесплатно,
+    # ноль кредитов Hive и Dune. Единственный модуль такой частоты.
+    - cron: '*/30 * * * *'
     # Hive Health · MUST #18 концентрация держателей + MUST #19 глубина 2%
     # Понедельник 02:00 UTC = 05:00 MSK. В это время не запускается ничего
     # другое — ближайшие соседи 03:30 (strk_avnu) и 04:00 (token_scan_daily).
@@ -58,6 +61,7 @@ on:
           - hive_prices
           - hive_health
           - hive_health_catalog
+          - funding_per_token
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -763,6 +767,34 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Funding per token · КАЖДЫЕ 30 МИНУТ · OKX public · 0 кредитов
+  # Binance отдаёт 451 с раннеров GitHub (geo-block), поэтому OKX.
+  # ============================================================
+  funding_per_token:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '*/30 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'funding_per_token')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Fetch funding + open interest (OKX, free)
+        run: python3 scripts/collectors/funding_per_token.py
+      - name: Commit funding_per_token.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/funding_per_token.json ] && git add data/cache/funding_per_token.json || echo "no funding_per_token.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: funding per token [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
