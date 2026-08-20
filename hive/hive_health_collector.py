@@ -190,11 +190,29 @@ class HiveClient:
         })
         self.errors = []
 
-    def list_tools(self):
-        """Бесплатно. Кредитов не стоит — можно звать сколько угодно."""
-        r = self.s.get(TOOLS_URL, timeout=30)
-        r.raise_for_status()
-        return r.json().get("data", [])
+    def list_tools(self, search=None, limit=250, max_pages=10):
+        """
+        Бесплатно — GET /api/v1/tools кредитов не стоит.
+        Поддерживает search / limit / cursor / sort по документации Hive.
+        Без ключа отдаёт публичную выборку (~50), с ключом — полный каталог.
+        """
+        tools, cursor, pages = [], None, 0
+        while pages < max_pages:
+            params = {"limit": limit, "sort": "name", "order": "asc"}
+            if search:
+                params["search"] = search
+            if cursor:
+                params["cursor"] = cursor
+            r = self.s.get(TOOLS_URL, params=params, timeout=30)
+            r.raise_for_status()
+            body = r.json()
+            batch = body.get("data", [])
+            tools.extend(batch)
+            cursor = (body.get("meta") or body).get("next_cursor") or body.get("cursor")
+            pages += 1
+            if not cursor or not batch:
+                break
+        return tools
 
     def call(self, tool, args, retries=3):
         """Материальный вызов = 1 кредит. Возвращает (data, error)."""
@@ -506,12 +524,12 @@ def run(dry_run=False, only=None):
     print(f"  кредитов за месяц: {guard.used}/{guard.budget}")
 
 
-def show_catalog():
+def show_catalog(search=None):
     """Бесплатно. С ключом отдаёт полный каталог, без ключа — публичную выборку."""
     api_key = os.getenv("HIVE_API_KEY", "").strip()
     guard = CreditGuard()
     hive = HiveClient(api_key, guard)
-    tools = hive.list_tools()
+    tools = hive.list_tools(search=search)
 
     os.makedirs(CACHE_DIR, exist_ok=True)
     with open(CATALOG_FILE, "w", encoding="utf-8") as f:
@@ -535,10 +553,12 @@ if __name__ == "__main__":
                     help="прогон без единого вызова Hive")
     ap.add_argument("--only", type=str, default="",
                     help="только эти токены, через запятую: STRK,LINK")
+    ap.add_argument("--search", type=str, default="",
+                    help="искать в каталоге: --catalog --search 'token security'")
     a = ap.parse_args()
 
     if a.catalog:
-        show_catalog()
+        show_catalog(search=a.search or None)
     else:
         only = {s.strip().upper() for s in a.only.split(",") if s.strip()} or None
         run(dry_run=a.dry_run, only=only)
