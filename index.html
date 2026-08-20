@@ -3330,6 +3330,194 @@ window.addEventListener('DOMContentLoaded', initViewFromHash);
 // ============================================================
 window.STRK_DATA_CACHE = { lab: null, momentum: null, netflow: null, rotation: null };
 
+
+// ═══════════════════════════════════════════════════════════════
+// MODAL INTELLIGENCE v1 · дополнительные слои для решения buy/wait
+// Читает 4 кэша, каждый со своим темпом обновления. Возраст каждого
+// показывается явно — метрика недельной давности не должна выглядеть
+// так же свежо, как фандинг двадцатиминутной давности.
+// ═══════════════════════════════════════════════════════════════
+
+function _ageBadge(iso) {
+  if (!iso) return { text: 'нет данных', color: 'var(--text-muted)' };
+  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (isNaN(mins)) return { text: 'нет данных', color: 'var(--text-muted)' };
+  let text;
+  if (mins < 60) text = mins + ' мин назад';
+  else if (mins < 1440) text = Math.floor(mins / 60) + ' ч назад';
+  else text = Math.floor(mins / 1440) + ' д назад';
+  const color = mins < 120 ? 'var(--green)' : mins < 1440 ? '#F59E0B' : 'var(--text-muted)';
+  return { text, color, mins };
+}
+
+async function _loadCache(name) {
+  try {
+    const r = await fetch(`${BASE_URL}/data/cache/${name}?v=${CACHE_VERSION}`);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+async function renderModalIntelligence(token) {
+  const el = document.getElementById('scanner-intel-content');
+  if (!el) return;
+  el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
+
+  const [health, funding, scan, sector] = await Promise.all([
+    _loadCache('hive_token_health.json'),
+    _loadCache('funding_per_token.json'),
+    _loadCache(`token_scan/${token}.json`),
+    _loadCache('dune_sector_netflow.json'),
+  ]);
+
+  let html = '';
+
+  // ── 1 · СВЕЖЕСТЬ ИСТОЧНИКОВ ────────────────────────────────
+  const sources = [
+    { name: 'Фандинг / OI', iso: funding && funding.computed_at, cadence: '30 мин · бесплатно' },
+    { name: 'Ликвидность / держатели', iso: health && health.computed_at, cadence: 'раз в неделю · Hive' },
+    { name: 'Фаза / потоки', iso: scan && scan.collected_at, cadence: 'раз в неделю · Dune' },
+    { name: 'Сектор', iso: sector && (sector.collected_at || sector.as_of), cadence: '2× в сутки · Dune' },
+  ];
+  html += '<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">';
+  for (const s of sources) {
+    const a = _ageBadge(s.iso);
+    html += `<div title="${s.cadence}" style="font-size: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.5); border: 1px solid ${a.color}33;">
+      <span style="color: var(--text-secondary);">${s.name}</span>
+      <span style="color: ${a.color}; font-weight: 700; margin-left: 5px;">${a.text}</span>
+    </div>`;
+  }
+  html += '</div>';
+
+  // ── 2 · ФАНДИНГ И ОТКРЫТЫЙ ИНТЕРЕС ─────────────────────────
+  const f = funding && funding.tokens && funding.tokens[token];
+  html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 14px 0 6px;">⚖️ Перекос позиций</div>';
+  if (f && f.status === 'OK') {
+    const ann = f.funding_annualised_pct;
+    const col = f.bias === 'LONGS_PAY' ? '#EA580C' : f.bias === 'SHORTS_PAY' ? 'var(--green)' : 'var(--text-secondary)';
+    const oi = f.open_interest_usd ? '$' + (f.open_interest_usd / 1e6).toFixed(1) + 'M' : '—';
+    const chg = (f.oi_change_pct !== null && f.oi_change_pct !== undefined)
+      ? `<span style="color: ${f.oi_change_pct >= 0 ? 'var(--green)' : 'var(--red)'};"> ${f.oi_change_pct >= 0 ? '+' : ''}${f.oi_change_pct}%</span>` : '';
+    html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">
+        <div style="font-size: 10px; color: var(--text-muted);">Фандинг</div>
+        <div style="font-size: 16px; font-weight: 700; color: ${col};">${f.funding_rate_pct > 0 ? '+' : ''}${f.funding_rate_pct}%</div>
+        <div style="font-size: 10px; color: var(--text-muted);">${ann > 0 ? '+' : ''}${ann}% годовых</div>
+      </div>
+      <div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">
+        <div style="font-size: 10px; color: var(--text-muted);">Открытый интерес</div>
+        <div style="font-size: 16px; font-weight: 700;">${oi}${chg}</div>
+        <div style="font-size: 10px; color: var(--text-muted);">против прошлого замера</div>
+      </div>
+    </div>
+    <div style="margin-top: 6px; font-size: 11px; color: var(--text-secondary);">${f.bias_ru}</div>`;
+  } else {
+    html += '<div style="font-size: 12px; color: var(--text-muted);">Бессрочного контракта нет или данные не собраны.</div>';
+  }
+
+  // ── 3 · ЛИКВИДНОСТЬ И КОНЦЕНТРАЦИЯ ─────────────────────────
+  const h = health && health.tokens && health.tokens[token];
+  html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">🐋 Стакан и держатели</div>';
+  if (h) {
+    const d = h.depth || {};
+    const ho = h.holders || {};
+    if (d.status === 'OK') {
+      const gcol = d.depth_grade === 'THIN' ? 'var(--red)' : d.depth_grade === 'DEEP' ? 'var(--green)' : '#F59E0B';
+      html += `<div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px; margin-bottom: 8px;">
+        <div style="font-size: 10px; color: var(--text-muted);">Сколько денег двигает цену на 2%</div>
+        <div style="font-size: 16px; font-weight: 700; color: ${gcol};">$${(d.total_2pct_depth_usd / 1e6).toFixed(1)}M · ${d.depth_grade}</div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 3px;">${d.grade_note || ''}</div>
+      </div>`;
+    }
+    if (ho.status === 'OK') {
+      const ccol = ho.concentration_grade === 'HIGH_CONCENTRATION' ? 'var(--red)'
+                 : ho.concentration_grade === 'DISTRIBUTED' ? 'var(--green)' : '#F59E0B';
+      html += `<div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">
+        <div style="font-size: 10px; color: var(--text-muted);">Доля топ-10 адресов</div>
+        <div style="font-size: 16px; font-weight: 700; color: ${ccol};">${ho.top10_pct}%</div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 3px;">
+          Крупнейший держит ${ho.top1_pct}%. Чем выше доля, тем легче одному игроку двинуть цену.
+        </div>`;
+      const rows = (ho.top_holders || []).slice(0, 5);
+      const contracts = rows.filter(r => r.is_contract).length;
+      if (rows.length) {
+        html += '<div style="margin-top: 8px; font-size: 10px;">';
+        for (const r of rows) {
+          const tag = r.is_contract ? '<span style="color: #F59E0B;">контракт</span>' : '<span style="color: var(--text-secondary);">кошелёк</span>';
+          const addr = r.address ? (r.address.slice(0, 6) + '…' + r.address.slice(-4)) : '—';
+          html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid rgba(0,0,0,0.04);">
+            <span style="font-family: monospace;">${r.label || addr}</span>
+            <span>${r.pct}% · ${tag}</span></div>`;
+        }
+        html += '</div>';
+      }
+      if (contracts > 0) {
+        html += `<div style="margin-top: 8px; padding: 8px; background: rgba(245, 158, 11, 0.10); border-radius: 4px; font-size: 11px; color: var(--text-secondary);">
+          ⚠ Среди топ-держателей ${contracts} контракта, а не живых китов. Обычно это мост, стейкинг или казна проекта — они не продают на рынке. Не читай эту цифру как «киты готовы вывалить».
+        </div>`;
+      }
+      html += '</div>';
+    } else if (ho.status === 'SKIPPED') {
+      html += `<div style="font-size: 12px; color: var(--text-muted);">Держатели недоступны: ${ho.reason || ''}</div>`;
+    }
+  } else {
+    html += '<div style="font-size: 12px; color: var(--text-muted);">Нет данных. Запусти hive_health.</div>';
+  }
+
+  // ── 4 · ГДЕ МЫ ВНУТРИ ФАЗЫ ─────────────────────────────────
+  html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">📐 Где мы внутри фазы</div>';
+  if (scan) {
+    const pos = scan.pct_positive_weeks_180d || 0;
+    const streak = scan.current_positive_streak_weeks || 0;
+    const sos = (scan.sos_events || []).length;
+    const dist = (scan.dist_events || []).length;
+    const nf30 = scan.netflow_30d_usd || 0;
+    const nf90 = scan.netflow_90d_usd || 0;
+
+    // Прогресс накопления: доля положительных недель + признаки силы,
+    // минус признаки распределения. Шкала грубая и честно подписана.
+    let progress = Math.round(pos);
+    if (sos > 0) progress = Math.min(95, progress + sos * 8);
+    if (dist > 0) progress = Math.max(5, progress - dist * 10);
+
+    const stage = progress < 35 ? 'Ранняя стадия — накопление только началось'
+                : progress < 60 ? 'Середина — процесс идёт, до импульса далеко'
+                : progress < 80 ? 'Поздняя стадия — приближается разрешение'
+                : 'Накопление выглядит завершённым';
+
+    html += `<div style="padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">
+      <div style="height: 10px; background: rgba(0,0,0,0.06); border-radius: 5px; overflow: hidden;">
+        <div style="height: 100%; width: ${progress}%; background: linear-gradient(90deg, #F59E0B, var(--green));"></div>
+      </div>
+      <div style="font-size: 12px; color: var(--text-bright); margin-top: 6px; font-weight: 600;">${stage}</div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+        ${pos.toFixed(0)}% недель за полгода были с притоком · серия подряд ${streak} нед ·
+        сигналов силы ${sos} · сигналов распределения ${dist}
+      </div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+        Приток за 30 дней ${nf30 >= 0 ? '+' : ''}$${(nf30 / 1e6).toFixed(1)}M · за 90 дней ${nf90 >= 0 ? '+' : ''}$${(nf90 / 1e6).toFixed(1)}M
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">
+        Шкала оценочная, а не измеренная. Она складывает долю положительных недель и сигналы силы — точность на истории пока не проверена.
+      </div>
+    </div>`;
+  } else {
+    html += '<div style="font-size: 12px; color: var(--text-muted);">Скан по токену не найден.</div>';
+  }
+
+  // ── 5 · СЕКТОР ─────────────────────────────────────────────
+  if (sector && Array.isArray(sector.sectors) && sector.sectors.length) {
+    const top = sector.sectors.slice(0, 3).map(s => s.sector || s.name).filter(Boolean);
+    if (top.length) {
+      html += `<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">💰 Куда идёт капитал</div>
+      <div style="font-size: 12px; color: var(--text-secondary);">Лидируют по притоку: ${top.join(' · ')}</div>`;
+    }
+  }
+
+  el.innerHTML = html;
+}
+
+
 async function renderTokenNewsInModal(token) {
   const container = document.getElementById('scanner-news-content');
   if (!container) return;
@@ -3452,6 +3640,9 @@ function openDurationScanner(token) {
   
   // v5: Load per-token news (async, independent)
   renderTokenNewsInModal(upperTok);
+  
+  // v6: слои решения (фандинг, стакан, держатели, фаза, сектор)
+  renderModalIntelligence(upperTok);
 }
 
 async function loadTokenScanCache(token) {
@@ -3789,6 +3980,11 @@ document.addEventListener('keydown', function(e) {
 <div style="margin-top: 16px; padding: 10px; background: rgba(88, 166, 255, 0.05); border-radius: 6px; border-left: 3px solid #58a6ff; font-size: 11px; color: var(--text-secondary);">
       ℹ Duration Scanner v1 · использует rotation_alerts.jsonl + dune snapshot. Extended history (24 недели netflow) появится когда добавим per-token Dune collector.
     </div>
+<!-- MODAL INTELLIGENCE v1 · слои для решения buy/wait -->
+<div id="scanner-intel-section" style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.04); border-radius: 10px; border-left: 4px solid #10B981;">
+<div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🧩 Слои решения · разная свежесть</div>
+<div id="scanner-intel-content" style="font-size: 12px;">Загружаю слои…</div>
+</div>
 <!-- NEWS SECTION (v5 · per-token news classification) -->
 <div id="scanner-news-section" style="margin-top: 20px; padding: 16px; background: rgba(139, 92, 246, 0.04); border-radius: 10px; border-left: 4px solid #8B5CF6;">
 <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🔔 News для этого токена</div>
