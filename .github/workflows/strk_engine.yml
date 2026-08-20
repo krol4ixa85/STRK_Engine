@@ -609,14 +609,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Surf CLI (primary source)
+        run: |
+          npm install -g @asksurf-ai/surf-cli || echo "surf CLI install failed, will use RSS fallback"
+          surf --version 2>&1 || echo "surf not available"
+      - name: Configure Surf auth
+        env:
+          SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
+        run: |
+          if command -v surf >/dev/null 2>&1 && [ -n "$SURF_API_KEY" ]; then
+            surf auth --api-key "$SURF_API_KEY" || echo "surf auth failed"
+            surf sync || echo "surf sync failed"
+          fi
+      - name: Install Python dependencies
         run: pip install feedparser requests
-      - name: Classify news impact
-        run: python3 news/news_impact_classifier.py
-      - name: Commit news_impact.json
+      - name: Classify news impact (v3 · Surf + RSS hybrid)
+        env:
+          SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
+        run: python3 news/news_impact_v3.py
+      - name: Commit surf_events.json
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
-          git add data/cache/news_impact.json
-          git diff --cached --quiet || git commit -m "chore: news impact update [skip ci]"
+          git add data/cache/surf_events.json data/cache/news_impact.json
+          git diff --cached --quiet || git commit -m "chore: news impact v3 update [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
