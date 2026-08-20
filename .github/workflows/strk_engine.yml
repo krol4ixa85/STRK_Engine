@@ -19,6 +19,8 @@ on:
     - cron: '0 6 * * 1'
     # v5.4 · STRK AVNU daily scan — каждый день 03:30 UTC = 06:30 MSK
     - cron: '30 3 * * *'
+    # Type A #3 · News impact classifier — 4x/day (00, 06, 12, 18 UTC)
+    - cron: '0 0,6,12,18 * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -37,6 +39,7 @@ on:
           - token_scan_daily
           - token_scan_force_all
           - strk_avnu
+          - news_impact
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -589,4 +592,31 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/STRK.json
           git diff --cached --quiet || git commit -m "chore: STRK AVNU scan [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Type A #3 · News Impact Classifier · 4x/day
+  # ============================================================
+  news_impact:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 0,6,12,18 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'news_impact')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install feedparser requests
+      - name: Classify news impact
+        run: python3 news/news_impact_classifier.py
+      - name: Commit news_impact.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/news_impact.json
+          git diff --cached --quiet || git commit -m "chore: news impact update [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
