@@ -450,6 +450,41 @@ tr:hover td { background: var(--bg-subtle); }
     }
 
 </style>
+
+<style id="section-reorder-css">
+/* Reorder dashboard sections via flex order — не трогая HTML */
+body > * {
+  /* Preserve default flow, но main sections в flex */
+}
+
+/* Section order · desired:
+   1. Overview cards (existing)
+   2. Interpretation (order: 1)
+   3. Global Context (order: 2)
+   4. Macro Context (order: 3)  
+   5. STRK Mission Control (order: 4)
+   6. STRK Scenarios (order: 5)
+   7. News Impact (order: 6)
+   8. Utility Rotation (order: 7)
+*/
+
+/* Container для sections */
+.dashboard-sections-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Individual section ordering */
+.section-regime-wrap { order: 0; }
+.section-interpretation-wrap { order: 1; }
+.section-global-wrap { order: 2; }
+.section-macro-wrap { order: 3; }
+/* STRK Mission Control уже до этого */
+.section-scenarios-wrap { order: 5; }
+.section-news-wrap { order: 6; }
+.section-rotation-wrap { order: 7; }
+</style>
+
 </head>
 <body>
 <div class="quick-nav"><a href="javascript:void(0)" onclick="switchView('home')" style="border-left: 3px solid var(--text-muted); background: var(--bg-subtle);">🏠 Home</a>
@@ -1800,6 +1835,124 @@ function renderConfluence(confluenceData) {
 }
 
 
+async function renderMarketRegime() {
+  const container = document.getElementById('market-regime-content');
+  if (!container) return;
+  
+  try {
+    const url = `${BASE_URL}/data/cache/market_regime.json?t=${Math.floor(Date.now() / 60000)}`;
+    const r = await fetch(url);
+    if (!r.ok) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🎯 Market Regime будет доступен после первого запуска market_regime job.</div>';
+      return;
+    }
+    const data = await r.json();
+    
+    const regime = data.regime_class || {};
+    const score = data.weighted_score || 0;
+    const scores = data.component_scores || {};
+    const summaries = data.component_summaries || {};
+    const weights = data.weights || {};
+    const narrative = data.layman_narrative_ru || '';
+    const strkCtx = data.strk_context_ru || '';
+    
+    // Determine colors  
+    const bgColor = regime.color === 'green' ? 'rgba(46, 160, 67, 0.10)' :
+                    regime.color === 'yellow' ? 'rgba(245, 158, 11, 0.10)' :
+                    regime.color === 'orange' ? 'rgba(234, 88, 12, 0.10)' :
+                    regime.color === 'red' ? 'rgba(203, 45, 45, 0.10)' :
+                    'rgba(139, 92, 246, 0.05)';
+    const borderColor = regime.color === 'green' ? 'var(--green)' :
+                        regime.color === 'yellow' ? '#F59E0B' :
+                        regime.color === 'orange' ? '#EA580C' :
+                        regime.color === 'red' ? 'var(--red)' :
+                        'var(--text-muted)';
+    
+    let html = '';
+    
+    // ========== MAIN REGIME BANNER ==========
+    html += `
+      <div style="padding: 20px; background: ${bgColor}; border-left: 6px solid ${borderColor}; border-radius: 10px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">📊 Регим рынка сейчас</div>
+            <div style="font-size: 24px; font-weight: 700; color: ${borderColor}; margin-top: 4px;">${regime.label_ru || '?'}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 32px; font-weight: 700; color: ${borderColor};">${score >= 0 ? '+' : ''}${score}</div>
+            <div style="font-size: 10px; color: var(--text-muted);">weighted score /100</div>
+          </div>
+        </div>
+        <div style="font-size: 13px; color: var(--text); margin-top: 8px; padding: 10px 12px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+          <strong style="color: ${borderColor};">💡 Действие:</strong> ${regime.action_ru || ''}
+        </div>
+      </div>
+    `;
+    
+    // ========== LAYMAN NARRATIVE ==========
+    html += `
+      <div style="padding: 14px 16px; background: rgba(255,255,255,0.6); border-radius: 8px; margin-bottom: 16px; font-size: 13px; line-height: 1.7;">
+        <div style="font-weight: 700; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">🧠 Синтез (layman friendly)</div>
+        ${narrative.split(' · ').map(part => `<div style="padding: 4px 0;">${part}</div>`).join('')}
+      </div>
+    `;
+    
+    // ========== STRK CONTEXT (special block) ==========
+    if (strkCtx) {
+      html += `
+        <div style="padding: 12px 16px; background: rgba(139, 92, 246, 0.08); border-left: 4px solid #8B5CF6; border-radius: 6px; margin-bottom: 16px; font-size: 13px;">
+          <strong style="color: #8B5CF6;">🎯 STRK context:</strong> ${strkCtx}
+        </div>
+      `;
+    }
+    
+    // ========== COMPONENT BREAKDOWN ==========
+    html += `<div style="font-weight: 700; font-size: 12px; color: var(--text-bright); margin-bottom: 8px;">📊 Разбивка по компонентам</div>`;
+    html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px;">';
+    
+    const componentIcons = {
+      macro: '🏦', phase: '🚀', news: '📰', stables: '💵', funding: '💸'
+    };
+    const componentLabels = {
+      macro: 'Macro (TradFi)', phase: 'Crypto Phase', news: 'News Narrative', 
+      stables: 'Stables (dry powder)', funding: 'Funding Rates'
+    };
+    
+    for (const key of ['macro', 'phase', 'news', 'stables', 'funding']) {
+      const s = scores[key] || 0;
+      const w = (weights[key] || 0) * 100;
+      const contrib = s * (weights[key] || 0);
+      const sColor = s > 10 ? 'var(--green)' : s < -10 ? 'var(--red)' : 'var(--text-muted)';
+      html += `
+        <div style="padding: 10px 12px; background: rgba(255,255,255,0.5); border-radius: 6px; border-left: 3px solid ${sColor};">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-weight: 700;">${componentIcons[key]} ${componentLabels[key]}</span>
+            <span style="font-size: 10px; color: var(--text-muted);">${w.toFixed(0)}%</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="color: ${sColor}; font-weight: 700; font-size: 16px;">${s >= 0 ? '+' : ''}${s}</span>
+            <span style="font-size: 10px; color: var(--text-muted);">contrib ${contrib >= 0 ? '+' : ''}${contrib.toFixed(1)}</span>
+          </div>
+          <div style="font-size: 10px; color: var(--text-secondary); margin-top: 4px; line-height: 1.3;">${(summaries[key] || '').substring(0, 80)}</div>
+        </div>
+      `;
+    }
+    html += '</div>';
+    
+    // Footer
+    if (data.computed_at) {
+      const ageMin = Math.floor((Date.now() - new Date(data.computed_at).getTime()) / 60000);
+      const ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ago`;
+      html += `<div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 10px;">Обновлено ${ageStr} · confidence: <strong>${regime.confidence || '?'}</strong></div>`;
+    }
+    
+    container.innerHTML = html;
+  } catch(e) {
+    console.error('[MarketRegime] error:', e);
+    container.innerHTML = '<div style="color: var(--red);">Ошибка загрузки market regime</div>';
+  }
+}
+
 async function renderInterpretation() {
   const container = document.getElementById('interpretation-content');
   if (!container) return;
@@ -2424,6 +2577,7 @@ async function loadAll(manual = false) {
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
   safeRender('Scenarios', () => renderScenarios());
   safeRender('NewsImpact', () => renderNewsImpact());
+  safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
   safeRender('GlobalContext', () => renderGlobalContext());
     badge.className = 'badge live';
