@@ -21,6 +21,8 @@ on:
     - cron: '30 3 * * *'
     # Type A #3 · News impact classifier — 4x/day (00, 06, 12, 18 UTC)
     - cron: '0 0,6,12,18 * * *'
+    # Module 1+2 · Macro Narratives (Fed/US10Y/DXY/VIX + TOTAL phase) — 4x/day
+    - cron: '15 0,6,12,18 * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -40,6 +42,7 @@ on:
           - token_scan_force_all
           - strk_avnu
           - news_impact
+          - macro_narratives
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -655,4 +658,38 @@ jobs:
           [ -f data/cache/surf_events.json ] && git add data/cache/surf_events.json || echo "surf_events.json not found — v3 may have failed"
           [ -f data/cache/news_impact.json ] && git add data/cache/news_impact.json || echo "news_impact.json not found — v1 legacy"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: news impact update [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Module 1+2 · Macro Narratives + TOTAL Phase
+  # Free APIs: FRED (optional key), CoinGecko (no key), Yahoo Finance (no key)
+  # 4x/day, ~1 second per job (no Dune credits)
+  # ============================================================
+  macro_narratives:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '15 0,6,12,18 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'macro_narratives')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Collect Macro Narratives (Fed/US10Y/DXY/VIX/Gold)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python3 macro/macro_narratives.py
+      - name: Collect TOTAL/TOTAL3 phase
+        run: python3 macro/total_phase.py
+      - name: Commit macro outputs
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/macro_narratives.json ] && git add data/cache/macro_narratives.json || echo "no macro_narratives.json"
+          [ -f data/cache/total_phase.json ] && git add data/cache/total_phase.json || echo "no total_phase.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: macro narratives + total phase [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
