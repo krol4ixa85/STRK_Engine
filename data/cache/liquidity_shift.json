@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-08-20T09:06:58.839763+00:00",
+  "as_of": "2026-08-20T09:44:47.254304+00:00",
   "components": {
     "ekubo": {
       "status": "OK",
       "pool_count": 9,
-      "total_usd": 2497748.0,
-      "net_usd_delta_24h": -4418.0,
-      "net_strk_delta_24h": -3854529.0,
+      "total_usd": 2483731.0,
+      "net_usd_delta_24h": -3723.0,
+      "net_strk_delta_24h": -3439881.0,
       "signal": "STABLE"
     },
     "endur_lst": {
       "status": "OK",
       "tvl_strk_now": 137072279.0,
-      "tvl_usd_now": 5932043,
+      "tvl_usd_now": 5998301,
       "apy_pct": 6.57,
-      "strk_delta_24h": -167237.0,
-      "strk_delta_7d": 1615668.0,
-      "pct_24h": -0.12,
-      "pct_7d": 1.19,
+      "strk_delta_24h": -239875.0,
+      "strk_delta_7d": 1543030.0,
+      "pct_24h": -0.17,
+      "pct_7d": 1.14,
       "signal": "STABLE"
     },
     "native_staking": {
-      "as_of": "2026-08-20T09:06:58.797963+00:00",
+      "as_of": "2026-08-20T09:44:47.217915+00:00",
       "status": "NOT_CHECKED",
       "reason": "RPC unavailable or staking_selector not configured",
       "contract": "0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7",
@@ -35,13 +35,13 @@
     "lst_share_of_stake_pct": null
   },
   "vectors": {
-    "stake_delta_24h_strk": -167237.0,
-    "lp_delta_24h_strk": -3854529.0,
-    "stake_signal": "STABLE",
+    "stake_delta_24h_strk": -239875.0,
+    "lp_delta_24h_strk": -3439881.0,
+    "stake_signal": "NEGATIVE",
     "lp_signal": "NEGATIVE"
   },
-  "overall_direction": "LP_REMOVING",
-  "layman": "Отток из DEX-пулов, стейкинг без движения. LP выводят капитал — тонкие книги ближе.",
+  "overall_direction": "EXTRACTING",
+  "layman": "Отток и из стейкинга, и из DEX-пулов. Ликвидность уходит из экосистемы — распределительный сигнал.",
   "thresholds": {
     "abs_strk_noise": 200000,
     "pct_stake_noise": 0.5
