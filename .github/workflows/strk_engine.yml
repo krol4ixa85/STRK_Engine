@@ -618,31 +618,35 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install Surf CLI (v4 · correct install script)
+      - name: Install Surf CLI (v5 · correct paths)
         run: |
-          echo "Installing Surf CLI via official installer..."
-          curl -fsSL https://downloads.asksurf.ai/cli/releases/install.sh | sh || echo "Surf install failed, will use RSS only"
-          # Add to PATH for subsequent steps
-          echo "$HOME/.surf/bin" >> $GITHUB_PATH
-          # Try to verify
-          ~/.surf/bin/surf version 2>&1 || echo "Surf binary not accessible"
-      - name: Configure Surf auth (v4)
+          echo "Installing Surf CLI..."
+          curl -fsSL https://downloads.asksurf.ai/cli/releases/install.sh | sh || echo "Surf install failed"
+          # Surf installs to ~/.local/bin, add to PATH
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.local/bin:$PATH"
+          which surf 2>&1 || echo "surf not in PATH"
+          surf version 2>&1 || echo "surf version failed"
+      - name: Configure Surf auth (v5)
         env:
           SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
         run: |
-          if [ -x "$HOME/.surf/bin/surf" ] && [ -n "$SURF_API_KEY" ]; then
+          export PATH="$HOME/.local/bin:$PATH"
+          if command -v surf >/dev/null 2>&1 && [ -n "$SURF_API_KEY" ]; then
             echo "Authenticating with Surf..."
-            $HOME/.surf/bin/surf auth --api-key "$SURF_API_KEY" || echo "surf auth failed"
-            $HOME/.surf/bin/surf sync || echo "surf sync failed"
+            surf auth --api-key "$SURF_API_KEY" 2>&1 || echo "surf auth failed"
+            surf sync 2>&1 || echo "surf sync failed"
           else
-            echo "Skipping surf auth (binary missing or no API key)"
+            echo "Skipping surf auth (surf not found or no API key)"
           fi
       - name: Install Python dependencies
         run: pip install feedparser requests
-      - name: Classify news impact (v4 · fixed Surf + extended RSS 10 sources)
+      - name: Classify news impact (v5 · per-token Surf queries)
         env:
           SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
-        run: python3 news/news_impact_v4.py
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 news/news_impact_v5.py
       - name: Commit news outputs (safe)
         run: |
           git config user.email "bot@github.com"
