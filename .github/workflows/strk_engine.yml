@@ -33,6 +33,7 @@ on:
           - lab
           - token_scan_weekly
           - token_scan_daily
+          - token_scan_force_all
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -440,6 +441,31 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
           git diff --cached --quiet || git commit -m "chore: weekly token scan cache refresh [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  force_all_token_scan:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_force_all'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dune-client requests
+      - name: FORCE refresh ALL tokens (ignore freshness cache)
+        env:
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+          DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
+        run: python3 token_scan/token_scan_collector.py --force
+      - name: Commit cache
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          git add data/cache/token_scan/
+          git diff --cached --quiet || git commit -m "chore: FORCE all token scan refresh [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   daily_token_scan:
