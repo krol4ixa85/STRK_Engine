@@ -618,28 +618,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install Surf CLI (primary source)
+      - name: Install Surf CLI (v4 · correct install script)
         run: |
-          npm install -g @asksurf-ai/surf-cli || echo "surf CLI install failed, will use RSS fallback"
-          surf --version 2>&1 || echo "surf not available"
-      - name: Configure Surf auth
+          echo "Installing Surf CLI via official installer..."
+          curl -fsSL https://downloads.asksurf.ai/cli/releases/install.sh | sh || echo "Surf install failed, will use RSS only"
+          # Add to PATH for subsequent steps
+          echo "$HOME/.surf/bin" >> $GITHUB_PATH
+          # Try to verify
+          ~/.surf/bin/surf version 2>&1 || echo "Surf binary not accessible"
+      - name: Configure Surf auth (v4)
         env:
           SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
         run: |
-          if command -v surf >/dev/null 2>&1 && [ -n "$SURF_API_KEY" ]; then
-            surf auth --api-key "$SURF_API_KEY" || echo "surf auth failed"
-            surf sync || echo "surf sync failed"
+          if [ -x "$HOME/.surf/bin/surf" ] && [ -n "$SURF_API_KEY" ]; then
+            echo "Authenticating with Surf..."
+            $HOME/.surf/bin/surf auth --api-key "$SURF_API_KEY" || echo "surf auth failed"
+            $HOME/.surf/bin/surf sync || echo "surf sync failed"
+          else
+            echo "Skipping surf auth (binary missing or no API key)"
           fi
       - name: Install Python dependencies
         run: pip install feedparser requests
-      - name: Classify news impact (v3 · Surf + RSS hybrid)
+      - name: Classify news impact (v4 · fixed Surf + extended RSS 10 sources)
         env:
           SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
-        run: python3 news/news_impact_v3.py
+        run: python3 news/news_impact_v4.py
       - name: Commit news outputs (safe)
         run: |
           git config user.email "bot@github.com"
