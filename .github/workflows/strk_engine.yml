@@ -23,6 +23,8 @@ on:
     - cron: '0 0,6,12,18 * * *'
     # Module 1+2 · Macro Narratives (Fed/US10Y/DXY/VIX + TOTAL phase) — 4x/day
     - cron: '15 0,6,12,18 * * *'
+    # Interpretation Layer · unified reading, 4x/day (5 min после macro)
+    - cron: '20 0,6,12,18 * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -43,6 +45,7 @@ on:
           - strk_avnu
           - news_impact
           - macro_narratives
+          - interpretation
           - full_run
 
 # Global env — все шаги видят все секреты
@@ -693,3 +696,30 @@ jobs:
           [ -f data/cache/total_phase.json ] && git add data/cache/total_phase.json || echo "no total_phase.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: macro narratives + total phase [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # Interpretation Layer · unified reading of all signals
+  # Reads all cache files, no external calls, ~1 second
+  # ============================================================
+  interpretation:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '20 0,6,12,18 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'interpretation')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Interpretation Layer
+        run: python3 interpretation/interpretation_layer.py
+      - name: Commit interpretation.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/interpretation.json ] && git add data/cache/interpretation.json || echo "no interpretation.json"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: interpretation layer [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
