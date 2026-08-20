@@ -649,6 +649,26 @@ tr:hover td { background: var(--bg-subtle); }
 </div>
 
 <!-- MODULE 1+2 · MACRO NARRATIVES + TOTAL PHASE (v6) -->
+
+<!-- INTERPRETATION LAYER v1 · UNIFIED SIGNAL READING -->
+<div class="section-interpretation-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🧠 Unified Reading · что реально происходит
+    </div>
+    <div class="section-header-desc">
+      Синтез всех модулей (macro + confluence + LAB + news + total phase) в одну картину.
+      Показывает: где мы, что делать сегодня, что смотреть завтра.
+    </div>
+    <div class="level-label">Level 0 · master reading</div>
+  </div>
+
+  <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05)); border: 2px solid rgba(139, 92, 246, 0.20); border-radius: 12px;">
+    <div id="interpretation-content">Loading unified reading...</div>
+  </div>
+</div>
+
+
 <div class="section-global-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
   <div class="section-header">
     <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
@@ -1780,6 +1800,138 @@ function renderConfluence(confluenceData) {
 }
 
 
+async function renderInterpretation() {
+  const container = document.getElementById('interpretation-content');
+  if (!container) return;
+  
+  try {
+    const url = `${BASE_URL}/data/cache/interpretation.json?t=${Math.floor(Date.now() / 60000)}`;
+    const r = await fetch(url);
+    if (!r.ok) {
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">🧠 Unified reading будет доступен после первого запуска interpretation job.</div>';
+      return;
+    }
+    const data = await r.json();
+    
+    const summary = data.context_summary_ru || '';
+    const coherence = data.coherence_score || 0;
+    const conflicts = data.conflicts || [];
+    const perAsset = data.per_asset_verdicts || [];
+    const actions = data.unified_action_today || [];
+    const watches = data.what_to_watch || [];
+    
+    let html = '';
+    
+    // ============ CONTEXT SUMMARY (top banner) ============
+    const coherenceColor = coherence >= 70 ? 'var(--green)' :
+                           coherence >= 50 ? '#F59E0B' :
+                           'var(--red)';
+    html += `
+      <div style="padding: 16px 20px; background: rgba(255,255,255,0.6); border-radius: 10px; margin-bottom: 16px; border-left: 4px solid ${coherenceColor};">
+        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">
+          📊 Big Picture · синтез сигналов
+        </div>
+        <div style="font-size: 14px; color: var(--text); line-height: 1.6;">${summary}</div>
+      </div>
+    `;
+    
+    // ============ CONFLICTS (if any) ============
+    if (conflicts.length > 0) {
+      html += `<div style="font-weight: 700; font-size: 13px; color: var(--red); margin: 16px 0 8px 0;">⚠ Конфликты сигналов (${conflicts.length})</div>`;
+      for (const c of conflicts) {
+        const color = c.level === 'high' ? 'var(--red)' : '#F59E0B';
+        html += `
+          <div style="padding: 10px 14px; background: rgba(203, 45, 45, 0.05); border-left: 3px solid ${color}; border-radius: 6px; margin-bottom: 6px; font-size: 12px;">
+            <strong style="color: ${color}; text-transform: uppercase; font-size: 10px;">${c.level}</strong> · ${c.text_ru}
+          </div>
+        `;
+      }
+    }
+    
+    // ============ UNIFIED ACTION TODAY ============
+    if (actions.length > 0) {
+      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin: 20px 0 8px 0;">🎯 Действие сегодня</div>`;
+      html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 12px 16px; border-radius: 8px;">';
+      for (const a of actions) {
+        // Detect emoji category  
+        let color = 'var(--text)';
+        if (a.includes('⛔') || a.includes('НЕ')) color = 'var(--red)';
+        else if (a.includes('✅')) color = 'var(--green)';
+        else if (a.includes('⏸') || a.includes('WAIT')) color = '#F59E0B';
+        else if (a.includes('👀') || a.includes('review')) color = '#EA580C';
+        else if (a.includes('⚠')) color = '#F59E0B';
+        
+        html += `<div style="padding: 6px 0; font-size: 13px; color: ${color}; font-weight: 600;">${a}</div>`;
+      }
+      html += '</div>';
+    }
+    
+    // ============ PER-ASSET VERDICTS ============
+    if (perAsset.length > 0) {
+      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin: 20px 0 8px 0;">📋 Verdicts per asset</div>`;
+      html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">';
+      for (const v of perAsset) {
+        const bgColor = v.signal_color === 'green' ? 'rgba(46, 160, 67, 0.08)' :
+                        v.signal_color === 'red' ? 'rgba(203, 45, 45, 0.08)' :
+                        v.signal_color === 'orange' ? 'rgba(234, 88, 12, 0.08)' :
+                        v.signal_color === 'yellow' ? 'rgba(245, 158, 11, 0.08)' :
+                        'rgba(139, 92, 246, 0.05)';
+        const borderColor = v.signal_color === 'green' ? 'var(--green)' :
+                            v.signal_color === 'red' ? 'var(--red)' :
+                            v.signal_color === 'orange' ? '#EA580C' :
+                            v.signal_color === 'yellow' ? '#F59E0B' :
+                            'var(--text-muted)';
+        html += `
+          <div style="padding: 10px 12px; background: ${bgColor}; border-left: 3px solid ${borderColor}; border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+              <span style="font-weight: 700; color: ${borderColor}; font-size: 13px;">${v.asset}</span>
+              <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">${v.verdict.replace(/_/g, ' ')}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">${v.recommendation_ru}</div>
+          </div>
+        `;
+      }
+      html += '</div>';
+    }
+    
+    // ============ WHAT TO WATCH ============
+    if (watches.length > 0) {
+      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin: 20px 0 8px 0;">👀 Что смотреть (upcoming triggers)</div>`;
+      html += '<div style="background: rgba(255, 255, 255, 0.7); padding: 12px 16px; border-radius: 8px;">';
+      for (const w of watches.slice(0, 5)) {
+        const importanceColor = w.importance === 'high' ? 'var(--red)' :
+                                w.importance === 'medium' ? '#F59E0B' :
+                                'var(--text-muted)';
+        const icon = w.importance === 'high' ? '🔴' : w.importance === 'medium' ? '🟡' : '🔵';
+        html += `<div style="padding: 6px 0; font-size: 12px; color: var(--text-secondary); border-bottom: 1px dotted rgba(0,0,0,0.05);">${icon} ${w.text_ru}</div>`;
+      }
+      html += '</div>';
+    }
+    
+    // ============ COHERENCE INDICATOR (bottom) ============
+    const coherenceText = coherence >= 70 ? 'aligned' : coherence >= 50 ? 'partial' : 'conflicting';
+    const coherenceLabel = coherence >= 70 ? '✓ Signals ALIGNED' : coherence >= 50 ? '~ Signals PARTIAL' : '⚠ Signals CONFLICTING';
+    html += `
+      <div style="margin-top: 16px; padding: 8px 12px; background: ${coherenceColor.replace('var(--', 'rgba(').replace(')', ', 0.08)')}; border-radius: 6px; text-align: center;">
+        <span style="font-size: 12px; font-weight: 700; color: ${coherenceColor};">${coherenceLabel} · ${coherence}%</span>
+        <span style="font-size: 10px; color: var(--text-muted); margin-left: 8px;">(coherence score)</span>
+      </div>
+    `;
+    
+    // Footer
+    if (data.computed_at) {
+      const ageMin = Math.floor((Date.now() - new Date(data.computed_at).getTime()) / 60000);
+      const ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ago`;
+      html += `<div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 6px;">Обновлено ${ageStr}</div>`;
+    }
+    
+    container.innerHTML = html;
+  } catch(e) {
+    console.error('[Interpretation] render error:', e);
+    container.innerHTML = '<div style="color: var(--red);">Ошибка загрузки interpretation</div>';
+  }
+}
+
 async function renderGlobalContext() {
   const container = document.getElementById('global-context-content');
   if (!container) return;
@@ -2272,6 +2424,7 @@ async function loadAll(manual = false) {
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
   safeRender('Scenarios', () => renderScenarios());
   safeRender('NewsImpact', () => renderNewsImpact());
+  safeRender('Interpretation', () => renderInterpretation());
   safeRender('GlobalContext', () => renderGlobalContext());
     badge.className = 'badge live';
     const now = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
