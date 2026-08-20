@@ -1766,90 +1766,126 @@ async function renderNewsImpact() {
   if (!container) return;
   
   try {
-    const url = `${BASE_URL}/data/cache/news_impact.json?t=${Math.floor(Date.now() / 60000)}`;
-    const r = await fetch(url);
+    // v2: use surf_events.json (methodology-compliant)
+    let url = `${BASE_URL}/data/cache/surf_events.json?t=${Math.floor(Date.now() / 60000)}`;
+    let r = await fetch(url);
+    let isV2 = true;
+    
     if (!r.ok) {
-      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">📰 News impact будет доступен после запуска workflow. Модуль недавно добавлен.</div>';
-      return;
+      // Fallback to v1 news_impact.json
+      url = `${BASE_URL}/data/cache/news_impact.json?t=${Math.floor(Date.now() / 60000)}`;
+      r = await fetch(url);
+      isV2 = false;
+      if (!r.ok) {
+        container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">📰 News impact будет доступен после запуска workflow. Модуль недавно добавлен.</div>';
+        return;
+      }
     }
+    
     const data = await r.json();
-    
-    const perAsset = data.per_asset || {};
-    const criticalAlerts = data.critical_alerts || [];
-    const topBullish = data.top_bullish_articles || [];
-    const topBearish = data.top_bearish_articles || [];
-    
     let html = '';
     
-    // Header stats
-    html += `
-      <div style="padding: 12px 16px; background: rgba(139, 92, 246, 0.06); border-radius: 8px; margin-bottom: 8px;">
-        <div style="font-size: 12px; color: var(--text-secondary);">
-          <strong>Отсканировано:</strong> ${data.total_articles_scanned} новостей из 5 источников · <strong>Relevant:</strong> ${data.relevant_articles} · <strong>Активов упомянуто:</strong> ${data.assets_with_news}
+    if (isV2) {
+      // ===== v2 rendering (methodology-compliant) =====
+      const homeEvents = data.home_events || [];
+      const macroEvents = data.macro_events || [];
+      const phase = data.phase_used || '?';
+      const routes = data.route_counts || {};
+      
+      // Header · phase context
+      html += `
+        <div style="padding: 12px 16px; background: rgba(139, 92, 246, 0.06); border-radius: 8px; margin-bottom: 12px;">
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            <strong>Phase used:</strong> ${phase} · <strong>Routed:</strong> home ${routes.home || 0} · macro ${routes.macro || 0} · archive ${routes.archive || 0}
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            📌 News НЕ открывают NEW_ENTRY. Могут менять SIZE / INVALIDATION / MONITOR. Max 3 на HOME.
+          </div>
         </div>
-      </div>
-    `;
-    
-    // Critical alerts (high severity)
-    if (criticalAlerts.length > 0) {
-      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin-top: 8px;">🚨 Critical Alerts</div>`;
-      for (const alert of criticalAlerts.slice(0, 5)) {
+      `;
+      
+      // HOME EVENTS (max 3, top priority)
+      if (homeEvents.length > 0) {
+        html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin-top: 8px;">🚨 HOME · требует внимания (${homeEvents.length}/3)</div>`;
+        for (const e of homeEvents) {
+          const color = e.type === 'security' ? 'var(--red)' :
+                        e.type === 'unlock' ? '#EA580C' :
+                        e.type === 'regulation' ? '#F59E0B' :
+                        e.type === 'upgrade' ? 'var(--green)' :
+                        'var(--text-muted)';
+          const bg = e.type === 'security' ? 'rgba(203, 45, 45, 0.08)' :
+                     e.type === 'unlock' ? 'rgba(234, 88, 12, 0.08)' :
+                     e.type === 'upgrade' ? 'rgba(46, 160, 67, 0.08)' :
+                     'rgba(245, 158, 11, 0.08)';
+          const sourceStr = e.source_class === 'official' ? '🏛 official' :
+                           e.source_class === 'tier1_news' ? '📰 tier1' :
+                           e.source_class === 'aggregator' ? '📡 aggregator' :
+                           e.source_class === 'social' ? '💬 social' : '❓ unknown';
+          
+          html += `
+            <div style="padding: 14px 16px; background: ${bg}; border-left: 4px solid ${color}; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                <div>
+                  <span style="font-weight: 700; color: ${color}; font-size: 14px;">${e.assets.join(', ')} · ${e.type.toUpperCase()}/${e.severity}</span>
+                  ${e.fomo_risk ? '<span style="background: #F59E0B; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 6px;">FOMO risk</span>' : ''}
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted);">score ${e.score}</div>
+              </div>
+              <div style="font-size: 13px; color: var(--text); margin-bottom: 6px;">
+                <a href="${e.url}" target="_blank" style="color: inherit; text-decoration: underline dotted;">${e.summary}</a>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">${sourceStr} · ${e.source_name}</div>
+              <div style="padding: 8px 12px; background: rgba(0,0,0,0.03); border-radius: 4px; font-size: 12px;">
+                <strong style="color: ${color};">→ ${e.action_hint.field}:</strong> ${e.action_hint.layman_ru}
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        html += `<div style="padding: 20px; text-align: center; color: var(--text-muted); background: rgba(46, 160, 67, 0.05); border-radius: 8px;">✓ Нет critical events. Watch mode.</div>`;
+      }
+      
+      // MACRO EVENTS (compact list)
+      if (macroEvents.length > 0) {
+        html += `<details style="margin-top: 12px; padding: 10px 14px; background: var(--bg-subtle); border-radius: 6px;">
+          <summary style="cursor: pointer; font-weight: 600; font-size: 12px;">📊 Macro context (${macroEvents.length} events)</summary>
+          <div style="margin-top: 10px;">`;
+        for (const e of macroEvents.slice(0, 5)) {
+          html += `
+            <div style="padding: 6px 8px; border-left: 2px solid var(--text-muted); margin-bottom: 4px; font-size: 11px;">
+              <strong>${e.assets.join(',')}</strong> · ${e.type}/${e.severity} · <a href="${e.url}" target="_blank">${e.summary.substring(0, 80)}</a> <span style="color: var(--text-muted);">(${e.score})</span>
+            </div>
+          `;
+        }
+        html += `</div></details>`;
+      }
+    } else {
+      // ===== v1 fallback rendering =====
+      const perAsset = data.per_asset || {};
+      const criticalAlerts = data.critical_alerts || [];
+      
+      html += `<div style="padding: 12px 16px; background: rgba(139, 92, 246, 0.06); border-radius: 8px; margin-bottom: 8px;">
+        <div style="font-size: 12px; color: var(--text-secondary);">
+          <strong>Отсканировано:</strong> ${data.total_articles_scanned || '?'} news · <strong>Relevant:</strong> ${data.relevant_articles || '?'}
+        </div>
+      </div>`;
+      
+      for (const alert of criticalAlerts.slice(0, 3)) {
         const isBull = alert.action.includes('BUY') || alert.action.includes('POSITIVE');
         const color = isBull ? 'var(--green)' : 'var(--red)';
-        const bg = isBull ? 'rgba(46, 160, 67, 0.08)' : 'rgba(203, 45, 45, 0.08)';
-        html += `
-          <div style="padding: 12px 14px; background: ${bg}; border-left: 4px solid ${color}; border-radius: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-              <div style="font-weight: 700; color: ${color}; font-size: 14px;">${alert.asset} · ${alert.action.replace(/_/g, ' ')}</div>
-              ${alert.whales && alert.whales.length > 0 ? `<div style="font-size: 11px; color: var(--text-muted);">🐋 ${alert.whales.join(', ')}</div>` : ''}
-            </div>
-            <div style="font-size: 12px; color: var(--text-secondary);">${alert.layman}</div>
-          </div>
-        `;
+        html += `<div style="padding: 12px 14px; background: ${isBull ? 'rgba(46, 160, 67, 0.08)' : 'rgba(203, 45, 45, 0.08)'}; border-left: 4px solid ${color}; border-radius: 8px; margin-bottom: 8px;">
+          <div style="font-weight: 700; color: ${color};">${alert.asset} · ${alert.action.replace(/_/g, ' ')}</div>
+          <div style="font-size: 12px; margin-top: 4px;">${alert.layman}</div>
+        </div>`;
       }
     }
     
-    // Per-asset breakdown (top 5 by activity)
-    const assetsSorted = Object.entries(perAsset).sort((a, b) => Math.abs(b[1].net_score) - Math.abs(a[1].net_score));
-    if (assetsSorted.length > 0) {
-      html += `<div style="font-weight: 700; font-size: 13px; color: var(--text-bright); margin-top: 12px;">📊 Per-Asset News Score (top 5)</div>`;
-      for (const [asset, data] of assetsSorted.slice(0, 5)) {
-        const isBull = data.net_score > 2;
-        const isBear = data.net_score < -2;
-        const color = isBull ? 'var(--green)' : isBear ? 'var(--red)' : 'var(--text-muted)';
-        const scoreStr = (data.net_score >= 0 ? '+' : '') + data.net_score;
-        html += `
-          <details style="padding: 10px 14px; background: var(--bg-subtle); border-radius: 6px; border-left: 3px solid ${color};">
-            <summary style="cursor: pointer; display: flex; justify-content: space-between;">
-              <span><strong>${asset}</strong> · ${data.bullish_articles.length} bull / ${data.bearish_articles.length} bear · <span style="color: ${color};">${scoreStr}</span></span>
-              <span style="font-size: 11px; color: var(--text-muted);">${data.overall_action.replace(/_/g, ' ')}</span>
-            </summary>
-            <div style="margin-top: 10px; font-size: 12px;">
-              <div style="color: var(--text-secondary); margin-bottom: 8px;">${data.overall_layman}</div>
-              ${data.bearish_articles.slice(0, 3).map(a => `
-                <div style="padding: 6px 8px; background: rgba(203, 45, 45, 0.05); border-left: 2px solid var(--red); border-radius: 3px; margin-bottom: 4px;">
-                  <div style="font-size: 11px; color: var(--text);">🔴 <a href="${a.link}" target="_blank" style="color: var(--red); text-decoration: none;">${a.title.substring(0, 90)}</a></div>
-                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${a.source} · ${a.action_hint.replace(/_/g, ' ')}</div>
-                </div>
-              `).join('')}
-              ${data.bullish_articles.slice(0, 3).map(a => `
-                <div style="padding: 6px 8px; background: rgba(46, 160, 67, 0.05); border-left: 2px solid var(--green); border-radius: 3px; margin-bottom: 4px;">
-                  <div style="font-size: 11px; color: var(--text);">🟢 <a href="${a.link}" target="_blank" style="color: var(--green); text-decoration: none;">${a.title.substring(0, 90)}</a></div>
-                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${a.source} · ${a.action_hint.replace(/_/g, ' ')}</div>
-                </div>
-              `).join('')}
-            </div>
-          </details>
-        `;
-      }
-    }
-    
-    // Footer with last update
-    if (data.computed_at) {
-      const dt = new Date(data.computed_at);
-      const ageMin = Math.floor((Date.now() - dt.getTime()) / 60000);
+    // Footer
+    const dt = data.as_of || data.computed_at;
+    if (dt) {
+      const ageMin = Math.floor((Date.now() - new Date(dt).getTime()) / 60000);
       const ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ago`;
-      html += `<div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 6px;">Обновлено ${ageStr}</div>`;
+      html += `<div style="font-size: 10px; color: var(--text-muted); text-align: right; margin-top: 6px;">Обновлено ${ageStr}${isV2 ? ' · methodology v2' : ' · v1 fallback'}</div>`;
     }
     
     container.innerHTML = html;
