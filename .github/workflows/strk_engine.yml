@@ -58,6 +58,15 @@ env:
 
 jobs:
   composite:
+    # Запускается ТОЛЬКО на digest schedule ИЛИ явно mode: digest/liq/run/backtest/baseline/lab
+    if: >
+      (github.event_name == 'schedule' && 
+        (github.event.schedule == '0 8,14,20 * * *' 
+         || github.event.schedule == '30 8,20 * * *'
+         || github.event.schedule == '0 21 * * 0'
+         || github.event.schedule == '0 0 * * 0'))
+      || (github.event_name == 'workflow_dispatch' 
+        && contains(fromJson('["digest","liq","run","backtest","baseline","lab"]'), github.event.inputs.mode))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -631,10 +640,12 @@ jobs:
         env:
           SURF_API_KEY: ${{ secrets.SURF_API_KEY }}
         run: python3 news/news_impact_v3.py
-      - name: Commit surf_events.json
+      - name: Commit news outputs (safe)
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
-          git add data/cache/surf_events.json data/cache/news_impact.json
-          git diff --cached --quiet || git commit -m "chore: news impact v3 update [skip ci]"
+          # Add files only if they exist (v3 creates surf_events.json, v1 legacy = news_impact.json)
+          [ -f data/cache/surf_events.json ] && git add data/cache/surf_events.json || echo "surf_events.json not found — v3 may have failed"
+          [ -f data/cache/news_impact.json ] && git add data/cache/news_impact.json || echo "news_impact.json not found — v1 legacy"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: news impact update [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
