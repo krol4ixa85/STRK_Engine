@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-21T12:52:14.919162+00:00",
+  "as_of": "2026-08-21T18:39:15.231141+00:00",
   "phase_used": "ACCUMULATION",
   "hold_tokens": [
     "ARB",
@@ -11,17 +11,17 @@
     "PENDLE"
   ],
   "priority_tokens": [
-    "MORPHO",
+    "DOGE",
+    "STRK",
+    "ETHFI",
+    "ONDO",
+    "PENDLE",
+    "ARB",
+    "LINK",
     "MNT",
     "FIL",
-    "ETHFI",
-    "PENDLE",
-    "ONDO",
-    "LINK",
     "OP",
-    "ARB",
-    "STRK",
-    "DOGE"
+    "MORPHO"
   ],
   "sources": {
     "surf_used": true,
@@ -53,32 +53,6 @@
       },
       "matched_keywords": [
         "hack"
-      ],
-      "query_context": ""
-    },
-    {
-      "id": "rss-9c4da1d3",
-      "assets": [
-        "ETH"
-      ],
-      "type": "unlock",
-      "severity": "medium",
-      "summary": "Gnosis Chain to Abandon Its Validator Set and Settle to Ethereum",
-      "source_class": "tier1_news",
-      "source_name": "The Defiant (RWA)",
-      "source_type": "rss",
-      "url": "https://thedefiant.io/news/blockchains/gnosis-chain-to-abandon-its-validator-set-and-settle-to-ethereum",
-      "published": "2026-08-19T14:25:49+00:00",
-      "fomo_risk": false,
-      "score": 0.643,
-      "route": "home",
-      "action_hint": {
-        "field": "SIZE",
-        "action": "down",
-        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-      },
-      "matched_keywords": [
-        "unlock"
       ],
       "query_context": ""
     },
@@ -135,32 +109,6 @@
       "query_context": "general"
     },
     {
-      "id": "surf-cc97d597",
-      "assets": [
-        "ARB"
-      ],
-      "type": "unlock",
-      "severity": "high",
-      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
-      "published": 1786245227,
-      "fomo_risk": true,
-      "score": 0.505,
-      "route": "macro",
-      "action_hint": {
-        "field": "SIZE",
-        "action": "down",
-        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-      },
-      "matched_keywords": [
-        "unlock"
-      ],
-      "query_context": "general"
-    },
-    {
       "id": "surf-21c9d55a",
       "assets": [
         "STRK"
@@ -180,6 +128,32 @@
         "field": "MONITOR",
         "action": "add_watch_item",
         "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f STRK \u0432 accumulation \u2014 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 MONITOR, \u043d\u0435 \u0432\u0445\u043e\u0434\u0438\u0442\u044c"
+      },
+      "matched_keywords": [
+        "unlock"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-cc97d597",
+      "assets": [
+        "ARB"
+      ],
+      "type": "unlock",
+      "severity": "high",
+      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
+      "published": 1786245227,
+      "fomo_risk": true,
+      "score": 0.505,
+      "route": "macro",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down",
+        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
       },
       "matched_keywords": [
         "unlock"
@@ -239,30 +213,6 @@
       "query_context": ""
     },
     {
-      "id": "rss-50a5a5bf",
-      "assets": [],
-      "type": "regulation",
-      "severity": "medium",
-      "summary": "CFTC chair says agency will move forward on crypto regulation if CLARITY fails",
-      "source_class": "tier1_news",
-      "source_name": "CoinTelegraph",
-      "source_type": "rss",
-      "url": "https://cointelegraph.com/news/cftc-chair-crypto-regulation-without-clarity-act-congress?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "published": "2026-08-20T20:56:23+00:00",
-      "fomo_risk": false,
-      "score": 0.476,
-      "route": "macro",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [
-        "cftc"
-      ],
-      "query_context": ""
-    },
-    {
       "id": "rss-6db31f40",
       "assets": [
         "ARB"
@@ -289,18 +239,18 @@
       "query_context": ""
     },
     {
-      "id": "surf-42c0895c",
+      "id": "surf-70b1ab26",
       "assets": [
-        "MORPHO"
+        "STRK"
       ],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Morpho rolls out Midnight for fixed term lending on Base",
-      "source_class": "surf_cited",
-      "source_name": "CRYPTODOTNEWS",
+      "summary": "Starknet Becomes First Rollup To Deploy Native Staking",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
       "source_type": "surf",
-      "url": "https://crypto.news/morpho-rolls-out-midnight-for-fixed-term-lending-on-base/",
-      "published": 1784647422,
+      "url": "https://thedefiant.io/news/defi/starknet-becomes-first-rollup-to-deploy-native-staking",
+      "published": 1732626480,
       "fomo_risk": false,
       "score": 0.412,
       "route": "macro",
@@ -310,24 +260,24 @@
         "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
-        "launches",
+        "launched",
         "launch"
       ],
       "query_context": "general"
     },
     {
-      "id": "surf-503af407",
+      "id": "surf-423b296d",
       "assets": [
-        "MORPHO"
+        "STRK"
       ],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Morpho launches fixed-rate lending protocol Midnight on Base to expand onchain credit markets",
-      "source_class": "tier1_news",
-      "source_name": "THEBLOCK",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Testnet - 11 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
       "source_type": "surf",
-      "url": "https://www.theblock.co/post/409062/morpho-midnight-fixed-rate-lending-protocol-base-onchain-credit-markets",
-      "published": 1784638800,
+      "url": "https://www.tradingview.com/news/coinmarketcal:ca2f6c7be094b:0-starknet-strk-starknet-v0-14-1-testnet-11-nov-2025/",
+      "published": 1761562824,
       "fomo_risk": false,
       "score": 0.412,
       "route": "macro",
@@ -337,8 +287,36 @@
         "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
-        "launches",
+        "mainnet",
+        "v0.",
         "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-c2e69194",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Mainnet - 25 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:e9ceace3c094b:0-starknet-strk-starknet-v0-14-1-mainnet-25-nov-2025/",
+      "published": 1761562824,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
       ],
       "query_context": "general"
     },
@@ -426,16 +404,16 @@
       "query_context": "general"
     },
     {
-      "id": "surf-a4803520",
+      "id": "surf-939972de",
       "assets": [],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Bybit Megadrop Launches: SHARDS Launches 4 MNT Wealth Management Pools, Increasing MNT Empowerment",
+      "summary": "Baby Doge: Plans to launch BabyDoge Properties service to enter the real estate RWA field",
       "source_class": "surf_cited",
       "source_name": "PANEWS",
       "source_type": "surf",
-      "url": "https://www.panewslab.com/en/articles/32e9a1c1-c386-446c-98e2-1aea41d0fa91",
-      "published": 1756382400,
+      "url": "https://www.panewslab.com/en/articles/abdj7sbp",
+      "published": 1732441880,
       "fomo_risk": true,
       "score": 0.206,
       "route": "archive",
@@ -445,9 +423,87 @@
         "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
-        "launches",
-        "launched",
         "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-65270f88",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Privacy Perps - 01 Dec 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:2271a2986094b:0-starknet-strk-privacy-perps-01-dec-2025/",
+      "published": 1763031634,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-5dd8b892",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - V0.14.2 Mainnet Upgrade - 20 April 2026",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:a717435e6094b:0-starknet-strk-v0-14-2-mainnet-upgrade-20-april-2026/",
+      "published": 1776704432,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-223d3a08",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet successfully deploys STRK staking infrastructure on mainnet",
+      "source_class": "surf_cited",
+      "source_name": "COINNESS",
+      "source_type": "surf",
+      "url": "https://coinness.com/en/news/1112523",
+      "published": 1732523456,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet"
       ],
       "query_context": "general"
     },
@@ -527,32 +583,6 @@
       },
       "matched_keywords": [
         "launch"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-eaac1e47",
-      "assets": [
-        "OP"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Coinbase\u2019s Base moves away from Optimism stack, OP token sinks",
-      "source_class": "surf_cited",
-      "source_name": "CRYPTODOTNEWS",
-      "source_type": "surf",
-      "url": "https://crypto.news/base-moves-away-from-optimism-stack-op-token-sinks/",
-      "published": 1771483112,
-      "fomo_risk": true,
-      "score": 0.206,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "noted",
-        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-      },
-      "matched_keywords": [
-        "hard fork"
       ],
       "query_context": "general"
     },
@@ -664,96 +694,16 @@
       "query_context": "general"
     },
     {
-      "id": "surf-65270f88",
-      "assets": [
-        "STRK"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Starknet (STRK) - Privacy Perps - 01 Dec 2025",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:2271a2986094b:0-starknet-strk-privacy-perps-01-dec-2025/",
-      "published": 1763031634,
-      "fomo_risk": true,
-      "score": 0.206,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "noted",
-        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-      },
-      "matched_keywords": [
-        "mainnet",
-        "launch"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-5dd8b892",
-      "assets": [
-        "STRK"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Starknet (STRK) - V0.14.2 Mainnet Upgrade - 20 April 2026",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:a717435e6094b:0-starknet-strk-v0-14-2-mainnet-upgrade-20-april-2026/",
-      "published": 1776704432,
-      "fomo_risk": true,
-      "score": 0.206,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "noted",
-        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-      },
-      "matched_keywords": [
-        "mainnet",
-        "v0."
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-223d3a08",
-      "assets": [
-        "STRK"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Starknet successfully deploys STRK staking infrastructure on mainnet",
-      "source_class": "surf_cited",
-      "source_name": "COINNESS",
-      "source_type": "surf",
-      "url": "https://coinness.com/en/news/1112523",
-      "published": 1732523456,
-      "fomo_risk": true,
-      "score": 0.206,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "noted",
-        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-      },
-      "matched_keywords": [
-        "mainnet"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-939972de",
+      "id": "surf-a4803520",
       "assets": [],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Baby Doge: Plans to launch BabyDoge Properties service to enter the real estate RWA field",
+      "summary": "Bybit Megadrop Launches: SHARDS Launches 4 MNT Wealth Management Pools, Increasing MNT Empowerment",
       "source_class": "surf_cited",
       "source_name": "PANEWS",
       "source_type": "surf",
-      "url": "https://www.panewslab.com/en/articles/abdj7sbp",
-      "published": 1732441880,
+      "url": "https://www.panewslab.com/en/articles/32e9a1c1-c386-446c-98e2-1aea41d0fa91",
+      "published": 1756382400,
       "fomo_risk": true,
       "score": 0.206,
       "route": "archive",
@@ -763,7 +713,35 @@
         "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
+        "launches",
+        "launched",
         "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-eaac1e47",
+      "assets": [
+        "OP"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Coinbase\u2019s Base moves away from Optimism stack, OP token sinks",
+      "source_class": "surf_cited",
+      "source_name": "CRYPTODOTNEWS",
+      "source_type": "surf",
+      "url": "https://crypto.news/base-moves-away-from-optimism-stack-op-token-sinks/",
+      "published": 1771483112,
+      "fomo_risk": true,
+      "score": 0.206,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "hard fork"
       ],
       "query_context": "general"
     },
@@ -814,32 +792,6 @@
       },
       "matched_keywords": [
         "partners with"
-      ],
-      "query_context": ""
-    },
-    {
-      "id": "rss-61902dc7",
-      "assets": [
-        "OP"
-      ],
-      "type": "partnership",
-      "severity": "medium",
-      "summary": "Optimism moves 546.9M OP from future airdrops to ecosystem growth fund",
-      "source_class": "tier1_news",
-      "source_name": "CoinTelegraph",
-      "source_type": "rss",
-      "url": "https://cointelegraph.com/news/optimism-moves-5469m-op-from-future-airdrops-to-ecosystem-growth-fund?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "published": "2026-08-20T15:43:00+00:00",
-      "fomo_risk": false,
-      "score": 0.167,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "noted",
-        "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-      },
-      "matched_keywords": [
-        "partnership"
       ],
       "query_context": ""
     },
@@ -1124,10 +1076,34 @@
         "treasury"
       ],
       "query_context": ""
+    },
+    {
+      "id": "rss-8ef783a8",
+      "assets": [
+        "BTC"
+      ],
+      "type": "narrative",
+      "severity": "high",
+      "summary": "Bitcoin, ether and solana climb as another $1 billion shorts get wiped out",
+      "source_class": "tier1_news",
+      "source_name": "CoinDesk",
+      "source_type": "rss",
+      "url": "https://www.coindesk.com/markets/2026/08/21/bitcoin-ether-and-solana-climb-as-another-usd1-billion-shorts-get-wiped-out",
+      "published": "2026-08-21T04:56:30+00:00",
+      "fomo_risk": false,
+      "score": 0.051,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Narrative \u00b7 high \u00b7 ACCUMULATION \u2014 noted"
+      },
+      "matched_keywords": [],
+      "query_context": ""
     }
   ],
   "route_counts": {
-    "home": 2,
+    "home": 1,
     "macro": 10,
     "archive": 94
   },
@@ -1155,32 +1131,6 @@
       },
       "matched_keywords": [
         "hack"
-      ],
-      "query_context": ""
-    },
-    {
-      "id": "rss-9c4da1d3",
-      "assets": [
-        "ETH"
-      ],
-      "type": "unlock",
-      "severity": "medium",
-      "summary": "Gnosis Chain to Abandon Its Validator Set and Settle to Ethereum",
-      "source_class": "tier1_news",
-      "source_name": "The Defiant (RWA)",
-      "source_type": "rss",
-      "url": "https://thedefiant.io/news/blockchains/gnosis-chain-to-abandon-its-validator-set-and-settle-to-ethereum",
-      "published": "2026-08-19T14:25:49+00:00",
-      "fomo_risk": false,
-      "score": 0.643,
-      "route": "home",
-      "action_hint": {
-        "field": "SIZE",
-        "action": "down",
-        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-      },
-      "matched_keywords": [
-        "unlock"
       ],
       "query_context": ""
     }
@@ -1239,32 +1189,6 @@
       "query_context": "general"
     },
     {
-      "id": "surf-cc97d597",
-      "assets": [
-        "ARB"
-      ],
-      "type": "unlock",
-      "severity": "high",
-      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
-      "published": 1786245227,
-      "fomo_risk": true,
-      "score": 0.505,
-      "route": "macro",
-      "action_hint": {
-        "field": "SIZE",
-        "action": "down",
-        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-      },
-      "matched_keywords": [
-        "unlock"
-      ],
-      "query_context": "general"
-    },
-    {
       "id": "surf-21c9d55a",
       "assets": [
         "STRK"
@@ -1284,6 +1208,32 @@
         "field": "MONITOR",
         "action": "add_watch_item",
         "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f STRK \u0432 accumulation \u2014 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 MONITOR, \u043d\u0435 \u0432\u0445\u043e\u0434\u0438\u0442\u044c"
+      },
+      "matched_keywords": [
+        "unlock"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-cc97d597",
+      "assets": [
+        "ARB"
+      ],
+      "type": "unlock",
+      "severity": "high",
+      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
+      "published": 1786245227,
+      "fomo_risk": true,
+      "score": 0.505,
+      "route": "macro",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down",
+        "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
       },
       "matched_keywords": [
         "unlock"
@@ -1343,30 +1293,6 @@
       "query_context": ""
     },
     {
-      "id": "rss-50a5a5bf",
-      "assets": [],
-      "type": "regulation",
-      "severity": "medium",
-      "summary": "CFTC chair says agency will move forward on crypto regulation if CLARITY fails",
-      "source_class": "tier1_news",
-      "source_name": "CoinTelegraph",
-      "source_type": "rss",
-      "url": "https://cointelegraph.com/news/cftc-chair-crypto-regulation-without-clarity-act-congress?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "published": "2026-08-20T20:56:23+00:00",
-      "fomo_risk": false,
-      "score": 0.476,
-      "route": "macro",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
-      },
-      "matched_keywords": [
-        "cftc"
-      ],
-      "query_context": ""
-    },
-    {
       "id": "rss-6db31f40",
       "assets": [
         "ARB"
@@ -1393,18 +1319,18 @@
       "query_context": ""
     },
     {
-      "id": "surf-42c0895c",
+      "id": "surf-70b1ab26",
       "assets": [
-        "MORPHO"
+        "STRK"
       ],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Morpho rolls out Midnight for fixed term lending on Base",
-      "source_class": "surf_cited",
-      "source_name": "CRYPTODOTNEWS",
+      "summary": "Starknet Becomes First Rollup To Deploy Native Staking",
+      "source_class": "tier1_news",
+      "source_name": "THEDEFIANT",
       "source_type": "surf",
-      "url": "https://crypto.news/morpho-rolls-out-midnight-for-fixed-term-lending-on-base/",
-      "published": 1784647422,
+      "url": "https://thedefiant.io/news/defi/starknet-becomes-first-rollup-to-deploy-native-staking",
+      "published": 1732626480,
       "fomo_risk": false,
       "score": 0.412,
       "route": "macro",
@@ -1414,24 +1340,24 @@
         "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
-        "launches",
+        "launched",
         "launch"
       ],
       "query_context": "general"
     },
     {
-      "id": "surf-503af407",
+      "id": "surf-423b296d",
       "assets": [
-        "MORPHO"
+        "STRK"
       ],
       "type": "upgrade",
       "severity": "medium",
-      "summary": "Morpho launches fixed-rate lending protocol Midnight on Base to expand onchain credit markets",
-      "source_class": "tier1_news",
-      "source_name": "THEBLOCK",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Testnet - 11 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
       "source_type": "surf",
-      "url": "https://www.theblock.co/post/409062/morpho-midnight-fixed-rate-lending-protocol-base-onchain-credit-markets",
-      "published": 1784638800,
+      "url": "https://www.tradingview.com/news/coinmarketcal:ca2f6c7be094b:0-starknet-strk-starknet-v0-14-1-testnet-11-nov-2025/",
+      "published": 1761562824,
       "fomo_risk": false,
       "score": 0.412,
       "route": "macro",
@@ -1441,24 +1367,52 @@
         "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
       },
       "matched_keywords": [
-        "launches",
+        "mainnet",
+        "v0.",
         "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-c2e69194",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Starknet V0.14.1 Mainnet - 25 Nov 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:e9ceace3c094b:0-starknet-strk-starknet-v0-14-1-mainnet-25-nov-2025/",
+      "published": 1761562824,
+      "fomo_risk": false,
+      "score": 0.412,
+      "route": "macro",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "noted",
+        "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
       ],
       "query_context": "general"
     }
   ],
   "per_asset_counts": {
-    "BTC": 28,
-    "ETH": 6,
-    "LINK": 11,
+    "BTC": 29,
+    "LINK": 10,
     "ONDO": 11,
-    "ARB": 11,
     "STRK": 10,
+    "ARB": 10,
     "MORPHO": 4,
     "PENDLE": 7,
     "DOGE": 2,
+    "ETH": 6,
     "ETHFI": 10,
-    "OP": 13,
+    "OP": 12,
     "EIGEN": 2,
     "UNI": 3,
     "AAVE": 1
@@ -1727,140 +1681,6 @@
         "query_context": "general"
       }
     ],
-    "ARB": [
-      {
-        "id": "surf-cc97d597",
-        "assets": [
-          "ARB"
-        ],
-        "type": "unlock",
-        "severity": "high",
-        "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
-        "source_class": "surf_cited",
-        "source_name": "TRADINGVIEW",
-        "source_type": "surf",
-        "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
-        "published": 1786245227,
-        "fomo_risk": true,
-        "score": 0.505,
-        "route": "macro",
-        "action_hint": {
-          "field": "SIZE",
-          "action": "down",
-          "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-        },
-        "matched_keywords": [
-          "unlock"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "rss-6db31f40",
-        "assets": [
-          "ARB"
-        ],
-        "type": "regulation",
-        "severity": "medium",
-        "summary": "Arbitrum Activates Elara With Optional Compliance Filters for Dedicated Chains",
-        "source_class": "tier1_news",
-        "source_name": "The Defiant (RWA)",
-        "source_type": "rss",
-        "url": "https://thedefiant.io/news/blockchains/arbitrum-activates-elara-with-optional-compliance-filters-for-dedicated-chains",
-        "published": "2026-08-20T22:50:28+00:00",
-        "fomo_risk": false,
-        "score": 0.476,
-        "route": "macro",
-        "action_hint": {
-          "field": "MONITOR",
-          "action": "noted",
-          "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
-        },
-        "matched_keywords": [
-          "compliance"
-        ],
-        "query_context": ""
-      },
-      {
-        "id": "surf-6f699925",
-        "assets": [
-          "ARB"
-        ],
-        "type": "unlock",
-        "severity": "medium",
-        "summary": "Arbitrum (ARB) - 92.65MM Token Unlock - 16 Dec 2025",
-        "source_class": "surf_cited",
-        "source_name": "TRADINGVIEW",
-        "source_type": "surf",
-        "url": "https://www.tradingview.com/news/coinmarketcal:e73b9cc94094b:0-arbitrum-arb-92-65mm-token-unlock-16-dec-2025/",
-        "published": 1763787633,
-        "fomo_risk": true,
-        "score": 0.353,
-        "route": "macro",
-        "action_hint": {
-          "field": "SIZE",
-          "action": "down",
-          "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
-        },
-        "matched_keywords": [
-          "unlock",
-          "unlocks"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-93b059d6",
-        "assets": [
-          "ARB"
-        ],
-        "type": "upgrade",
-        "severity": "medium",
-        "summary": "Robinhood US Launches Arbitrum (ARB)",
-        "source_class": "surf_cited",
-        "source_name": "PANEWS",
-        "source_type": "surf",
-        "url": "https://www.panewslab.com/en/articles/ejsnjto8",
-        "published": 1741180229,
-        "fomo_risk": true,
-        "score": 0.206,
-        "route": "archive",
-        "action_hint": {
-          "field": "thesis_alive",
-          "action": "noted",
-          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-        },
-        "matched_keywords": [
-          "launches",
-          "launch"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-d214f47d",
-        "assets": [
-          "ARB"
-        ],
-        "type": "upgrade",
-        "severity": "medium",
-        "summary": "Arbitrum jumps 5% on Robinhood news \u2013 But THIS can ruin ARB\u2019s breakout",
-        "source_class": "surf_cited",
-        "source_name": "AMBCRYPTO",
-        "source_type": "surf",
-        "url": "https://ambcrypto.com/arbitrum-jumps-5-on-robinhood-news-but-what-can-ruin-arbs-breakout/",
-        "published": 1751468403,
-        "fomo_risk": true,
-        "score": 0.206,
-        "route": "archive",
-        "action_hint": {
-          "field": "thesis_alive",
-          "action": "noted",
-          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-        },
-        "matched_keywords": [
-          "launch"
-        ],
-        "query_context": "general"
-      }
-    ],
     "STRK": [
       {
         "id": "surf-21c9d55a",
@@ -1995,6 +1815,139 @@
           "launches",
           "launched",
           "launch"
+        ],
+        "query_context": "general"
+      }
+    ],
+    "ARB": [
+      {
+        "id": "surf-cc97d597",
+        "assets": [
+          "ARB"
+        ],
+        "type": "unlock",
+        "severity": "high",
+        "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
+        "published": 1786245227,
+        "fomo_risk": true,
+        "score": 0.505,
+        "route": "macro",
+        "action_hint": {
+          "field": "SIZE",
+          "action": "down",
+          "layman_ru": "\u26a0 UNLOCK \u0434\u043b\u044f HOLD \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE \u043d\u0430 25-50%"
+        },
+        "matched_keywords": [
+          "unlock"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "rss-6db31f40",
+        "assets": [
+          "ARB"
+        ],
+        "type": "regulation",
+        "severity": "medium",
+        "summary": "Arbitrum Activates Elara With Optional Compliance Filters for Dedicated Chains",
+        "source_class": "tier1_news",
+        "source_name": "The Defiant (RWA)",
+        "source_type": "rss",
+        "url": "https://thedefiant.io/news/blockchains/arbitrum-activates-elara-with-optional-compliance-filters-for-dedicated-chains",
+        "published": "2026-08-20T22:50:28+00:00",
+        "fomo_risk": false,
+        "score": 0.476,
+        "route": "macro",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Regulation \u00b7 medium \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [
+          "compliance"
+        ],
+        "query_context": ""
+      },
+      {
+        "id": "surf-93b059d6",
+        "assets": [
+          "ARB"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Robinhood US Launches Arbitrum (ARB)",
+        "source_class": "surf_cited",
+        "source_name": "PANEWS",
+        "source_type": "surf",
+        "url": "https://www.panewslab.com/en/articles/ejsnjto8",
+        "published": 1741180229,
+        "fomo_risk": true,
+        "score": 0.206,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launches",
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-d214f47d",
+        "assets": [
+          "ARB"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Arbitrum jumps 5% on Robinhood news \u2013 But THIS can ruin ARB\u2019s breakout",
+        "source_class": "surf_cited",
+        "source_name": "AMBCRYPTO",
+        "source_type": "surf",
+        "url": "https://ambcrypto.com/arbitrum-jumps-5-on-robinhood-news-but-what-can-ruin-arbs-breakout/",
+        "published": 1751468403,
+        "fomo_risk": true,
+        "score": 0.206,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "launch"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-2cab10dd",
+        "assets": [
+          "ARB"
+        ],
+        "type": "roadmap",
+        "severity": "high",
+        "summary": "Arbitrum Foundation plans to allocate $14 million to ARB to subsidize security audits of network projects",
+        "source_class": "surf_cited",
+        "source_name": "PANEWS",
+        "source_type": "surf",
+        "url": "https://www.panewslab.com/en/articles/1qp8bwp5",
+        "published": 1753709021,
+        "fomo_risk": true,
+        "score": 0.206,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "\ud83d\udcc5 Roadmap update \u2014 \u0443\u0447\u0435\u0441\u0442\u044c \u0432 scenarios, \u043d\u043e \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "plans to"
         ],
         "query_context": "general"
       }
@@ -2420,32 +2373,6 @@
     ],
     "OP": [
       {
-        "id": "surf-eaac1e47",
-        "assets": [
-          "OP"
-        ],
-        "type": "upgrade",
-        "severity": "medium",
-        "summary": "Coinbase\u2019s Base moves away from Optimism stack, OP token sinks",
-        "source_class": "surf_cited",
-        "source_name": "CRYPTODOTNEWS",
-        "source_type": "surf",
-        "url": "https://crypto.news/base-moves-away-from-optimism-stack-op-token-sinks/",
-        "published": 1771483112,
-        "fomo_risk": true,
-        "score": 0.206,
-        "route": "archive",
-        "action_hint": {
-          "field": "thesis_alive",
-          "action": "noted",
-          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
-        },
-        "matched_keywords": [
-          "hard fork"
-        ],
-        "query_context": "general"
-      },
-      {
         "id": "surf-51777565",
         "assets": [
           "ARB",
@@ -2474,30 +2401,30 @@
         "query_context": "general"
       },
       {
-        "id": "rss-61902dc7",
+        "id": "surf-eaac1e47",
         "assets": [
           "OP"
         ],
-        "type": "partnership",
+        "type": "upgrade",
         "severity": "medium",
-        "summary": "Optimism moves 546.9M OP from future airdrops to ecosystem growth fund",
-        "source_class": "tier1_news",
-        "source_name": "CoinTelegraph",
-        "source_type": "rss",
-        "url": "https://cointelegraph.com/news/optimism-moves-5469m-op-from-future-airdrops-to-ecosystem-growth-fund?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "published": "2026-08-20T15:43:00+00:00",
-        "fomo_risk": false,
-        "score": 0.167,
+        "summary": "Coinbase\u2019s Base moves away from Optimism stack, OP token sinks",
+        "source_class": "surf_cited",
+        "source_name": "CRYPTODOTNEWS",
+        "source_type": "surf",
+        "url": "https://crypto.news/base-moves-away-from-optimism-stack-op-token-sinks/",
+        "published": 1771483112,
+        "fomo_risk": true,
+        "score": 0.206,
         "route": "archive",
         "action_hint": {
           "field": "thesis_alive",
           "action": "noted",
-          "layman_ru": "Partnership \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
+          "layman_ru": "Upgrade \u2014 thesis support, \u041d\u0415 NEW_ENTRY"
         },
         "matched_keywords": [
-          "partnership"
+          "hard fork"
         ],
-        "query_context": ""
+        "query_context": "general"
       },
       {
         "id": "surf-2f8cd8bb",
@@ -2551,6 +2478,33 @@
         },
         "matched_keywords": [
           "collaboration"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-d3f251d7",
+        "assets": [
+          "ETH",
+          "OP"
+        ],
+        "type": "funding",
+        "severity": "low",
+        "summary": "Optimism awards 8M OP tokens to Ethereum and OP Stack contributors",
+        "source_class": "surf_cited",
+        "source_name": "COINNESS",
+        "source_type": "surf",
+        "url": "https://coinness.com/en/news/1109482",
+        "published": 1729606251,
+        "fomo_risk": true,
+        "score": 0.028,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Funding \u00b7 low \u00b7 ACCUMULATION \u2014 noted"
+        },
+        "matched_keywords": [
+          "funding round"
         ],
         "query_context": "general"
       }
