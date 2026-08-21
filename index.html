@@ -766,6 +766,24 @@ body > * {
 <div class="loading" id="precision-content">Loading...</div>
 </div></div></div>
 
+<!-- 4.4 · МОИ СДЕЛКИ -->
+<div class="section-trades-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      💼 Мои сделки
+    </div>
+    <div class="section-header-desc">
+      Открытые позиции, плавающий результат и сверка с решениями движка.
+      Считается в scripts/trade_journal.py.
+    </div>
+    <div class="level-label">Level 0 · portfolio</div>
+  </div>
+
+  <div class="card" style="padding: 20px; border-radius: 12px;">
+    <div id="trades-content">Loading trades...</div>
+  </div>
+</div>
+
 <!-- 4.5 · STRK · ЦЕЛИ ЦЕНЫ -->
 <div class="section-strk-targets-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
   <div class="section-header">
@@ -2473,6 +2491,124 @@ async function renderNewsImpact() {
   }
 }
 
+async function renderTrades() {
+  const el = document.getElementById('trades-content');
+  if (!el) return;
+
+  const j = await _loadCache('trade_journal.json');
+
+  if (!j) {
+    el.innerHTML = `<div style="color: var(--text-muted); font-size: 13px; line-height: 1.6;">
+      Журнал сделок пуст.<br>
+      <span style="font-size: 11px;">Записи добавляются в <code>data/history/trades.jsonl</code>, пересчёт каждые 6 часов.</span>
+    </div>`;
+    return;
+  }
+
+  const open = j.open_positions || [];
+  const closed = j.closed_positions || [];
+  const st = j.stats || {};
+  const ms = j.match_stats || {};
+  const ign = j.ignored_signals || [];
+
+  const fmt = (p) => p == null ? '—' : (p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2));
+  let out = '';
+
+  // ── ОТКРЫТЫЕ ПОЗИЦИИ ──
+  out += `<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Открытые позиции · ${open.length}</div>`;
+
+  if (open.length) {
+    out += `<div style="display: grid; gap: 8px;">`;
+    for (const p of open) {
+      const pnl = p.unrealized_pnl_pct;
+      const pnlColor = pnl == null ? 'var(--text-muted)' : pnl >= 0 ? '#059669' : '#DC2626';
+      const sideColor = (p.side === 'SHORT') ? '#EA580C' : '#059669';
+      const cat = (p.match && p.match.category) || '';
+      const catColor = cat === 'FOLLOWED' ? '#059669' : cat === 'AGAINST' ? '#DC2626' : '#6B7280';
+      const catLabel = cat === 'FOLLOWED' ? 'по сигналу' : cat === 'AGAINST' ? 'против сигнала' : 'без сигнала';
+
+      out += `<div style="padding: 12px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid ${sideColor};">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <span style="font-size: 16px; font-weight: 700;">${p.token}</span>
+            <span style="font-size: 12px; font-weight: 700; color: ${sideColor}; margin-left: 6px;">${p.side}</span>
+            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">вход $${fmt(p.entry_price)}${p.size_usd ? ' · $' + p.size_usd.toLocaleString() : ''}</span>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 18px; font-weight: 700; color: ${pnlColor};">${pnl == null ? '—' : (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%'}</div>
+            ${p.unrealized_pnl_usd != null ? `<div style="font-size: 11px; color: ${pnlColor};">${p.unrealized_pnl_usd >= 0 ? '+' : ''}$${Math.abs(p.unrealized_pnl_usd).toFixed(2)}</div>` : ''}
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--text-muted); flex-wrap: wrap; gap: 6px;">
+          <span>сейчас $${fmt(p.current_price)}${p.days_open != null ? ' · ' + p.days_open.toFixed(0) + 'д в позиции' : ''}</span>
+          <span style="color: ${catColor}; font-weight: 700;">${catLabel}</span>
+        </div>
+        ${p.match && p.match.text_ru ? `<div style="margin-top: 4px; font-size: 10px; color: var(--text-secondary);">${p.match.text_ru}</div>` : ''}
+      </div>`;
+    }
+    out += `</div>`;
+  } else {
+    out += `<div style="padding: 14px; background: var(--bg-secondary); border-radius: 8px; color: var(--text-muted); font-size: 12px;">
+      Открытых позиций нет
+    </div>`;
+  }
+
+  // ── ИТОГИ ──
+  if (st.n_closed) {
+    const avgColor = st.avg_pnl_pct >= 0 ? '#059669' : '#DC2626';
+    out += `<div style="margin-top: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Закрытые · ${st.n_closed}</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; font-size: 12px;">
+        <div><div style="color: var(--text-muted); font-size: 10px;">прибыльных</div><strong>${st.win_rate_pct}%</strong></div>
+        <div><div style="color: var(--text-muted); font-size: 10px;">средняя</div><strong style="color: ${avgColor};">${st.avg_pnl_pct >= 0 ? '+' : ''}${st.avg_pnl_pct}%</strong></div>
+        <div><div style="color: var(--text-muted); font-size: 10px;">медиана</div><strong>${st.median_pnl_pct >= 0 ? '+' : ''}${st.median_pnl_pct}%</strong></div>
+        <div><div style="color: var(--text-muted); font-size: 10px;">лучшая</div><strong style="color: #059669;">+${st.best_pct}%</strong></div>
+        <div><div style="color: var(--text-muted); font-size: 10px;">худшая</div><strong style="color: #DC2626;">${st.worst_pct}%</strong></div>
+        ${st.total_pnl_usd != null ? `<div><div style="color: var(--text-muted); font-size: 10px;">итого</div><strong style="color: ${st.total_pnl_usd >= 0 ? '#059669' : '#DC2626'};">${st.total_pnl_usd >= 0 ? '+' : ''}$${st.total_pnl_usd.toFixed(0)}</strong></div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  // ── СВЕРКА ──
+  const catKeys = Object.keys(ms);
+  if (catKeys.length) {
+    const labels = {FOLLOWED: 'следовала сигналу', AGAINST: 'против сигнала', NO_SIGNAL: 'сигнала не было'};
+    out += `<div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px;">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Сверка с движком</div>`;
+    for (const k of catKeys) {
+      const e = ms[k];
+      const col = k === 'FOLLOWED' ? '#059669' : k === 'AGAINST' ? '#DC2626' : '#6B7280';
+      out += `<div style="display: flex; justify-content: space-between; font-size: 12px; margin: 4px 0;">
+        <span style="color: ${col};">${labels[k] || k}</span>
+        <span>${e.n} позиций${e.win_rate_pct != null ? ` · прибыльных ${e.win_rate_pct}%` : ''}${e.avg_pnl_pct != null ? ` · ${e.avg_pnl_pct >= 0 ? '+' : ''}${e.avg_pnl_pct}%` : ''}</span>
+      </div>`;
+    }
+    out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-style: italic;">Осмысленно после 15-20 закрытых в каждой категории. Сейчас это накопление, не статистика.</div>
+    </div>`;
+  }
+
+  // ── УПУЩЕННОЕ ──
+  const realIgn = ign.filter(x => x.would_be_pnl_pct != null && !x.data_suspicious);
+  if (realIgn.length) {
+    out += `<div style="margin-top: 12px; padding: 12px; background: rgba(245, 158, 11, 0.06); border-radius: 8px; border-left: 3px solid #F59E0B;">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Сигналы без сделки · что было бы</div>`;
+    for (const x of realIgn.slice(0, 5)) {
+      const c = x.would_be_pnl_pct >= 0 ? '#059669' : '#DC2626';
+      out += `<div style="display: flex; justify-content: space-between; font-size: 12px; margin: 3px 0;">
+        <span><strong>${x.token}</strong> <span style="color: var(--text-muted); font-size: 10px;">сигнал ${x.size_pct}%</span></span>
+        <span style="color: ${c}; font-weight: 700;">${x.would_be_pnl_pct >= 0 ? '+' : ''}${x.would_be_pnl_pct}%</span>
+      </div>`;
+    }
+    out += `</div>`;
+  }
+
+  out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+    Записи ведутся вручную в data/history/trades.jsonl. Система ничего не исполняет — только считает.
+  </div>`;
+
+  el.innerHTML = out;
+}
+
 async function renderStrkTargets() {
   const el = document.getElementById('strk-targets-content');
   if (!el) return;
@@ -2801,6 +2937,7 @@ async function loadAll(manual = false) {
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
   safeRender('Scenarios', () => renderScenarios());
   safeRender('StrkTargets', () => renderStrkTargets());
+  safeRender('Trades', () => renderTrades());
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
@@ -3663,7 +3800,7 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti] = await Promise.all([
+  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
@@ -3675,6 +3812,7 @@ async function renderModalIntelligence(token) {
     _loadCache('hl_perps.json'),
     _loadCache('volume_profile.json'),
     _loadCache('cvd_multi.json'),
+    _loadCache('asset_compass.json'),
   ]);
 
   // Серверные данные v1.1: phase_analyzer + decision_engine + HL perps
@@ -3683,6 +3821,7 @@ async function renderModalIntelligence(token) {
   const hl = hlPerps && hlPerps.tokens && hlPerps.tokens[token] || null;
   const vp = volProfile && volProfile.tokens && volProfile.tokens[token] || null;
   const cvd = cvdMulti && cvdMulti.tokens && cvdMulti.tokens[token] || null;
+  const compass = compassAll && compassAll.tokens && compassAll.tokens[token] || null;
 
   // Новости по этому токену — нужны детектору противоречий.
   // Модуль News ниже рисует их сам, здесь мы их только считаем.
@@ -3902,6 +4041,100 @@ async function renderModalIntelligence(token) {
         Это анализ, не финансовая рекомендация. Все пороги задавались экспертно, качество будет измерено через 7 дней после первых прогнозов.
       </div></div>`;
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 🧭 КОМПАС · шкала SHORT ← → LONG
+  // Всё посчитано в scripts/asset_compass.py. Здесь только отрисовка:
+  // позиция маркера, ширина баров, цвета. Никаких вычислений вердикта.
+  // ═══════════════════════════════════════════════════════════════════
+  if (compass && compass.status === 'OK') {
+    const sc = compass.score;                 // готовый балл от -100 до +100
+    const markerPct = (sc + 100) / 2;         // позиция на шкале, только вёрстка
+    const vColor = sc >= 30 ? '#059669' : sc >= 10 ? '#10B981' :
+                   sc > -10 ? '#6B7280' : sc > -30 ? '#F59E0B' : '#DC2626';
+
+    html += `<div style="padding: 14px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; flex-wrap: wrap; gap: 6px;">
+        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">🧭 Компас актива</div>
+        <div style="font-size: 9px; color: var(--text-muted);">покрытие данных ${compass.data_coverage_pct}%</div>
+      </div>
+
+      <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px;">
+        <span style="font-size: 30px; font-weight: 700; color: ${vColor};">${sc >= 0 ? '+' : ''}${sc.toFixed(0)}</span>
+        <span style="font-size: 15px; font-weight: 700; color: ${vColor}; text-transform: uppercase;">${compass.verdict_ru}</span>
+      </div>
+
+      <div style="position: relative; margin: 14px 0 6px;">
+        <div style="height: 14px; border-radius: 7px; background: linear-gradient(to right, #DC2626 0%, #F59E0B 30%, #E5E7EB 50%, #10B981 70%, #059669 100%);"></div>
+        <div style="position: absolute; top: -5px; left: ${markerPct}%; transform: translateX(-50%);">
+          <div style="width: 3px; height: 24px; background: #111827; border-radius: 2px; box-shadow: 0 0 0 2px rgba(255,255,255,0.9);"></div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--text-muted);">
+        <span style="color: #DC2626;">◄ SHORT −100</span>
+        <span>0</span>
+        <span style="color: #059669;">LONG +100 ►</span>
+      </div>
+
+      <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">`;
+
+    const compLabels = {
+      onchain:     {ru: 'Ончейн',      icon: '⛓'},
+      derivatives: {ru: 'Деривативы',  icon: '⚖'},
+      technical:   {ru: 'Техника',     icon: '📊'},
+    };
+
+    for (const key of ['onchain', 'derivatives', 'technical']) {
+      const c = compass.components[key];
+      if (!c) continue;
+      const L = compLabels[key];
+      const v = c.score;
+      const cColor = v > 0.15 ? '#059669' : v < -0.15 ? '#DC2626' : '#6B7280';
+      // ширина бара — чисто вёрстка, значение уже посчитано в Python
+      const half = Math.abs(v) * 50;
+      const left = v < 0 ? 50 - half : 50;
+
+      html += `<div style="margin: 8px 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+          <span style="color: var(--text-secondary);">${L.icon} ${L.ru} <span style="color: var(--text-muted); font-size: 9px;">${Math.round(c.weight * 100)}%</span></span>
+          <span style="font-weight: 700; color: ${cColor};">${v >= 0 ? '+' : ''}${v.toFixed(2)}</span>
+        </div>
+        <div style="position: relative; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden;">
+          <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border);"></div>
+          <div style="position: absolute; left: ${left}%; width: ${half}%; top: 0; bottom: 0; background: ${cColor}; border-radius: 4px;"></div>
+        </div>`;
+
+      if (c.parts && c.parts.length) {
+        html += `<div style="margin-top: 3px;">`;
+        for (const p of c.parts) {
+          const pc = p.value > 0 ? '#059669' : p.value < 0 ? '#DC2626' : 'var(--text-muted)';
+          html += `<div style="font-size: 10px; color: var(--text-muted); line-height: 1.5;">
+            <span style="color: ${pc}; font-weight: 700;">${p.value >= 0 ? '+' : ''}${p.value.toFixed(2)}</span>
+            ${p.detail}
+          </div>`;
+        }
+        html += `</div>`;
+      }
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+
+    // Вердикт движка рядом — оба из одного файла, разойтись не могут
+    if (compass.decision_action) {
+      const da = compass.decision_action;
+      const daColor = da === 'ВХОД ЧАСТЬЮ' ? '#059669' :
+                      da === 'НЕ ВХОДИТЬ' ? '#DC2626' : '#F59E0B';
+      html += `<div style="margin-top: 10px; padding: 8px; background: var(--bg); border-radius: 6px; font-size: 11px;">
+        <span style="color: var(--text-muted);">Решение движка:</span>
+        <strong style="color: ${daColor};"> ${da}${compass.decision_size_pct ? ' · ' + compass.decision_size_pct + '%' : ''}</strong>
+      </div>`;
+    }
+
+    html += `<div style="font-size: 9px; color: var(--text-muted); margin-top: 8px; font-style: italic;">
+      Считается в scripts/asset_compass.py каждые 30 минут. Веса и пороги экспертные, на истории не проверялись.
+    </div></div>`;
   }
 
   // ═══════════════════════════════════════════════════════════════════
