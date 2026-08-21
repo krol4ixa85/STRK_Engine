@@ -2491,6 +2491,113 @@ async function renderNewsImpact() {
   }
 }
 
+function _tradePin() {
+  let pin = null;
+  try { pin = localStorage.getItem('strk_scan_pin'); } catch (e) {}
+  if (!pin) {
+    pin = prompt('PIN (тот же, что для скана):');
+    if (pin) { try { localStorage.setItem('strk_scan_pin', pin); } catch (e) {} }
+  }
+  return pin;
+}
+
+// Быстрое закрытие: подставляет CLOSE и текущую цену в форму,
+// разворачивает её и прокручивает к кнопке. Ничего не отправляет сама —
+// решение о записи остаётся за человеком.
+function quickClose(token, price) {
+  const wrap = document.getElementById('trade-form-wrap');
+  if (wrap) wrap.open = true;
+  const t = document.getElementById('tr-token');
+  const a = document.getElementById('tr-action');
+  const p = document.getElementById('tr-price');
+  const n = document.getElementById('tr-note');
+  if (t) t.value = token;
+  if (a) a.value = 'CLOSE';
+  if (p) p.value = price != null ? price : '';
+  if (n) n.value = '';
+  if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function loadRawTrades() {
+  const box = document.getElementById('raw-trades');
+  if (!box) return;
+  const pin = _tradePin();
+  if (!pin) { box.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Нужен PIN</div>'; return; }
+
+  box.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Загружаю журнал…</div>';
+
+  let data = {};
+  try {
+    const r = await fetch(TRADES_LIST_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Scan-Pin': pin },
+      body: '{}',
+    });
+    data = await r.json();
+    if (r.status === 403) { try { localStorage.removeItem('strk_scan_pin'); } catch(e) {} }
+  } catch (e) {
+    box.innerHTML = `<div style="font-size:12px;color:#DC2626;">Воркер недоступен: ${e}</div>`;
+    return;
+  }
+
+  if (!data.ok) {
+    box.innerHTML = `<div style="font-size:12px;color:#DC2626;">${data.error || 'ошибка чтения'}</div>`;
+    return;
+  }
+
+  const recs = (data.records || []).slice().reverse();
+  if (!recs.length) {
+    box.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Журнал пуст</div>';
+    return;
+  }
+
+  const fmt = (p) => p == null ? '—' : (p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2));
+  let out = '';
+  for (const r of recs) {
+    const id = r.id || `${r.token}-${String(r.ts || '').replace(/[:.]/g, '')}`;
+    const isOpen = ['LONG', 'SHORT', 'BUY'].includes(r.action);
+    const col = r.action === 'SHORT' ? '#EA580C' : isOpen ? '#059669' : '#6B7280';
+    const when = r.ts ? new Date(r.ts).toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    out += `<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 9px; background: var(--bg); border-radius: 5px; margin: 4px 0; font-size: 12px;">
+      <div style="flex: 1; min-width: 0;">
+        <strong>${r.token}</strong>
+        <span style="color: ${col}; font-weight: 700; margin-left: 5px;">${r.action}</span>
+        <span style="color: var(--text-muted); margin-left: 5px;">$${fmt(r.price)}${r.size_usd ? ' · $' + r.size_usd : ''}</span>
+        <span style="color: var(--text-muted); font-size: 10px; margin-left: 5px;">${when}</span>
+        ${r.note ? `<div style="color: var(--text-muted); font-size: 10px; margin-top: 2px;">${r.note}</div>` : ''}
+      </div>
+      <button onclick="deleteTrade('${id}')" style="padding: 4px 9px; background: transparent; color: #DC2626; border: 1px solid rgba(220,38,38,0.35); border-radius: 4px; font-size: 11px; cursor: pointer; flex-shrink: 0;">удалить</button>
+    </div>`;
+  }
+  out += `<div style="font-size:10px;color:var(--text-muted);margin-top:8px;font-style:italic;">Всего записей: ${data.count}. Удаление правит trades.jsonl, история изменений остаётся в коммитах git.</div>`;
+  box.innerHTML = out;
+}
+
+async function deleteTrade(id) {
+  if (!confirm('Удалить эту запись из журнала?')) return;
+  const pin = _tradePin();
+  if (!pin) return;
+
+  let data = {};
+  try {
+    const r = await fetch(TRADE_DELETE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Scan-Pin': pin },
+      body: JSON.stringify({ id }),
+    });
+    data = await r.json();
+  } catch (e) {
+    alert('Воркер недоступен: ' + e);
+    return;
+  }
+
+  if (!data.ok) {
+    alert('Не удалилось: ' + (data.error || 'нет деталей'));
+    return;
+  }
+  await loadRawTrades();
+}
+
 async function submitTrade() {
   // Только сбор значений и отправка. Валидация и запись — на сервере.
   const btn = document.getElementById('tr-submit');
@@ -2663,9 +2770,12 @@ async function renderTrades() {
             ${p.unrealized_pnl_usd != null ? `<div style="font-size: 11px; color: ${pnlColor};">${p.unrealized_pnl_usd >= 0 ? '+' : ''}$${Math.abs(p.unrealized_pnl_usd).toFixed(2)}</div>` : ''}
           </div>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--text-muted); flex-wrap: wrap; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10px; color: var(--text-muted); flex-wrap: wrap; gap: 6px;">
           <span>сейчас $${fmt(p.current_price)}${p.days_open != null ? ' · ' + p.days_open.toFixed(0) + 'д в позиции' : ''}</span>
-          <span style="color: ${catColor}; font-weight: 700;">${catLabel}</span>
+          <span style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: ${catColor}; font-weight: 700;">${catLabel}</span>
+            <button onclick="quickClose('${p.token}', ${p.current_price != null ? p.current_price : 'null'})" style="padding: 3px 8px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; cursor: pointer;">закрыть</button>
+          </span>
         </div>
         ${p.match && p.match.text_ru ? `<div style="margin-top: 4px; font-size: 10px; color: var(--text-secondary);">${p.match.text_ru}</div>` : ''}
       </div>`;
@@ -2726,8 +2836,16 @@ async function renderTrades() {
     out += `</div>`;
   }
 
+  // ── УПРАВЛЕНИЕ ЗАПИСЯМИ ──
+  out += `<details style="margin-top: 14px;" ontoggle="if(this.open) loadRawTrades();">
+    <summary style="cursor: pointer; padding: 8px 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-secondary); user-select: none;">
+      ✎ Все записи журнала · править и удалять
+    </summary>
+    <div id="raw-trades" style="margin-top: 8px;"></div>
+  </details>`;
+
   out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 10px; font-style: italic;">
-    Записи ведутся вручную в data/history/trades.jsonl. Система ничего не исполняет — только считает.
+    Записи хранятся в data/history/trades.jsonl. Система ничего не исполняет — только считает.
   </div>`;
 
   el.innerHTML = out;
@@ -5063,6 +5181,8 @@ async function loadTokenScanCache(token) {
 // ═══════════════════════════════════════════════════════════════
 const SCAN_ENDPOINT = 'https://flat-night-190d.krol4ixa85.workers.dev/scan';
 const TRADE_ENDPOINT = 'https://flat-night-190d.krol4ixa85.workers.dev/trade';
+const TRADES_LIST_ENDPOINT = 'https://flat-night-190d.krol4ixa85.workers.dev/trades';
+const TRADE_DELETE_ENDPOINT = 'https://flat-night-190d.krol4ixa85.workers.dev/trade/delete';
 
 function _scanPin() {
   let pin = null;
