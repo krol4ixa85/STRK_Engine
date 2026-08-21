@@ -29,6 +29,12 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Volume Profile · КАЖДЫЕ 6 ЧАСОВ. POC/VAH/VAL/HVN из бесплатных
+    # свечей Hyperliquid. Даёт ЦЕЛИ — куда стремится цена.
+    - cron: '35 1,7,13,19 * * *'
+    # CVD Multi · КАЖДЫЕ 30 МИНУТ. Агрессия покупателей/продавцов
+    # по всем токенам через OKX taker-volume. Ловит дивергенции.
+    - cron: '0,30 * * * *'
     # HL Trade Collector · КАЖДЫЕ 15 МИНУТ. Собирает публичные сделки
     # >$500 по 10 нашим ключевым токенам в append-only лог.
     # База для будущего whale-watchlist — за 2-3 дня накопится достаточно
@@ -90,6 +96,8 @@ on:
           - phase_analyzer
           - hl_perps
           - hl_trades
+          - volume_profile
+          - cvd_multi
           - decision_engine
           - decision_verify
           - archivist
@@ -992,6 +1000,62 @@ jobs:
           [ -f data/cache/hl_trades_status.json ] && git add data/cache/hl_trades_status.json || echo "no status"
           [ -f data/cache/.hl_seen_hashes.json ] && git add data/cache/.hl_seen_hashes.json || echo "no seen"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl trades [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # VOLUME PROFILE · POC/VAH/VAL/HVN каждые 6 часов · 0 кредитов
+  # Источник — бесплатные свечи Hyperliquid (candleSnapshot).
+  # Отвечает на вопрос "куда стремится цена": магниты объёма.
+  # ============================================================
+  volume_profile:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '35 1,7,13,19 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'volume_profile')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Build volume profiles
+        run: python3 scripts/collectors/volume_profile_collector.py
+      - name: Commit volume_profile.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/volume_profile.json ] && git add data/cache/volume_profile.json || echo "no vp"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: volume profile [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # CVD MULTI · агрессия покупателей/продавцов каждые 30 мин · 0 кредитов
+  # OKX taker-volume по всем токенам. Ловит DISTRIBUTION_DIV
+  # (цена вверх + агрессия продающая) — классический сигнал вершины.
+  # ============================================================
+  cvd_multi:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0,30 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'cvd_multi')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Collect CVD for all tokens
+        run: python3 scripts/collectors/cvd_multi_collector.py
+      - name: Commit cvd_multi.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/cvd_multi.json ] && git add data/cache/cvd_multi.json || echo "no cvd"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: cvd multi [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================

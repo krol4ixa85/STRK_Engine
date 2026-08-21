@@ -1,6 +1,6 @@
 {
-  "computed_at": "2026-08-21T09:48:57.571493+00:00",
-  "engine_version": "1.1",
+  "computed_at": "2026-08-21T11:05:34.149422+00:00",
+  "engine_version": "1.2",
   "verify_after_days": 7,
   "regime": {
     "name": "NEUTRAL_MIXED",
@@ -9,7 +9,7 @@
     "why": "смешанные сигналы; доминация BTC 59.2% — альты под давлением"
   },
   "tokens_evaluated": 31,
-  "tokens_actionable": 8,
+  "tokens_actionable": 6,
   "tokens_suspicious_data": 6,
   "rules_status": "HYPOTHESIS · пороги вручную, на истории не проверены",
   "decisions": {
@@ -46,7 +46,41 @@
       },
       "unified_verdict": null,
       "price_at_decision": 100.7,
-      "flow_accel_4w_usd": -5331600
+      "flow_accel_4w_usd": -5331600,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 100.7,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 102.806125,
+            "distance_pct": -9.03,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 101.52646,
+            "distance_pct": -10.16,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 100.09552,
+            "distance_pct": -11.43,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "suggested_stop": {
+          "price": 102.806125,
+          "distance_pct": -9.03,
+          "label": "VAH 7d"
+        }
+      }
     },
     "AIXBT": {
       "token": "AIXBT",
@@ -82,7 +116,56 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.01836441,
-      "flow_accel_4w_usd": -1300
+      "flow_accel_4w_usd": -1300,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.01836441,
+        "targets_up": [
+          {
+            "price": 0.021589,
+            "distance_pct": 5.19,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.018376,
+            "distance_pct": -10.47,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 7.21
+          },
+          {
+            "price": 0.018305,
+            "distance_pct": -10.81,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.018054,
+            "distance_pct": -12.03,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          }
+        ],
+        "first_target": {
+          "price": 0.021589,
+          "distance_pct": 5.19,
+          "label": "VAH 90d"
+        },
+        "suggested_stop": {
+          "price": 0.018376,
+          "distance_pct": -10.47,
+          "label": "HVN 90d"
+        },
+        "risk_reward": 0.5
+      }
     },
     "AKT": {
       "token": "AKT",
@@ -119,7 +202,10 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.50419424,
-      "flow_accel_4w_usd": 4500
+      "flow_accel_4w_usd": 4500,
+      "cvd_consensus": null,
+      "vp_position": null,
+      "price_targets": null
     },
     "ARB": {
       "token": "ARB",
@@ -181,7 +267,56 @@
       },
       "unified_verdict": "AVOID",
       "price_at_decision": 0.88719743,
-      "flow_accel_4w_usd": 73600
+      "flow_accel_4w_usd": 73600,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.88719743,
+        "targets_up": [
+          {
+            "price": 1.084883,
+            "distance_pct": 6.75,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.998756,
+            "distance_pct": -1.73,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.43
+          },
+          {
+            "price": 0.994865,
+            "distance_pct": -2.11,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.988623,
+            "distance_pct": -2.72,
+            "label": "POC 90d",
+            "kind": "POC",
+            "window": "90d"
+          }
+        ],
+        "first_target": {
+          "price": 1.084883,
+          "distance_pct": 6.75,
+          "label": "VAH 90d"
+        },
+        "suggested_stop": {
+          "price": 0.998756,
+          "distance_pct": -1.73,
+          "label": "HVN 90d"
+        },
+        "risk_reward": 3.9
+      }
     },
     "BONK": {
       "token": "BONK",
@@ -241,12 +376,15 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.144705,
-      "flow_accel_4w_usd": -70500
+      "flow_accel_4w_usd": -70500,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": null,
+      "price_targets": null
     },
     "CRV": {
       "token": "CRV",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 17,
+      "size_pct": 4,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "ACCEL_UP",
@@ -258,7 +396,9 @@
         "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
         "Динамика потока: приток разгоняется — лучшее окно для входа.",
         "Поток ускоряется → размер 25% → 31%.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%.",
+        "CVD: лёгкий перевес продавцов — размер 17% → 8%.",
+        "Volume Profile: цена выше зоны стоимости на 21.0% — объёмной поддержки сверху нет. Цена на 58% выше справедливой — размер 8% → 4%."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -271,7 +411,9 @@
       "rules_fired": [
         "phase:EARLY_ACCUMULATION",
         "flow_accel_up_boost",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "cvd_sell_pressure_cut",
+        "vp_far_above_value_cut"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -280,7 +422,42 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.25803166,
-      "flow_accel_4w_usd": 1233900
+      "flow_accel_4w_usd": 1233900,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.25803166,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 0.271188,
+            "distance_pct": -15.34,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.264654,
+            "distance_pct": -17.38,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.245235,
+            "distance_pct": -23.44,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 7.9
+          }
+        ],
+        "suggested_stop": {
+          "price": 0.271188,
+          "distance_pct": -15.34,
+          "label": "VAH 7d"
+        }
+      }
     },
     "DOGE": {
       "token": "DOGE",
@@ -309,7 +486,7 @@
     "EIGEN": {
       "token": "EIGEN",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 14,
+      "size_pct": 5,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "STABLE_ZERO",
@@ -326,7 +503,9 @@
       "notes": [
         "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%.",
+        "CVD: лёгкий перевес продавцов — размер 14% → 7%.",
+        "Volume Profile: цена выше зоны стоимости на 5.6% — объёмной поддержки сверху нет — размер 7% → 5%."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -338,7 +517,9 @@
       ],
       "rules_fired": [
         "phase:EARLY_ACCUMULATION",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "cvd_sell_pressure_cut",
+        "vp_above_value_cut"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -347,12 +528,76 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.209072,
-      "flow_accel_4w_usd": -237300
+      "flow_accel_4w_usd": -237300,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.209072,
+        "targets_up": [
+          {
+            "price": 0.2263,
+            "distance_pct": 6.19,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.59
+          },
+          {
+            "price": 0.22958,
+            "distance_pct": 7.73,
+            "label": "POC 90d",
+            "kind": "POC",
+            "window": "90d"
+          },
+          {
+            "price": 0.22958,
+            "distance_pct": 7.73,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.67
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.201744,
+            "distance_pct": -5.33,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.19842,
+            "distance_pct": -6.89,
+            "label": "VAL 90d",
+            "kind": "VAL",
+            "window": "90d"
+          },
+          {
+            "price": 0.19658,
+            "distance_pct": -7.75,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          }
+        ],
+        "first_target": {
+          "price": 0.2263,
+          "distance_pct": 6.19,
+          "label": "HVN 90d"
+        },
+        "suggested_stop": {
+          "price": 0.201744,
+          "distance_pct": -5.33,
+          "label": "VAH 30d"
+        },
+        "risk_reward": 1.16
+      }
     },
     "ETHFI": {
       "token": "ETHFI",
-      "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 9,
+      "action": "ЖДАТЬ",
+      "size_pct": 0,
       "stage": "ACCUMULATION_PHASE_B",
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
       "flow_regime": "STALLING_UP",
@@ -367,7 +612,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $4.1M — фандинг слабый сигнал."
+          "text": "OI $4.2M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 1,
@@ -375,9 +620,11 @@
         "Фаза Dune: ACCUMULATION_PHASE_B. Wyckoff Phase B — построение базы",
         "Динамика потока: приток есть, но темп падает — возможная вершина.",
         "Приток есть, но темп падает — вершина возможна. Размер 33% → 16%.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 16% → 9%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 16% → 9%.",
+        "CVD: агрессия продавцов на нескольких окнах (score -8). Агрессия против входа — размер обнулён."
       ],
       "triggers": [
+        "Появится ACCEL_UP",
         "Dune-фаза перейдёт в MID_ACCUMULATION",
         "Волна FOMO-заголовков спадёт",
         "Режим рынка станет BULL_BIAS или лучше"
@@ -390,7 +637,8 @@
       "rules_fired": [
         "phase:ACCUMULATION_PHASE_B",
         "flow_stalling_cut",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "cvd_strong_sell_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -399,7 +647,43 @@
       },
       "unified_verdict": "HOLD_STRONG",
       "price_at_decision": 0.556656,
-      "flow_accel_4w_usd": -637200
+      "flow_accel_4w_usd": -637200,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.556656,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 0.548162,
+            "distance_pct": -1.8,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.500463,
+            "distance_pct": -10.35,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 6.74
+          },
+          {
+            "price": 0.483872,
+            "distance_pct": -13.32,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 7.68
+          }
+        ],
+        "suggested_stop": {
+          "price": 0.548162,
+          "distance_pct": -1.8,
+          "label": "VAH 7d"
+        }
+      }
     },
     "FET": {
       "token": "FET",
@@ -435,12 +719,76 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.1283935,
-      "flow_accel_4w_usd": 67500
+      "flow_accel_4w_usd": 67500,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.1283935,
+        "targets_up": [
+          {
+            "price": 0.185477,
+            "distance_pct": 14.55,
+            "label": "POC 90d",
+            "kind": "POC",
+            "window": "90d"
+          },
+          {
+            "price": 0.185477,
+            "distance_pct": 14.55,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.38
+          },
+          {
+            "price": 0.255058,
+            "distance_pct": 57.52,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.154929,
+            "distance_pct": -4.32,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 3.5
+          },
+          {
+            "price": 0.15457,
+            "distance_pct": -4.54,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.149838,
+            "distance_pct": -7.46,
+            "label": "VAL 90d",
+            "kind": "VAL",
+            "window": "90d"
+          }
+        ],
+        "first_target": {
+          "price": 0.185477,
+          "distance_pct": 14.55,
+          "label": "POC 90d"
+        },
+        "suggested_stop": {
+          "price": 0.154929,
+          "distance_pct": -4.32,
+          "label": "HVN 90d"
+        },
+        "risk_reward": 3.37
+      }
     },
     "FIL": {
       "token": "FIL",
-      "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 14,
+      "action": "ЖДАТЬ",
+      "size_pct": 0,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "STABLE_ZERO",
@@ -451,7 +799,8 @@
       "notes": [
         "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%.",
+        "CVD: агрессия продавцов на нескольких окнах (score -6). Агрессия против входа — размер обнулён."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -463,7 +812,8 @@
       ],
       "rules_fired": [
         "phase:EARLY_ACCUMULATION",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "cvd_strong_sell_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -472,7 +822,57 @@
       },
       "unified_verdict": "HOLD",
       "price_at_decision": 0.67056584,
-      "flow_accel_4w_usd": -4200
+      "flow_accel_4w_usd": -4200,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.67056584,
+        "targets_up": [
+          {
+            "price": 0.864421,
+            "distance_pct": 11.2,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.771646,
+            "distance_pct": -0.74,
+            "label": "POC 90d",
+            "kind": "POC",
+            "window": "90d"
+          },
+          {
+            "price": 0.771646,
+            "distance_pct": -0.74,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 6.2
+          },
+          {
+            "price": 0.76188,
+            "distance_pct": -1.99,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 5.99
+          }
+        ],
+        "first_target": {
+          "price": 0.864421,
+          "distance_pct": 11.2,
+          "label": "VAH 90d"
+        },
+        "suggested_stop": {
+          "price": 0.771646,
+          "distance_pct": -0.74,
+          "label": "POC 90d"
+        },
+        "risk_reward": 15.14
+      }
     },
     "GRT": {
       "token": "GRT",
@@ -509,7 +909,10 @@
       },
       "unified_verdict": "AVOID",
       "price_at_decision": 0.01361961,
-      "flow_accel_4w_usd": 61700
+      "flow_accel_4w_usd": 61700,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": null,
+      "price_targets": null
     },
     "LDO": {
       "token": "LDO",
@@ -524,7 +927,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $3.2M — фандинг слабый сигнал."
+          "text": "OI $3.1M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
@@ -550,12 +953,47 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.343068,
-      "flow_accel_4w_usd": -2822200
+      "flow_accel_4w_usd": -2822200,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.343068,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 0.34295,
+            "distance_pct": -4.98,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.337681,
+            "distance_pct": -6.44,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.334485,
+            "distance_pct": -7.32,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 5.89
+          }
+        ],
+        "suggested_stop": {
+          "price": 0.34295,
+          "distance_pct": -4.98,
+          "label": "VAH 30d"
+        }
+      }
     },
     "LINK": {
       "token": "LINK",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 46,
+      "size_pct": 23,
       "stage": "MID_ACCUMULATION_STRONG",
       "phase_verdict_dune": "MID_ACCUMULATION_STRONG",
       "flow_regime": "ACCEL_UP",
@@ -573,7 +1011,8 @@
         "Фаза Dune: MID_ACCUMULATION_STRONG. Зрелое накопление подтверждено сигналами силы",
         "Динамика потока: приток разгоняется — лучшее окно для входа.",
         "Поток ускоряется → размер 66% → 82%.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 82% → 46%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 82% → 46%.",
+        "Volume Profile: цена выше зоны стоимости на 17.3% — объёмной поддержки сверху нет. Цена на 38% выше справедливой — размер 46% → 23%."
       ],
       "triggers": [
         "Волна FOMO-заголовков спадёт",
@@ -587,7 +1026,8 @@
       "rules_fired": [
         "phase:MID_ACCUMULATION_STRONG",
         "flow_accel_up_boost",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "vp_far_above_value_cut"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -596,12 +1036,47 @@
       },
       "unified_verdict": null,
       "price_at_decision": 11.08,
-      "flow_accel_4w_usd": 11566800
+      "flow_accel_4w_usd": 11566800,
+      "cvd_consensus": "MIXED",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 11.08,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 10.688038,
+            "distance_pct": -6.11,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 9.707546,
+            "distance_pct": -14.73,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 9.491476,
+            "distance_pct": -16.62,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 9.12
+          }
+        ],
+        "suggested_stop": {
+          "price": 10.688038,
+          "distance_pct": -6.11,
+          "label": "VAH 7d"
+        }
+      }
     },
     "MNT": {
       "token": "MNT",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 17,
+      "size_pct": 8,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "ACCEL_UP",
@@ -614,7 +1089,8 @@
         "Динамика потока: приток разгоняется — лучшее окно для входа.",
         "Поток ускоряется → размер 25% → 31%.",
         "Дивергенция в нашу пользу: цена -52% за 30д, а деньги заходят $+0.5M — накопление на просадке.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%.",
+        "Volume Profile: цена выше зоны стоимости на 14.4% — объёмной поддержки сверху нет. Цена на 29% выше справедливой — размер 17% → 8%."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -628,7 +1104,8 @@
         "phase:EARLY_ACCUMULATION",
         "flow_accel_up_boost",
         "bullish_divergence_note",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "vp_far_above_value_cut"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -637,12 +1114,61 @@
       },
       "unified_verdict": "HOLD",
       "price_at_decision": 0.55421455,
-      "flow_accel_4w_usd": 884500
+      "flow_accel_4w_usd": 884500,
+      "cvd_consensus": null,
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.55421455,
+        "targets_up": [
+          {
+            "price": 0.535396,
+            "distance_pct": 3.51,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.514617,
+            "distance_pct": -0.5,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 8.27
+          },
+          {
+            "price": 0.493415,
+            "distance_pct": -4.6,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.486347,
+            "distance_pct": -5.97,
+            "label": "POC 7d",
+            "kind": "POC",
+            "window": "7d"
+          }
+        ],
+        "first_target": {
+          "price": 0.535396,
+          "distance_pct": 3.51,
+          "label": "VAH 90d"
+        },
+        "suggested_stop": {
+          "price": 0.514617,
+          "distance_pct": -0.5,
+          "label": "HVN 7d"
+        },
+        "risk_reward": 7.02
+      }
     },
     "MORPHO": {
       "token": "MORPHO",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 18,
+      "size_pct": 16,
       "stage": "ACCUMULATION_PHASE_B",
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
       "flow_regime": "STEADY_UP",
@@ -659,7 +1185,9 @@
       "notes": [
         "Фаза Dune: ACCUMULATION_PHASE_B. Wyckoff Phase B — построение базы",
         "Динамика потока: стабильный приток без ускорения.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 33% → 18%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 33% → 18%.",
+        "CVD подтверждает: агрессия покупателей на нескольких окнах — размер 18% → 22%.",
+        "Volume Profile: цена выше зоны стоимости на 14.0% — объёмной поддержки сверху нет — размер 22% → 16%."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -672,7 +1200,9 @@
       ],
       "rules_fired": [
         "phase:ACCUMULATION_PHASE_B",
-        "regime:NEUTRAL_MIXED"
+        "regime:NEUTRAL_MIXED",
+        "cvd_strong_buy_boost",
+        "vp_above_value_cut"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -681,7 +1211,42 @@
       },
       "unified_verdict": null,
       "price_at_decision": 2.27,
-      "flow_accel_4w_usd": -27200
+      "flow_accel_4w_usd": -27200,
+      "cvd_consensus": "STRONG_BUY_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 2.27,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 2.213488,
+            "distance_pct": -4.27,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 2.152396,
+            "distance_pct": -6.91,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          },
+          {
+            "price": 2.110234,
+            "distance_pct": -8.73,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 6.29
+          }
+        ],
+        "suggested_stop": {
+          "price": 2.213488,
+          "distance_pct": -4.27,
+          "label": "VAH 7d"
+        }
+      }
     },
     "ONDO": {
       "token": "ONDO",
@@ -717,7 +1282,72 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.367172,
-      "flow_accel_4w_usd": -808300
+      "flow_accel_4w_usd": -808300,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "INSIDE_VALUE",
+      "price_targets": {
+        "current_price": 0.367172,
+        "targets_up": [
+          {
+            "price": 0.40124,
+            "distance_pct": 5.97,
+            "label": "HVN 30d",
+            "kind": "HVN",
+            "window": "30d",
+            "volume_share_pct": 4.16
+          },
+          {
+            "price": 0.40337,
+            "distance_pct": 6.54,
+            "label": "POC 30d",
+            "kind": "POC",
+            "window": "30d"
+          },
+          {
+            "price": 0.40337,
+            "distance_pct": 6.54,
+            "label": "HVN 30d",
+            "kind": "HVN",
+            "window": "30d",
+            "volume_share_pct": 4.44
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.364972,
+            "distance_pct": -3.6,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.53
+          },
+          {
+            "price": 0.361604,
+            "distance_pct": -4.49,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.35861,
+            "distance_pct": -5.28,
+            "label": "POC 90d",
+            "kind": "POC",
+            "window": "90d"
+          }
+        ],
+        "first_target": {
+          "price": 0.40124,
+          "distance_pct": 5.97,
+          "label": "HVN 30d"
+        },
+        "suggested_stop": {
+          "price": 0.364972,
+          "distance_pct": -3.6,
+          "label": "HVN 90d"
+        },
+        "risk_reward": 1.66
+      }
     },
     "OP": {
       "token": "OP",
@@ -732,7 +1362,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $4.3M — фандинг слабый сигнал."
+          "text": "OI $4.4M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
@@ -760,7 +1390,57 @@
       },
       "unified_verdict": "HOLD_STRONG",
       "price_at_decision": 0.098372,
-      "flow_accel_4w_usd": 96000
+      "flow_accel_4w_usd": 96000,
+      "cvd_consensus": "MIXED",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.098372,
+        "targets_up": [
+          {
+            "price": 0.105321,
+            "distance_pct": 4.24,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.096189,
+            "distance_pct": -4.8,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.62
+          },
+          {
+            "price": 0.09404,
+            "distance_pct": -6.93,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.63
+          },
+          {
+            "price": 0.091582,
+            "distance_pct": -9.36,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          }
+        ],
+        "first_target": {
+          "price": 0.105321,
+          "distance_pct": 4.24,
+          "label": "VAH 90d"
+        },
+        "suggested_stop": {
+          "price": 0.096189,
+          "distance_pct": -4.8,
+          "label": "HVN 90d"
+        },
+        "risk_reward": 0.88
+      }
     },
     "PENDLE": {
       "token": "PENDLE",
@@ -775,7 +1455,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $1.7M — фандинг слабый сигнал."
+          "text": "OI $1.8M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
@@ -804,7 +1484,41 @@
       },
       "unified_verdict": "REVIEW",
       "price_at_decision": 1.55,
-      "flow_accel_4w_usd": -638200
+      "flow_accel_4w_usd": -638200,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 1.55,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 1.540864,
+            "distance_pct": -3.05,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          },
+          {
+            "price": 1.483437,
+            "distance_pct": -6.67,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 1.48128,
+            "distance_pct": -6.8,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          }
+        ],
+        "suggested_stop": {
+          "price": 1.540864,
+          "distance_pct": -3.05,
+          "label": "VAH 90d"
+        }
+      }
     },
     "PEPE": {
       "token": "PEPE",
@@ -842,7 +1556,42 @@
       },
       "unified_verdict": null,
       "price_at_decision": 5.674e-05,
-      "flow_accel_4w_usd": -1405500
+      "flow_accel_4w_usd": -1405500,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 5.674e-05,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 0.003132,
+            "distance_pct": -13.7,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.003117,
+            "distance_pct": -14.11,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 6.67
+          },
+          {
+            "price": 0.00308,
+            "distance_pct": -15.13,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "suggested_stop": {
+          "price": 0.003132,
+          "distance_pct": -13.7,
+          "label": "VAH 7d"
+        }
+      }
     },
     "RNDR": {
       "token": "RNDR",
@@ -878,7 +1627,10 @@
       },
       "unified_verdict": null,
       "price_at_decision": 1.27308658,
-      "flow_accel_4w_usd": 108600
+      "flow_accel_4w_usd": 108600,
+      "cvd_consensus": null,
+      "vp_position": null,
+      "price_targets": null
     },
     "RPL": {
       "token": "RPL",
@@ -913,7 +1665,10 @@
       },
       "unified_verdict": null,
       "price_at_decision": 1.382889,
-      "flow_accel_4w_usd": -61200
+      "flow_accel_4w_usd": -61200,
+      "cvd_consensus": "MIXED",
+      "vp_position": null,
+      "price_targets": null
     },
     "SAND": {
       "token": "SAND",
@@ -948,7 +1703,56 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.03980162,
-      "flow_accel_4w_usd": 213800
+      "flow_accel_4w_usd": 213800,
+      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.03980162,
+        "targets_up": [
+          {
+            "price": 0.051915,
+            "distance_pct": 10.29,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.046441,
+            "distance_pct": -1.34,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 6.14
+          },
+          {
+            "price": 0.042669,
+            "distance_pct": -9.36,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.040997,
+            "distance_pct": -12.91,
+            "label": "POC 30d",
+            "kind": "POC",
+            "window": "30d"
+          }
+        ],
+        "first_target": {
+          "price": 0.051915,
+          "distance_pct": 10.29,
+          "label": "VAH 90d"
+        },
+        "suggested_stop": {
+          "price": 0.046441,
+          "distance_pct": -1.34,
+          "label": "HVN 90d"
+        },
+        "risk_reward": 7.68
+      }
     },
     "STRK": {
       "token": "STRK",
@@ -963,7 +1767,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $1.2M — фандинг слабый сигнал."
+          "text": "OI $1.3M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
@@ -991,7 +1795,73 @@
       },
       "unified_verdict": "FALSE_RALLY_WAIT",
       "price_at_decision": 0.02614882,
-      "flow_accel_4w_usd": 29400
+      "flow_accel_4w_usd": 29400,
+      "cvd_consensus": "MIXED",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.02614882,
+        "targets_up": [
+          {
+            "price": 0.028493,
+            "distance_pct": 5.37,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.27
+          },
+          {
+            "price": 0.028899,
+            "distance_pct": 6.88,
+            "label": "POC 90d",
+            "kind": "POC",
+            "window": "90d"
+          },
+          {
+            "price": 0.028899,
+            "distance_pct": 6.88,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 5.17
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.026004,
+            "distance_pct": -3.83,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.025984,
+            "distance_pct": -3.91,
+            "label": "HVN 7d",
+            "kind": "HVN",
+            "window": "7d",
+            "volume_share_pct": 5.65
+          },
+          {
+            "price": 0.025338,
+            "distance_pct": -6.29,
+            "label": "HVN 30d",
+            "kind": "HVN",
+            "window": "30d",
+            "volume_share_pct": 6.29
+          }
+        ],
+        "first_target": {
+          "price": 0.028493,
+          "distance_pct": 5.37,
+          "label": "HVN 90d"
+        },
+        "suggested_stop": {
+          "price": 0.026004,
+          "distance_pct": -3.83,
+          "label": "VAH 30d"
+        },
+        "risk_reward": 1.4
+      }
     },
     "TAO": {
       "token": "TAO",
@@ -1075,7 +1945,41 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.58870855,
-      "flow_accel_4w_usd": -4383100
+      "flow_accel_4w_usd": -4383100,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.58870855,
+        "targets_up": [],
+        "targets_down": [
+          {
+            "price": 0.648723,
+            "distance_pct": -4.87,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          },
+          {
+            "price": 0.608233,
+            "distance_pct": -10.81,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.60166,
+            "distance_pct": -11.77,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          }
+        ],
+        "suggested_stop": {
+          "price": 0.648723,
+          "distance_pct": -4.87,
+          "label": "VAH 90d"
+        }
+      }
     },
     "WIF": {
       "token": "WIF",
@@ -1134,7 +2038,72 @@
       },
       "unified_verdict": null,
       "price_at_decision": 0.00770216,
-      "flow_accel_4w_usd": 17800
+      "flow_accel_4w_usd": 17800,
+      "cvd_consensus": "SELL_PRESSURE",
+      "vp_position": "ABOVE_VALUE",
+      "price_targets": {
+        "current_price": 0.00770216,
+        "targets_up": [
+          {
+            "price": 0.010049,
+            "distance_pct": 7.27,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 5.6
+          },
+          {
+            "price": 0.010385,
+            "distance_pct": 10.86,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 5.91
+          },
+          {
+            "price": 0.011478,
+            "distance_pct": 22.52,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          }
+        ],
+        "targets_down": [
+          {
+            "price": 0.008287,
+            "distance_pct": -11.54,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
+            "price": 0.008183,
+            "distance_pct": -12.65,
+            "label": "VAH 30d",
+            "kind": "VAH",
+            "window": "30d"
+          },
+          {
+            "price": 0.007872,
+            "distance_pct": -15.97,
+            "label": "HVN 30d",
+            "kind": "HVN",
+            "window": "30d",
+            "volume_share_pct": 8.62
+          }
+        ],
+        "first_target": {
+          "price": 0.010049,
+          "distance_pct": 7.27,
+          "label": "HVN 90d"
+        },
+        "suggested_stop": {
+          "price": 0.008287,
+          "distance_pct": -11.54,
+          "label": "VAH 7d"
+        },
+        "risk_reward": 0.63
+      }
     }
   }
 }
