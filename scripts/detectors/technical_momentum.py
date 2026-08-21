@@ -98,8 +98,28 @@ def compute_technical_features(candles):
     slope_7d = (closes[-1] / closes[-n_7d] - 1) * 100 if closes[-n_7d] > 0 else 0
     slope_14d = (closes[-1] / closes[-n_14d] - 1) * 100 if closes[-n_14d] > 0 else 0
     
-    # Slope acceleration (recent vs prior)
-    slope_accel = slope_3d - (slope_7d - slope_3d)  # positive = accelerating
+    # ---- Slope acceleration ----
+    #
+    # ФИКС 21.08.2026. Было: slope_3d - (slope_7d - slope_3d), то есть
+    # 2*slope_3d - slope_7d. Это НЕ производная наклона, а линейная
+    # комбинация двух перекрывающихся окон, и она систематически врёт:
+    #
+    #   ровный тренд  (+3 / +7)   → -1   «замедление» там, где его нет
+    #   обвал        (-10 / -20)  →  0   «не отскакивает» на любом падении
+    #
+    # Второй случай кормил проверку not_bouncing в confluence_gate.
+    # Стало: честное сравнение двух ПОСЛЕДОВАТЕЛЬНЫХ окон одной длины —
+    # последние 3 дня против предыдущих 3 дней.
+    if len(closes) >= 2 * n_3d and closes[-2 * n_3d] > 0:
+        slope_prev_3d = (closes[-n_3d] / closes[-2 * n_3d] - 1) * 100
+        slope_accel = slope_3d - slope_prev_3d      # positive = accelerating
+        slope_accel_ok = True
+    else:
+        # Истории не хватает на два непересекающихся окна.
+        # Ноль здесь был бы утверждением «ускорения нет» — а это неизвестно.
+        slope_prev_3d = None
+        slope_accel = None
+        slope_accel_ok = False
     
     # ---- Volume analysis ----
     vol_3d = sum(vols[-n_3d:]) / n_3d
@@ -157,7 +177,9 @@ def compute_technical_features(candles):
         'slope_3d_pct': round(slope_3d, 2),
         'slope_7d_pct': round(slope_7d, 2),
         'slope_14d_pct': round(slope_14d, 2),
-        'slope_accel_pct': round(slope_accel, 2),
+        'slope_accel_pct': round(slope_accel, 2) if slope_accel_ok else None,
+        'slope_accel_available': slope_accel_ok,
+        'slope_prev_3d_pct': round(slope_prev_3d, 2) if slope_accel_ok else None,
         'vol_ratio_3d_vs_30d': round(vol_ratio_3d, 2),
         'vol_ratio_7d_vs_30d': round(vol_ratio_7d, 2),
         'vol_accel': round(vol_accel, 2),
@@ -197,12 +219,16 @@ def classify_technical(features):
         reasons['BEARISH'].append(f'slope_3d {features["slope_3d_pct"]:+.1f}%')
     
     # Slope acceleration (very important for rally prediction!)
-    if features['slope_accel_pct'] > 3:
+    # None означает «истории не хватило» — это не ноль и не голос.
+    _accel = features.get('slope_accel_pct')
+    if _accel is None:
+        reasons.setdefault('NEUTRAL', []).append('slope accel: недостаточно истории')
+    elif _accel > 3:
         votes['BULLISH'] += 2
-        reasons['BULLISH'].append(f'slope accelerating +{features["slope_accel_pct"]:.1f}%')
-    elif features['slope_accel_pct'] < -3:
+        reasons['BULLISH'].append(f'slope accelerating +{_accel:.1f}%')
+    elif _accel < -3:
         votes['BEARISH'] += 1
-        reasons['BEARISH'].append(f'slope decelerating')
+        reasons['BEARISH'].append('slope decelerating')
     
     # Volume
     if features['vol_ratio_3d_vs_30d'] > 1.5 and features['slope_3d_pct'] > 3:
@@ -286,7 +312,9 @@ def backtest_technical():
         
         logger.info(f"  Price: ${features['price_now']:.4f}")
         logger.info(f"  Slope 3d: {features['slope_3d_pct']:+.2f}% · 7d: {features['slope_7d_pct']:+.2f}%")
-        logger.info(f"  Slope accel: {features['slope_accel_pct']:+.2f}%")
+        _a = features.get('slope_accel_pct')
+        logger.info(f"  Slope accel: {_a:+.2f}%" if _a is not None
+                    else "  Slope accel: нет данных (мало истории)")
         logger.info(f"  Vol ratio 3d: {features['vol_ratio_3d_vs_30d']}")
         logger.info(f"  Structure: {features['structure']} · RSI: {features['rsi']}")
         logger.info(f"  From high: {features['pct_from_high']:.1f}% · From low: {features['pct_from_low']:+.1f}%")
