@@ -29,6 +29,11 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # HL Perps · КАЖДЫЕ 30 МИНУТ. Публичный API Hyperliquid, ноль ключей.
+    # Даёт funding, premium (mark−oracle), OI по каждому активу.
+    # Ключевой сигнал — premium: указывает давление ПРЯМО СЕЙЧАС,
+    # без 8-часовой задержки фандинга.
+    - cron: '10,40 * * * *'
     # Phase Analyzer · КАЖДЫЕ 30 МИНУТ. Считает ускорение потока и
     # sanity-фильтр битых данных из уже собранных weekly-скана.
     # Ноль Dune запросов — работает на локальных файлах.
@@ -78,6 +83,7 @@ on:
           - funding_per_token
           - token_scan_single
           - phase_analyzer
+          - hl_perps
           - decision_engine
           - decision_verify
           - archivist
@@ -920,6 +926,35 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/phase_analysis.json ] && git add data/cache/phase_analysis.json || echo "no phase_analysis"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: phase deltas [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # HL PERPS · Hyperliquid перпы каждые 30 мин · 0 кредитов
+  # Публичный /info endpoint, ноль ключей, ноль тарифа.
+  # Один POST даёт агрегат по 232 активам, из которых мы читаем 42.
+  # ============================================================
+  hl_perps:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '10,40 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hl_perps')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Collect HL perps (public API, free)
+        run: python3 scripts/collectors/hl_perps_collector.py
+      - name: Commit hl_perps.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/hl_perps.json ] && git add data/cache/hl_perps.json || echo "no hl_perps"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl perps [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
