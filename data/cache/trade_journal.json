@@ -1,7 +1,8 @@
 {
-  "computed_at": "2026-08-21T20:59:57.320707+00:00",
-  "trades_recorded": 1,
-  "open_positions": [
+  "computed_at": "2026-08-21T21:14:56.016637+00:00",
+  "trades_recorded": 2,
+  "open_positions": [],
+  "closed_positions": [
     {
       "token": "AAVE",
       "side": "SHORT",
@@ -18,12 +19,22 @@
           "price": 111,
           "note": "ПЛЕЧО 5",
           "size_usd": 13000
+        },
+        {
+          "id": "AAVE-2026-08-21T211445006Z",
+          "ts": "2026-08-21T21:14:45.006Z",
+          "token": "AAVE",
+          "action": "CLOSE",
+          "price": 117.76,
+          "note": ""
         }
       ],
-      "current_price": 109.4,
-      "unrealized_pnl_pct": 1.46,
-      "unrealized_pnl_usd": 190.13,
-      "days_open": 0.2,
+      "exit_price": 117.76,
+      "exit_ts": "2026-08-21T21:14:45.006Z",
+      "exit_note": "",
+      "pnl_pct": -5.74,
+      "pnl_usd": -746.26,
+      "duration_days": 0.2,
       "match": {
         "category": "FOLLOWED",
         "text_ru": "шорт при сигнале НЕ ВХОДИТЬ — согласуется с движком",
@@ -54,12 +65,21 @@
       }
     }
   ],
-  "closed_positions": [],
-  "stats": {},
+  "stats": {
+    "n_closed": 1,
+    "win_rate_pct": 0.0,
+    "avg_pnl_pct": -5.74,
+    "median_pnl_pct": -5.74,
+    "best_pct": -5.74,
+    "worst_pct": -5.74,
+    "total_pnl_usd": -746.26
+  },
   "match_stats": {
     "FOLLOWED": {
       "n": 1,
-      "n_closed": 0
+      "n_closed": 1,
+      "avg_pnl_pct": -5.74,
+      "win_rate_pct": 0.0
     }
   },
   "ignored_signals": [
