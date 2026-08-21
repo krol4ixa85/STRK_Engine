@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-asset_compass.py · v1.1 · 21.08.2026
+asset_compass.py · v1.2 · 21.08.2026
 STRK ENGINE · шкала LONG / SHORT по каждому активу
 
 ЗАЧЕМ
@@ -67,8 +67,15 @@ import glob
 import argparse
 from datetime import datetime, timezone
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common.nodata import MISSING, weighted, explain  # noqa: E402
+
 CACHE = "data/cache"
 OUT_FILE = os.path.join(CACHE, "asset_compass.json")
+
+# Ниже этой доли измеренного веса вердикт не выдаётся: неполная
+# картина не должна выглядеть уверенным сигналом.
+MIN_COVERAGE = 0.7
 
 WEIGHTS = {"onchain": 0.40, "derivatives": 0.30, "technical": 0.30}
 
@@ -324,19 +331,62 @@ def compute(token, sig):
     deriv, p_der = score_derivatives(hl, sig["funding"])
     tech, p_tech = score_technical(vp, cvd)
 
-    # Если блока нет вовсе, его вес перераспределять не будем — просто
-    # компонент нулевой. Иначе отсутствие данных начнёт выглядеть
-    # как сигнал, а это худший вид вранья.
     present = {
         "onchain": bool(p_on),
         "derivatives": bool(p_der),
         "technical": bool(p_tech),
     }
 
-    total = (onchain * WEIGHTS["onchain"]
-             + deriv * WEIGHTS["derivatives"]
-             + tech * WEIGHTS["technical"])
-    score = round(total * 100, 1)
+    # ФИКС 21.08.2026 · комментарий здесь утверждал ровно правильное,
+    # а код делал обратное: отсутствующий блок входил в сумму нулём и
+    # ВСЁ РАВНО умножался на свой вес. Токен с ончейн-баллом -1.00 и без
+    # двух других блоков получал -40 («шорт») вместо -100 («сильный
+    # шорт») — отсутствие данных работало как голос за нейтральность.
+    #
+    # Теперь вес перераспределяется на присутствующие блоки, а покрытие
+    # пишется честно. При покрытии ниже 70% вердикт не выдаётся: три
+    # десятых картины — не повод называть актив сильным шортом.
+    agg = weighted([
+        (onchain if p_on else MISSING, WEIGHTS["onchain"], "ончейн"),
+        (deriv if p_der else MISSING, WEIGHTS["derivatives"], "деривативы"),
+        (tech if p_tech else MISSING, WEIGHTS["technical"], "техника"),
+    ], min_coverage=MIN_COVERAGE)
+
+    if agg["score"] is MISSING:
+        return {
+            "token": token,
+            "status": "NO_DATA",
+            "score": None,
+            "verdict": "NO_SIGNAL",
+            "verdict_ru": "ни один слой не посчитан",
+            "data_coverage_pct": 0,
+            "missing_blocks": agg["missing"],
+            "decision_action": (dec or {}).get("action"),
+        }
+
+    score = round(agg["score"] * 100, 1)
+    if not agg["enough"]:
+        return {
+            "token": token,
+            "status": "LOW_COVERAGE",
+            "score": score,
+            "verdict": "NO_SIGNAL",
+            "verdict_ru": (f"измерено {agg['coverage_pct']}% картины — "
+                           f"для вердикта мало"),
+            "data_coverage_pct": agg["coverage_pct"],
+            "missing_blocks": agg["missing"],
+            "coverage_note": explain(agg["missing"], "вердикта компаса"),
+            "components": {
+                "onchain": {"score": onchain, "weight": WEIGHTS["onchain"],
+                            "parts": p_on, "has_data": bool(p_on)},
+                "derivatives": {"score": deriv, "weight": WEIGHTS["derivatives"],
+                                "parts": p_der, "has_data": bool(p_der)},
+                "technical": {"score": tech, "weight": WEIGHTS["technical"],
+                              "parts": p_tech, "has_data": bool(p_tech)},
+            },
+            "decision_action": (dec or {}).get("action"),
+        }
+
     code, ru = verdict_for(score)
 
     return {
@@ -374,7 +424,7 @@ def discover_tokens():
 
 
 def main(only=None):
-    print("=== Asset Compass v1.1 ===\n")
+    print("=== Asset Compass v1.2 ===\n")
 
     sig = {
         "phase": load("phase_analysis.json", {}) or {},
