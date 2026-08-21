@@ -29,6 +29,10 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # View Data · КАЖДЫЕ 30 МИНУТ, на :58 — самым последним.
+    # Готовит структуры для дашборда: таблицу сигналов уже отсортированной
+    # и данные модалки. Браузеру остаётся только вывести.
+    - cron: '58 * * * *'
     # Module Summaries · КАЖДЫЕ 30 МИНУТ, на :55 — последним в цикле,
     # чтобы читать уже свежие compass, decisions и volume_profile.
     # Строит человеческий вывод по каждому модулю дашборда.
@@ -126,6 +130,7 @@ on:
           - asset_compass
           - price_reference
           - module_summaries
+          - view_data
           - decision_engine
           - decision_verify
           - archivist
@@ -1233,6 +1238,34 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/module_summaries.json ] && git add data/cache/module_summaries.json || echo "no summaries"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: module summaries [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # VIEW DATA · готовые структуры для дашборда · 0 кредитов
+  # Сортировка по важности, счётчики, переводы кодов на русский.
+  # Всё это — суждения и вычисления, поэтому им место в Python,
+  # а не в браузере. См. ПРАВИЛО_вычисления.md.
+  # ============================================================
+  view_data:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '58 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'view_data')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build view data
+        run: python3 scripts/view_data.py
+      - name: Commit view_data.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/view_data.json ] && git add data/cache/view_data.json || echo "no view data"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: view data [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
