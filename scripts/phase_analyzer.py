@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-phase_analyzer.py · v1.2 · 21.08.2026
+phase_analyzer.py · v1.3 · 21.08.2026
 STRK ENGINE · быстрая часть анализа фазы, работает каждые 30 мин
 
 ЗАЧЕМ
@@ -81,6 +81,13 @@ DATA_QUALITY_MAX_PCT = 500.0
 # считать её сигналом, а не шумом пересчёта окон.
 FLOW_ACCEL_NOISE_USD = 500_000
 
+# Последний недельный бакет Dune-скана почти всегда НЕПОЛНЫЙ: неделя
+# начинается в понедельник, а скан приезжает в середине недели. Если
+# считать его как полную неделю, скорость 1w систематически занижена —
+# и форма разгона врёт в сторону «выдыхается». Ниже порога считаем
+# бакет слишком коротким, чтобы вообще его использовать.
+PARTIAL_WEEK_MIN_FRACTION = 0.40
+
 
 def load_json(path, default=None):
     try:
@@ -115,6 +122,46 @@ FLOW_WINDOWS = [
 ]
 
 
+def _parse_dt(value):
+    """Разбор ISO-даты в timezone-aware UTC. Наивные строки считаем UTC."""
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except Exception:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def partial_week_fraction(scan, weekly):
+    """
+    Какая доля последней недели реально прожита на момент сбора данных.
+
+    Возвращает число от 0 до 1, либо None если дату определить нельзя.
+    1.0 означает, что бакет полный и корректировка не нужна.
+    """
+    if not weekly:
+        return None
+
+    week_start = _parse_dt((weekly[-1] or {}).get("week"))
+    collected = _parse_dt(
+        scan.get("collected_at")
+        or scan.get("generated_at")
+        or scan.get("computed_at")
+    )
+    if week_start is None or collected is None:
+        return None
+
+    elapsed_days = (collected - week_start).total_seconds() / 86400.0
+    if elapsed_days <= 0:
+        return None
+    if elapsed_days >= 7.0:
+        return 1.0
+    return elapsed_days / 7.0
+
+
 def analyze_flow(scan):
     """
     Дельты потока по лестнице окон. Каждое окно сравнивается с
@@ -132,7 +179,35 @@ def analyze_flow(scan):
         return {"status": "NOT_ENOUGH_HISTORY", "weeks": len(weekly)}
 
     flows = [float(w.get("net_flow_m_usd") or 0) for w in weekly]
+
+    # ── Неполная последняя неделя ────────────────────────────
+    # Скан приезжает в середине недели, а бакет считается как полный.
+    # Без поправки окно 1w занижено примерно на 35-40%, и форма разгона
+    # систематически выглядит «выдыхающейся» там, где она ровная.
+    frac = partial_week_fraction(scan, weekly)
+    partial_note = None
+    if frac is not None and frac < 1.0:
+        if frac < PARTIAL_WEEK_MIN_FRACTION:
+            # Слишком мало прожито — экстраполяция была бы гаданием
+            dropped_week = (weekly[-1] or {}).get("week")
+            flows = flows[:-1]
+            partial_note = {
+                "action": "dropped",
+                "week": dropped_week,
+                "fraction": round(frac, 3),
+            }
+        else:
+            # Приводим неполную неделю к полной, чтобы окна были сравнимы
+            flows = flows[:-1] + [flows[-1] / frac]
+            partial_note = {
+                "action": "scaled",
+                "week": (weekly[-1] or {}).get("week"),
+                "fraction": round(frac, 3),
+            }
+
     n = len(flows)
+    if n < 4:
+        return {"status": "NOT_ENOUGH_HISTORY", "weeks": n}
 
     def window_sum(offset_from_end, size):
         end = n - offset_from_end
@@ -142,6 +217,8 @@ def analyze_flow(scan):
         return sum(flows[start:end])
 
     result = {"status": "OK", "weeks_available": n, "windows": {}}
+    if partial_note:
+        result["partial_last_week"] = partial_note
 
     for label, size in FLOW_WINDOWS:
         last = window_sum(0, size)
@@ -216,49 +293,76 @@ def flow_shape(windows):
     # Направление берём по среднему окну — оно устойчивее недельного шума
     direction = "IN" if mid > 0 else ("OUT" if mid < 0 else "FLAT")
 
+    if direction == "FLAT":
+        return {"code": "FLAT", "stage_pct": None,
+                "text_ru": "потока почти нет, о фазе говорить рано"}
+
+    # ── Нормализация по направлению фазы ─────────────────────
+    # Скорости оттока отрицательны. Без приведения знака формула
+    # «стало больше предыдущего» переворачивает смысл: ускорение
+    # оттока (-1.7M против -0.5M) читалось как затухание.
+    # Работаем с ИНТЕНСИВНОСТЬЮ фазы: насколько сильно поток идёт
+    # в ту сторону, которую задаёт среднее окно.
+    sgn = 1.0 if direction == "IN" else -1.0
+    short_i = short * sgn
+    mid_i = mid * sgn
+    long_i = long * sgn
+
     def rel(a, b):
         if b == 0:
             return 0.0
         return (a - b) / abs(b)
 
-    short_vs_mid = rel(short, mid)
-    mid_vs_long = rel(mid, long)
+    short_vs_mid = rel(short_i, mid_i)
+    mid_vs_long = rel(mid_i, long_i)
+
+    # Короткое окно ушло против направления фазы — это уже не затухание,
+    # а разворот. Код оставляем прежним (потребители его знают),
+    # но помечаем флагом и говорим об этом прямым текстом.
+    flipped = short_i < 0
 
     building = short_vs_mid > 0.25 and mid_vs_long > 0.25
     fading = short_vs_mid < -0.25
     plateau = abs(short_vs_mid) <= 0.25
 
-    if direction == "FLAT":
-        return {"code": "FLAT", "stage_pct": None,
-                "text_ru": "потока почти нет, о фазе говорить рано"}
+    def out(code, stage, text):
+        res = {"code": code, "stage_pct": stage, "text_ru": text,
+               "direction": direction,
+               "short_vs_mid": round(short_vs_mid, 3),
+               "mid_vs_long": round(mid_vs_long, 3),
+               "short_flipped": flipped}
+        if flipped:
+            res["stage_pct"] = 95
+            res["text_ru"] = (
+                "приток на последней неделе сменился оттоком — фаза сломана"
+                if direction == "IN" else
+                "отток на последней неделе сменился притоком — распродажа закончилась"
+            )
+        return res
 
     if direction == "IN":
         if building:
-            return {"code": "ACCUMULATION_BUILDING", "stage_pct": 25,
-                    "text_ru": "разгон притока нарастает — фаза молодая, "
-                               "самое начало"}
+            return out("ACCUMULATION_BUILDING", 25,
+                       "разгон притока нарастает — фаза молодая, самое начало")
         if plateau:
-            return {"code": "ACCUMULATION_MATURE", "stage_pct": 55,
-                    "text_ru": "приток идёт ровно — фаза зрелая, середина"}
+            return out("ACCUMULATION_MATURE", 55,
+                       "приток идёт ровно — фаза зрелая, середина")
         if fading:
-            return {"code": "ACCUMULATION_FADING", "stage_pct": 85,
-                    "text_ru": "разгон притока выдыхается — фаза к концу, "
-                               "новые входы дороже"}
-        return {"code": "ACCUMULATION_MIXED", "stage_pct": 50,
-                "text_ru": "приток без чёткой формы"}
+            return out("ACCUMULATION_FADING", 85,
+                       "разгон притока выдыхается — фаза к концу, "
+                       "новые входы дороже")
+        return out("ACCUMULATION_MIXED", 50, "приток без чёткой формы")
 
     if building:
-        return {"code": "DISTRIBUTION_BUILDING", "stage_pct": 25,
-                "text_ru": "отток ускоряется — распродажа только началась"}
+        return out("DISTRIBUTION_BUILDING", 25,
+                   "отток ускоряется — распродажа только началась")
     if plateau:
-        return {"code": "DISTRIBUTION_MATURE", "stage_pct": 55,
-                "text_ru": "отток идёт ровно — распродажа в разгаре"}
+        return out("DISTRIBUTION_MATURE", 55,
+                   "отток идёт ровно — распродажа в разгаре")
     if fading:
-        return {"code": "DISTRIBUTION_FADING", "stage_pct": 85,
-                "text_ru": "отток замедляется — распродажа выдыхается, "
-                           "возможное дно"}
-    return {"code": "DISTRIBUTION_MIXED", "stage_pct": 50,
-            "text_ru": "отток без чёткой формы"}
+        return out("DISTRIBUTION_FADING", 85,
+                   "отток замедляется — распродажа выдыхается, возможное дно")
+    return out("DISTRIBUTION_MIXED", 50, "отток без чёткой формы")
 
 
 # ─────────────────────────────────────────────────────────────
@@ -292,8 +396,16 @@ def classify_regime(flow):
     if abs(last) < small and abs(accel) < small:
         return {"code": "STABLE_ZERO", "text_ru": "поток около нуля, без сигнала"}
 
+    prev = flow.get("prev_4w_usd") or 0
+
     # Приток
     if last > 0:
+        # Разворот проверяем ПЕРВЫМ. Раньше он стоял после проверок на
+        # ускорение и был недостижим: смена знака всегда даёт значимое
+        # ускорение, и ветка ACCEL_UP забирала случай себе.
+        if prev < -small:
+            return {"code": "FLIPPING_UP",
+                    "text_ru": "развернулось из оттока в приток — молодой разворот"}
         if sig and accel > 0:
             return {"code": "ACCEL_UP",
                     "text_ru": "приток разгоняется — лучшее окно для входа"}
@@ -304,25 +416,19 @@ def classify_regime(flow):
         if last > small and abs(accel) < small:
             return {"code": "STEADY_UP",
                     "text_ru": "стабильный приток без ускорения"}
-        # Раньше был отток, теперь плюс
-        prev = flow.get("prev_4w_usd") or 0
-        if prev < -small and last > 0:
-            return {"code": "FLIPPING_UP",
-                    "text_ru": "развернулось из оттока в приток — молодой разворот"}
         return {"code": "STEADY_UP", "text_ru": "лёгкий приток"}
 
     # Отток
     if last < 0:
+        if prev > small:
+            return {"code": "FLIPPING_DOWN",
+                    "text_ru": "приток закончился, пошёл отток — сигнал выхода"}
         if sig and accel < 0:
             return {"code": "ACCEL_DOWN",
                     "text_ru": "отток ускоряется — капитуляция или distribution"}
         if sig and accel > 0:
             return {"code": "STALLING_DOWN",
                     "text_ru": "отток замедляется — возможное дно"}
-        prev = flow.get("prev_4w_usd") or 0
-        if prev > small and last < 0:
-            return {"code": "FLIPPING_DOWN",
-                    "text_ru": "приток закончился, пошёл отток — сигнал выхода"}
         return {"code": "STEADY_DOWN", "text_ru": "стабильный отток"}
 
     return {"code": "STABLE_ZERO", "text_ru": "нейтрально"}
@@ -455,7 +561,7 @@ def analyze_all(only=None):
               },
               "tokens": {}}
 
-    print(f"=== phase_analyzer v1.0 · {len(tokens)} токенов ===\n")
+    print(f"=== phase_analyzer v1.3 · {len(tokens)} токенов ===\n")
 
     for t in tokens:
         scan = load_json(os.path.join(SCAN_DIR, f"{t}.json"))
