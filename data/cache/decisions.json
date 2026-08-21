@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-21T22:39:08.000271+00:00",
+  "computed_at": "2026-08-21T22:58:37.389379+00:00",
   "engine_version": "1.5",
   "verify_after_days": 7,
   "regime": {
@@ -28,7 +28,7 @@
         "Фаза Dune: WEAKENING. Ослабление — приток исчерпывается",
         "Динамика потока: приток закончился, пошёл отток — сигнал выхода.",
         "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет.",
-        "Volume Profile: цена выше зоны стоимости на 20.1% — выход на объёме ×3.01 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 20.0% — выход на объёме ×3.03 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -114,14 +114,14 @@
         "targets_up": [
           {
             "price": 121.880925,
-            "distance_pct": 0.55,
+            "distance_pct": 0.69,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 124.8,
-            "distance_pct": 2.95,
+            "distance_pct": 3.11,
             "label": "свинг-хай 158д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -129,7 +129,7 @@
           },
           {
             "price": 126.88,
-            "distance_pct": 4.67,
+            "distance_pct": 4.82,
             "label": "свинг-хай 172д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -139,14 +139,14 @@
         "targets_down": [
           {
             "price": 110.142488,
-            "distance_pct": -9.14,
+            "distance_pct": -9.0,
             "label": "POC 7d",
             "kind": "POC",
             "window": "7d"
           },
           {
             "price": 104.73,
-            "distance_pct": -13.6,
+            "distance_pct": -13.47,
             "label": "свинг-лоу 174д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -154,7 +154,7 @@
           },
           {
             "price": 100.90354,
-            "distance_pct": -16.76,
+            "distance_pct": -16.64,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
@@ -162,15 +162,15 @@
         ],
         "first_target": {
           "price": 121.880925,
-          "distance_pct": 0.55,
+          "distance_pct": 0.69,
           "label": "VAH 7d"
         },
         "suggested_stop": {
           "price": 110.142488,
-          "distance_pct": -9.14,
+          "distance_pct": -9.0,
           "label": "POC 7d"
         },
-        "risk_reward": 0.06
+        "risk_reward": 0.08
       }
     },
     "AIXBT": {
@@ -271,7 +271,7 @@
         "targets_up": [
           {
             "price": 0.023738,
-            "distance_pct": 9.84,
+            "distance_pct": 9.59,
             "label": "свинг-хай 188д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -279,7 +279,7 @@
           },
           {
             "price": 0.024486,
-            "distance_pct": 13.3,
+            "distance_pct": 13.05,
             "label": "свинг-хай 61д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -287,7 +287,7 @@
           },
           {
             "price": 0.025143,
-            "distance_pct": 16.34,
+            "distance_pct": 16.08,
             "label": "свинг-хай 69д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -297,7 +297,7 @@
         "targets_down": [
           {
             "price": 0.021054,
-            "distance_pct": -2.58,
+            "distance_pct": -2.8,
             "label": "свинг-лоу 141д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -305,14 +305,14 @@
           },
           {
             "price": 0.019264,
-            "distance_pct": -10.86,
+            "distance_pct": -11.06,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.019061,
-            "distance_pct": -11.8,
+            "distance_pct": -12.0,
             "label": "свинг-лоу 76д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -321,15 +321,15 @@
         ],
         "first_target": {
           "price": 0.023738,
-          "distance_pct": 9.84,
+          "distance_pct": 9.59,
           "label": "свинг-хай 188д назад"
         },
         "suggested_stop": {
           "price": 0.021054,
-          "distance_pct": -2.58,
+          "distance_pct": -2.8,
           "label": "свинг-лоу 141д назад"
         },
-        "risk_reward": 3.81
+        "risk_reward": 3.43
       }
     },
     "AKT": {
@@ -449,8 +449,7 @@
       "conflicts_warn": 0,
       "notes": [
         "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
-        "Динамика потока: развернулось из оттока в приток — молодой разворот.",
-        "Volume Profile: цена выше зоны стоимости на 19.3% — выход на объёме ×2.04 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Динамика потока: развернулось из оттока в приток — молодой разворот."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -464,8 +463,7 @@
         "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "phase:MIXED_OR_NEUTRAL",
-        "vp_markup_no_cut"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -538,7 +536,7 @@
         "targets_up": [
           {
             "price": 0.10149,
-            "distance_pct": 1.98,
+            "distance_pct": 2.4,
             "label": "свинг-хай 40д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -546,7 +544,7 @@
           },
           {
             "price": 0.11144,
-            "distance_pct": 11.98,
+            "distance_pct": 12.44,
             "label": "свинг-хай 158д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -554,7 +552,7 @@
           },
           {
             "price": 0.11285,
-            "distance_pct": 13.39,
+            "distance_pct": 13.86,
             "label": "свинг-хай 175д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -564,7 +562,7 @@
         "targets_down": [
           {
             "price": 0.09337,
-            "distance_pct": -6.18,
+            "distance_pct": -5.79,
             "label": "свинг-лоу 166д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -572,7 +570,7 @@
           },
           {
             "price": 0.09093,
-            "distance_pct": -8.63,
+            "distance_pct": -8.25,
             "label": "свинг-лоу 196д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -580,7 +578,7 @@
           },
           {
             "price": 0.08967,
-            "distance_pct": -9.9,
+            "distance_pct": -9.52,
             "label": "свинг-лоу 138д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -589,15 +587,15 @@
         ],
         "first_target": {
           "price": 0.10149,
-          "distance_pct": 1.98,
+          "distance_pct": 2.4,
           "label": "свинг-хай 40д назад"
         },
         "suggested_stop": {
           "price": 0.09337,
-          "distance_pct": -6.18,
+          "distance_pct": -5.79,
           "label": "свинг-лоу 166д назад"
         },
-        "risk_reward": 0.32
+        "risk_reward": 0.41
       }
     },
     "AXS": {
@@ -614,7 +612,6 @@
       "notes": [
         "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Volume Profile: цена выше зоны стоимости на 14.9% — выход на объёме ×2.5 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
         "Общая картина ставит вето: AVOID."
       ],
       "triggers": [
@@ -628,7 +625,6 @@
       ],
       "rules_fired": [
         "phase:MIXED_OR_NEUTRAL",
-        "vp_markup_no_cut",
         "unified_veto"
       ],
       "regime": {
@@ -702,7 +698,7 @@
         "targets_up": [
           {
             "price": 1.0755,
-            "distance_pct": 1.97,
+            "distance_pct": 2.14,
             "label": "свинг-хай 49д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -710,7 +706,7 @@
           },
           {
             "price": 1.1609,
-            "distance_pct": 10.07,
+            "distance_pct": 10.25,
             "label": "свинг-хай 135д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -718,7 +714,7 @@
           },
           {
             "price": 1.181,
-            "distance_pct": 11.97,
+            "distance_pct": 12.16,
             "label": "свинг-хай 267д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -728,7 +724,7 @@
         "targets_down": [
           {
             "price": 1.04,
-            "distance_pct": -1.39,
+            "distance_pct": -1.23,
             "label": "свинг-лоу 273д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -736,14 +732,14 @@
           },
           {
             "price": 1.013624,
-            "distance_pct": -3.89,
+            "distance_pct": -3.74,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.998756,
-            "distance_pct": -5.3,
+            "distance_pct": -5.15,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -752,15 +748,15 @@
         ],
         "first_target": {
           "price": 1.0755,
-          "distance_pct": 1.97,
+          "distance_pct": 2.14,
           "label": "свинг-хай 49д назад"
         },
         "suggested_stop": {
           "price": 1.04,
-          "distance_pct": -1.39,
+          "distance_pct": -1.23,
           "label": "свинг-лоу 273д назад"
         },
-        "risk_reward": 1.42
+        "risk_reward": 1.74
       }
     },
     "BONK": {
@@ -866,21 +862,21 @@
         "targets_up": [
           {
             "price": 0.003176,
-            "distance_pct": 2.06,
+            "distance_pct": 0.95,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
           },
           {
             "price": 0.00418,
-            "distance_pct": 34.32,
+            "distance_pct": 32.87,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
           },
           {
             "price": 0.005142,
-            "distance_pct": 65.23,
+            "distance_pct": 63.45,
             "label": "свинг-хай 67д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -890,21 +886,21 @@
         "targets_down": [
           {
             "price": 0.00292,
-            "distance_pct": -6.17,
+            "distance_pct": -7.18,
             "label": "POC 30d",
             "kind": "POC",
             "window": "30d"
           },
           {
             "price": 0.002871,
-            "distance_pct": -7.74,
+            "distance_pct": -8.74,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.00283,
-            "distance_pct": -9.06,
+            "distance_pct": -10.04,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -913,15 +909,15 @@
         ],
         "first_target": {
           "price": 0.003176,
-          "distance_pct": 2.06,
+          "distance_pct": 0.95,
           "label": "VAH 30d"
         },
         "suggested_stop": {
           "price": 0.00292,
-          "distance_pct": -6.17,
+          "distance_pct": -7.18,
           "label": "POC 30d"
         },
-        "risk_reward": 0.33
+        "risk_reward": 0.13
       }
     },
     "CFG": {
@@ -1037,7 +1033,7 @@
         "Форма разгона: разгон притока нарастает — фаза молодая, самое начало (пройдено 25% фазы) — размер 31% → 37%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 37% → 21%.",
         "CVD: агрессия продавцов на нескольких окнах (score -8). Агрессия против входа — размер обнулён.",
-        "Volume Profile: цена выше зоны стоимости на 27.2% — выход на объёме ×2.73 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 28.1% — выход на объёме ×2.74 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -1126,7 +1122,7 @@
         "targets_up": [
           {
             "price": 0.43,
-            "distance_pct": 27.6,
+            "distance_pct": 26.72,
             "label": "свинг-хай 254д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1134,7 +1130,7 @@
           },
           {
             "price": 0.4385,
-            "distance_pct": 30.12,
+            "distance_pct": 29.23,
             "label": "свинг-хай 227д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1142,7 +1138,7 @@
           },
           {
             "price": 0.44964,
-            "distance_pct": 33.43,
+            "distance_pct": 32.51,
             "label": "свинг-хай 266д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1152,22 +1148,22 @@
         "targets_down": [
           {
             "price": 0.33153,
-            "distance_pct": -1.62,
+            "distance_pct": -2.3,
             "label": "свинг-лоу 246д назад",
             "kind": "SWING_LOW",
             "window": "365d",
             "bars_ago": 246
           },
           {
-            "price": 0.299448,
-            "distance_pct": -11.14,
+            "price": 0.30213,
+            "distance_pct": -10.96,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.275466,
-            "distance_pct": -18.26,
+            "distance_pct": -18.82,
             "label": "VAH 14d",
             "kind": "VAH",
             "window": "14d"
@@ -1175,15 +1171,15 @@
         ],
         "first_target": {
           "price": 0.43,
-          "distance_pct": 27.6,
+          "distance_pct": 26.72,
           "label": "свинг-хай 254д назад"
         },
         "suggested_stop": {
           "price": 0.33153,
-          "distance_pct": -1.62,
+          "distance_pct": -2.3,
           "label": "свинг-лоу 246д назад"
         },
-        "risk_reward": 17.04
+        "risk_reward": 11.62
       }
     },
     "DOGE": {
@@ -1209,7 +1205,7 @@
         "Поток ускоряется → размер 25% → 31%.",
         "Форма разгона: разгон притока нарастает — фаза молодая, самое начало (пройдено 25% фазы) — размер 31% → 37%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 37% → 21%.",
-        "Volume Profile: цена выше зоны стоимости на 20.6% — выход на объёме ×4.18 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 20.9% — выход на объёме ×4.23 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Волна FOMO-заголовков спадёт",
@@ -1297,8 +1293,15 @@
         "current_price": 0.07685279,
         "targets_up": [
           {
+            "price": 0.094914,
+            "distance_pct": 0.54,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
             "price": 0.095982,
-            "distance_pct": 2.28,
+            "distance_pct": 1.67,
             "label": "свинг-хай 136д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1306,25 +1309,17 @@
           },
           {
             "price": 0.097887,
-            "distance_pct": 4.31,
+            "distance_pct": 3.69,
             "label": "свинг-хай 149д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
             "bars_ago": 149
-          },
-          {
-            "price": 0.10223,
-            "distance_pct": 8.94,
-            "label": "свинг-хай 126д назад",
-            "kind": "SWING_HIGH",
-            "window": "365d",
-            "bars_ago": 126
           }
         ],
         "targets_down": [
           {
             "price": 0.089112,
-            "distance_pct": -5.04,
+            "distance_pct": -5.61,
             "label": "свинг-лоу 152д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -1332,7 +1327,7 @@
           },
           {
             "price": 0.087998,
-            "distance_pct": -6.22,
+            "distance_pct": -6.79,
             "label": "свинг-лоу 145д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -1340,7 +1335,7 @@
           },
           {
             "price": 0.086651,
-            "distance_pct": -7.66,
+            "distance_pct": -8.22,
             "label": "свинг-лоу 166д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -1348,16 +1343,16 @@
           }
         ],
         "first_target": {
-          "price": 0.095982,
-          "distance_pct": 2.28,
-          "label": "свинг-хай 136д назад"
+          "price": 0.094914,
+          "distance_pct": 0.54,
+          "label": "VAH 7d"
         },
         "suggested_stop": {
           "price": 0.089112,
-          "distance_pct": -5.04,
+          "distance_pct": -5.61,
           "label": "свинг-лоу 152д назад"
         },
-        "risk_reward": 0.45
+        "risk_reward": 0.1
       }
     },
     "EIGEN": {
@@ -1382,8 +1377,7 @@
         "Динамика потока: поток около нуля, без сигнала.",
         "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%.",
-        "CVD: агрессия продавцов на нескольких окнах (score -5). Агрессия против входа — размер обнулён.",
-        "Volume Profile: цена выше зоны стоимости на 9.6% — выход на объёме ×1.35 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "CVD: агрессия продавцов на нескольких окнах (score -5). Агрессия против входа — размер обнулён."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -1397,8 +1391,7 @@
         "phase:EARLY_ACCUMULATION",
         "shape_distribution_fading",
         "regime:NEUTRAL_MIXED",
-        "cvd_strong_sell_veto",
-        "vp_markup_no_cut"
+        "cvd_strong_sell_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1470,16 +1463,8 @@
         "current_price": 0.212512,
         "targets_up": [
           {
-            "price": 0.2228,
-            "distance_pct": 0.72,
-            "label": "свинг-хай 188д назад",
-            "kind": "SWING_HIGH",
-            "window": "365d",
-            "bars_ago": 188
-          },
-          {
             "price": 0.2263,
-            "distance_pct": 2.31,
+            "distance_pct": 1.48,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -1487,46 +1472,54 @@
           },
           {
             "price": 0.22958,
-            "distance_pct": 3.79,
+            "distance_pct": 2.95,
             "label": "POC 90d",
             "kind": "POC",
             "window": "90d"
+          },
+          {
+            "price": 0.23286,
+            "distance_pct": 4.42,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 4.03
           }
         ],
         "targets_down": [
           {
-            "price": 0.209153,
-            "distance_pct": -5.45,
+            "price": 0.20855,
+            "distance_pct": -6.48,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.20185,
-            "distance_pct": -8.75,
+            "distance_pct": -9.48,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
           },
           {
             "price": 0.19842,
-            "distance_pct": -10.3,
+            "distance_pct": -11.02,
             "label": "VAL 90d",
             "kind": "VAL",
             "window": "90d"
           }
         ],
         "first_target": {
-          "price": 0.2228,
-          "distance_pct": 0.72,
-          "label": "свинг-хай 188д назад"
+          "price": 0.2263,
+          "distance_pct": 1.48,
+          "label": "HVN 90d"
         },
         "suggested_stop": {
-          "price": 0.209153,
-          "distance_pct": -5.45,
+          "price": 0.20855,
+          "distance_pct": -6.48,
           "label": "VAH 7d"
         },
-        "risk_reward": 0.13
+        "risk_reward": 0.23
       }
     },
     "ETHFI": {
@@ -1552,8 +1545,7 @@
         "Приток есть, но темп падает — вершина возможна. Размер 33% → 16%.",
         "Форма разгона: приток на последней неделе сменился оттоком — фаза сломана (пройдено 95% фазы). Приток был, но выдохся — размер 16% → 6%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 6% → 3%.",
-        "CVD: агрессия продавцов на нескольких окнах (score -5). Агрессия против входа — размер обнулён.",
-        "Volume Profile: цена выше зоны стоимости на 26.4% — выход на объёме ×2.51 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "CVD: агрессия продавцов на нескольких окнах (score -5). Агрессия против входа — размер обнулён."
       ],
       "triggers": [
         "Появится ACCEL_UP",
@@ -1571,8 +1563,7 @@
         "flow_stalling_cut",
         "shape_accumulation_fading",
         "regime:NEUTRAL_MIXED",
-        "cvd_strong_sell_veto",
-        "vp_markup_no_cut"
+        "cvd_strong_sell_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1645,7 +1636,7 @@
         "targets_up": [
           {
             "price": 0.63858,
-            "distance_pct": 2.69,
+            "distance_pct": 2.62,
             "label": "свинг-хай 206д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1653,7 +1644,7 @@
           },
           {
             "price": 0.81801,
-            "distance_pct": 31.54,
+            "distance_pct": 31.45,
             "label": "свинг-хай 220д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1661,7 +1652,7 @@
           },
           {
             "price": 0.83181,
-            "distance_pct": 33.76,
+            "distance_pct": 33.67,
             "label": "свинг-хай 227д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1671,7 +1662,7 @@
         "targets_down": [
           {
             "price": 0.58374,
-            "distance_pct": -6.13,
+            "distance_pct": -6.19,
             "label": "свинг-лоу 214д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -1679,14 +1670,14 @@
           },
           {
             "price": 0.55928,
-            "distance_pct": -10.06,
+            "distance_pct": -10.12,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.516262,
-            "distance_pct": -16.98,
+            "distance_pct": -17.04,
             "label": "VAH 14d",
             "kind": "VAH",
             "window": "14d"
@@ -1694,15 +1685,15 @@
         ],
         "first_target": {
           "price": 0.63858,
-          "distance_pct": 2.69,
+          "distance_pct": 2.62,
           "label": "свинг-хай 206д назад"
         },
         "suggested_stop": {
           "price": 0.58374,
-          "distance_pct": -6.13,
+          "distance_pct": -6.19,
           "label": "свинг-лоу 214д назад"
         },
-        "risk_reward": 0.44
+        "risk_reward": 0.42
       }
     },
     "FET": {
@@ -1719,8 +1710,7 @@
       "notes": [
         "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет.",
-        "Volume Profile: цена выше зоны стоимости на 15.6% — выход на объёме ×2.46 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -1733,8 +1723,7 @@
       ],
       "rules_fired": [
         "phase:MIXED_OR_NEUTRAL",
-        "shape_distribution_fading",
-        "vp_markup_no_cut"
+        "shape_distribution_fading"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1807,7 +1796,7 @@
         "targets_up": [
           {
             "price": 0.17585,
-            "distance_pct": 5.11,
+            "distance_pct": 3.64,
             "label": "свинг-хай 177д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1815,7 +1804,7 @@
           },
           {
             "price": 0.18487,
-            "distance_pct": 10.5,
+            "distance_pct": 8.95,
             "label": "свинг-хай 188д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1823,7 +1812,7 @@
           },
           {
             "price": 0.19087,
-            "distance_pct": 14.09,
+            "distance_pct": 12.49,
             "label": "свинг-хай 49д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -1833,39 +1822,39 @@
         "targets_down": [
           {
             "price": 0.15938,
-            "distance_pct": -4.73,
+            "distance_pct": -6.07,
             "label": "свинг-лоу 57д назад",
             "kind": "SWING_LOW",
             "window": "365d",
             "bars_ago": 57
           },
           {
-            "price": 0.15612,
-            "distance_pct": -6.68,
+            "price": 0.156193,
+            "distance_pct": -7.95,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
-            "price": 0.15022,
-            "distance_pct": -10.21,
-            "label": "свинг-лоу 32д назад",
+            "price": 0.15462,
+            "distance_pct": -8.88,
+            "label": "свинг-лоу 44д назад",
             "kind": "SWING_LOW",
             "window": "365d",
-            "bars_ago": 32
+            "bars_ago": 44
           }
         ],
         "first_target": {
           "price": 0.17585,
-          "distance_pct": 5.11,
+          "distance_pct": 3.64,
           "label": "свинг-хай 177д назад"
         },
         "suggested_stop": {
           "price": 0.15938,
-          "distance_pct": -4.73,
+          "distance_pct": -6.07,
           "label": "свинг-лоу 57д назад"
         },
-        "risk_reward": 1.08
+        "risk_reward": 0.6
       }
     },
     "FIL": {
@@ -1883,8 +1872,7 @@
         "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
         "Динамика потока: поток около нуля, без сигнала.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%.",
-        "CVD: агрессия продавцов на нескольких окнах (score -8). Агрессия против входа — размер обнулён.",
-        "Volume Profile: цена выше зоны стоимости на 10.3% — выход на объёме ×1.92 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "CVD: агрессия продавцов на нескольких окнах (score -8). Агрессия против входа — размер обнулён."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -1897,8 +1885,7 @@
       "rules_fired": [
         "phase:EARLY_ACCUMULATION",
         "regime:NEUTRAL_MIXED",
-        "cvd_strong_sell_veto",
-        "vp_markup_no_cut"
+        "cvd_strong_sell_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1970,33 +1957,49 @@
         "current_price": 0.67056584,
         "targets_up": [
           {
+            "price": 0.83104,
+            "distance_pct": 1.81,
+            "label": "свинг-хай 65д назад",
+            "kind": "SWING_HIGH",
+            "window": "365d",
+            "bars_ago": 65
+          },
+          {
             "price": 0.864421,
-            "distance_pct": 6.38,
+            "distance_pct": 5.9,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
+          },
+          {
+            "price": 0.89343,
+            "distance_pct": 9.45,
+            "label": "свинг-хай 42д назад",
+            "kind": "SWING_HIGH",
+            "window": "365d",
+            "bars_ago": 42
           }
         ],
         "targets_down": [
           {
-            "price": 0.775634,
-            "distance_pct": -4.54,
-            "label": "HVN 7d",
-            "kind": "HVN",
-            "window": "7d",
-            "volume_share_pct": 5.6
+            "price": 0.77258,
+            "distance_pct": -5.35,
+            "label": "свинг-лоу 196д назад",
+            "kind": "SWING_LOW",
+            "window": "365d",
+            "bars_ago": 196
           },
           {
             "price": 0.76188,
-            "distance_pct": -6.24,
+            "distance_pct": -6.67,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
-            "volume_share_pct": 5.92
+            "volume_share_pct": 5.93
           },
           {
             "price": 0.752114,
-            "distance_pct": -7.44,
+            "distance_pct": -7.86,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -2004,16 +2007,16 @@
           }
         ],
         "first_target": {
-          "price": 0.864421,
-          "distance_pct": 6.38,
-          "label": "VAH 90d"
+          "price": 0.83104,
+          "distance_pct": 1.81,
+          "label": "свинг-хай 65д назад"
         },
         "suggested_stop": {
-          "price": 0.775634,
-          "distance_pct": -4.54,
-          "label": "HVN 7d"
+          "price": 0.77258,
+          "distance_pct": -5.35,
+          "label": "свинг-лоу 196д назад"
         },
-        "risk_reward": 1.41
+        "risk_reward": 0.34
       }
     },
     "GRT": {
@@ -2125,14 +2128,13 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $3.3M — фандинг слабый сигнал."
+          "text": "OI $3.4M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
       "notes": [
         "Фаза Dune: MARKDOWN. Фаза распределения / падения",
-        "Динамика потока: приток закончился, пошёл отток — сигнал выхода.",
-        "Volume Profile: цена выше зоны стоимости на 5.3% — выход на объёме ×1.63 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Динамика потока: приток закончился, пошёл отток — сигнал выхода."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -2143,8 +2145,7 @@
         "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "phase:MARKDOWN",
-        "vp_markup_no_cut"
+        "phase:MARKDOWN"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -2217,14 +2218,14 @@
         "targets_up": [
           {
             "price": 0.378427,
-            "distance_pct": 2.32,
+            "distance_pct": 2.05,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.41309,
-            "distance_pct": 11.7,
+            "distance_pct": 11.4,
             "label": "свинг-хай 29д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2232,7 +2233,7 @@
           },
           {
             "price": 0.45217,
-            "distance_pct": 22.26,
+            "distance_pct": 21.94,
             "label": "свинг-хай 127д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2242,23 +2243,23 @@
         "targets_down": [
           {
             "price": 0.364239,
-            "distance_pct": -1.51,
+            "distance_pct": -1.77,
             "label": "HVN 7d",
             "kind": "HVN",
             "window": "7d",
-            "volume_share_pct": 5.4
+            "volume_share_pct": 5.44
           },
           {
             "price": 0.359874,
-            "distance_pct": -2.69,
+            "distance_pct": -2.95,
             "label": "HVN 7d",
             "kind": "HVN",
             "window": "7d",
-            "volume_share_pct": 5.24
+            "volume_share_pct": 5.22
           },
           {
-            "price": 0.351367,
-            "distance_pct": -4.99,
+            "price": 0.354172,
+            "distance_pct": -4.49,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
@@ -2266,15 +2267,15 @@
         ],
         "first_target": {
           "price": 0.378427,
-          "distance_pct": 2.32,
+          "distance_pct": 2.05,
           "label": "VAH 7d"
         },
         "suggested_stop": {
           "price": 0.364239,
-          "distance_pct": -1.51,
+          "distance_pct": -1.77,
           "label": "HVN 7d"
         },
-        "risk_reward": 1.54
+        "risk_reward": 1.16
       }
     },
     "LINK": {
@@ -2306,7 +2307,7 @@
         "Форма разгона: приток на последней неделе сменился оттоком — фаза сломана (пройдено 95% фазы). Приток был, но выдохся — размер 33% → 13%.",
         "Новости срезали размер на 50%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 6% → 3%.",
-        "Volume Profile: цена выше зоны стоимости на 22.2% — выход на объёме ×3.87 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
+        "Volume Profile: цена выше зоны стоимости на 22.4% — выход на объёме ×3.89 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
         "После всех корректировок осталось 3% — меньше практического минимума 10%. Слишком много правил против; входить в такую долю смысла нет, комиссии съедят."
       ],
       "triggers": [
@@ -2399,7 +2400,7 @@
         "targets_up": [
           {
             "price": 14.405,
-            "distance_pct": 18.14,
+            "distance_pct": 17.99,
             "label": "свинг-хай 219д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2407,7 +2408,7 @@
           },
           {
             "price": 15.0,
-            "distance_pct": 23.02,
+            "distance_pct": 22.86,
             "label": "свинг-хай 255д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2415,7 +2416,7 @@
           },
           {
             "price": 15.235,
-            "distance_pct": 24.95,
+            "distance_pct": 24.78,
             "label": "свинг-хай 228д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2425,7 +2426,7 @@
         "targets_down": [
           {
             "price": 11.984,
-            "distance_pct": -1.71,
+            "distance_pct": -1.84,
             "label": "свинг-лоу 239д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -2433,7 +2434,7 @@
           },
           {
             "price": 11.74,
-            "distance_pct": -3.72,
+            "distance_pct": -3.84,
             "label": "свинг-лоу 263д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -2441,7 +2442,7 @@
           },
           {
             "price": 11.603,
-            "distance_pct": -4.84,
+            "distance_pct": -4.96,
             "label": "свинг-лоу 273д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -2450,15 +2451,15 @@
         ],
         "first_target": {
           "price": 14.405,
-          "distance_pct": 18.14,
+          "distance_pct": 17.99,
           "label": "свинг-хай 219д назад"
         },
         "suggested_stop": {
           "price": 11.984,
-          "distance_pct": -1.71,
+          "distance_pct": -1.84,
           "label": "свинг-лоу 239д назад"
         },
-        "risk_reward": 10.61
+        "risk_reward": 9.78
       }
     },
     "MNT": {
@@ -2478,7 +2479,7 @@
         "Поток ускоряется → размер 25% → 31%.",
         "Форма разгона: разгон притока нарастает — фаза молодая, самое начало (пройдено 25% фазы) — размер 31% → 37%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 37% → 21%.",
-        "Volume Profile: цена выше зоны стоимости на 11.2% — выход на объёме ×3.31 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 11.6% — выход на объёме ×3.32 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -2566,14 +2567,14 @@
         "targets_up": [
           {
             "price": 0.530166,
-            "distance_pct": 3.42,
+            "distance_pct": 3.02,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.59526,
-            "distance_pct": 16.12,
+            "distance_pct": 15.67,
             "label": "свинг-хай 67д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2581,7 +2582,7 @@
           },
           {
             "price": 0.66441,
-            "distance_pct": 29.61,
+            "distance_pct": 29.1,
             "label": "свинг-хай 118д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2591,7 +2592,7 @@
         "targets_down": [
           {
             "price": 0.50512,
-            "distance_pct": -1.46,
+            "distance_pct": -1.85,
             "label": "свинг-лоу 76д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -2599,14 +2600,14 @@
           },
           {
             "price": 0.488428,
-            "distance_pct": -4.72,
+            "distance_pct": -5.09,
             "label": "VAH 14d",
             "kind": "VAH",
             "window": "14d"
           },
           {
             "price": 0.461015,
-            "distance_pct": -10.07,
+            "distance_pct": -10.42,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
@@ -2614,15 +2615,15 @@
         ],
         "first_target": {
           "price": 0.530166,
-          "distance_pct": 3.42,
+          "distance_pct": 3.02,
           "label": "VAH 7d"
         },
         "suggested_stop": {
           "price": 0.50512,
-          "distance_pct": -1.46,
+          "distance_pct": -1.85,
           "label": "свинг-лоу 76д назад"
         },
-        "risk_reward": 2.34
+        "risk_reward": 1.63
       }
     },
     "MORPHO": {
@@ -2648,8 +2649,8 @@
         "Форма разгона: приток на последней неделе сменился оттоком — фаза сломана (пройдено 95% фазы). Приток был, но выдохся — размер 33% → 13%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 13% → 7%.",
         "CVD подтверждает: агрессия покупателей на нескольких окнах — размер 7% → 8%.",
-        "Volume Profile: цена выше зоны стоимости на 14.6% — выход на объёме ×2.52 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
-        "После всех корректировок осталось 8% — меньше практического минимума 10%. Слишком много правил против; входить в такую долю смысла нет, комиссии съедят."
+        "Volume Profile: цена выше зоны стоимости на 15.1% — объём ×2.52 не выделяется на фоне рынка (медиана ×2.33) — движение не подтверждено, вероятен возврат в зону — размер 8% → 6%.",
+        "После всех корректировок осталось 6% — меньше практического минимума 10%. Слишком много правил против; входить в такую долю смысла нет, комиссии съедят."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -2665,7 +2666,7 @@
         "shape_accumulation_fading",
         "regime:NEUTRAL_MIXED",
         "cvd_strong_buy_boost",
-        "vp_markup_no_cut",
+        "vp_above_value_cut",
         "below_min_practical_size"
       ],
       "regime": {
@@ -2739,7 +2740,7 @@
         "targets_up": [
           {
             "price": 2.4203,
-            "distance_pct": 1.86,
+            "distance_pct": 1.38,
             "label": "свинг-хай 88д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2747,7 +2748,7 @@
           },
           {
             "price": 2.4781,
-            "distance_pct": 4.29,
+            "distance_pct": 3.8,
             "label": "свинг-хай 337д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -2757,21 +2758,21 @@
         "targets_down": [
           {
             "price": 2.32221,
-            "distance_pct": -2.27,
+            "distance_pct": -2.73,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 2.2563,
-            "distance_pct": -5.05,
+            "distance_pct": -5.49,
             "label": "VAH 14d",
             "kind": "VAH",
             "window": "14d"
           },
           {
             "price": 2.15538,
-            "distance_pct": -9.29,
+            "distance_pct": -9.71,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
@@ -2779,15 +2780,15 @@
         ],
         "first_target": {
           "price": 2.4203,
-          "distance_pct": 1.86,
+          "distance_pct": 1.38,
           "label": "свинг-хай 88д назад"
         },
         "suggested_stop": {
           "price": 2.32221,
-          "distance_pct": -2.27,
+          "distance_pct": -2.73,
           "label": "VAH 7d"
         },
-        "risk_reward": 0.82
+        "risk_reward": 0.51
       }
     },
     "ONDO": {
@@ -2888,7 +2889,7 @@
         "targets_up": [
           {
             "price": 0.40124,
-            "distance_pct": 1.55,
+            "distance_pct": 0.87,
             "label": "HVN 30d",
             "kind": "HVN",
             "window": "30d",
@@ -2896,14 +2897,14 @@
           },
           {
             "price": 0.407916,
-            "distance_pct": 3.24,
+            "distance_pct": 2.55,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
           },
           {
             "price": 0.419348,
-            "distance_pct": 6.13,
+            "distance_pct": 5.42,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
@@ -2912,21 +2913,21 @@
         "targets_down": [
           {
             "price": 0.379573,
-            "distance_pct": -3.93,
+            "distance_pct": -4.57,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.37105,
-            "distance_pct": -6.09,
+            "distance_pct": -6.72,
             "label": "VAH 14d",
             "kind": "VAH",
             "window": "14d"
           },
           {
             "price": 0.364972,
-            "distance_pct": -7.63,
+            "distance_pct": -8.25,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -2935,15 +2936,15 @@
         ],
         "first_target": {
           "price": 0.40124,
-          "distance_pct": 1.55,
+          "distance_pct": 0.87,
           "label": "HVN 30d"
         },
         "suggested_stop": {
           "price": 0.379573,
-          "distance_pct": -3.93,
+          "distance_pct": -4.57,
           "label": "VAH 7d"
         },
-        "risk_reward": 0.39
+        "risk_reward": 0.19
       }
     },
     "OP": {
@@ -2966,8 +2967,7 @@
       "notes": [
         "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет.",
-        "Volume Profile: цена выше зоны стоимости на 17.5% — выход на объёме ×1.94 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -2981,8 +2981,7 @@
       ],
       "rules_fired": [
         "phase:MIXED_OR_NEUTRAL",
-        "shape_distribution_fading",
-        "vp_markup_no_cut"
+        "shape_distribution_fading"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -3055,7 +3054,7 @@
         "targets_up": [
           {
             "price": 0.10928,
-            "distance_pct": 1.59,
+            "distance_pct": 1.04,
             "label": "свинг-хай 57д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3063,7 +3062,7 @@
           },
           {
             "price": 0.11128,
-            "distance_pct": 3.45,
+            "distance_pct": 2.88,
             "label": "свинг-хай 48д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3071,7 +3070,7 @@
           },
           {
             "price": 0.11242,
-            "distance_pct": 4.51,
+            "distance_pct": 3.94,
             "label": "свинг-хай 69д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3081,14 +3080,14 @@
         "targets_down": [
           {
             "price": 0.105321,
-            "distance_pct": -2.09,
+            "distance_pct": -2.62,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
           },
           {
             "price": 0.09846,
-            "distance_pct": -8.47,
+            "distance_pct": -8.97,
             "label": "свинг-лоу 145д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3096,7 +3095,7 @@
           },
           {
             "price": 0.09645,
-            "distance_pct": -10.34,
+            "distance_pct": -10.83,
             "label": "свинг-лоу 44д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3105,15 +3104,15 @@
         ],
         "first_target": {
           "price": 0.10928,
-          "distance_pct": 1.59,
+          "distance_pct": 1.04,
           "label": "свинг-хай 57д назад"
         },
         "suggested_stop": {
           "price": 0.105321,
-          "distance_pct": -2.09,
+          "distance_pct": -2.62,
           "label": "VAH 90d"
         },
-        "risk_reward": 0.76
+        "risk_reward": 0.4
       }
     },
     "PENDLE": {
@@ -3149,7 +3148,7 @@
         "Новости срезали размер на 25%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 19% → 11%.",
         "CVD: агрессия продавцов на нескольких окнах (score -5). Агрессия против входа — размер обнулён.",
-        "Volume Profile: цена выше зоны стоимости на 10.5% — выход на объёме ×3.2 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 11.5% — выход на объёме ×3.21 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Новостной фон перестанет требовать урезания",
@@ -3238,16 +3237,8 @@
         "current_price": 1.6,
         "targets_up": [
           {
-            "price": 1.6771,
-            "distance_pct": 1.07,
-            "label": "свинг-хай 31д назад",
-            "kind": "SWING_HIGH",
-            "window": "365d",
-            "bars_ago": 31
-          },
-          {
             "price": 2.0059,
-            "distance_pct": 20.88,
+            "distance_pct": 19.86,
             "label": "свинг-хай 91д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3255,17 +3246,33 @@
           },
           {
             "price": 2.2008,
-            "distance_pct": 32.63,
+            "distance_pct": 31.51,
             "label": "свинг-хай 101д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
             "bars_ago": 101
+          },
+          {
+            "price": 2.2345,
+            "distance_pct": 33.52,
+            "label": "свинг-хай 211д назад",
+            "kind": "SWING_HIGH",
+            "window": "365d",
+            "bars_ago": 211
           }
         ],
         "targets_down": [
           {
+            "price": 1.6545,
+            "distance_pct": -1.14,
+            "label": "свинг-лоу 240д назад",
+            "kind": "SWING_LOW",
+            "window": "365d",
+            "bars_ago": 240
+          },
+          {
             "price": 1.5704,
-            "distance_pct": -5.36,
+            "distance_pct": -6.16,
             "label": "свинг-лоу 315д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3273,30 +3280,23 @@
           },
           {
             "price": 1.540864,
-            "distance_pct": -7.14,
+            "distance_pct": -7.93,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
-          },
-          {
-            "price": 1.51022,
-            "distance_pct": -8.99,
-            "label": "VAH 7d",
-            "kind": "VAH",
-            "window": "7d"
           }
         ],
         "first_target": {
-          "price": 1.6771,
-          "distance_pct": 1.07,
-          "label": "свинг-хай 31д назад"
+          "price": 2.0059,
+          "distance_pct": 19.86,
+          "label": "свинг-хай 91д назад"
         },
         "suggested_stop": {
-          "price": 1.5704,
-          "distance_pct": -5.36,
-          "label": "свинг-лоу 315д назад"
+          "price": 1.6545,
+          "distance_pct": -1.14,
+          "label": "свинг-лоу 240д назад"
         },
-        "risk_reward": 0.2
+        "risk_reward": 17.42
       }
     },
     "PEPE": {
@@ -3314,7 +3314,7 @@
         "Фаза Dune: ACCUMULATION_PHASE_B. Wyckoff Phase B — построение базы",
         "Динамика потока: приток закончился, пошёл отток — сигнал выхода.",
         "Поток развернулся из плюса в минус — сигнал выхода.",
-        "Volume Profile: цена выше зоны стоимости на 34.6% — выход на объёме ×3.11 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 35.9% — выход на объёме ×3.12 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -3401,7 +3401,7 @@
         "targets_up": [
           {
             "price": 0.004124,
-            "distance_pct": 2.05,
+            "distance_pct": 1.08,
             "label": "свинг-хай 126д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3409,7 +3409,7 @@
           },
           {
             "price": 0.004449,
-            "distance_pct": 10.1,
+            "distance_pct": 9.04,
             "label": "свинг-хай 177д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3417,7 +3417,7 @@
           },
           {
             "price": 0.004589,
-            "distance_pct": 13.56,
+            "distance_pct": 12.48,
             "label": "свинг-хай 103д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3427,7 +3427,7 @@
         "targets_down": [
           {
             "price": 0.003958,
-            "distance_pct": -2.05,
+            "distance_pct": -2.99,
             "label": "свинг-лоу 263д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3435,7 +3435,7 @@
           },
           {
             "price": 0.003731,
-            "distance_pct": -7.67,
+            "distance_pct": -8.55,
             "label": "свинг-лоу 114д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3443,7 +3443,7 @@
           },
           {
             "price": 0.003636,
-            "distance_pct": -10.02,
+            "distance_pct": -10.88,
             "label": "свинг-лоу 246д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3452,15 +3452,15 @@
         ],
         "first_target": {
           "price": 0.004124,
-          "distance_pct": 2.05,
+          "distance_pct": 1.08,
           "label": "свинг-хай 126д назад"
         },
         "suggested_stop": {
           "price": 0.003958,
-          "distance_pct": -2.05,
+          "distance_pct": -2.99,
           "label": "свинг-лоу 263д назад"
         },
-        "risk_reward": 1.0
+        "risk_reward": 0.36
       }
     },
     "RNDR": {
@@ -3667,8 +3667,7 @@
       "conflicts_warn": 0,
       "notes": [
         "Фаза Dune: MARKDOWN. Фаза распределения / падения",
-        "Динамика потока: поток около нуля, без сигнала.",
-        "Volume Profile: цена выше зоны стоимости на 14.3% — выход на объёме ×1.48 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -3679,8 +3678,7 @@
         "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "phase:MARKDOWN",
-        "vp_markup_no_cut"
+        "phase:MARKDOWN"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -3752,8 +3750,15 @@
         "current_price": 0.03980162,
         "targets_up": [
           {
+            "price": 0.051915,
+            "distance_pct": 6.2,
+            "label": "VAH 90d",
+            "kind": "VAH",
+            "window": "90d"
+          },
+          {
             "price": 0.052972,
-            "distance_pct": 8.87,
+            "distance_pct": 8.37,
             "label": "свинг-хай 49д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -3761,57 +3766,50 @@
           },
           {
             "price": 0.057031,
-            "distance_pct": 17.22,
+            "distance_pct": 16.67,
             "label": "свинг-хай 68д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
             "bars_ago": 68
-          },
-          {
-            "price": 0.06415,
-            "distance_pct": 31.85,
-            "label": "свинг-хай 61д назад",
-            "kind": "SWING_HIGH",
-            "window": "365d",
-            "bars_ago": 61
           }
         ],
         "targets_down": [
           {
-            "price": 0.046268,
-            "distance_pct": -4.91,
-            "label": "свинг-лоу 39д назад",
+            "price": 0.048632,
+            "distance_pct": -0.51,
+            "label": "свинг-лоу 76д назад",
             "kind": "SWING_LOW",
             "window": "365d",
-            "bars_ago": 39
+            "bars_ago": 76
           },
           {
-            "price": 0.04499,
-            "distance_pct": -7.53,
-            "label": "свинг-лоу 56д назад",
-            "kind": "SWING_LOW",
-            "window": "365d",
-            "bars_ago": 56
+            "price": 0.047171,
+            "distance_pct": -3.5,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 6.19
           },
           {
-            "price": 0.042553,
-            "distance_pct": -12.54,
-            "label": "VAH 30d",
-            "kind": "VAH",
-            "window": "30d"
+            "price": 0.046441,
+            "distance_pct": -4.99,
+            "label": "HVN 90d",
+            "kind": "HVN",
+            "window": "90d",
+            "volume_share_pct": 6.18
           }
         ],
         "first_target": {
-          "price": 0.052972,
-          "distance_pct": 8.87,
-          "label": "свинг-хай 49д назад"
+          "price": 0.051915,
+          "distance_pct": 6.2,
+          "label": "VAH 90d"
         },
         "suggested_stop": {
-          "price": 0.046268,
-          "distance_pct": -4.91,
-          "label": "свинг-лоу 39д назад"
+          "price": 0.048632,
+          "distance_pct": -0.51,
+          "label": "свинг-лоу 76д назад"
         },
-        "risk_reward": 1.81
+        "risk_reward": 12.16
       }
     },
     "STRK": {
@@ -3834,7 +3832,6 @@
       "notes": [
         "Фаза Dune: MARKDOWN. Фаза распределения / падения",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Volume Profile: цена выше зоны стоимости на 10.3% — выход на объёме ×2.4 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
         "Общая картина ставит вето: FALSE_RALLY_WAIT."
       ],
       "triggers": [
@@ -3847,7 +3844,6 @@
       ],
       "rules_fired": [
         "phase:MARKDOWN",
-        "vp_markup_no_cut",
         "unified_veto"
       ],
       "regime": {
@@ -3920,15 +3916,8 @@
         "current_price": 0.02749382,
         "targets_up": [
           {
-            "price": 0.028899,
-            "distance_pct": 0.8,
-            "label": "POC 90d",
-            "kind": "POC",
-            "window": "90d"
-          },
-          {
             "price": 0.029305,
-            "distance_pct": 2.21,
+            "distance_pct": 1.26,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -3936,25 +3925,33 @@
           },
           {
             "price": 0.03171,
-            "distance_pct": 10.6,
+            "distance_pct": 9.57,
             "label": "свинг-хай 25д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
             "bars_ago": 25
+          },
+          {
+            "price": 0.03227,
+            "distance_pct": 11.51,
+            "label": "свинг-хай 47д назад",
+            "kind": "SWING_HIGH",
+            "window": "365d",
+            "bars_ago": 47
           }
         ],
         "targets_down": [
           {
             "price": 0.028493,
-            "distance_pct": -0.62,
+            "distance_pct": -1.54,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
-            "volume_share_pct": 4.21
+            "volume_share_pct": 4.54
           },
           {
             "price": 0.02799,
-            "distance_pct": -2.37,
+            "distance_pct": -3.28,
             "label": "свинг-лоу 54д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3962,7 +3959,7 @@
           },
           {
             "price": 0.02723,
-            "distance_pct": -5.02,
+            "distance_pct": -5.91,
             "label": "свинг-лоу 34д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -3970,16 +3967,16 @@
           }
         ],
         "first_target": {
-          "price": 0.028899,
-          "distance_pct": 0.8,
-          "label": "POC 90d"
+          "price": 0.029305,
+          "distance_pct": 1.26,
+          "label": "HVN 90d"
         },
         "suggested_stop": {
           "price": 0.028493,
-          "distance_pct": -0.62,
+          "distance_pct": -1.54,
           "label": "HVN 90d"
         },
-        "risk_reward": 1.29
+        "risk_reward": 0.82
       }
     },
     "TAO": {
@@ -3998,7 +3995,7 @@
         "Динамика потока: поток около нуля, без сигнала.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%.",
         "CVD подтверждает: агрессия покупателей на нескольких окнах — размер 14% → 17%.",
-        "Volume Profile: цена выше зоны стоимости на 13.9% — выход на объёме ×2.9 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Volume Profile: цена выше зоны стоимости на 14.2% — выход на объёме ×2.91 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -4085,14 +4082,14 @@
         "targets_up": [
           {
             "price": 250.5084,
-            "distance_pct": 7.4,
+            "distance_pct": 7.1,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
           },
           {
             "price": 289.83,
-            "distance_pct": 24.26,
+            "distance_pct": 23.91,
             "label": "свинг-хай 67д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4100,7 +4097,7 @@
           },
           {
             "price": 293.25,
-            "distance_pct": 25.73,
+            "distance_pct": 25.37,
             "label": "свинг-хай 91д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4110,7 +4107,7 @@
         "targets_down": [
           {
             "price": 227.06,
-            "distance_pct": -2.65,
+            "distance_pct": -2.92,
             "label": "свинг-лоу 214д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -4118,14 +4115,14 @@
           },
           {
             "price": 217.15875,
-            "distance_pct": -6.89,
+            "distance_pct": -7.16,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 209.883333,
-            "distance_pct": -10.01,
+            "distance_pct": -10.27,
             "label": "VAH 14d",
             "kind": "VAH",
             "window": "14d"
@@ -4133,15 +4130,15 @@
         ],
         "first_target": {
           "price": 250.5084,
-          "distance_pct": 7.4,
+          "distance_pct": 7.1,
           "label": "VAH 90d"
         },
         "suggested_stop": {
           "price": 227.06,
-          "distance_pct": -2.65,
+          "distance_pct": -2.92,
           "label": "свинг-лоу 214д назад"
         },
-        "risk_reward": 2.79
+        "risk_reward": 2.43
       }
     },
     "UNI": {
@@ -4243,8 +4240,16 @@
         "current_price": 3.54350687,
         "targets_up": [
           {
+            "price": 4.2073,
+            "distance_pct": 0.61,
+            "label": "свинг-хай 161д назад",
+            "kind": "SWING_HIGH",
+            "window": "365d",
+            "bars_ago": 161
+          },
+          {
             "price": 4.2887,
-            "distance_pct": 2.16,
+            "distance_pct": 2.56,
             "label": "свинг-хай 177д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4252,57 +4257,49 @@
           },
           {
             "price": 4.5176,
-            "distance_pct": 7.62,
+            "distance_pct": 8.03,
             "label": "свинг-хай 191д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
             "bars_ago": 191
-          },
-          {
-            "price": 4.5739,
-            "distance_pct": 8.96,
-            "label": "свинг-хай 21д назад",
-            "kind": "SWING_HIGH",
-            "window": "365d",
-            "bars_ago": 21
           }
         ],
         "targets_down": [
           {
             "price": 4.026262,
-            "distance_pct": -4.09,
+            "distance_pct": -3.72,
             "label": "HVN 30d",
             "kind": "HVN",
             "window": "30d",
-            "volume_share_pct": 5.5
+            "volume_share_pct": 5.49
           },
           {
             "price": 3.970094,
-            "distance_pct": -5.43,
+            "distance_pct": -5.06,
             "label": "POC 30d",
             "kind": "POC",
             "window": "30d"
           },
           {
-            "price": 3.906273,
-            "distance_pct": -6.95,
+            "price": 3.910619,
+            "distance_pct": -6.48,
             "label": "HVN 7d",
             "kind": "HVN",
             "window": "7d",
-            "volume_share_pct": 4.79
+            "volume_share_pct": 5.07
           }
         ],
         "first_target": {
-          "price": 4.2887,
-          "distance_pct": 2.16,
-          "label": "свинг-хай 177д назад"
+          "price": 4.2073,
+          "distance_pct": 0.61,
+          "label": "свинг-хай 161д назад"
         },
         "suggested_stop": {
           "price": 4.026262,
-          "distance_pct": -4.09,
+          "distance_pct": -3.72,
           "label": "HVN 30d"
         },
-        "risk_reward": 0.53
+        "risk_reward": 0.16
       }
     },
     "VIRTUAL": {
@@ -4319,8 +4316,7 @@
       "notes": [
         "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
         "Динамика потока: приток закончился, пошёл отток — сигнал выхода.",
-        "Форма разгона: отток замедляется — распродажа выдыхается, возможное дно (пройдено 85% фазы). Дно возможно, но подтверждения ещё нет.",
-        "Volume Profile: цена выше зоны стоимости на 19.9% — выход на объёме ×2.16 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Форма разгона: отток замедляется — распродажа выдыхается, возможное дно (пройдено 85% фазы). Дно возможно, но подтверждения ещё нет."
       ],
       "triggers": [
         "Dune-фаза перейдёт в MID_ACCUMULATION",
@@ -4333,8 +4329,7 @@
       ],
       "rules_fired": [
         "phase:MIXED_OR_NEUTRAL",
-        "shape_distribution_fading",
-        "vp_markup_no_cut"
+        "shape_distribution_fading"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -4407,7 +4402,7 @@
         "targets_up": [
           {
             "price": 0.75506,
-            "distance_pct": 4.5,
+            "distance_pct": 4.11,
             "label": "свинг-хай 149д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4415,7 +4410,7 @@
           },
           {
             "price": 0.76991,
-            "distance_pct": 6.56,
+            "distance_pct": 6.16,
             "label": "свинг-хай 80д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4423,7 +4418,7 @@
           },
           {
             "price": 0.79614,
-            "distance_pct": 10.19,
+            "distance_pct": 9.77,
             "label": "свинг-хай 126д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4433,7 +4428,7 @@
         "targets_down": [
           {
             "price": 0.67676,
-            "distance_pct": -6.33,
+            "distance_pct": -6.69,
             "label": "свинг-лоу 90д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -4441,7 +4436,7 @@
           },
           {
             "price": 0.665,
-            "distance_pct": -7.96,
+            "distance_pct": -8.31,
             "label": "свинг-лоу 114д назад",
             "kind": "SWING_LOW",
             "window": "365d",
@@ -4449,7 +4444,7 @@
           },
           {
             "price": 0.648723,
-            "distance_pct": -10.21,
+            "distance_pct": -10.55,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
@@ -4457,15 +4452,15 @@
         ],
         "first_target": {
           "price": 0.75506,
-          "distance_pct": 4.5,
+          "distance_pct": 4.11,
           "label": "свинг-хай 149д назад"
         },
         "suggested_stop": {
           "price": 0.67676,
-          "distance_pct": -6.33,
+          "distance_pct": -6.69,
           "label": "свинг-лоу 90д назад"
         },
-        "risk_reward": 0.71
+        "risk_reward": 0.61
       }
     },
     "WIF": {
@@ -4486,7 +4481,7 @@
         "Форма разгона: разгон притока выдыхается — фаза к концу, новые входы дороже (пройдено 85% фазы). Приток был, но выдохся — размер 25% → 10%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 10% → 6%.",
         "CVD: агрессия продавцов на нескольких окнах (score -8). Агрессия против входа — размер обнулён.",
-        "Volume Profile: цена выше зоны стоимости на 25.9% — выход на объёме ×4.13 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
+        "Volume Profile: цена выше зоны стоимости на 28.2% — выход на объёме ×4.16 при медиане рынка ×2.33 — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем.",
         "Общая картина ставит вето: AVOID."
       ],
       "triggers": [
@@ -4577,16 +4572,8 @@
         "current_price": 0.0003073,
         "targets_up": [
           {
-            "price": 0.20162,
-            "distance_pct": 1.41,
-            "label": "свинг-хай 149д назад",
-            "kind": "SWING_HIGH",
-            "window": "365d",
-            "bars_ago": 149
-          },
-          {
             "price": 0.20422,
-            "distance_pct": 2.72,
+            "distance_pct": 0.78,
             "label": "свинг-хай 91д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
@@ -4594,49 +4581,56 @@
           },
           {
             "price": 0.20651,
-            "distance_pct": 3.87,
+            "distance_pct": 1.91,
             "label": "свинг-хай 134д назад",
             "kind": "SWING_HIGH",
             "window": "365d",
             "bars_ago": 134
+          },
+          {
+            "price": 0.22255,
+            "distance_pct": 9.83,
+            "label": "свинг-хай 170д назад",
+            "kind": "SWING_HIGH",
+            "window": "365d",
+            "bars_ago": 170
           }
         ],
         "targets_down": [
           {
+            "price": 0.18923,
+            "distance_pct": -6.61,
+            "label": "VAH 7d",
+            "kind": "VAH",
+            "window": "7d"
+          },
+          {
             "price": 0.18549,
-            "distance_pct": -6.7,
+            "distance_pct": -8.46,
             "label": "свинг-лоу 96д назад",
             "kind": "SWING_LOW",
             "window": "365d",
             "bars_ago": 96
           },
           {
-            "price": 0.18113,
-            "distance_pct": -8.89,
-            "label": "свинг-лоу 174д назад",
-            "kind": "SWING_LOW",
-            "window": "365d",
-            "bars_ago": 174
-          },
-          {
-            "price": 0.174607,
-            "distance_pct": -12.17,
-            "label": "VAH 7d",
+            "price": 0.181925,
+            "distance_pct": -10.22,
+            "label": "VAH 90d",
             "kind": "VAH",
-            "window": "7d"
+            "window": "90d"
           }
         ],
         "first_target": {
-          "price": 0.20162,
-          "distance_pct": 1.41,
-          "label": "свинг-хай 149д назад"
+          "price": 0.20422,
+          "distance_pct": 0.78,
+          "label": "свинг-хай 91д назад"
         },
         "suggested_stop": {
-          "price": 0.18549,
-          "distance_pct": -6.7,
-          "label": "свинг-лоу 96д назад"
+          "price": 0.18923,
+          "distance_pct": -6.61,
+          "label": "VAH 7d"
         },
-        "risk_reward": 0.21
+        "risk_reward": 0.12
       }
     },
     "ZK": {
@@ -4653,8 +4647,7 @@
       "notes": [
         "Фаза Dune: WEAKENING. Ослабление — приток исчерпывается",
         "Динамика потока: поток около нуля, без сигнала.",
-        "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет.",
-        "Volume Profile: цена выше зоны стоимости на 15.1% — выход на объёме ×1.69 к среднему — рынок принимает новую цену — пробой подтверждён объёмом, размер не режем."
+        "Форма разгона: отток на последней неделе сменился притоком — распродажа закончилась (пройдено 95% фазы). Дно возможно, но подтверждения ещё нет."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -4666,8 +4659,7 @@
       ],
       "rules_fired": [
         "phase:WEAKENING",
-        "shape_distribution_fading",
-        "vp_markup_no_cut"
+        "shape_distribution_fading"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -4740,7 +4732,7 @@
         "targets_up": [
           {
             "price": 0.010049,
-            "distance_pct": 6.62,
+            "distance_pct": 5.95,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -4748,7 +4740,7 @@
           },
           {
             "price": 0.010385,
-            "distance_pct": 10.19,
+            "distance_pct": 9.49,
             "label": "HVN 90d",
             "kind": "HVN",
             "window": "90d",
@@ -4756,7 +4748,7 @@
           },
           {
             "price": 0.011478,
-            "distance_pct": 21.78,
+            "distance_pct": 21.01,
             "label": "VAH 90d",
             "kind": "VAH",
             "window": "90d"
@@ -4765,22 +4757,22 @@
         "targets_down": [
           {
             "price": 0.009121,
-            "distance_pct": -3.23,
+            "distance_pct": -3.84,
             "label": "свинг-лоу 34д назад",
             "kind": "SWING_LOW",
             "window": "365d",
             "bars_ago": 34
           },
           {
-            "price": 0.008366,
-            "distance_pct": -11.24,
+            "price": 0.008368,
+            "distance_pct": -11.78,
             "label": "VAH 7d",
             "kind": "VAH",
             "window": "7d"
           },
           {
             "price": 0.008186,
-            "distance_pct": -13.15,
+            "distance_pct": -13.7,
             "label": "VAH 30d",
             "kind": "VAH",
             "window": "30d"
@@ -4788,15 +4780,15 @@
         ],
         "first_target": {
           "price": 0.010049,
-          "distance_pct": 6.62,
+          "distance_pct": 5.95,
           "label": "HVN 90d"
         },
         "suggested_stop": {
           "price": 0.009121,
-          "distance_pct": -3.23,
+          "distance_pct": -3.84,
           "label": "свинг-лоу 34д назад"
         },
-        "risk_reward": 2.05
+        "risk_reward": 1.55
       }
     }
   }
