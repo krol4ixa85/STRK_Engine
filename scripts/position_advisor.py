@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-position_advisor.py · v1.0 · 21.08.2026
+position_advisor.py · v1.1 · 21.08.2026
 STRK ENGINE · советы по ОТКРЫТОЙ позиции
 
 ЗАЧЕМ
@@ -152,6 +152,184 @@ def signal_direction(compass_score, decision_action):
     if compass_score >= BULLISH_ABOVE:
         return "UP"
     return "FLAT"
+
+
+def fmt_price(p):
+    if p is None:
+        return "—"
+    if p < 0.01:
+        return f"{p:.6f}"
+    if p < 1:
+        return f"{p:.4f}"
+    return f"{p:.2f}"
+
+
+def build_plain(out, sig, dec, pa, vp, comp, hl, targets):
+    """
+    Четыре вопроса обычными словами.
+
+    Зачем отдельный блок. Уровни сами по себе не говорят, что делать —
+    они говорят, где цена раньше торговалась. Действие появляется, когда
+    к уровням добавлены три вещи: что ближе, жива ли причина входа, и
+    что именно тебя опровергнет. Раньше система отвечала на вопрос
+    «стоит ли покупать» — а человек с открытой позицией спрашивает
+    другое.
+
+    Здесь нет ни одного совета вида «закрывай» или «держи»: только
+    числа и то, что из них следует. Решение принимает человек.
+    """
+    is_short = out["side"] == "SHORT"
+    side_ru = "шорт" if is_short else "лонг"
+    price = out.get("current_price")
+    blocks = []
+
+    # ── 1. Что у тебя ────────────────────────────────────────
+    lines = [f"{side_ru.capitalize()} от ${fmt_price(out['entry_price'])}, "
+             f"сейчас ${fmt_price(price)}."]
+    if out.get("size_usd"):
+        lines.append(f"Объём ${out['size_usd']:,.0f}".replace(",", " ") + ".")
+    if out.get("hours_open") is not None:
+        h = out["hours_open"]
+        lines.append(f"В позиции {int(h)} ч." if h < 48
+                     else f"В позиции {h/24:.1f} дн.")
+    if out.get("pnl_pct") is not None:
+        znak = "плюсе" if out["pnl_pct"] >= 0 else "минусе"
+        s = f"Сейчас в {znak} на {abs(out['pnl_pct']):.2f}%"
+        if out.get("pnl_usd") is not None:
+            s += f" (${abs(out['pnl_usd']):,.0f})".replace(",", " ")
+        lines.append(s + ".")
+    blocks.append({"q": "Что у тебя", "tone": "muted", "lines": lines})
+
+    # ── 2. Что ближе — помеха или выгода ─────────────────────
+    up = targets.get("nearest_up") or []
+    down = targets.get("nearest_down") or []
+    helps, hurts = (down, up) if is_short else (up, down)
+
+    lines = []
+    tone = "muted"
+    d_hurt = d_help = None
+    if hurts:
+        h0 = hurts[0]
+        d_hurt = abs(h0["distance_pct"])
+        lines.append(f"Против тебя ближайшее — ${fmt_price(h0['price'])} "
+                     f"({d_hurt:.1f}%), {h0['label']}.")
+    if helps:
+        g0 = helps[0]
+        d_help = abs(g0["distance_pct"])
+        lines.append(f"За тебя ближайшее — ${fmt_price(g0['price'])} "
+                     f"({d_help:.1f}%), {g0['label']}.")
+
+    if d_hurt is not None and d_help is not None:
+        if d_help > d_hurt:
+            tone = "red"
+            lines.append(f"Помеха ближе выгоды: {d_hurt:.1f}% против "
+                         f"{d_help:.1f}%. Идти позиции дальше, чем "
+                         f"до первого сопротивления.")
+        else:
+            tone = "green"
+            lines.append(f"Выгода ближе помехи: {d_help:.1f}% против "
+                         f"{d_hurt:.1f}%.")
+    if len(hurts) > 1:
+        h1 = hurts[1]
+        lines.append(f"Следующее против тебя — ${fmt_price(h1['price'])} "
+                     f"({abs(h1['distance_pct']):.1f}%), {h1['label']}.")
+    if not lines:
+        lines = ["Уровней по этому активу нет — расстояния посчитать не из чего."]
+    else:
+        lines.append("Это не стоп: здесь только расстояния до цен, где "
+                     "раньше проходил объём. Стоп ставишь ты.")
+    blocks.append({"q": "Что ближе — помеха или выгода",
+                   "tone": tone, "lines": lines})
+
+    # ── 3. Жива ли причина входа ─────────────────────────────
+    za, protiv = [], []
+
+    shape = ((pa.get("flow") or {}).get("shape")) or {}
+    if shape.get("text_ru"):
+        code = shape.get("code") or ""
+        bearish_shape = code.startswith("DISTRIBUTION") and not shape.get("short_flipped")
+        bullish_shape = code.startswith("ACCUMULATION") and not shape.get("short_flipped")
+        txt = f"форма потока: {shape['text_ru']}"
+        if shape.get("short_flipped"):
+            (protiv if is_short and code.startswith("DISTRIBUTION")
+             else protiv if not is_short and code.startswith("ACCUMULATION")
+             else za).append(txt)
+        elif bearish_shape:
+            (za if is_short else protiv).append(txt)
+        elif bullish_shape:
+            (protiv if is_short else za).append(txt)
+
+    reg = (pa.get("regime") or {})
+    rc = reg.get("code") or ""
+    if reg.get("text_ru"):
+        txt = f"движение денег: {reg['text_ru']}"
+        if rc in ("ACCEL_DOWN", "FLIPPING_DOWN", "STEADY_DOWN"):
+            (za if is_short else protiv).append(txt)
+        elif rc in ("ACCEL_UP", "FLIPPING_UP", "STEADY_UP"):
+            (protiv if is_short else za).append(txt)
+
+    vpos = vp.get("position") or {}
+    kind = vpos.get("above_kind")
+    if vpos.get("code") == "ABOVE_VALUE" and kind:
+        if kind == "MARKUP":
+            txt = (f"объём подтверждает выход цены вверх "
+                   f"(×{vpos.get('vol_ratio_recent')} к среднему по рынку)")
+            (protiv if is_short else za).append(txt)
+        else:
+            txt = "цена ушла вверх, объём этого не подтверждает"
+            (za if is_short else protiv).append(txt)
+    elif vpos.get("code") == "BELOW_VALUE":
+        (za if is_short else protiv).append("цена ниже зоны объёма")
+
+    score = out.get("compass_score")
+    if score is not None:
+        txt = f"компас {score:+.0f}"
+        if score <= BEARISH_BELOW:
+            (za if is_short else protiv).append(txt)
+        elif score >= BULLISH_ABOVE:
+            (protiv if is_short else za).append(txt)
+
+    lines = []
+    if za:
+        lines.append("За твою сторону: " + "; ".join(za) + ".")
+    if protiv:
+        lines.append("Против: " + "; ".join(protiv) + ".")
+    if not za and not protiv:
+        lines.append("Ни один слой не высказался определённо — "
+                     "картина нейтральная.")
+        status, tone = "neutral", "muted"
+    elif za and not protiv:
+        lines.append("Причина, по которой позиция открыта, подтверждается.")
+        status, tone = "alive", "green"
+    elif protiv and not za:
+        lines.append("Причина, по которой позиция открыта, сейчас "
+                     "не подтверждается ни одним слоем.")
+        status, tone = "broken", "red"
+    else:
+        lines.append(f"Слои спорят: {len(za)} за, {len(protiv)} против. "
+                     f"Это не то же самое, что уверенный сигнал.")
+        status, tone = "mixed", "yellow"
+    blocks.append({"q": "Жива ли причина входа", "tone": tone,
+                   "lines": lines, "status": status})
+
+    # ── 4. Что тебя опровергнет ──────────────────────────────
+    lines = []
+    if hurts:
+        h0 = hurts[0]
+        napr = "выше" if is_short else "ниже"
+        lines.append(f"Ближайшая проверка — ${fmt_price(h0['price'])}. "
+                     f"Дневное закрытие {napr} этой цены значит, что "
+                     f"ближайшая защита пройдена.")
+    if len(hurts) > 1:
+        h1 = hurts[1]
+        lines.append(f"Структурная — ${fmt_price(h1['price'])} ({h1['label']}). "
+                     f"За ней уровней рядом нет.")
+    lines.append("Если уровень не назван заранее, решение принимается "
+                 "заново при каждом взгляде на экран — и почти всегда "
+                 "в пользу «подожду ещё немного».")
+    blocks.append({"q": "Что тебя опровергнет", "tone": "muted", "lines": lines})
+
+    return blocks
 
 
 def advise(pos, sig):
@@ -309,11 +487,57 @@ def advise(pos, sig):
                          f"риск каскада вниз.")
 
     out["body"] = " ".join(parts)
+
+    # Человеческий разбор из четырёх вопросов. Считается здесь, в Python,
+    # и кладётся готовым — браузеру остаётся только вывести строки.
+    try:
+        out["plain"] = build_plain(out, sig, dec, pa, vp, comp, hl, targets)
+    except Exception as e:
+        out["plain"] = [{"q": "Разбор позиции", "tone": "muted",
+                         "lines": [f"не удалось собрать: {e}"]}]
+
+    # ── Сверка заголовка с разбором ──────────────────────────
+    # Заголовок строился только по компасу и вердикту движка и мог
+    # сказать «сигналы за тебя · ok» там, где разбор ниже показывает
+    # спор слоёв и помеху ближе выгоды. Два противоположных вывода
+    # в одной карточке — это ровно та болезнь, которую мы лечили
+    # на дашборде. Заголовок понижается до того, что видно в разборе.
+    _by_q = {b.get("q"): b for b in (out.get("plain") or [])}
+    _thesis = _by_q.get("Жива ли причина входа") or {}
+    _dist = _by_q.get("Что ближе — помеха или выгода") or {}
+    _rank = {"ok": 0, "info": 1, "warning": 2, "critical": 3}
+
+    def _raise_to(level, headline=None, why=None):
+        if _rank.get(level, 0) > _rank.get(out.get("urgency", "ok"), 0):
+            out["urgency"] = level
+            if headline:
+                out["headline"] = headline
+            if why:
+                out["body"] = (out.get("body", "") + " " + why).strip()
+
+    if _thesis.get("status") == "broken":
+        _raise_to("critical", f"Причина входа в {side_ru} больше не подтверждается",
+                  "Ни один слой сейчас не говорит в сторону позиции.")
+    elif _thesis.get("status") == "mixed":
+        _raise_to("warning", f"Слои спорят — {side_ru} держится не на всех сигналах",
+                  "Часть слоёв развернулась против позиции.")
+
+    if _dist.get("tone") == "red":
+        _raise_to("warning", None,
+                  "До ближайшей помехи ближе, чем до ближайшей выгоды.")
+
+    # Соотношение хода к риску считалось как «до цели / до ближайшего
+    # уровня против». При цене вплотную к уровню знаменатель крошечный,
+    # и число вылетало в 15-20 — выглядело отличным там, где ситуация
+    # ровно обратная. Оставляю поле для совместимости, но помечаю.
+    if out.get("remaining_rr") is not None:
+        out["remaining_rr_note"] = ("расстояние до уровней, а не до стопа; "
+                                    "большое число рядом с уровнем обманчиво")
     return out
 
 
 def main():
-    print("=== Position Advisor v1.0 ===\n")
+    print("=== Position Advisor v1.1 ===\n")
 
     trades = read_trades()
     positions = build_open_positions(trades)
