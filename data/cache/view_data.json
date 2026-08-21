@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-21T20:37:35.524156+00:00",
+  "computed_at": "2026-08-21T21:20:33.978299+00:00",
   "purpose": "Готовые данные для отображения. Браузер только выводит, никаких вычислений на его стороне.",
   "signals_table": {
     "rows": [
@@ -27,8 +27,8 @@
         "action": "ВХОД ЧАСТЬЮ",
         "action_color": "green",
         "size_pct": 13,
-        "compass_score": -10.0,
-        "compass_verdict": "нейтрально",
+        "compass_score": -16.0,
+        "compass_verdict": "слабый шорт",
         "phase": "EARLY_ACCUMULATION",
         "phase_ru": "ранняя стадия",
         "flow": "STEADY_UP",
@@ -54,7 +54,7 @@
         "action": "ВХОД ЧАСТЬЮ",
         "action_color": "green",
         "size_pct": 10,
-        "compass_score": 8.0,
+        "compass_score": 2.0,
         "compass_verdict": "нейтрально",
         "phase": "EARLY_ACCUMULATION",
         "phase_ru": "ранняя стадия",
@@ -154,7 +154,7 @@
         "action": "ЖДАТЬ",
         "action_color": "yellow",
         "size_pct": 0,
-        "compass_score": -4.0,
+        "compass_score": -10.0,
         "compass_verdict": "нейтрально",
         "phase": "EARLY_ACCUMULATION",
         "phase_ru": "ранняя стадия",
@@ -171,33 +171,6 @@
         "target_down": {
           "price_fmt": "216.01",
           "distance_pct": -3.75,
-          "label": "VAH 7d"
-        },
-        "data_ok": true,
-        "whales": null
-      },
-      {
-        "token": "MORPHO",
-        "action": "ЖДАТЬ",
-        "action_color": "yellow",
-        "size_pct": 0,
-        "compass_score": -6.0,
-        "compass_verdict": "нейтрально",
-        "phase": "ACCUMULATION_PHASE_B",
-        "phase_ru": "база строится",
-        "flow": "STEADY_UP",
-        "flow_ru": "стабильный приток",
-        "flow_tone": "green",
-        "price": 2.3177,
-        "price_fmt": "2.32",
-        "target_up": {
-          "price_fmt": "2.37",
-          "distance_pct": 2.05,
-          "label": "свинг-хай 107д назад"
-        },
-        "target_down": {
-          "price_fmt": "2.31",
-          "distance_pct": -0.51,
           "label": "VAH 7d"
         },
         "data_ok": true,
@@ -299,6 +272,33 @@
           "price_fmt": "3.92",
           "distance_pct": -1.36,
           "label": "HVN 7d"
+        },
+        "data_ok": true,
+        "whales": null
+      },
+      {
+        "token": "MORPHO",
+        "action": "ЖДАТЬ",
+        "action_color": "yellow",
+        "size_pct": 0,
+        "compass_score": -15.0,
+        "compass_verdict": "слабый шорт",
+        "phase": "ACCUMULATION_PHASE_B",
+        "phase_ru": "база строится",
+        "flow": "STEADY_UP",
+        "flow_ru": "стабильный приток",
+        "flow_tone": "green",
+        "price": 2.3177,
+        "price_fmt": "2.32",
+        "target_up": {
+          "price_fmt": "2.37",
+          "distance_pct": 2.05,
+          "label": "свинг-хай 107д назад"
+        },
+        "target_down": {
+          "price_fmt": "2.31",
+          "distance_pct": -0.51,
+          "label": "VAH 7d"
         },
         "data_ok": true,
         "whales": null
@@ -412,60 +412,6 @@
         "whales": null
       },
       {
-        "token": "ETHFI",
-        "action": "ЖДАТЬ",
-        "action_color": "yellow",
-        "size_pct": 0,
-        "compass_score": -28.0,
-        "compass_verdict": "слабый шорт",
-        "phase": "ACCUMULATION_PHASE_B",
-        "phase_ru": "база строится",
-        "flow": "STALLING_UP",
-        "flow_ru": "приток затухает",
-        "flow_tone": "yellow",
-        "price": 0.58381,
-        "price_fmt": "0.5838",
-        "target_up": {
-          "price_fmt": "0.5987",
-          "distance_pct": 2.55,
-          "label": "свинг-хай 164д назад"
-        },
-        "target_down": {
-          "price_fmt": "0.5564",
-          "distance_pct": -4.7,
-          "label": "VAH 7d"
-        },
-        "data_ok": true,
-        "whales": null
-      },
-      {
-        "token": "FET",
-        "action": "ЖДАТЬ",
-        "action_color": "yellow",
-        "size_pct": 0,
-        "compass_score": -30.0,
-        "compass_verdict": "слабый шорт",
-        "phase": "MIXED_OR_NEUTRAL",
-        "phase_ru": "без перевеса",
-        "flow": "STABLE_ZERO",
-        "flow_ru": "поток около нуля",
-        "flow_tone": "muted",
-        "price": 0.1605,
-        "price_fmt": "0.1605",
-        "target_up": {
-          "price_fmt": "0.1759",
-          "distance_pct": 9.56,
-          "label": "свинг-хай 177д назад"
-        },
-        "target_down": {
-          "price_fmt": "0.1594",
-          "distance_pct": -0.7,
-          "label": "свинг-лоу 57д назад"
-        },
-        "data_ok": true,
-        "whales": null
-      },
-      {
         "token": "PENDLE",
         "action": "ЖДАТЬ",
         "action_color": "yellow",
@@ -497,7 +443,7 @@
         "action": "ЖДАТЬ",
         "action_color": "yellow",
         "size_pct": 0,
-        "compass_score": -40.0,
+        "compass_score": -34.0,
         "compass_verdict": "шорт",
         "phase": "ACCUMULATION_PHASE_B",
         "phase_ru": "база строится",
@@ -515,6 +461,33 @@
           "price_fmt": "0.0037",
           "distance_pct": -1.56,
           "label": "свинг-лоу 114д назад"
+        },
+        "data_ok": true,
+        "whales": null
+      },
+      {
+        "token": "FET",
+        "action": "ЖДАТЬ",
+        "action_color": "yellow",
+        "size_pct": 0,
+        "compass_score": -39.0,
+        "compass_verdict": "шорт",
+        "phase": "MIXED_OR_NEUTRAL",
+        "phase_ru": "без перевеса",
+        "flow": "STABLE_ZERO",
+        "flow_ru": "поток около нуля",
+        "flow_tone": "muted",
+        "price": 0.1605,
+        "price_fmt": "0.1605",
+        "target_up": {
+          "price_fmt": "0.1759",
+          "distance_pct": 9.56,
+          "label": "свинг-хай 177д назад"
+        },
+        "target_down": {
+          "price_fmt": "0.1594",
+          "distance_pct": -0.7,
+          "label": "свинг-лоу 57д назад"
         },
         "data_ok": true,
         "whales": null
@@ -542,6 +515,33 @@
           "price_fmt": "0.6768",
           "distance_pct": -2.39,
           "label": "свинг-лоу 90д назад"
+        },
+        "data_ok": true,
+        "whales": null
+      },
+      {
+        "token": "ETHFI",
+        "action": "ЖДАТЬ",
+        "action_color": "yellow",
+        "size_pct": 0,
+        "compass_score": -49.0,
+        "compass_verdict": "шорт",
+        "phase": "ACCUMULATION_PHASE_B",
+        "phase_ru": "база строится",
+        "flow": "STALLING_UP",
+        "flow_ru": "приток затухает",
+        "flow_tone": "yellow",
+        "price": 0.58381,
+        "price_fmt": "0.5838",
+        "target_up": {
+          "price_fmt": "0.5987",
+          "distance_pct": 2.55,
+          "label": "свинг-хай 164д назад"
+        },
+        "target_down": {
+          "price_fmt": "0.5564",
+          "distance_pct": -4.7,
+          "label": "VAH 7d"
         },
         "data_ok": true,
         "whales": null
@@ -578,7 +578,7 @@
         "action": "НЕ ВХОДИТЬ",
         "action_color": "red",
         "size_pct": 0,
-        "compass_score": -18.0,
+        "compass_score": -24.0,
         "compass_verdict": "слабый шорт",
         "phase": "MIXED_OR_NEUTRAL",
         "phase_ru": "без перевеса",
@@ -724,8 +724,8 @@
         "action": "НЕ ВХОДИТЬ",
         "action_color": "red",
         "size_pct": 0,
-        "compass_score": -55.0,
-        "compass_verdict": "шорт",
+        "compass_score": -61.0,
+        "compass_verdict": "сильный шорт",
         "phase": "MARKDOWN",
         "phase_ru": "падение",
         "flow": "ACCEL_DOWN",
@@ -778,7 +778,7 @@
         "action": "НЕ ВХОДИТЬ",
         "action_color": "red",
         "size_pct": 0,
-        "compass_score": -76.0,
+        "compass_score": -91.0,
         "compass_verdict": "сильный шорт",
         "phase": "WEAKENING",
         "phase_ru": "ослабление",
@@ -812,58 +812,63 @@
     "tone": "neutral",
     "engine_version": "1.4",
     "decisions_at": "2026-08-21T19:03:20.429124+00:00",
-    "compass_at": "2026-08-21T20:03:26.792232+00:00"
+    "compass_at": "2026-08-21T21:10:23.122071+00:00"
   },
   "whales": {
     "status": "OK",
-    "headline": "Толпа и крупные расходятся: SUI",
+    "headline": "Толпа и крупные расходятся: SOL, ARB, AAVE, PENDLE, ENA, SUI",
     "tone": "caution",
     "action": "Расхождение обычно разрешается в пользу крупных. По этим активам вход против них рискованнее обычного.",
     "rows": [
       {
         "token": "ETH",
-        "bias": "WHALES_SHORT",
-        "n_long": 6,
+        "bias": "SINGLE_WHALE_SHORT",
+        "n_long": 7,
         "n_short": 6,
-        "long_m": 9.62,
-        "short_m": 35.7,
-        "net_pct": -57.5,
+        "long_m": 7.48,
+        "short_m": 42.45,
+        "net_pct": -70.0,
         "divergent": false,
-        "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено",
-        "text_ru": "6 адресов в шортах на $35.7M против 6 в лонгах на $9.6M"
+        "crowd_vs_whales_ru": null,
+        "text_ru": "перевес в шорт держат 6 адрес(а) против 7 с другой стороны — это мнение одного счёта, а не крупных в целом"
       },
       {
         "token": "BTC",
         "bias": "WHALES_SHORT",
-        "n_long": 3,
-        "n_short": 5,
-        "long_m": 1.13,
-        "short_m": 7.41,
-        "net_pct": -73.5,
+        "n_long": 4,
+        "n_short": 7,
+        "long_m": 0.91,
+        "short_m": 9.52,
+        "net_pct": -82.5,
         "divergent": false,
         "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено",
-        "text_ru": "5 адресов в шортах на $7.4M против 3 в лонгах на $1.1M"
+        "text_ru": "7 адресов в шортах на $9.5M против 4 в лонгах на $0.9M"
       },
       {
         "token": "SOL",
-        "bias": "SINGLE_WHALE_LONG",
-        "n_long": 2,
-        "n_short": 3,
-        "long_m": 2.56,
-        "short_m": 0.66,
-        "net_pct": 59.0,
-        "divergent": false,
-        "crowd_vs_whales_ru": null,
-        "text_ru": "перевес в лонг держат 2 адрес(а) против 3 с другой стороны — это мнение одного счёта, а не крупных в целом"
+        "bias": "WHALES_LONG",
+        "n_long": 4,
+        "n_short": 2,
+        "long_m": 2.67,
+        "short_m": 0.5,
+        "net_pct": 68.4,
+        "divergent": true,
+        "crowd_vs_whales_ru": "толпа набрала шорты, а крупные стоят в лонгах — расхождение, обычно правы крупные",
+        "text_ru": "4 адресов в лонгах на $2.7M против 2 в шортах на $0.5M"
       }
     ],
     "divergent_tokens": [
+      "SOL",
+      "ARB",
+      "AAVE",
+      "PENDLE",
+      "ENA",
       "SUI"
     ],
-    "whales_directional": 19,
+    "whales_directional": 23,
     "market_makers_skipped": 3,
-    "trades_in_log": 205,
-    "computed_at": "2026-08-21T20:01:50.895444+00:00"
+    "trades_in_log": 231,
+    "computed_at": "2026-08-21T21:08:50.691770+00:00"
   },
   "modal": {
     "AAVE": {
@@ -895,7 +900,7 @@
         "phase:WEAKENING"
       ],
       "compass": {
-        "score": -76.0,
+        "score": -91.0,
         "verdict_ru": "сильный шорт",
         "components": {
           "onchain": {
@@ -921,18 +926,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.4,
+            "score": -0.9,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": -0.2,
-                "detail": "перекос в лонги (+0.123%)"
+                "value": -0.5,
+                "detail": "лонги сильно переплачивают (+0.349%)"
               },
               {
                 "name": "фандинг",
-                "value": -0.2,
-                "detail": "лонги платят 21% годовых"
+                "value": -0.4,
+                "detail": "держать лонг очень дорого (63% годовых)"
               }
             ],
             "has_data": true
@@ -960,8 +965,8 @@
       "price": {
         "now": 110.11,
         "now_fmt": "110.11",
-        "change_7d_pct": 27.41,
-        "change_30d_pct": 13.01,
+        "change_7d_pct": 36.08,
+        "change_30d_pct": 20.7,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -1056,18 +1061,18 @@
         "symbol": "AAVE",
         "hl_name": "AAVE",
         "status": "OK",
-        "mark_price": 111.98,
-        "oracle_price": 111.845,
-        "funding_rate_pct": 0.00474,
-        "funding_annualised_pct": 41.56,
-        "premium_pct": 0.0731,
-        "open_interest_usd": 68650367,
-        "open_interest_base": 613059.18,
-        "oi_change_pct": 1.86,
-        "day_volume_usd": 49075923,
-        "volume_share_of_oi": 0.71,
+        "mark_price": 114.95,
+        "oracle_price": 114.61,
+        "funding_rate_pct": 0.00719,
+        "funding_annualised_pct": 62.99,
+        "premium_pct": 0.349,
+        "open_interest_usd": 77102103,
+        "open_interest_base": 670744.7,
+        "oi_change_pct": 12.31,
+        "day_volume_usd": 55282402,
+        "volume_share_of_oi": 0.72,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.073%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.349% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -1080,10 +1085,40 @@
       },
       "whales": {
         "status": "TOO_SMALL",
-        "total_usd": 95124,
-        "text_ru": "позиции крупных всего $0.10M — мало, чтобы считать это сигналом"
+        "total_usd": 113718,
+        "text_ru": "позиции крупных всего $0.11M — мало, чтобы считать это сигналом"
       },
-      "advice": null,
+      "advice": {
+        "token": "AAVE",
+        "side": "SHORT",
+        "entry_price": 111,
+        "current_price": 110.11,
+        "size_usd": 13000,
+        "note": "ПЛЕЧО 5",
+        "hours_open": 3.8,
+        "days_open": 0.2,
+        "pnl_pct": 0.81,
+        "pnl_usd": 105.08,
+        "compass_score": -76.0,
+        "signal_direction": "DOWN",
+        "decision_action": "НЕ ВХОДИТЬ",
+        "aligned": true,
+        "next_target": {
+          "price": 108.570062,
+          "distance_pct": 1.4,
+          "label": "HVN 7d"
+        },
+        "invalidation": {
+          "price": 113.232675,
+          "distance_pct": 2.84,
+          "label": "VAH 7d"
+        },
+        "remaining_rr": 0.49,
+        "urgency": "warning",
+        "headline": "Держи шорт, но цель рядом",
+        "action_ru": "Снять часть у цели",
+        "body": "Сигналы за твою позицию, но до ближайшего уровня $108.5701 осталось 1.4%. Разумно снять часть у уровня и перевести стоп в безубыток. Премия HL +0.349%: толпа в лонгах, их вынос сыграет за твой шорт."
+      },
       "layers": [
         {
           "key": "flow",
@@ -1098,8 +1133,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.4,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.073% · фандинг 42% годовых"
+          "score": -0.9,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.349% · фандинг 63% годовых"
         },
         {
           "key": "levels",
@@ -1122,8 +1157,9 @@
           "name": "Позиция",
           "icon": "📍",
           "purpose": "что у меня открыто",
-          "score": null,
-          "detail": "позиции нет"
+          "score": 0.6,
+          "detail": "SHORT от $111 · +0.81% · снять часть у цели",
+          "urgency": "warning"
         }
       ],
       "data_quality": {
@@ -1229,8 +1265,8 @@
       "price": {
         "now": 0.020982,
         "now_fmt": "0.0210",
-        "change_7d_pct": 19.17,
-        "change_30d_pct": 12.15,
+        "change_7d_pct": 20.66,
+        "change_30d_pct": 13.55,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -1325,25 +1361,24 @@
         "symbol": "AIXBT",
         "hl_name": "AIXBT",
         "status": "OK",
-        "mark_price": 0.021049,
-        "oracle_price": 0.02104,
+        "mark_price": 0.021259,
+        "oracle_price": 0.021255,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 585120,
-        "open_interest_base": 27798006.0,
-        "oi_change_pct": 0.11,
-        "day_volume_usd": 213345,
+        "open_interest_usd": 590609,
+        "open_interest_base": 27781602.0,
+        "oi_change_pct": 0.94,
+        "day_volume_usd": 213910,
         "volume_share_of_oi": 0.36,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
-        "score": -8,
+        "score": -6,
         "text_ru": "агрессия продавцов на нескольких окнах",
         "votes": [
-          "1H:DIST_DIV",
           "1D:DIST_DIV"
         ]
       },
@@ -1596,7 +1631,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.000%)"
+                "detail": "баланс (-0.010%)"
               },
               {
                 "name": "фандинг",
@@ -1606,7 +1641,7 @@
               {
                 "name": "открытый интерес",
                 "value": 0.0,
-                "detail": "$4.2M — деривативов мало, сигналам этого блока веры меньше"
+                "detail": "$4.3M — деривативов мало, сигналам этого блока веры меньше"
               }
             ],
             "has_data": true
@@ -1639,8 +1674,8 @@
       "price": {
         "now": 0.09501,
         "now_fmt": "0.0950",
-        "change_7d_pct": 27.91,
-        "change_30d_pct": 5.77,
+        "change_7d_pct": 30.74,
+        "change_30d_pct": 8.11,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -1739,15 +1774,15 @@
         "symbol": "ARB",
         "hl_name": "ARB",
         "status": "OK",
-        "mark_price": 0.09664,
-        "oracle_price": 0.0967,
+        "mark_price": 0.09717,
+        "oracle_price": 0.09719,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": -0.0103,
-        "open_interest_usd": 4241976,
-        "open_interest_base": 43894620.4,
-        "oi_change_pct": 1.49,
-        "day_volume_usd": 4910422,
+        "open_interest_usd": 4256419,
+        "open_interest_base": 43803839.8,
+        "oi_change_pct": 0.34,
+        "day_volume_usd": 4934998,
         "volume_share_of_oi": 1.16,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия -0.010%"
@@ -1762,8 +1797,9 @@
         ]
       },
       "whales": {
-        "status": "NONE",
-        "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
+        "status": "TOO_SMALL",
+        "total_usd": 23793,
+        "text_ru": "позиции крупных всего $0.02M — мало, чтобы считать это сигналом"
       },
       "advice": null,
       "layers": [
@@ -1846,7 +1882,7 @@
         "unified_veto"
       ],
       "compass": {
-        "score": -18.0,
+        "score": -24.0,
         "verdict_ru": "слабый шорт",
         "components": {
           "onchain": {
@@ -1867,13 +1903,13 @@
             "has_data": true
           },
           "derivatives": {
-            "score": 0.0,
+            "score": -0.2,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": 0.0,
-                "detail": "баланс (+0.023%)"
+                "value": -0.2,
+                "detail": "перекос в лонги (+0.053%)"
               },
               {
                 "name": "фандинг",
@@ -1916,8 +1952,8 @@
       "price": {
         "now": 1.0029,
         "now_fmt": "1.00",
-        "change_7d_pct": 12.8,
-        "change_30d_pct": 9.15,
+        "change_7d_pct": 14.97,
+        "change_30d_pct": 11.26,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -2006,18 +2042,18 @@
         "symbol": "AXS",
         "hl_name": "AXS",
         "status": "OK",
-        "mark_price": 1.0151,
-        "oracle_price": 1.0143,
+        "mark_price": 1.019,
+        "oracle_price": 1.01752,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0,
-        "open_interest_usd": 1070540,
-        "open_interest_base": 1054615.6,
-        "oi_change_pct": 1.19,
-        "day_volume_usd": 1119402,
-        "volume_share_of_oi": 1.05,
-        "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.000%"
+        "premium_pct": 0.0531,
+        "open_interest_usd": 1073481,
+        "open_interest_base": 1053465.2,
+        "oi_change_pct": 0.27,
+        "day_volume_usd": 1118673,
+        "volume_share_of_oi": 1.04,
+        "hl_bias": "LONG_HEAVY",
+        "hl_bias_ru": "лонги переплачивают: премия +0.053%"
       },
       "cvd_consensus": {
         "code": "SELL_PRESSURE",
@@ -2046,8 +2082,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": 0.0,
-          "detail": "лёгкий перевес продавцов · премия HL +0.000%"
+          "score": -0.2,
+          "detail": "лёгкий перевес продавцов · премия HL +0.053%"
         },
         {
           "key": "levels",
@@ -2177,8 +2213,8 @@
       "price": {
         "now": 0.002968,
         "now_fmt": "0.0030",
-        "change_7d_pct": 24.15,
-        "change_30d_pct": -0.87,
+        "change_7d_pct": 28.12,
+        "change_30d_pct": 2.3,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -2273,15 +2309,15 @@
         "symbol": "BONK",
         "hl_name": "kBONK",
         "status": "OK",
-        "mark_price": 0.003042,
-        "oracle_price": 0.003042,
+        "mark_price": 0.003059,
+        "oracle_price": 0.003058,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 6650646,
-        "open_interest_base": 2186274176.0,
-        "oi_change_pct": 3.26,
-        "day_volume_usd": 5747156,
+        "open_interest_usd": 6719085,
+        "open_interest_base": 2196497258.0,
+        "oi_change_pct": 1.03,
+        "day_volume_usd": 5810052,
         "volume_share_of_oi": 0.86,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
@@ -2556,12 +2592,12 @@
               {
                 "name": "премия HL",
                 "value": -0.2,
-                "detail": "перекос в лонги (+0.122%)"
+                "detail": "перекос в лонги (+0.100%)"
               },
               {
                 "name": "фандинг",
                 "value": -0.4,
-                "detail": "держать лонг очень дорого (79% годовых)"
+                "detail": "держать лонг очень дорого (60% годовых)"
               }
             ],
             "has_data": true
@@ -2594,8 +2630,8 @@
       "price": {
         "now": 0.32816,
         "now_fmt": "0.3282",
-        "change_7d_pct": 38.46,
-        "change_30d_pct": 55.62,
+        "change_7d_pct": 38.19,
+        "change_30d_pct": 55.32,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -2691,18 +2727,18 @@
         "symbol": "CRV",
         "hl_name": "CRV",
         "status": "OK",
-        "mark_price": 0.33002,
-        "oracle_price": 0.32957,
-        "funding_rate_pct": 0.00697,
-        "funding_annualised_pct": 61.02,
-        "premium_pct": 0.1153,
-        "open_interest_usd": 14755551,
-        "open_interest_base": 44711080.6,
-        "oi_change_pct": 0.12,
-        "day_volume_usd": 24927995,
+        "mark_price": 0.32944,
+        "oracle_price": 0.32905,
+        "funding_rate_pct": 0.00679,
+        "funding_annualised_pct": 59.51,
+        "premium_pct": 0.1003,
+        "open_interest_usd": 14740556,
+        "open_interest_base": 44744280.0,
+        "oi_change_pct": -0.1,
+        "day_volume_usd": 24842062,
         "volume_share_of_oi": 1.69,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.115% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.100% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -2733,7 +2769,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": -0.6,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.115% · фандинг 61% годовых"
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.100% · фандинг 60% годовых"
         },
         {
           "key": "levels",
@@ -2808,8 +2844,8 @@
         "vp_above_value_cut"
       ],
       "compass": {
-        "score": -10.0,
-        "verdict_ru": "нейтрально",
+        "score": -16.0,
+        "verdict_ru": "слабый шорт",
         "components": {
           "onchain": {
             "score": 0.35,
@@ -2829,18 +2865,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.4,
+            "score": -0.6,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
                 "value": -0.2,
-                "detail": "перекос в лонги (+0.099%)"
+                "detail": "перекос в лонги (+0.146%)"
               },
               {
                 "name": "фандинг",
-                "value": -0.2,
-                "detail": "лонги платят 38% годовых"
+                "value": -0.4,
+                "detail": "держать лонг очень дорого (97% годовых)"
               }
             ],
             "has_data": true
@@ -2868,8 +2904,8 @@
       "price": {
         "now": 0.084849,
         "now_fmt": "0.0848",
-        "change_7d_pct": 21.48,
-        "change_30d_pct": 16.6,
+        "change_7d_pct": 24.82,
+        "change_30d_pct": 19.81,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -2965,18 +3001,18 @@
         "symbol": "DOGE",
         "hl_name": "DOGE",
         "status": "OK",
-        "mark_price": 0.086939,
-        "oracle_price": 0.086825,
-        "funding_rate_pct": 0.01023,
-        "funding_annualised_pct": 89.59,
-        "premium_pct": 0.0737,
-        "open_interest_usd": 49079339,
-        "open_interest_base": 564526154.0,
-        "oi_change_pct": 4.76,
-        "day_volume_usd": 75075552,
-        "volume_share_of_oi": 1.53,
+        "mark_price": 0.087057,
+        "oracle_price": 0.086915,
+        "funding_rate_pct": 0.01103,
+        "funding_annualised_pct": 96.65,
+        "premium_pct": 0.1461,
+        "open_interest_usd": 50080539,
+        "open_interest_base": 575261484.0,
+        "oi_change_pct": 2.04,
+        "day_volume_usd": 75967436,
+        "volume_share_of_oi": 1.52,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.074% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.146% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -3003,8 +3039,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.4,
-          "detail": "окна не согласованы · премия HL +0.074% · фандинг 90% годовых"
+          "score": -0.6,
+          "detail": "окна не согласованы · премия HL +0.146% · фандинг 97% годовых"
         },
         {
           "key": "levels",
@@ -3103,7 +3139,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.047%)"
+                "detail": "баланс (+0.046%)"
               },
               {
                 "name": "фандинг",
@@ -3136,8 +3172,8 @@
       "price": {
         "now": 0.2149,
         "now_fmt": "0.2149",
-        "change_7d_pct": 25.41,
-        "change_30d_pct": -8.91,
+        "change_7d_pct": 26.69,
+        "change_30d_pct": -7.98,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -3231,24 +3267,25 @@
         "symbol": "EIGEN",
         "hl_name": "EIGEN",
         "status": "OK",
-        "mark_price": 0.2158,
-        "oracle_price": 0.2154,
+        "mark_price": 0.2171,
+        "oracle_price": 0.2167,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0929,
-        "open_interest_usd": 5237140,
-        "open_interest_base": 24268489.22,
-        "oi_change_pct": 0.27,
-        "day_volume_usd": 1305057,
+        "premium_pct": 0.0461,
+        "open_interest_usd": 5259481,
+        "open_interest_base": 24226074.78,
+        "oi_change_pct": 0.43,
+        "day_volume_usd": 1314978,
         "volume_share_of_oi": 0.25,
-        "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.093%"
+        "hl_bias": "NEUTRAL",
+        "hl_bias_ru": "перекоса нет: премия +0.046%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
-        "score": -6,
+        "score": -5,
         "text_ru": "агрессия продавцов на нескольких окнах",
         "votes": [
+          "1H:UP",
           "1D:DIST_DIV"
         ]
       },
@@ -3272,7 +3309,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": 0.0,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.093%"
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.046%"
         },
         {
           "key": "levels",
@@ -3356,8 +3393,8 @@
         "cvd_strong_sell_veto"
       ],
       "compass": {
-        "score": -28.0,
-        "verdict_ru": "слабый шорт",
+        "score": -49.0,
+        "verdict_ru": "шорт",
         "components": {
           "onchain": {
             "score": 0.2,
@@ -3377,18 +3414,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.2,
+            "score": -0.9,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": -0.2,
-                "detail": "перекос в лонги (+0.103%)"
+                "value": -0.5,
+                "detail": "лонги сильно переплачивают (+0.189%)"
               },
               {
                 "name": "фандинг",
-                "value": 0.0,
-                "detail": "фандинг спокойный (11% годовых)"
+                "value": -0.4,
+                "detail": "держать лонг очень дорого (78% годовых)"
               }
             ],
             "has_data": true
@@ -3421,8 +3458,8 @@
       "price": {
         "now": 0.58381,
         "now_fmt": "0.5838",
-        "change_7d_pct": 30.85,
-        "change_30d_pct": 27.56,
+        "change_7d_pct": 36.69,
+        "change_30d_pct": 33.26,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -3510,31 +3547,32 @@
         "symbol": "ETHFI",
         "hl_name": "ETHFI",
         "status": "OK",
-        "mark_price": 0.60746,
-        "oracle_price": 0.6067,
-        "funding_rate_pct": 0.00639,
-        "funding_annualised_pct": 55.96,
-        "premium_pct": 0.0,
-        "open_interest_usd": 15600322,
-        "open_interest_base": 25681233.6,
-        "oi_change_pct": 2.77,
-        "day_volume_usd": 11245985,
-        "volume_share_of_oi": 0.72,
-        "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.000%"
+        "mark_price": 0.61634,
+        "oracle_price": 0.61495,
+        "funding_rate_pct": 0.00892,
+        "funding_annualised_pct": 78.11,
+        "premium_pct": 0.1886,
+        "open_interest_usd": 16253067,
+        "open_interest_base": 26370293.6,
+        "oi_change_pct": 4.18,
+        "day_volume_usd": 11917191,
+        "volume_share_of_oi": 0.73,
+        "hl_bias": "LONG_HEAVY",
+        "hl_bias_ru": "лонги переплачивают: премия +0.189% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
-        "score": -6,
+        "score": -5,
         "text_ru": "агрессия продавцов на нескольких окнах",
         "votes": [
+          "1H:UP",
           "1D:DIST_DIV"
         ]
       },
       "whales": {
         "status": "TOO_SMALL",
-        "total_usd": 207128,
-        "text_ru": "позиции крупных всего $0.21M — мало, чтобы считать это сигналом"
+        "total_usd": 219167,
+        "text_ru": "позиции крупных всего $0.22M — мало, чтобы считать это сигналом"
       },
       "advice": null,
       "layers": [
@@ -3551,8 +3589,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.2,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000% · фандинг 56% годовых"
+          "score": -0.9,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.189% · фандинг 78% годовых"
         },
         {
           "key": "levels",
@@ -3581,8 +3619,7 @@
       ],
       "data_quality": {
         "ok": true,
-        "flags": [],
-        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
+        "flags": []
       }
     },
     "FET": {
@@ -3615,8 +3652,8 @@
         "phase:MIXED_OR_NEUTRAL"
       ],
       "compass": {
-        "score": -30.0,
-        "verdict_ru": "слабый шорт",
+        "score": -39.0,
+        "verdict_ru": "шорт",
         "components": {
           "onchain": {
             "score": 0.0,
@@ -3636,18 +3673,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.6,
+            "score": -0.9,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": -0.2,
-                "detail": "перекос в лонги (+0.122%)"
+                "value": -0.5,
+                "detail": "лонги сильно переплачивают (+0.174%)"
               },
               {
                 "name": "фандинг",
                 "value": -0.4,
-                "detail": "держать лонг очень дорого (90% годовых)"
+                "detail": "держать лонг очень дорого (161% годовых)"
               }
             ],
             "has_data": true
@@ -3675,8 +3712,8 @@
       "price": {
         "now": 0.1605,
         "now_fmt": "0.1605",
-        "change_7d_pct": 19.81,
-        "change_30d_pct": 2.67,
+        "change_7d_pct": 24.31,
+        "change_30d_pct": 6.53,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -3773,24 +3810,26 @@
         "symbol": "FET",
         "hl_name": "FET",
         "status": "OK",
-        "mark_price": 0.16442,
-        "oracle_price": 0.16399,
-        "funding_rate_pct": 0.0175,
-        "funding_annualised_pct": 153.33,
-        "premium_pct": 0.2787,
-        "open_interest_usd": 6831259,
-        "open_interest_base": 41547618.0,
-        "oi_change_pct": 9.15,
-        "day_volume_usd": 4280848,
-        "volume_share_of_oi": 0.63,
+        "mark_price": 0.16707,
+        "oracle_price": 0.1667,
+        "funding_rate_pct": 0.01833,
+        "funding_annualised_pct": 160.59,
+        "premium_pct": 0.174,
+        "open_interest_usd": 6969044,
+        "open_interest_base": 41713316.0,
+        "oi_change_pct": 2.02,
+        "day_volume_usd": 4472814,
+        "volume_share_of_oi": 0.64,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.279% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.174% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "MIXED",
-        "score": 0,
+        "score": 1,
         "text_ru": "окна не согласованы",
-        "votes": []
+        "votes": [
+          "1H:UP"
+        ]
       },
       "whales": {
         "status": "NONE",
@@ -3811,8 +3850,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.6,
-          "detail": "окна не согласованы · премия HL +0.279% · фандинг 153% годовых"
+          "score": -0.9,
+          "detail": "окна не согласованы · премия HL +0.174% · фандинг 161% годовых"
         },
         {
           "key": "levels",
@@ -3905,7 +3944,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (-0.024%)"
+                "detail": "баланс (+0.000%)"
               },
               {
                 "name": "фандинг",
@@ -3915,7 +3954,7 @@
               {
                 "name": "открытый интерес",
                 "value": 0.0,
-                "detail": "$2.0M — деривативов мало, сигналам этого блока веры меньше"
+                "detail": "$2.1M — деривативов мало, сигналам этого блока веры меньше"
               }
             ],
             "has_data": true
@@ -3943,8 +3982,8 @@
       "price": {
         "now": 0.77893,
         "now_fmt": "0.7789",
-        "change_7d_pct": 14.47,
-        "change_30d_pct": 2.18,
+        "change_7d_pct": 17.47,
+        "change_30d_pct": 4.86,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -4007,18 +4046,18 @@
         "symbol": "FIL",
         "hl_name": "FIL",
         "status": "OK",
-        "mark_price": 0.79051,
-        "oracle_price": 0.7912,
+        "mark_price": 0.79667,
+        "oracle_price": 0.79685,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": -0.1062,
-        "open_interest_usd": 1995115,
-        "open_interest_base": 2523832.8,
-        "oi_change_pct": 1.81,
-        "day_volume_usd": 1299417,
+        "premium_pct": 0.0,
+        "open_interest_usd": 2053111,
+        "open_interest_base": 2577115.8,
+        "oi_change_pct": 2.91,
+        "day_volume_usd": 1328522,
         "volume_share_of_oi": 0.65,
-        "hl_bias": "SHORT_HEAVY",
-        "hl_bias_ru": "шорты переплачивают: премия -0.106%"
+        "hl_bias": "NEUTRAL",
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -4049,7 +4088,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": 0.0,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL -0.106%"
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000%"
         },
         {
           "key": "levels",
@@ -4291,7 +4330,7 @@
               {
                 "name": "премия HL",
                 "value": -0.2,
-                "detail": "перекос в лонги (+0.073%)"
+                "detail": "перекос в лонги (+0.052%)"
               },
               {
                 "name": "фандинг",
@@ -4324,8 +4363,8 @@
       "price": {
         "now": 0.35825,
         "now_fmt": "0.3583",
-        "change_7d_pct": 21.07,
-        "change_30d_pct": -10.29,
+        "change_7d_pct": 24.51,
+        "change_30d_pct": -7.75,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -4418,18 +4457,18 @@
         "symbol": "LDO",
         "hl_name": "LDO",
         "status": "OK",
-        "mark_price": 0.36531,
-        "oracle_price": 0.365,
+        "mark_price": 0.36718,
+        "oracle_price": 0.36675,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0685,
-        "open_interest_usd": 10623940,
-        "open_interest_base": 29081985.0,
-        "oi_change_pct": 2.53,
-        "day_volume_usd": 5046313,
+        "premium_pct": 0.0518,
+        "open_interest_usd": 10687118,
+        "open_interest_base": 29105936.6,
+        "oi_change_pct": 0.59,
+        "day_volume_usd": 5056488,
         "volume_share_of_oi": 0.47,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.068%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.052%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -4441,8 +4480,9 @@
         ]
       },
       "whales": {
-        "status": "NONE",
-        "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
+        "status": "TOO_SMALL",
+        "total_usd": 7744,
+        "text_ru": "позиции крупных всего $0.01M — мало, чтобы считать это сигналом"
       },
       "advice": null,
       "layers": [
@@ -4460,7 +4500,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": -0.2,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.069%"
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.052%"
         },
         {
           "key": "levels",
@@ -4574,12 +4614,12 @@
               {
                 "name": "премия HL",
                 "value": -0.2,
-                "detail": "перекос в лонги (+0.088%)"
+                "detail": "перекос в лонги (+0.112%)"
               },
               {
                 "name": "фандинг",
                 "value": -0.2,
-                "detail": "лонги платят 45% годовых"
+                "detail": "лонги платят 36% годовых"
               }
             ],
             "has_data": true
@@ -4612,8 +4652,8 @@
       "price": {
         "now": 11.655,
         "now_fmt": "11.65",
-        "change_7d_pct": 29.85,
-        "change_30d_pct": 34.95,
+        "change_7d_pct": 32.51,
+        "change_30d_pct": 37.71,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -4709,18 +4749,18 @@
         "symbol": "LINK",
         "hl_name": "LINK",
         "status": "OK",
-        "mark_price": 11.77056,
-        "oracle_price": 11.75933,
-        "funding_rate_pct": 0.00341,
-        "funding_annualised_pct": 29.87,
-        "premium_pct": 0.0947,
-        "open_interest_usd": 66462879,
-        "open_interest_base": 5646535.0,
-        "oi_change_pct": -0.2,
-        "day_volume_usd": 39921388,
+        "mark_price": 11.792,
+        "oracle_price": 11.7757,
+        "funding_rate_pct": 0.00406,
+        "funding_annualised_pct": 35.52,
+        "premium_pct": 0.1117,
+        "open_interest_usd": 66629397,
+        "open_interest_base": 5650389.8,
+        "oi_change_pct": 0.25,
+        "day_volume_usd": 39702551,
         "volume_share_of_oi": 0.6,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.095%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.112%"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -4732,8 +4772,8 @@
       },
       "whales": {
         "status": "TOO_SMALL",
-        "total_usd": 215584,
-        "text_ru": "позиции крупных всего $0.22M — мало, чтобы считать это сигналом"
+        "total_usd": 207301,
+        "text_ru": "позиции крупных всего $0.21M — мало, чтобы считать это сигналом"
       },
       "advice": null,
       "layers": [
@@ -4751,7 +4791,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": -0.4,
-          "detail": "окна не согласованы · премия HL +0.095% · фандинг 30% годовых"
+          "detail": "окна не согласованы · премия HL +0.112% · фандинг 36% годовых"
         },
         {
           "key": "levels",
@@ -4821,7 +4861,7 @@
         "vp_far_above_value_cut"
       ],
       "compass": {
-        "score": 8.0,
+        "score": 2.0,
         "verdict_ru": "нейтрально",
         "components": {
           "onchain": {
@@ -4842,13 +4882,13 @@
             "has_data": true
           },
           "derivatives": {
-            "score": 0.0,
+            "score": -0.2,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": 0.0,
-                "detail": "баланс (+0.000%)"
+                "value": -0.2,
+                "detail": "перекос в лонги (+0.109%)"
               },
               {
                 "name": "фандинг",
@@ -4881,8 +4921,8 @@
       "price": {
         "now": 0.50298,
         "now_fmt": "0.5030",
-        "change_7d_pct": 13.6,
-        "change_30d_pct": 19.64,
+        "change_7d_pct": 13.81,
+        "change_30d_pct": 19.87,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -4977,18 +5017,18 @@
         "symbol": "MNT",
         "hl_name": "MNT",
         "status": "OK",
-        "mark_price": 0.5044,
-        "oracle_price": 0.50378,
+        "mark_price": 0.50369,
+        "oracle_price": 0.5028,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0397,
-        "open_interest_usd": 3491682,
-        "open_interest_base": 6922445.8,
-        "oi_change_pct": 0.35,
-        "day_volume_usd": 1131512,
+        "premium_pct": 0.1094,
+        "open_interest_usd": 3494768,
+        "open_interest_base": 6938330.8,
+        "oi_change_pct": 0.09,
+        "day_volume_usd": 1135003,
         "volume_share_of_oi": 0.32,
-        "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.040%"
+        "hl_bias": "LONG_HEAVY",
+        "hl_bias_ru": "лонги переплачивают: премия +0.109%"
       },
       "cvd_consensus": {},
       "whales": {
@@ -5010,8 +5050,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": 0.0,
-          "detail": "премия HL +0.040%"
+          "score": -0.2,
+          "detail": "премия HL +0.109%"
         },
         {
           "key": "levels",
@@ -5091,8 +5131,8 @@
         "below_min_practical_size"
       ],
       "compass": {
-        "score": -6.0,
-        "verdict_ru": "нейтрально",
+        "score": -15.0,
+        "verdict_ru": "слабый шорт",
         "components": {
           "onchain": {
             "score": 0.45,
@@ -5112,18 +5152,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.6,
+            "score": -0.9,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": -0.2,
-                "detail": "перекос в лонги (+0.116%)"
+                "value": -0.5,
+                "detail": "лонги сильно переплачивают (+0.188%)"
               },
               {
                 "name": "фандинг",
                 "value": -0.4,
-                "detail": "держать лонг очень дорого (57% годовых)"
+                "detail": "держать лонг очень дорого (82% годовых)"
               }
             ],
             "has_data": true
@@ -5156,8 +5196,8 @@
       "price": {
         "now": 2.3177,
         "now_fmt": "2.32",
-        "change_7d_pct": 18.71,
-        "change_30d_pct": 20.9,
+        "change_7d_pct": 18.64,
+        "change_30d_pct": 20.83,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -5236,18 +5276,18 @@
         "symbol": "MORPHO",
         "hl_name": "MORPHO",
         "status": "OK",
-        "mark_price": 2.3331,
-        "oracle_price": 2.3285,
-        "funding_rate_pct": 0.00644,
-        "funding_annualised_pct": 56.42,
-        "premium_pct": 0.1044,
-        "open_interest_usd": 6050387,
-        "open_interest_base": 2593282.4,
-        "oi_change_pct": 2.59,
-        "day_volume_usd": 4572024,
+        "mark_price": 2.3199,
+        "oracle_price": 2.3135,
+        "funding_rate_pct": 0.00937,
+        "funding_annualised_pct": 82.12,
+        "premium_pct": 0.188,
+        "open_interest_usd": 6091607,
+        "open_interest_base": 2625806.0,
+        "oi_change_pct": 0.68,
+        "day_volume_usd": 4624450,
         "volume_share_of_oi": 0.76,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.104% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.188% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "BUY_PRESSURE",
@@ -5276,8 +5316,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.6,
-          "detail": "лёгкий перевес покупателей · премия HL +0.104% · фандинг 56% годовых"
+          "score": -0.9,
+          "detail": "лёгкий перевес покупателей · премия HL +0.188% · фандинг 82% годовых"
         },
         {
           "key": "levels",
@@ -5342,8 +5382,8 @@
         "shape_distribution_fading"
       ],
       "compass": {
-        "score": -55.0,
-        "verdict_ru": "шорт",
+        "score": -61.0,
+        "verdict_ru": "сильный шорт",
         "components": {
           "onchain": {
             "score": -1.0,
@@ -5363,18 +5403,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.2,
+            "score": -0.4,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
                 "value": -0.2,
-                "detail": "перекос в лонги (+0.082%)"
+                "detail": "перекос в лонги (+0.075%)"
               },
               {
                 "name": "фандинг",
-                "value": 0.0,
-                "detail": "фандинг спокойный (11% годовых)"
+                "value": -0.2,
+                "detail": "лонги платят 31% годовых"
               }
             ],
             "has_data": true
@@ -5402,8 +5442,8 @@
       "price": {
         "now": 0.37876,
         "now_fmt": "0.3788",
-        "change_7d_pct": 15.82,
-        "change_30d_pct": -8.19,
+        "change_7d_pct": 18.23,
+        "change_30d_pct": -6.28,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -5499,18 +5539,18 @@
         "symbol": "ONDO",
         "hl_name": "ONDO",
         "status": "OK",
-        "mark_price": 0.38471,
-        "oracle_price": 0.38431,
-        "funding_rate_pct": 0.00243,
-        "funding_annualised_pct": 21.32,
-        "premium_pct": 0.0851,
-        "open_interest_usd": 25904403,
-        "open_interest_base": 67334884.0,
-        "oi_change_pct": 1.8,
-        "day_volume_usd": 30671514,
+        "mark_price": 0.38648,
+        "oracle_price": 0.3861,
+        "funding_rate_pct": 0.00352,
+        "funding_annualised_pct": 30.79,
+        "premium_pct": 0.0754,
+        "open_interest_usd": 26155740,
+        "open_interest_base": 67676826.0,
+        "oi_change_pct": 0.97,
+        "day_volume_usd": 30983640,
         "volume_share_of_oi": 1.18,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.085%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.075%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -5540,8 +5580,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.2,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.085% · фандинг 21% годовых"
+          "score": -0.4,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.075% · фандинг 31% годовых"
         },
         {
           "key": "levels",
@@ -5638,17 +5678,17 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (-0.029%)"
+                "detail": "баланс (-0.048%)"
               },
               {
                 "name": "фандинг",
                 "value": 0.0,
-                "detail": "фандинг спокойный (-16% годовых)"
+                "detail": "фандинг спокойный (11% годовых)"
               },
               {
                 "name": "открытый интерес",
                 "value": 0.0,
-                "detail": "$3.1M — деривативов мало, сигналам этого блока веры меньше"
+                "detail": "$3.2M — деривативов мало, сигналам этого блока веры меньше"
               }
             ],
             "has_data": true
@@ -5676,8 +5716,8 @@
       "price": {
         "now": 0.10236,
         "now_fmt": "0.1024",
-        "change_7d_pct": 18.71,
-        "change_30d_pct": 5.82,
+        "change_7d_pct": 22.03,
+        "change_30d_pct": 8.78,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -5773,18 +5813,18 @@
         "symbol": "OP",
         "hl_name": "OP",
         "status": "OK",
-        "mark_price": 0.10359,
-        "oracle_price": 0.10368,
+        "mark_price": 0.10515,
+        "oracle_price": 0.10526,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": -0.0675,
-        "open_interest_usd": 3168462,
-        "open_interest_base": 30586560.4,
-        "oi_change_pct": 1.18,
-        "day_volume_usd": 1628432,
-        "volume_share_of_oi": 0.51,
-        "hl_bias": "SHORT_HEAVY",
-        "hl_bias_ru": "шорты переплачивают: премия -0.068%"
+        "premium_pct": -0.0475,
+        "open_interest_usd": 3218208,
+        "open_interest_base": 30605880.8,
+        "oi_change_pct": 1.57,
+        "day_volume_usd": 1623727,
+        "volume_share_of_oi": 0.5,
+        "hl_bias": "NEUTRAL",
+        "hl_bias_ru": "перекоса нет: премия -0.048%"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -5812,7 +5852,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": 0.0,
-          "detail": "окна не согласованы · премия HL -0.068%"
+          "detail": "окна не согласованы · премия HL -0.048%"
         },
         {
           "key": "levels",
@@ -5911,7 +5951,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.037%)"
+                "detail": "баланс (+0.000%)"
               },
               {
                 "name": "фандинг",
@@ -5949,8 +5989,8 @@
       "price": {
         "now": 1.6083,
         "now_fmt": "1.61",
-        "change_7d_pct": 23.21,
-        "change_30d_pct": -1.65,
+        "change_7d_pct": 26.18,
+        "change_30d_pct": 0.72,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -6046,30 +6086,32 @@
         "symbol": "PENDLE",
         "hl_name": "PENDLE",
         "status": "OK",
-        "mark_price": 1.63525,
-        "oracle_price": 1.634,
+        "mark_price": 1.6417,
+        "oracle_price": 1.640316,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 6140351,
-        "open_interest_base": 3754992.0,
-        "oi_change_pct": 1.28,
-        "day_volume_usd": 4581620,
+        "open_interest_usd": 6144151,
+        "open_interest_base": 3742554.0,
+        "oi_change_pct": 0.06,
+        "day_volume_usd": 4587633,
         "volume_share_of_oi": 0.75,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
-        "score": -6,
+        "score": -5,
         "text_ru": "агрессия продавцов на нескольких окнах",
         "votes": [
+          "1H:UP",
           "1D:DIST_DIV"
         ]
       },
       "whales": {
-        "status": "NONE",
-        "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
+        "status": "TOO_SMALL",
+        "total_usd": 5317,
+        "text_ru": "позиции крупных всего $0.01M — мало, чтобы считать это сигналом"
       },
       "advice": null,
       "layers": [
@@ -6154,7 +6196,7 @@
         "shape_distribution_fading"
       ],
       "compass": {
-        "score": -40.0,
+        "score": -34.0,
         "verdict_ru": "шорт",
         "components": {
           "onchain": {
@@ -6175,18 +6217,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.2,
+            "score": 0.0,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
-                "value": -0.2,
-                "detail": "перекос в лонги (+0.132%)"
+                "value": 0.0,
+                "detail": "баланс (+0.026%)"
               },
               {
                 "name": "фандинг",
                 "value": 0.0,
-                "detail": "фандинг спокойный (17% годовых)"
+                "detail": "фандинг спокойный (11% годовых)"
               }
             ],
             "has_data": true
@@ -6219,8 +6261,8 @@
       "price": {
         "now": 0.00379,
         "now_fmt": "0.0038",
-        "change_7d_pct": 42.67,
-        "change_30d_pct": 31.46,
+        "change_7d_pct": 43.8,
+        "change_30d_pct": 32.5,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -6302,15 +6344,15 @@
         "symbol": "PEPE",
         "hl_name": "kPEPE",
         "status": "OK",
-        "mark_price": 0.003858,
-        "oracle_price": 0.003855,
+        "mark_price": 0.003847,
+        "oracle_price": 0.003845,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0259,
-        "open_interest_usd": 32580749,
-        "open_interest_base": 8444984150.0,
-        "oi_change_pct": 2.5,
-        "day_volume_usd": 35990736,
+        "premium_pct": 0.026,
+        "open_interest_usd": 32420944,
+        "open_interest_base": 8427591440.0,
+        "oi_change_pct": -0.49,
+        "day_volume_usd": 35608596,
         "volume_share_of_oi": 1.1,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.026%"
@@ -6342,7 +6384,7 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.2,
+          "score": 0.0,
           "detail": "агрессия продавцов на нескольких окнах · премия HL +0.026%"
         },
         {
@@ -6726,7 +6768,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (-0.032%)"
+                "detail": "баланс (+0.000%)"
               },
               {
                 "name": "фандинг",
@@ -6764,8 +6806,8 @@
       "price": {
         "now": 0.046822,
         "now_fmt": "0.0468",
-        "change_7d_pct": 17.08,
-        "change_30d_pct": -2.03,
+        "change_7d_pct": 18.88,
+        "change_30d_pct": -0.52,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -6832,18 +6874,18 @@
         "symbol": "SAND",
         "hl_name": "SAND",
         "status": "OK",
-        "mark_price": 0.047148,
-        "oracle_price": 0.0472,
+        "mark_price": 0.047427,
+        "oracle_price": 0.04747,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": -0.0275,
-        "open_interest_usd": 298210,
-        "open_interest_base": 6324970.0,
-        "oi_change_pct": 1.37,
-        "day_volume_usd": 307359,
-        "volume_share_of_oi": 1.03,
+        "premium_pct": 0.0,
+        "open_interest_usd": 300377,
+        "open_interest_base": 6333450.0,
+        "oi_change_pct": 0.73,
+        "day_volume_usd": 305719,
+        "volume_share_of_oi": 1.02,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия -0.028%"
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -6874,7 +6916,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": 0.0,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL -0.028%"
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000%"
         },
         {
           "key": "levels",
@@ -6981,7 +7023,7 @@
               {
                 "name": "открытый интерес",
                 "value": 0.0,
-                "detail": "$2.4M — деривативов мало, сигналам этого блока веры меньше"
+                "detail": "$2.5M — деривативов мало, сигналам этого блока веры меньше"
               }
             ],
             "has_data": true
@@ -7009,8 +7051,8 @@
       "price": {
         "now": 0.02738,
         "now_fmt": "0.0274",
-        "change_7d_pct": 18.95,
-        "change_30d_pct": -9.13,
+        "change_7d_pct": 21.95,
+        "change_30d_pct": -6.84,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -7107,26 +7149,24 @@
         "symbol": "STRK",
         "hl_name": "STRK",
         "status": "OK",
-        "mark_price": 0.02784,
-        "oracle_price": 0.02781,
+        "mark_price": 0.02796,
+        "oracle_price": 0.02793,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 2530564,
-        "open_interest_base": 90896695.2,
-        "oi_change_pct": 3.81,
-        "day_volume_usd": 1144844,
-        "volume_share_of_oi": 0.45,
+        "open_interest_usd": 2510170,
+        "open_interest_base": 89777170.2,
+        "oi_change_pct": -0.81,
+        "day_volume_usd": 1193437,
+        "volume_share_of_oi": 0.48,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "MIXED",
-        "score": 1,
+        "score": 0,
         "text_ru": "окна не согласованы",
-        "votes": [
-          "1H:UP"
-        ]
+        "votes": []
       },
       "whales": {
         "status": "NONE",
@@ -7220,7 +7260,7 @@
         "below_min_practical_size"
       ],
       "compass": {
-        "score": -4.0,
+        "score": -10.0,
         "verdict_ru": "нейтрально",
         "components": {
           "onchain": {
@@ -7241,18 +7281,18 @@
             "has_data": true
           },
           "derivatives": {
-            "score": -0.4,
+            "score": -0.6,
             "weight": 0.3,
             "parts": [
               {
                 "name": "премия HL",
                 "value": -0.2,
-                "detail": "перекос в лонги (+0.083%)"
+                "detail": "перекос в лонги (+0.123%)"
               },
               {
                 "name": "фандинг",
-                "value": -0.2,
-                "detail": "лонги платят 37% годовых"
+                "value": -0.4,
+                "detail": "держать лонг очень дорого (61% годовых)"
               }
             ],
             "has_data": true
@@ -7280,8 +7320,8 @@
       "price": {
         "now": 224.42,
         "now_fmt": "224.42",
-        "change_7d_pct": 12.56,
-        "change_30d_pct": 13.75,
+        "change_7d_pct": 14.14,
+        "change_30d_pct": 15.35,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -7376,18 +7416,18 @@
         "symbol": "TAO",
         "hl_name": "TAO",
         "status": "OK",
-        "mark_price": 226.66,
-        "oracle_price": 226.363,
-        "funding_rate_pct": 0.00614,
-        "funding_annualised_pct": 53.75,
-        "premium_pct": 0.0928,
-        "open_interest_usd": 36341454,
-        "open_interest_base": 160334.66,
-        "oi_change_pct": 0.46,
-        "day_volume_usd": 24476954,
+        "mark_price": 227.785,
+        "oracle_price": 227.45,
+        "funding_rate_pct": 0.00693,
+        "funding_annualised_pct": 60.72,
+        "premium_pct": 0.1231,
+        "open_interest_usd": 36545536,
+        "open_interest_base": 160438.73,
+        "oi_change_pct": 0.56,
+        "day_volume_usd": 24591809,
         "volume_share_of_oi": 0.67,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.093% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.123% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "STRONG_BUY_PRESSURE",
@@ -7417,8 +7457,8 @@
           "name": "Давление",
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
-          "score": -0.4,
-          "detail": "агрессия покупателей на нескольких окнах · премия HL +0.093% · фандинг 54% годовых"
+          "score": -0.6,
+          "detail": "агрессия покупателей на нескольких окнах · премия HL +0.123% · фандинг 61% годовых"
         },
         {
           "key": "levels",
@@ -7512,7 +7552,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.013%)"
+                "detail": "баланс (+0.019%)"
               },
               {
                 "name": "фандинг",
@@ -7545,8 +7585,8 @@
       "price": {
         "now": 3.9722,
         "now_fmt": "3.97",
-        "change_7d_pct": 23.84,
-        "change_30d_pct": 4.67,
+        "change_7d_pct": 25.98,
+        "change_30d_pct": 6.47,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -7642,18 +7682,18 @@
         "symbol": "UNI",
         "hl_name": "UNI",
         "status": "OK",
-        "mark_price": 4.0105,
-        "oracle_price": 4.00882,
+        "mark_price": 4.0257,
+        "oracle_price": 4.0239,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0035,
-        "open_interest_usd": 20680612,
-        "open_interest_base": 5156617.0,
-        "oi_change_pct": -0.84,
-        "day_volume_usd": 20101505,
-        "volume_share_of_oi": 0.97,
+        "premium_pct": 0.0189,
+        "open_interest_usd": 20775990,
+        "open_interest_base": 5160839.0,
+        "oi_change_pct": 0.46,
+        "day_volume_usd": 19836391,
+        "volume_share_of_oi": 0.95,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.003%"
+        "hl_bias_ru": "перекоса нет: премия +0.019%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -7684,7 +7724,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": 0.0,
-          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.004%"
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.019%"
         },
         {
           "key": "levels",
@@ -7779,7 +7819,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.029%)"
+                "detail": "баланс (+0.042%)"
               },
               {
                 "name": "фандинг",
@@ -7817,8 +7857,8 @@
       "price": {
         "now": 0.6933,
         "now_fmt": "0.6933",
-        "change_7d_pct": 23.91,
-        "change_30d_pct": 10.36,
+        "change_7d_pct": 26.65,
+        "change_30d_pct": 12.8,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -7906,18 +7946,18 @@
         "symbol": "VIRTUAL",
         "hl_name": "VIRTUAL",
         "status": "OK",
-        "mark_price": 0.70415,
-        "oracle_price": 0.7037,
+        "mark_price": 0.70826,
+        "oracle_price": 0.70761,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0441,
-        "open_interest_usd": 10147518,
-        "open_interest_base": 14411017.8,
-        "oi_change_pct": 1.09,
-        "day_volume_usd": 4304687,
+        "premium_pct": 0.0424,
+        "open_interest_usd": 10210734,
+        "open_interest_base": 14416645.8,
+        "oi_change_pct": 0.62,
+        "day_volume_usd": 4263113,
         "volume_share_of_oi": 0.42,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.044%"
+        "hl_bias_ru": "перекоса нет: премия +0.042%"
       },
       "cvd_consensus": {
         "code": "SELL_PRESSURE",
@@ -7947,7 +7987,7 @@
           "icon": "⚔",
           "purpose": "кто агрессивнее прямо сейчас",
           "score": 0.0,
-          "detail": "лёгкий перевес продавцов · премия HL +0.044%"
+          "detail": "лёгкий перевес продавцов · премия HL +0.042%"
         },
         {
           "key": "levels",
@@ -8047,7 +8087,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.025%)"
+                "detail": "баланс (+0.000%)"
               },
               {
                 "name": "фандинг",
@@ -8057,7 +8097,7 @@
               {
                 "name": "открытый интерес",
                 "value": 0.0,
-                "detail": "$4.1M — деривативов мало, сигналам этого блока веры меньше"
+                "detail": "$4.4M — деривативов мало, сигналам этого блока веры меньше"
               }
             ],
             "has_data": true
@@ -8090,8 +8130,8 @@
       "price": {
         "now": 0.18533,
         "now_fmt": "0.1853",
-        "change_7d_pct": 34.2,
-        "change_30d_pct": 21.57,
+        "change_7d_pct": 39.57,
+        "change_30d_pct": 26.43,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -8187,15 +8227,15 @@
         "symbol": "WIF",
         "hl_name": "WIF",
         "status": "OK",
-        "mark_price": 0.19244,
-        "oracle_price": 0.19225,
+        "mark_price": 0.19316,
+        "oracle_price": 0.192996,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 4342372,
-        "open_interest_base": 22564808.0,
-        "oi_change_pct": 6.15,
-        "day_volume_usd": 4366489,
+        "open_interest_usd": 4361401,
+        "open_interest_base": 22579212.0,
+        "oi_change_pct": 0.44,
+        "day_volume_usd": 4403598,
         "volume_share_of_oi": 1.01,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
@@ -8318,7 +8358,7 @@
               {
                 "name": "премия HL",
                 "value": 0.0,
-                "detail": "баланс (+0.043%)"
+                "detail": "баланс (+0.000%)"
               },
               {
                 "name": "фандинг",
@@ -8356,8 +8396,8 @@
       "price": {
         "now": 0.009216,
         "now_fmt": "0.0092",
-        "change_7d_pct": 22.92,
-        "change_30d_pct": -4.34,
+        "change_7d_pct": 23.58,
+        "change_30d_pct": -3.83,
         "source": "hyperliquid_candles"
       },
       "targets": {
@@ -8452,16 +8492,16 @@
         "symbol": "ZK",
         "hl_name": "ZK",
         "status": "OK",
-        "mark_price": 0.009233,
-        "oracle_price": 0.009226,
+        "mark_price": 0.009248,
+        "oracle_price": 0.009245,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 724627,
-        "open_interest_base": 78482244.0,
-        "oi_change_pct": 0.14,
-        "day_volume_usd": 383260,
-        "volume_share_of_oi": 0.53,
+        "open_interest_usd": 716303,
+        "open_interest_base": 77454874.0,
+        "oi_change_pct": -1.15,
+        "day_volume_usd": 390878,
+        "volume_share_of_oi": 0.55,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
