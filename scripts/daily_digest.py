@@ -158,7 +158,14 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
     # SMART cohort net flow
     coh = cohorts.get('cohorts') or {}
     smart = coh.get('SMART') or coh.get('smart') or {}
-    smart_net = smart.get('net_flow_strk') or smart.get('net_24h_strk') or 0
+    # ФИКС 21.08.2026 · было `or 0`. Нет когорт — и в дайджест уходило
+    # «SMART +0.00M» как факт замера. Ноль и отсутствие данных должны
+    # выглядеть по-разному, иначе читатель не отличит тишину от нуля.
+    _sn = smart.get('net_flow_strk')
+    if _sn is None:
+        _sn = smart.get('net_24h_strk')
+    smart_has_data = _sn is not None
+    smart_net = _sn if smart_has_data else 0
 
     # CVD 1h signal
     cvd_1h = ((cvd_data.get('timeframes') or {}).get('1h') or
@@ -177,7 +184,7 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
     if is_accumulation and smart_positive and news_bullish:
         fund['emoji'] = '🟢'
         fund['verdict'] = 'ЗОНА НАБОРА'
-        fund['data'] = f'Phase {phase}, SMART +{smart_net/1e6:.2f}M, news {news_signal}'
+        fund['data'] = f'Phase {phase}, SMART ' + (f'+{smart_net/1e6:.2f}M' if smart_has_data else 'нет данных') + f', news {news_signal}'
         fund['action'] = 'DCA от текущей цены. Разбить бюджет на 3-5 частей.'
     elif is_distribution or (smart_net < 0) or unlock_close:
         fund['emoji'] = '🔴'
@@ -191,7 +198,7 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
     else:
         fund['emoji'] = '🟡'
         fund['verdict'] = 'НЕЙТРАЛЬНО'
-        fund['data'] = f'Phase {phase}, SMART {smart_net/1e6:+.2f}M, news {news_signal}'
+        fund['data'] = f'Phase {phase}, SMART ' + (f'{smart_net/1e6:+.2f}M' if smart_has_data else 'нет данных') + f', news {news_signal}'
         fund['action'] = 'Копить кэш. Ждать чёткого phase change или BULLISH news.'
 
     # === SWING (3-14d) ===
@@ -256,7 +263,13 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
         veto_reasons.append(f'CEX {cex_signal}')
 
     # Check Wyckoff explicit distribution phase (не MARKUP/ACCUMULATION)
-    if is_distribution and phase.upper() in ('DISTRIBUTION', 'MARKDOWN'):
+    #
+    # ФИКС 21.08.2026 · было `if is_distribution and phase in (...)`.
+    # is_distribution = 'DISTRIBUTION' in phase, поэтому для фазы
+    # MARKDOWN первое условие ложно и `and` короткозамыкается.
+    # MARKDOWN стоял в списке, но был недостижим: SWING мог выдать 🟢
+    # в фазе markdown. Проверяем фазу напрямую.
+    if phase.upper() in ('DISTRIBUTION', 'MARKDOWN'):
         onchain_veto = True
         veto_reasons.append(f'Wyckoff {phase}')
 
@@ -315,15 +328,24 @@ def _compute_action_3horizons(wyckoff, tech, cex, cohorts, unlock, news, btc_ctx
         sqz['emoji'] = '🟢'
         sqz['verdict'] = 'ЛОНГ НА ОТСКОКЕ'
         sqz['data'] = f'RSI {rsi:.0f}, CVD замедляется, funding {fund_apr:.2f}%'
-        _stop = price * 0.98 if price else 0
-        _take = price * 1.05 if price else 0
-        sqz['action'] = f'Long, stop ${_stop:.4f} (-2%), take ${_take:.4f} (+5%)'
+        # ФИКС 21.08.2026 · было `price * 0.98 if price else 0` — при
+        # отсутствии цены в Telegram уходила торговая инструкция
+        # «Long, stop $0.0000 (-2%), take $0.0000 (+5%)». Цифры уровней
+        # без цены — не уровни, а мусор, который выглядит как план.
+        if price:
+            sqz['action'] = (f'Long, stop ${price * 0.98:.4f} (-2%), '
+                             f'take ${price * 1.05:.4f} (+5%)')
+        else:
+            sqz['action'] = 'Long — но цены нет, уровни посчитать не из чего'
     elif rsi_overbought and fund_crowded_long:
         sqz['emoji'] = '🔴'
         sqz['verdict'] = 'КОРОТКИЙ СКВИЗ ВНИЗ'
         sqz['data'] = f'RSI {rsi:.0f} overbought, funding {fund_apr:.2f}% (crowded long)'
-        _take = price * 0.97 if price else 0
-        sqz['action'] = f'Short, take ${_take:.4f} (-3%), stop над локальным high'
+        if price:
+            sqz['action'] = (f'Short, take ${price * 0.97:.4f} (-3%), '
+                             f'stop над локальным high')
+        else:
+            sqz['action'] = 'Short — но цены нет, уровни посчитать не из чего'
     else:
         sqz['emoji'] = '⚪'
         sqz['verdict'] = 'ШУМ'
@@ -1164,12 +1186,26 @@ def get_recent_decisions(hours_back=6):
         data = json.loads(DECISION_LOG.read_text(encoding='utf-8'))
         decisions = data.get('decisions', [])
         cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours_back)).isoformat()
-        recent = [d for d in decisions if d.get('timestamp', '') > cutoff]
-        accepted = [d for d in recent if d.get('action') == 'ACCEPTED']
-        rejected = [d for d in recent if d.get('action') == 'REJECTED']
-        queued = [d for d in recent if d.get('action') == 'QUEUED_FOR_REVIEW']
+
+        # ФИКС 21.08.2026 · фильтры искали ключи 'timestamp' и 'action',
+        # а файл (его пишет detectors/decision_layer.py) содержит 'ts'
+        # и 'decision'. Совпадений было ноль всегда: блок «New wallets»
+        # не рендерился ни разу, а дайджест писал «Accepted: 0» при
+        # 32 реальных записях в логе.
+        def _ts(d):
+            return d.get('ts') or d.get('timestamp') or ''
+
+        def _act(d):
+            return str(d.get('decision') or d.get('action') or '').upper()
+
+        recent = [d for d in decisions if _ts(d) > cutoff]
+        accepted = [d for d in recent if _act(d) in ('ACCEPTED', 'ACCEPT')]
+        rejected = [d for d in recent if _act(d) in ('REJECTED', 'REJECT')]
+        queued = [d for d in recent if _act(d) in ('QUEUE', 'QUEUED', 'QUEUED_FOR_REVIEW')]
         return accepted, rejected, queued
-    except:
+    except Exception as e:
+        # Голый except глотал в том числе опечатки в самом коде
+        print(f'  ⚠ get_recent_decisions: {e}')
         return [], [], []
 
 
