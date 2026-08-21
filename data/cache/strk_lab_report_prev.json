@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-20T21:00:44.051521+00:00",
+  "generated_at": "2026-08-21T09:11:18.063948+00:00",
   "strk_status": {
-    "verdict": "EARLY_INFLECTION",
-    "triggers_hit": 1,
+    "verdict": "STILL_ACCUMULATION",
+    "triggers_hit": 0,
     "triggers_total": 4,
-    "recommendation": "Один сигнал шума. Продолжать rotation.",
-    "wyckoff_phase": "MARKUP",
+    "recommendation": "STRK в accumulation. Ротировать капитал в active sectors.",
+    "wyckoff_phase": "ACCUMULATION",
     "dune_monthly_signal": "BEARISH_BREAKDOWN",
     "cex_signal": "STRONG_DISTRIBUTION",
     "strk_price": null,
@@ -14,9 +14,9 @@
   "re_entry_triggers": {
     "trigger_list": [
       [
-        "✓",
+        "✗",
         "Wyckoff",
-        "MARKUP"
+        "ACCUMULATION (need MARKUP/ACC)"
       ],
       [
         "✗",
