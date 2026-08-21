@@ -883,7 +883,14 @@ STRONG_BUY здесь ставится по одному правилу: при�
 <div class="card-subtitle">7 дней</div>
 </div>
 <div class="layman-intro">Когда токен появляется/исчезает из STRONG_BUY — это события ротации капитала между секторами.</div>
-<div class="loading" id="rotation-content">Loading...</div>
+<div class="loading" id="rotation-content">Loading...</div><div class="card">
+<div class="card-header">
+<div class="card-title">🐋 Крупные игроки Hyperliquid</div>
+<div class="card-subtitle" id="whales-age">—</div>
+</div>
+<div class="layman-intro">Позиции адресов с крупным оборотом. Собраны из публичных сделок — Hyperliquid показывает состояние любого счёта. Маркетмейкеры отсеяны.</div>
+<div class="loading" id="whales-content">Loading...</div>
+</div>
 </div><div class="card card-wide card-full">
 <div class="card-header">
 <div class="card-title">💰 Куда идёт капитал · sector rotation</div><div id="rotation-summary-slot" style="margin: 12px 0;"></div>
@@ -1318,6 +1325,69 @@ async function renderEngineSignals() {
   out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 8px; font-style: italic;">
     Клик по строке открывает разбор актива. Всё посчитано в scripts/view_data.py, обновляется каждые 30 минут.
   </div>`;
+
+  el.innerHTML = out;
+}
+
+// Тонкий рендер. Тон, тексты и сортировка приходят из view_data.py.
+async function renderWhales() {
+  const el = document.getElementById('whales-content');
+  if (!el) return;
+
+  const vd = await _loadCache('view_data.json');
+  const w = vd && vd.whales;
+  if (!w) { el.innerHTML = '<div class="empty">Данные не собраны</div>'; return; }
+
+  const ageEl = document.getElementById('whales-age');
+  if (ageEl && w.computed_at) {
+    const m = Math.round((Date.now() - new Date(w.computed_at).getTime()) / 60000);
+    ageEl.textContent = m < 60 ? m + ' мин назад' : Math.round(m / 60) + ' ч назад';
+  }
+
+  if (w.status === 'NOT_ENOUGH_DATA') {
+    el.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">${w.text_ru}<br><span style="font-size: 11px;">Сделок в логе: ${w.trades_in_log || 0}</span></div>`;
+    return;
+  }
+
+  const toneBg = {positive: 'rgba(16,185,129,0.07)', caution: 'rgba(245,158,11,0.08)', neutral: 'rgba(59,130,246,0.05)'};
+  const toneBd = {positive: 'var(--green)', caution: 'var(--yellow)', neutral: '#3B82F6'};
+
+  let out = `<div style="padding: 11px; background: ${toneBg[w.tone] || toneBg.neutral}; border-radius: 8px; border-left: 3px solid ${toneBd[w.tone] || toneBd.neutral}; margin-bottom: 10px;">
+    <div style="font-size: 13px; font-weight: 700; color: ${toneBd[w.tone] || toneBd.neutral};">${w.headline}</div>
+    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px; line-height: 1.5;">${w.action}</div>
+  </div>`;
+
+  out += `<div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
+    Направленных адресов: ${w.whales_directional} · маркетмейкеров отсеяно: ${w.market_makers_skipped} · сделок в базе: ${w.trades_in_log}
+  </div>`;
+
+  if (w.rows && w.rows.length) {
+    out += '<div class="table-wrapper"><table><thead><tr><th>Токен</th><th>Перевес</th><th class="number">Лонг</th><th class="number">Шорт</th></tr></thead><tbody>';
+    for (const r of w.rows) {
+      const bCol = r.bias === 'WHALES_LONG' ? 'var(--green)' :
+                   r.bias === 'WHALES_SHORT' ? 'var(--red)' :
+                   r.bias && r.bias.indexOf('SINGLE') === 0 ? 'var(--yellow)' : 'var(--text-muted)';
+      out += `<tr${r.divergent ? ' style="background: rgba(245,158,11,0.06);"' : ''}>
+        <td><strong>${r.token}</strong>${r.divergent ? ' <span style="color: var(--yellow); font-size: 10px;">⚠</span>' : ''}</td>
+        <td style="font-size: 10px; color: ${bCol}; font-weight: 600;">${r.bias}</td>
+        <td class="number" style="color: var(--green); font-size: 11px;">${r.n_long}шт · $${r.long_m}M</td>
+        <td class="number" style="color: var(--red); font-size: 11px;">${r.n_short}шт · $${r.short_m}M</td>
+      </tr>`;
+    }
+    out += '</tbody></table></div>';
+  }
+
+  const div = (w.rows || []).filter(r => r.divergent);
+  if (div.length) {
+    out += '<div style="margin-top: 10px;">';
+    for (const r of div) {
+      out += `<div style="padding: 8px; background: rgba(245,158,11,0.08); border-radius: 5px; margin: 4px 0; font-size: 11px; line-height: 1.5;">
+        <strong style="color: var(--yellow);">${r.token}:</strong>
+        <span style="color: var(--text-secondary);"> ${r.crowd_vs_whales_ru || ''}</span>
+      </div>`;
+    }
+    out += '</div>';
+  }
 
   el.innerHTML = out;
 }
@@ -3262,6 +3332,7 @@ async function loadAll(manual = false) {
   safeRender('Trades', () => renderTrades());
   safeRender('Summaries', () => renderModuleSummaries());
   safeRender('EngineSignals', () => renderEngineSignals());
+  safeRender('Whales', () => renderWhales());
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
@@ -4878,7 +4949,63 @@ async function renderModalIntelligence(token) {
         Обновляется каждые 30 мин.
       </div>
     </div>`;
-  } else if (hl && hl.status === 'NOT_LISTED') {
+  }
+
+  // ── 🐋 КРУПНЫЕ ИГРОКИ · позиции из view_data.json ─────────────
+  // Watchlist собран из публичных сделок HL. Тон и текст готовые:
+  // перевес одного счёта и перевес шести адресов выглядят одинаково
+  // в цифрах, но значат разное — это суждение считается в Python.
+  {
+    const md2 = viewData && viewData.modal && viewData.modal[token];
+    const w = md2 && md2.whales;
+    if (w && w.status === 'OK') {
+      const tone = {green: 'var(--green)', red: 'var(--red)',
+                    yellow: 'var(--yellow)', muted: 'var(--text-muted)'};
+      const col = tone[w.tone] || tone.muted;
+      const icon = w.bias === 'WHALES_LONG' ? '🟢' :
+                   w.bias === 'WHALES_SHORT' ? '🔴' :
+                   w.single_whale ? '⚠' : '⚪';
+
+      html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">🐋 Крупные игроки · реальные позиции</div>';
+      html += `<div style="padding: 12px; background: rgba(139, 92, 246, 0.04); border-radius: 6px; border-left: 3px solid ${col};">
+        <div style="display: flex; align-items: flex-start; gap: 9px;">
+          <span style="font-size: 19px;">${icon}</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 13px; color: ${col};">${w.bias}</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.5;">${w.text_ru || ''}</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+          <div style="padding: 7px; background: rgba(16,185,129,0.07); border-radius: 4px;">
+            <div style="font-size: 10px; color: var(--text-muted);">в лонгах</div>
+            <div style="font-weight: 700; color: var(--green);">${w.n_long} адрес(ов) · $${w.long_m}M</div>
+          </div>
+          <div style="padding: 7px; background: rgba(220,38,38,0.06); border-radius: 4px;">
+            <div style="font-size: 10px; color: var(--text-muted);">в шортах</div>
+            <div style="font-weight: 700; color: var(--red);">${w.n_short} адрес(ов) · $${w.short_m}M</div>
+          </div>
+        </div>`;
+
+      if (w.crowd_vs_whales === 'DIVERGENT' && w.crowd_vs_whales_ru) {
+        html += `<div style="margin-top: 9px; padding: 9px; background: rgba(245,158,11,0.10); border-radius: 4px; border: 1px solid rgba(245,158,11,0.3); font-size: 11px; line-height: 1.5;">
+          <strong style="color: var(--yellow);">⚠ Толпа против крупных:</strong>
+          <span style="color: var(--text-secondary);"> ${w.crowd_vs_whales_ru}</span>
+        </div>`;
+      } else if (w.crowd_vs_whales === 'ALIGNED') {
+        html += `<div style="margin-top: 9px; font-size: 11px; color: var(--text-muted);">Толпа и крупные смотрят в одну сторону.</div>`;
+      }
+
+      html += `<div style="font-size: 9px; color: var(--text-muted); margin-top: 8px; font-style: italic;">
+        Адреса собраны из публичных сделок Hyperliquid, маркетмейкеры отсеяны по числу одновременных позиций. Обновляется раз в час.
+      </div></div>`;
+    } else if (w && w.status === 'NONE') {
+      html += `<div style="font-size: 11px; color: var(--text-muted); margin: 12px 0; padding: 8px; background: rgba(107,114,128,0.05); border-radius: 4px;">
+        🐋 ${w.text_ru}
+      </div>`;
+    }
+  }
+
+  if (hl && hl.status === 'NOT_LISTED') {
     html += `<div style="font-size: 11px; color: var(--text-muted); margin: 10px 0; padding: 8px; background: rgba(107, 114, 128, 0.05); border-radius: 4px;">
       🐙 На Hyperliquid нет контракта для этого токена
     </div>`;
