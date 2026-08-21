@@ -3929,7 +3929,26 @@ async function renderModalIntelligence(token) {
                      'Внутри зоны объёма';
 
     html += `<div style="padding: 14px; background: rgba(59, 130, 246, 0.06); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.25); margin-bottom: 14px;">
-      <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🎯 Куда стремится цена</div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">🎯 Куда стремится цена</div>
+        <div style="font-size: 9px; color: var(--text-muted);">${(() => {
+          // Свежесть каждого источника — чтобы было видно на чём строится совет
+          const ago = (iso) => {
+            if (!iso) return '—';
+            const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+            if (m < 60) return m + 'мин';
+            const hh = Math.round(m / 60);
+            if (hh < 48) return hh + 'ч';
+            return Math.round(hh / 24) + 'д';
+          };
+          const parts = [];
+          if (scan && scan.collected_at) parts.push('фаза ' + ago(scan.collected_at));
+          if (volProfile && volProfile.computed_at) parts.push('профиль ' + ago(volProfile.computed_at));
+          if (cvdMulti && cvdMulti.computed_at) parts.push('CVD ' + ago(cvdMulti.computed_at));
+          if (hlPerps && hlPerps.computed_at) parts.push('перпы ' + ago(hlPerps.computed_at));
+          return parts.join(' · ');
+        })()}</div>
+      </div>
       
       <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;">
         <span style="font-size: 24px; font-weight: 700;">$${cur < 0.01 ? cur.toFixed(6) : cur < 1 ? cur.toFixed(4) : cur.toFixed(2)}</span>
@@ -4509,7 +4528,14 @@ async function renderModalIntelligence(token) {
     </div>`;
   }
 
-  html = decisionHtml + conflictHtml + html;
+  // Старый браузерный блок решения ОТКЛЮЧЁН 21.08.2026.
+  // Причина: серверный decision_engine (v1.3) считает то же самое, но
+  // записывает прогноз в лог и потому проверяем. Два автора решения на
+  // одном экране давали разные проценты (33% в браузере против 23% на
+  // сервере после подключения Volume Profile) и запутывали.
+  // decisionHtml больше не вставляется; conflictHtml остаётся — он
+  // показывает расхождения сигналов и дублирования не создаёт.
+  html = conflictHtml + html;
 
   el.innerHTML = html;
 }
