@@ -1,12 +1,12 @@
 {
-  "computed_at": "2026-08-20T20:11:42.676106+00:00",
+  "computed_at": "2026-08-21T07:11:51.569662+00:00",
   "coherence_score": 10,
-  "context_summary_ru": "🚀 BULL market · BTC.D 59% (high) → alts suppressed · Macro: MIXED, но DXY -2.21% (bullish crypto medium-term) · STRK: STILL_ACCUMULATION · 0/4 triggers · 3 HOME news · ⚠ COHERENCE 10% · сигналы противоречат друг другу (4 conflicts)",
+  "context_summary_ru": "🚀 BULL market · BTC.D 59% (high) → alts suppressed · Macro: MIXED, но DXY -2.52% (bullish crypto medium-term) · STRK: EARLY_INFLECTION · 1/4 triggers · 1 HOME news · ⚠ COHERENCE 10% · сигналы противоречат друг другу (4 conflicts)",
   "conflicts": [
     {
       "level": "high",
       "type": "strk_confluence_lab_conflict",
-      "text_ru": "Confluence Gate показывает \"Consider LONG on break above $0.0259 with stop $0.0222\", но LAB verdict STILL_ACCUMULATION (0/4 triggers). Rally signal НЕ подтверждён fundamentals — вероятно false signal или pump на low liquidity."
+      "text_ru": "Confluence Gate показывает \"Consider LONG on break above $0.0260 with stop $0.0222\", но LAB verdict EARLY_INFLECTION (1/4 triggers). Rally signal НЕ подтверждён fundamentals — вероятно false signal или pump на low liquidity."
     },
     {
       "level": "high",
@@ -21,7 +21,7 @@
     {
       "level": "medium",
       "type": "btc_dominance_high",
-      "text_ru": "BTC.D 58.7% (высокая) — alts под давлением. Даже если STRK rally сигнал есть, movement будет короткий и слабый."
+      "text_ru": "BTC.D 59.2% (высокая) — alts под давлением. Даже если STRK rally сигнал есть, movement будет короткий и слабый."
     }
   ],
   "per_asset_verdicts": [
@@ -31,7 +31,7 @@
       "signal_color": "red",
       "recommendation_ru": "⚠ Confluence rally 6/9, НО thesis breach: STRONG_DISTRIBUTION, BEARISH_BREAKDOWN. Это pump НЕ на fundamentals. НЕ входить. | ⚠ 1 bearish news событий (см News секцию)",
       "confluence_score": 6,
-      "triggers_hit": 0,
+      "triggers_hit": 1,
       "thesis_intact": false,
       "news_events_total": 10,
       "news_bearish_count": 1,
@@ -41,7 +41,7 @@
       "asset": "BTC",
       "verdict": "MACRO_BULL",
       "signal_color": "green",
-      "recommendation_ru": "BTC в MARKUP phase (+9.74%/30d). Держать long-term core.",
+      "recommendation_ru": "BTC в MARKUP phase (+16.51%/30d). Держать long-term core.",
       "news_bearish_count": 0,
       "news_bullish_count": 0
     },
@@ -49,17 +49,35 @@
       "asset": "ETH",
       "verdict": "MACRO_BULL",
       "signal_color": "green",
-      "recommendation_ru": "ETH в MARKUP phase (+19.95%/30d). Держать long-term core.",
+      "recommendation_ru": "ETH в MARKUP phase (+26.49%/30d). Держать long-term core.",
       "news_bearish_count": 0,
       "news_bullish_count": 0
     },
     {
-      "asset": "LINK",
+      "asset": "ARB",
       "verdict": "REVIEW",
       "signal_color": "orange",
-      "recommendation_ru": "LINK: bearish news (3 events). Review SIZE, tighten stops.",
-      "news_events_total": 11,
-      "news_bearish_count": 3,
+      "recommendation_ru": "ARB: bearish news (2 events). Review SIZE, tighten stops.",
+      "news_events_total": 10,
+      "news_bearish_count": 2,
+      "news_bullish_count": 3
+    },
+    {
+      "asset": "MNT",
+      "verdict": "HOLD",
+      "signal_color": "gray",
+      "recommendation_ru": "MNT: держать позицию. Watch mode.",
+      "news_events_total": 0,
+      "news_bearish_count": 0,
+      "news_bullish_count": 0
+    },
+    {
+      "asset": "DOGE",
+      "verdict": "HOLD_STRONG",
+      "signal_color": "green",
+      "recommendation_ru": "DOGE: bullish news + bull market → продолжать HOLD. Не FOMO новые входы.",
+      "news_events_total": 2,
+      "news_bearish_count": 0,
       "news_bullish_count": 1
     },
     {
@@ -67,48 +85,80 @@
       "verdict": "HOLD_STRONG",
       "signal_color": "green",
       "recommendation_ru": "ETHFI: bullish news + bull market → продолжать HOLD. Не FOMO новые входы.",
-      "news_events_total": 9,
+      "news_events_total": 10,
       "news_bearish_count": 0,
-      "news_bullish_count": 2
+      "news_bullish_count": 3
     },
     {
-      "asset": "DOGE",
-      "verdict": "AVOID",
-      "signal_color": "red",
-      "recommendation_ru": "DOGE: divergence signal (цена up без capital flow). Не входить.",
+      "asset": "OP",
+      "verdict": "HOLD_STRONG",
+      "signal_color": "green",
+      "recommendation_ru": "OP: bullish news + bull market → продолжать HOLD. Не FOMO новые входы.",
+      "news_events_total": 14,
+      "news_bearish_count": 0,
+      "news_bullish_count": 4
+    },
+    {
+      "asset": "FIL",
+      "verdict": "HOLD",
+      "signal_color": "gray",
+      "recommendation_ru": "FIL: держать позицию. Watch mode.",
+      "news_events_total": 0,
       "news_bearish_count": 0,
       "news_bullish_count": 0
     },
     {
-      "asset": "ARB",
+      "asset": "PENDLE",
+      "verdict": "REVIEW",
+      "signal_color": "orange",
+      "recommendation_ru": "PENDLE: bearish news (1 events). Review SIZE, tighten stops.",
+      "news_events_total": 7,
+      "news_bearish_count": 1,
+      "news_bullish_count": 0
+    },
+    {
+      "asset": "GRT",
       "verdict": "AVOID",
       "signal_color": "red",
-      "recommendation_ru": "ARB: divergence signal (цена up без capital flow). Не входить.",
+      "recommendation_ru": "GRT: divergence signal (цена up без capital flow). Не входить.",
       "news_bearish_count": 0,
       "news_bullish_count": 0
     },
     {
-      "asset": "UNI",
+      "asset": "WIF",
       "verdict": "AVOID",
       "signal_color": "red",
-      "recommendation_ru": "UNI: divergence signal (цена up без capital flow). Не входить.",
+      "recommendation_ru": "WIF: divergence signal (цена up без capital flow). Не входить.",
+      "news_bearish_count": 0,
+      "news_bullish_count": 0
+    },
+    {
+      "asset": "AXS",
+      "verdict": "AVOID",
+      "signal_color": "red",
+      "recommendation_ru": "AXS: divergence signal (цена up без capital flow). Не входить.",
       "news_bearish_count": 0,
       "news_bullish_count": 0
     }
   ],
   "unified_action_today": [
     "⛔ STRK: НЕ входить на pump (false rally, thesis breach)",
-    "👀 LINK: review SIZE (3 bearish events)",
+    "👀 ARB: review SIZE (2 bearish events)",
+    "📊 MNT: HOLD (watch mode)",
+    "✅ DOGE: HOLD strong (thesis alive)",
     "✅ ETHFI: HOLD strong (thesis alive)",
+    "✅ OP: HOLD strong (thesis alive)",
+    "📊 FIL: HOLD (watch mode)",
+    "👀 PENDLE: review SIZE (1 bearish events)",
     "⚠ Coherence LOW (10%) — сигналы конфликтуют. Не делать big moves."
   ],
   "what_to_watch": [
     {
-      "text_ru": "BTC.D сейчас 58.7% — watch пробой ниже 55% как сигнал начала alt season",
+      "text_ru": "BTC.D сейчас 59.2% — watch пробой ниже 55% как сигнал начала alt season",
       "importance": "high"
     },
     {
-      "text_ru": "STRK triggers 0/4 — watch следующие weekly rollups для достижения 3/4 или 4/4",
+      "text_ru": "STRK triggers 1/4 — watch следующие weekly rollups для достижения 3/4 или 4/4",
       "importance": "high"
     },
     {
@@ -117,10 +167,6 @@
     },
     {
       "text_ru": "News HOME: BTC · security/high · Iranian Hackers Tied to $6 Million Bitcoin Extortion Charged in Massive Cyber Ca",
-      "importance": "medium"
-    },
-    {
-      "text_ru": "News HOME: BTC · security/high · Six-Bug Exploit Halts Maya Protocol After $1.4 Million in Bitcoin Stolen",
       "importance": "medium"
     }
   ],

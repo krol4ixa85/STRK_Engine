@@ -1,69 +1,69 @@
 {
-  "as_of": "2026-08-20T20:59:49.016812+00:00",
-  "phase": "MARKUP",
-  "sub_phase": "Trend continuation up",
+  "as_of": "2026-08-21T09:10:18.644107+00:00",
+  "phase": "ACCUMULATION",
+  "sub_phase": "Phase D · Sign of Strength",
   "confidence": "HIGH",
-  "score": 5,
+  "score": 6,
   "all_scores": {
-    "ACCUMULATION": 4,
-    "MARKUP": 5,
+    "ACCUMULATION": 6,
+    "MARKUP": 6,
     "DISTRIBUTION": 4,
     "MARKDOWN": 0
   },
   "reasons": [
-    "uptrend structure (HH/HL)",
-    "volume expanding with trend",
-    "BTC UP"
+    "few LARGE receivers (2)",
+    "small holders active (ratio 0.381)",
+    "extreme shorts (min -11.3%)"
   ],
   "technical": {
-    "price_now": 0.0254,
-    "high_7d": 0.0263,
+    "price_now": 0.0267,
+    "high_7d": 0.0271,
     "low_7d": 0.0222,
-    "high_14d": 0.0265,
+    "high_14d": 0.0271,
     "low_14d": 0.0222,
     "resistance_zones": [
+      0.0271,
       0.0263,
-      0.0253,
-      0.0238
+      0.0245
     ],
     "support_zones": [
       0.0222,
       0.0224,
       0.0225
     ],
-    "avg_vol_30": 96238.37,
-    "last_vol": 35496.75,
-    "vol_ratio_last": 0.37,
-    "vol_trend_10": 1.73,
+    "avg_vol_30": 114584.36,
+    "last_vol": 226102.27,
+    "vol_ratio_last": 1.97,
+    "vol_trend_10": 1.72,
     "structure": "UPTREND",
-    "compression": 0.68,
-    "pct_from_high_14d": -4.08,
-    "pct_from_low_14d": 14.32
+    "compression": 1.36,
+    "pct_from_high_14d": -1.51,
+    "pct_from_low_14d": 20.26
   },
   "triggers": {
     "to_next_phase": [
       [
-        "LARGE receivers 14d spike above 50 (now 3)",
+        "Break ABOVE $0.0271 on volume",
+        true
+      ],
+      [
+        "Distribution ratio holds above 0.30",
+        true
+      ],
+      [
+        "BTC breaks up-cycle",
         false
       ],
       [
-        "Funding turn extreme positive >20% ann",
-        false
-      ],
-      [
-        "Volume expansion but price flat",
-        false
-      ],
-      [
-        "Custody sending to CEX",
+        "Volume expansion up 2+ candles",
         false
       ]
     ],
     "exit_signals": [
-      "If long: trail stop below prior HL, take profit at $0.0305",
-      "Watch for exhaustion on high volume"
+      "If flat: consider LONG on break above $0.0271 with stop at $0.0222",
+      "Position sizing: small (accumulation not confirmed until markup)"
     ],
-    "next_phase": "DISTRIBUTION"
+    "next_phase": "MARKUP"
   },
-  "layman_explanation": "Фаза РОСТА. Умные деньги набрали, теперь рынок растёт. Retail покупает на пике эйфории. Тренд твой друг — держи long, трейл стоп по higher lows. Выходи когда объём растёт а цена стагнирует (это начало distribution).\n\nВАЖНО: сейчас в системе много ШОРТОВ (funding negative). Это топливо для короткого squeeze rally. Может быть +5-15% движение но НЕ разворот тренда."
+  "layman_explanation": "Фаза НАКОПЛЕНИЯ. Крупные игроки тихо покупают токены у розницы. Цена в боковике, объём падает. Это до-стадия роста. Обычно длится 2-8 недель. Ничего покупать пока не время — жди пробоя вверх с объёмом.\n\nВАЖНО: сейчас в системе много ШОРТОВ (funding negative). Это топливо для короткого squeeze rally. Может быть +5-15% движение но НЕ разворот тренда."
 }

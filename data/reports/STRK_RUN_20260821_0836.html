@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRK RUN · 2026-08-21 08:36 UTC</title>
+<style>
+:root{
+  --bg:#0A0C10;--card:#12151C;--border:#1E2330;--text:#E2E8F0;--dim:#64748B;
+  --green:#22C55E;--red:#EF4444;--yellow:#EAB308;--blue:#3B82F6;--purple:#A855F7;
+  --cyan:#06B6D4;--orange:#F97316;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',monospace;font-size:13px;padding:18px;max-width:940px;margin:0 auto;line-height:1.5}
+.g{color:var(--green)}.r{color:var(--red)}.y{color:var(--yellow)}.b{color:var(--blue)}
+.c{color:var(--cyan)}.o{color:var(--orange)}.dim{color:var(--dim)}.p{color:var(--purple)}
+
+/* HERO */
+.hdr{background:linear-gradient(135deg,#12151C,#0f1219);border:2px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.hdr-title{font-size:18px;font-weight:bold;margin-bottom:4px}
+.hdr-sub{color:var(--dim);font-size:11px}
+
+/* DECISION (главное) */
+.decision{border:3px solid var(--green);border-radius:12px;padding:20px;margin-bottom:14px;background:linear-gradient(135deg,#0f2a12,#0f1219)}
+.dec-title{font-size:16px;font-weight:bold;letter-spacing:2px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15)}
+.dec-signal{font-size:22px;font-weight:bold;color:var(--green);text-align:center;padding:14px 0;letter-spacing:1px}
+.dec-grid{display:grid;grid-template-columns:160px 1fr;gap:5px 12px;font-size:12px;line-height:1.7;margin-top:12px}
+@media(max-width:640px){.dec-grid{grid-template-columns:1fr}}
+.dec-k{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;padding-top:2px}
+.dec-v{font-weight:bold}
+.dec-action{background:#0c1015;padding:12px;border-radius:6px;margin-top:12px;border-left:3px solid var(--green)}
+.dec-action-lbl{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;margin-bottom:4px}
+.dec-action-val{font-size:13px;color:var(--green);font-weight:bold}
+
+/* LAYMAN */
+.layman{background:linear-gradient(135deg,#0a1a20,#0f1219);border:2px solid var(--cyan);border-radius:12px;padding:18px;margin-bottom:14px}
+.layman-title{font-size:15px;font-weight:bold;color:var(--cyan);margin-bottom:10px;letter-spacing:1px}
+.layman-item{padding:8px 0;border-bottom:1px dashed #1a1f2a;font-size:13px;line-height:1.6}
+.layman-item:last-child{border:none}
+
+/* Section base */
+.sec{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
+.sec-title{font-size:13px;font-weight:bold;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);letter-spacing:1px}
+
+/* Confluence checks */
+.check{display:grid;grid-template-columns:24px 1fr;gap:8px;padding:4px 0;font-size:12px;font-family:'SF Mono',monospace}
+.check-icon{text-align:center;font-weight:bold}
+
+/* МЕСТО */
+.place{background:#0a1420;border:2px solid var(--blue);border-radius:10px;padding:14px;margin-bottom:12px}
+.place-title{color:var(--blue)}
+.place-row{display:grid;grid-template-columns:140px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #1a1f2a;font-size:12px}
+.place-row:last-child{border:none}
+.place-k{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;padding-top:2px;font-weight:bold}
+
+/* Event Layer */
+.event{background:#12100a;border:2px solid var(--orange);border-radius:10px;padding:14px;margin-bottom:12px}
+.event-title{color:var(--orange)}
+.reason-list{margin-top:8px}
+.reason{padding:4px 8px;margin:3px 0;border-radius:4px;font-size:11.5px;line-height:1.4}
+.reason-bull{background:#0f2a12;border-left:3px solid var(--green)}
+.reason-bear{background:#2a0f0f;border-left:3px solid var(--red)}
+
+/* Sector table */
+.sector-tbl{display:grid;grid-template-columns:60px 80px 80px 80px;gap:6px;margin-top:10px;font-size:11px}
+.sector-hdr{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;padding:6px;background:#0c1015;border-radius:4px}
+.sector-row{padding:6px;border-radius:4px}
+.sector-row.up{background:#0f2a12}
+.sector-row.down{background:#2a0f0f}
+
+/* Scenarios */
+.scenario{border-radius:8px;padding:12px;margin-bottom:10px}
+.sc-base{background:linear-gradient(135deg,#12151C,#0f1219);border:1px solid var(--dim)}
+.sc-bull{background:linear-gradient(135deg,#0f2a12,#0f1219);border:1px solid var(--green)}
+.sc-bear{background:linear-gradient(135deg,#2a0f0f,#0f1219);border:1px solid var(--red)}
+.sc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sc-name{font-weight:bold;font-size:14px;letter-spacing:1px}
+.sc-prob{background:rgba(255,255,255,.1);padding:2px 10px;border-radius:12px;font-size:12px;font-weight:bold}
+.sc-range{color:var(--cyan);margin-bottom:6px;font-size:12px}
+.sc-desc{font-size:11.5px;line-height:1.5;color:#c2c9d4}
+.sc-triggers{margin-top:8px;padding-top:8px;border-top:1px dashed #1a1f2a}
+.sc-trg-title{font-size:10px;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+.sc-trg{font-size:11px;padding:2px 0}
+
+/* Evidence (под капотом) */
+.evidence{background:#0c1015;border:1px solid #1a1f2a;border-radius:6px;padding:10px;margin-bottom:8px}
+.evidence summary{cursor:pointer;font-weight:bold;color:var(--dim);text-transform:uppercase;font-size:11px;letter-spacing:1px;padding:2px 0}
+.evidence summary:hover{color:var(--text)}
+.evidence[open] summary{color:var(--text);margin-bottom:8px}
+.ev-grid{display:grid;grid-template-columns:130px 1fr;gap:4px 12px;font-size:11.5px;line-height:1.6;padding-top:4px}
+.ev-k{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding-top:2px}
+
+/* Buttons/toolbar */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;padding:12px;background:#0c1015;border-radius:8px;border:1px solid var(--border)}
+.btn{background:#1a1f2a;border:1px solid #2a303f;color:var(--text);padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s}
+.btn:hover{background:#2a303f;border-color:var(--cyan)}
+.btn-run{border-color:var(--green);color:var(--green)}
+.btn-liq{border-color:var(--orange);color:var(--orange)}
+.btn-scenario{border-color:var(--purple);color:var(--purple)}
+.btn-review{border-color:var(--blue);color:var(--blue)}
+
+/* Watchers */
+.w-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.w-count{text-align:center;padding:10px;border-radius:6px;background:#0c1015}
+.w-count-num{font-size:22px;font-weight:bold}
+.w-count-lbl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* Forecast block */
+.forecast{background:linear-gradient(135deg,#12100a,#0f1219);border:2px solid var(--purple);border-radius:10px;padding:14px;margin-bottom:12px}
+.fc-title{color:var(--purple)}
+.fc-code{font-family:monospace;background:#0c1015;padding:10px;border-radius:6px;font-size:11px;line-height:1.5;white-space:pre-wrap;color:var(--cyan)}
+
+/* MODE PANEL */
+.mode-panel{margin-top:20px;padding:12px 16px;background:#0c1015;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--dim);text-align:center;letter-spacing:1px}
+.mode-panel b{color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<!-- ============ BLOCK 1: HERO ============ -->
+<div class="hdr">
+  <div class="hdr-title">STRK ENGINE · RUN REPORT</div>
+  <div class="hdr-sub">2026-08-21 08:36 UTC · v4.7 · engine v6 · position: <b class="c">FLAT</b></div>
+</div>
+
+<!-- ============ BLOCK 2: DECISION (главное вверху) ============ -->
+<div class="decision">
+  <div class="dec-title">⚡ DECISION LAYER</div>
+  <div class="dec-signal">🟢 RALLY_HIGH_CONFLUENCE</div>
+  
+  <div class="dec-grid">
+    <div class="dec-k">Signal</div><div class="dec-v">RALLY_HIGH_CONFLUENCE</div>
+    <div class="dec-k">Confidence</div><div class="dec-v">HIGH</div>
+    <div class="dec-k">Rally checks</div><div class="dec-v">5/6+</div>
+    <div class="dec-k">Crash checks</div><div class="dec-v">1/6+</div>
+    <div class="dec-k">Off-chain</div><div class="dec-v">SLIGHT_BULLISH (4 vs 1)</div>
+    <div class="dec-k">Wyckoff phase</div><div class="dec-v">ACCUMULATION · Phase D · Sign of Strength</div>
+    <div class="dec-k">BTC cycle</div><div class="dec-v">UP · dist200 +12.4%</div>
+    <div class="dec-k">Position</div><div class="dec-v"><span class="c">FLAT</span></div>
+  </div>
+  
+  <div class="dec-action">
+    <div class="dec-action-lbl">Action</div>
+    <div class="dec-action-val">Consider LONG on break above $0.0265 with stop $0.0222</div>
+  </div>
+</div>
+
+<!-- ============ TOOLBAR (кнопки/actions) ============ -->
+<div class="toolbar">
+  <a class="btn btn-run" href="#run">📊 RUN details</a>
+  <a class="btn btn-scenario" href="#scenarios">🎯 SCENARIOS</a>
+  <a class="btn btn-liq" href="#watchers">👁 WATCHERS</a>
+  <a class="btn btn-review" href="#evidence">🔬 EVIDENCE</a>
+  <a class="btn" href="#forecast">📝 FORECAST</a>
+</div>
+
+<!-- ============ BLOCK 3: LAYMAN «Что происходит» ============ -->
+<div class="layman" id="layman">
+  <div class="layman-title">🧠 ЧТО ПРОИСХОДИТ (простым языком)</div>
+  <div class="layman-item">1. <b>Где мы:</b> STRK в фазе <b>НАКОПЛЕНИЯ</b> (Phase D · Sign of Strength). Крупные игроки собирают токены у розницы. Ничего кричащего.</div><div class="layman-item">2. <b>L2 сектор:</b> STRK движется в линии с сектором.</div><div class="layman-item">3. <b>Off-chain:</b> Смешанные сигналы. Ближайший unlock — через 24 дней.</div><div class="layman-item">4. <b>Технически:</b> Много шортов в системе (funding +5.47% ann) — есть <b class='y'>топливо для short squeeze +5-15%</b>, но это НЕ разворот тренда.</div><div class="layman-item">5. <b>Вердикт:</b> <b class='g'>RALLY_HIGH_CONFLUENCE</b> — Смешанные сигналы — недостаточно данных для чёткого вердикта. <i>Финальное действие — блок DECISION ниже.</i></div>
+</div>
+
+<!-- ============ BLOCK 4: CONFLUENCE CHECKS · input evidence (Action см. §2) ============ -->
+<div class="sec" id="checks">
+  <div class="sec-title">🔬 CONFLUENCE CHECKS · input evidence</div>
+  <div style="margin-bottom:10px;color:var(--dim);font-size:11.5px">
+    Это входные проверки для DECISION LAYER (§2). Сам вердикт и Action — там.
+  </div>
+  <div style="margin-bottom:10px;color:var(--dim);font-size:11.5px">STRONG RALLY SETUP - 5 independent checks agree</div>
+  
+  <details>
+    <summary style="cursor:pointer;font-size:12px;font-weight:bold">Как посчитано (5/9 rally · 1/9 crash)</summary>
+    <div style="margin-top:8px">
+      <div class="check"><div class="check-icon g">✓</div><div class="g">on_chain_ok</div></div><div class="check"><div class="check-icon g">✓</div><div class="g">price_up_3d</div></div><div class="check"><div class="check-icon g">✓</div><div class="g">accelerating</div></div><div class="check"><div class="check-icon r">✗</div><div class="r">vol_expanding</div></div><div class="check"><div class="check-icon g">✓</div><div class="g">not_distributing_cex</div></div><div class="check"><div class="check-icon g">✓</div><div class="g">events_supportive</div></div>
+    </div>
+  </details>
+</div>
+
+<!-- ============ BLOCK 5: МЕСТО / STRUCTURE ============ -->
+<div class="place">
+  <div class="sec-title place-title">📍 STRUCTURE / МЕСТО</div>
+  <div class="place-row"><div class="place-k">Price</div><div><b class="c">$0.0267</b></div></div>
+  <div class="place-row"><div class="place-k">Phase (Wyckoff)</div><div>ACCUMULATION · <span class="dim">Phase D · Sign of Strength</span></div></div>
+  <div class="place-row"><div class="place-k">Wyckoff conf.</div><div class="g">HIGH</div></div>
+  <div class="place-row"><div class="place-k">RSI 14</div><div>77</div></div>
+  <div class="place-row"><div class="place-k">Slope 3d</div><div class="g">+17.78%</div></div>
+  <div class="place-row"><div class="place-k">Volume 3d</div><div>1.14× avg</div></div>
+  <div class="place-row"><div class="place-k">14d range</div><div>$0.0222 → $0.0267</div></div>
+  <div class="place-row"><div class="place-k">7d range</div><div>$0.0222 → $0.0267</div></div>
+  <div class="place-row"><div class="place-k">Distance from high</div><div class="r">-0.11%</div></div>
+  <div class="place-row"><div class="place-k">Distance from low</div><div class="g">+20.17%</div></div>
+</div>
+
+<!-- ============ BLOCK 6: EVENT LAYER (off-chain) ============ -->
+<div class="event">
+  <div class="sec-title event-title">📅 OFF-CHAIN EVENT LAYER</div>
+  <div style="margin-bottom:8px">
+    <b>Signal:</b> <span class="y">SLIGHT_BULLISH</span> · 
+    Bull 4 vs Bear 1
+  </div>
+  
+  <div class="reason-list"><div class="reason reason-bull">✓ Starknet Season 3 quest launch in 10d (POSITIVE)</div><div class="reason reason-bull">✓ L2 sector +20.4% — beta play</div><div class="reason reason-bear">✗ Very low bridge activity — no user interest</div></div>
+  
+  <div style="margin-top:14px"><b style="font-size:12px">L2 SECTOR (7d):</b><div class="sector-tbl"><div class="sector-hdr">Token</div><div class="sector-hdr">24h</div><div class="sector-hdr">7d</div><div class="sector-hdr">30d</div><div class="sector-row up">ARB</div><div class="sector-row up">+5.9%</div><div class="sector-row up">+26.7%</div><div class="sector-row up">+4.3%</div><div class="sector-row up">ZK</div><div class="sector-row up">+5.4%</div><div class="sector-row up">+25.7%</div><div class="sector-row up">-6.3%</div><div class="sector-row up" style="font-weight:bold;border:1px solid var(--yellow)">STRK</div><div class="sector-row up">+1.6%</div><div class="sector-row up">+17.3%</div><div class="sector-row up">-10.3%</div><div class="sector-row up">OP</div><div class="sector-row up">+5.2%</div><div class="sector-row up">+16.3%</div><div class="sector-row up">+1.8%</div><div class="sector-row up">METIS</div><div class="sector-row up">+4.2%</div><div class="sector-row up">+13.0%</div><div class="sector-row up">-3.9%</div></div><div style="margin-top:8px;font-size:12px">STRK alpha 7d: <b class="r">-3.2%</b></div></div>
+  
+  <div style="margin-top:14px"><b style="font-size:12px">Next unlock (canonical):</b><div style="font-size:11.5px;margin-top:4px">· in 54 days · <b>200M STRK</b> (2.9% supply) · pressure: MEDIUM<br></div><b style="font-size:12px;margin-top:8px;display:block">Next milestones:</b><div style="font-size:11.5px;margin-top:4px">· 2026-09-01 (10d) · <b class="c">Starknet Season 3 quest launch</b><br>· 2026-10-01 (40d) · <b class="c">Starknet Bitcoin integration testnet</b><br></div></div>
+</div>
+
+<!-- ============ BLOCK 7: SCENARIOS (Base/Bull/Bear) ============ -->
+<div class="sec" id="scenarios">
+  <div class="sec-title">🎯 SCENARIOS (Base / Bull / Bear)</div>
+  <div style="color:var(--dim);font-size:11px;margin-bottom:12px">Valid until: 2026-08-28</div>
+  
+  <div class="scenario sc-base">
+          <div class="sc-header">
+            <div class="sc-name">BASE · Продолжение accumulation</div>
+            <div class="sc-prob">58%</div>
+          </div>
+          <div class="sc-range">Range: $0.0218 - $0.0294 · 14d</div>
+          <div class="sc-desc">Продолжение аккумуляции в диапазоне. Крупные покупают на dip, розница пассивна.</div>
+          <div class="sc-triggers">
+            <div class="sc-trg-title">Trigger / Position hint</div>
+            <div class="sc-trg">📍 Постепенное building base 2-6 недель до подтверждения markup.</div>
+            <div class="sc-trg">💡 Stay flat. Не открывать directional trade без confirmation.</div>
+          </div>
+        </div><div class="scenario sc-bull">
+          <div class="sc-header">
+            <div class="sc-name">BULL · Positive shock / squeeze</div>
+            <div class="sc-prob">17%</div>
+          </div>
+          <div class="sc-range">Range: $0.0280 - $0.0334 · 7d</div>
+          <div class="sc-desc">Short squeeze rally. Все шорты в панике закрываются, funding -11% signals fuel.</div>
+          <div class="sc-triggers">
+            <div class="sc-trg-title">Trigger / Position hint</div>
+            <div class="sc-trg">📍 Trigger: BTC breaks +3% в 24ч, или positive STRK news (partnership, upgrade).</div>
+            <div class="sc-trg">💡 Long only above $0.0280 with stop $0.0254. Size small.</div>
+          </div>
+        </div><div class="scenario sc-bear">
+          <div class="sc-header">
+            <div class="sc-name">BEAR · Negative shock / markdown</div>
+            <div class="sc-prob">24%</div>
+          </div>
+          <div class="sc-range">Range: $0.0178 - $0.0218 · 14d</div>
+          <div class="sc-desc">Cascade breakdown. CEX inflows + unlock 64M через 24d вызывают sell pressure.</div>
+          <div class="sc-triggers">
+            <div class="sc-trg-title">Trigger / Position hint</div>
+            <div class="sc-trg">📍 Trigger: break BELOW $0.0222 + volume spike. Или BTC уходит под $60k.</div>
+            <div class="sc-trg">💡 Short only below $0.0218 with stop $0.0280. Or reduce longs.</div>
+          </div>
+        </div>
+</div>
+
+<!-- ============ BLOCK 8: WATCHERS ============ -->
+<div class="sec" id="watchers">
+  <div class="sec-title">👁 WATCHERS</div>
+  <div class="w-summary">
+    <div class="w-count"><div class="w-count-num c">4</div><div class="w-count-lbl">Long triggers</div></div>
+    <div class="w-count"><div class="w-count-num r">4</div><div class="w-count-lbl">Short triggers</div></div>
+    <div class="w-count"><div class="w-count-num g">$0.0267</div><div class="w-count-lbl">Break UP</div></div>
+    <div class="w-count"><div class="w-count-num r">$0.0222</div><div class="w-count-lbl">Break DOWN</div></div>
+  </div>
+  
+  <div style="font-size:11.5px;line-height:1.7;color:#c2c9d4">
+    <b>LONG triggers</b> (все должны сработать):<br>
+    · Break ABOVE $0.0267 on volume 1.5×+<br>
+    · CEX flow flips to OUTFLOW (3d consecutive)<br>
+    · Event Layer improves to SLIGHT_BULLISH+<br>
+    · BTC breaks $70k (up-cycle confirmation)<br>
+    <br>
+    <b>SHORT triggers</b> (unlock scenario):<br>
+    · Break BELOW $0.0222 on volume<br>
+    · Unlock event at day 54 (200M STRK)<br>
+    · L2 sector rotation continues OUT<br>
+    · Distribution accelerates (top 5 &gt; 45%)
+  </div>
+</div>
+
+<!-- ============ BLOCK 9: EVIDENCE (под капотом) ============ -->
+<div id="evidence">
+  <div class="sec-title" style="border:none;padding:12px 0;font-size:15px;color:var(--dim)">🔬 EVIDENCE (под капотом)</div>
+  
+  <details class="evidence">
+    <summary>🔗 ON-CHAIN evidence · HHI, Entropy, Concentration</summary>
+    <div class="ev-grid">
+      <div class="ev-k">HHI concentration</div><div>0.0496 <span class="dim">(diluted → distribution)</span></div>
+      <div class="ev-k">Shannon entropy</div><div>0.00 bits</div>
+      <div class="ev-k">Gini coefficient</div><div>0.668</div>
+      <div class="ev-k">LARGE receivers 14d</div><div>0</div>
+      <div class="ev-k">Top 5 share</div><div>42.6%</div>
+      <div class="ev-k">Signal</div><div class="r">DISTRIBUTION_SHAPE</div>
+    </div>
+  </details>
+  
+  <details class="evidence">
+    <summary>🏦 CEX FLOW evidence · 7d directional</summary>
+    <div class="ev-grid">
+      <div class="ev-k">Signal</div><div class="r"><b>STRONG_DISTRIBUTION</b></div>
+      <div class="ev-k">Net 7d</div><div>-36.4M STRK</div>
+      <div class="ev-k">Inflow 7d</div><div>126.2M STRK</div>
+      <div class="ev-k">Outflow 7d</div><div>89.8M STRK</div>
+      <div class="ev-k">Bearish streak</div><div>4 days</div>
+    </div>
+  </details>
+  
+  <details class="evidence">
+    <summary>⚖ EFFORT/RESULT + CVD divergence</summary>
+    <div class="ev-grid">
+      <div class="ev-k">Effort/Result</div><div>N/A</div>
+      <div class="ev-k">Interpretation</div><div class="dim"></div>
+      <div class="ev-k">CVD signal</div><div>N/A</div>
+      <div class="ev-k">CVD note</div><div class="dim"></div>
+    </div>
+  </details>
+  
+  <details class="evidence">
+    <summary>📈 DERIVATIVES · funding, OI</summary>
+    <div class="ev-grid">
+      <div class="ev-k">Funding annualized</div><div>+5.47%</div>
+      <div class="ev-k">Short crowded</div><div>🔴 YES</div>
+      <div class="ev-k">3d neg funding</div><div>0%</div>
+      <div class="ev-k">7d min funding</div><div>+0.0%</div>
+      <!-- Squeeze scenario removed from canon (see docstring) -->
+    </div>
+  </details>
+  
+  <details class="evidence">
+    <summary>🌐 MACRO context · BTC cycle</summary>
+    <div class="ev-grid">
+      <div class="ev-k">BTC price</div><div>$77,566</div>
+      <div class="ev-k">Cycle</div><div class="g">UP</div>
+      <div class="ev-k">Distance from MA200</div><div>+12.4%</div>
+      <div class="ev-k">Interpretation</div><div class="dim">No tailwind for STRK</div>
+    </div>
+  </details>
+  
+  <details class="evidence">
+    <summary>📰 NEWS + Discord + Twitter · off-chain sources</summary>
+    <div class="ev-grid">
+      <div class="ev-k">News signal</div><div>NEUTRAL</div>
+      <div class="ev-k">STRK news 7d</div><div>3</div>
+      <div class="ev-k">Discord signal</div><div>N/A</div>
+      <div class="ev-k">Bridge activity</div><div>LOW_ACTIVITY</div>
+      <div class="ev-k">GitHub dev</div><div>N/A</div>
+    </div>
+  </details>
+</div>
+
+<!-- ============ BLOCK 10: FORECAST для FORWARDTEST_LOG ============ -->
+<div class="forecast" id="forecast">
+  <div class="sec-title fc-title">📝 FORECAST для FORWARDTEST_LOG</div>
+  <div class="fc-code">## FORECAST_20260821_0836
+- **verify_after:** 2026-08-21T23:59 + 72h
+- **phase_now:** ACCUMULATION · Phase D · Sign of Strength
+- **price_now:** $0.0267
+- **confluence_signal:** RALLY_HIGH_CONFLUENCE
+- **rally_score:** 5/6+
+- **crash_score:** 1/6+
+- **event_layer:** SLIGHT_BULLISH (B4/Br1)
+- **btc_cycle:** UP
+- **expected_range_72h:** $0.0218 - $0.0294
+- **base_case_prob:** 58%
+- **bull_case:** $0.0280 - $0.0334 (17%)
+- **bear_case:** $0.0178 - $0.0218 (24%)
+- **verdict:** Consider LONG on break above $0.0265 with stop $0.0222
+- **status:** PENDING</div>
+</div>
+
+<!-- ============ MODE PANEL ============ -->
+<div class="mode-panel">
+  <b>[ MODE ✓ ]</b> RUN · LIQ · REVIEW · DEV · SCENARIO — доступны
+</div>
+
+</body>
+</html>
