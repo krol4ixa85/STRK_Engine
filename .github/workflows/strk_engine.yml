@@ -29,6 +29,11 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # HL Trade Collector · КАЖДЫЕ 15 МИНУТ. Собирает публичные сделки
+    # >$500 по 10 нашим ключевым токенам в append-only лог.
+    # База для будущего whale-watchlist — за 2-3 дня накопится достаточно
+    # адресов чтобы отслеживать их позиции.
+    - cron: '5,20,35,50 * * * *'
     # HL Perps · КАЖДЫЕ 30 МИНУТ. Публичный API Hyperliquid, ноль ключей.
     # Даёт funding, premium (mark−oracle), OI по каждому активу.
     # Ключевой сигнал — premium: указывает давление ПРЯМО СЕЙЧАС,
@@ -84,6 +89,7 @@ on:
           - token_scan_single
           - phase_analyzer
           - hl_perps
+          - hl_trades
           - decision_engine
           - decision_verify
           - archivist
@@ -955,6 +961,37 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hl_perps.json ] && git add data/cache/hl_perps.json || echo "no hl_perps"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl perps [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # HL TRADE COLLECTOR · публичные сделки HL каждые 15 мин · 0 кредитов
+  # Пишет в append-only лог data/history/hl_trades.jsonl.
+  # Через 2-3 дня накопится база для построения whale-watchlist.
+  # ============================================================
+  hl_trades:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '5,20,35,50 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hl_trades')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Collect HL public trades
+        run: python3 scripts/collectors/hl_trade_collector.py
+      - name: Commit trades log
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/history/hl_trades.jsonl ] && git add data/history/hl_trades.jsonl || echo "no trades log"
+          [ -f data/cache/hl_trades_status.json ] && git add data/cache/hl_trades_status.json || echo "no status"
+          [ -f data/cache/.hl_seen_hashes.json ] && git add data/cache/.hl_seen_hashes.json || echo "no seen"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl trades [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
