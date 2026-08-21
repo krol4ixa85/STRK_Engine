@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-view_data.py · v1.0 · 21.08.2026
+view_data.py · v1.1 · 21.08.2026
 STRK ENGINE · готовые данные для отображения
 
 ЗАЧЕМ
@@ -129,6 +129,66 @@ def fmt_price(p):
     return f"{p:,.2f}"
 
 
+def build_whale_summary(whales):
+    """Сводка по крупным игрокам для дашборда."""
+    if not whales or whales.get("status") == "NOT_ENOUGH_DATA":
+        return {
+            "status": "NOT_ENOUGH_DATA",
+            "text_ru": ("База адресов ещё копится. Сделки собираются каждые "
+                        "15 минут, через сутки картина станет представительной."),
+            "trades_in_log": (whales or {}).get("trades_in_log", 0),
+        }
+
+    by_token = whales.get("by_token") or {}
+    active = {t: a for t, a in by_token.items() if a.get("status") == "OK"}
+    divergent = whales.get("divergent_tokens") or []
+
+    rows = []
+    for t, a in active.items():
+        rows.append({
+            "token": t,
+            "bias": a.get("bias"),
+            "n_long": a.get("whales_long"),
+            "n_short": a.get("whales_short"),
+            "long_m": round((a.get("long_usd") or 0) / 1e6, 2),
+            "short_m": round((a.get("short_usd") or 0) / 1e6, 2),
+            "net_pct": a.get("net_pct"),
+            "divergent": a.get("crowd_vs_whales") == "DIVERGENT",
+            "crowd_vs_whales_ru": a.get("crowd_vs_whales_ru"),
+            "text_ru": a.get("text_ru"),
+        })
+    # Крупнейшие позиции вперёд
+    rows.sort(key=lambda r: -(abs(r["long_m"]) + abs(r["short_m"])))
+
+    if divergent:
+        headline = f"Толпа и крупные расходятся: {', '.join(divergent)}"
+        tone = "caution"
+        action = ("Расхождение обычно разрешается в пользу крупных. "
+                  "По этим активам вход против них рискованнее обычного.")
+    elif rows:
+        headline = f"Крупные держат позиции по {len(rows)} активам"
+        tone = "neutral"
+        action = ("Расхождений с толпой нет — крупные и розница смотрят "
+                  "в одну сторону.")
+    else:
+        headline = "Крупные без открытых позиций по нашим активам"
+        tone = "neutral"
+        action = "Смотреть не на что, ждём накопления данных."
+
+    return {
+        "status": "OK",
+        "headline": headline,
+        "tone": tone,
+        "action": action,
+        "rows": rows[:10],
+        "divergent_tokens": divergent,
+        "whales_directional": whales.get("whales_directional"),
+        "market_makers_skipped": whales.get("market_makers_skipped"),
+        "trades_in_log": whales.get("trades_in_log"),
+        "computed_at": whales.get("computed_at"),
+    }
+
+
 def build_signals_table(dec, comp, vp, pa):
     """
     Строки таблицы, уже отсортированные по важности, плюс счётчики.
@@ -225,7 +285,54 @@ def build_signals_table(dec, comp, vp, pa):
     }
 
 
-def build_modal_data(dec, comp, vp, pa, hl, cvd, pref):
+def build_whale_view(row):
+    """
+    Готовая карточка по крупным игрокам. Тон и текст решаются здесь,
+    потому что это суждение: перевес одного счёта и перевес шести
+    адресов выглядят одинаково в цифрах, но значат разное.
+    """
+    if not row or row.get("status") != "OK":
+        return {"status": "NONE",
+                "text_ru": "никто из отслеживаемых крупных адресов "
+                           "не держит позицию по этому активу"}
+
+    bias = row.get("bias")
+    single = bias in ("SINGLE_WHALE_LONG", "SINGLE_WHALE_SHORT")
+
+    if bias == "WHALES_LONG":
+        tone = "green"
+    elif bias == "WHALES_SHORT":
+        tone = "red"
+    elif single:
+        tone = "yellow"
+    else:
+        tone = "muted"
+
+    # Расхождение с толпой весит больше самого перевеса
+    div = row.get("crowd_vs_whales")
+    if div == "DIVERGENT":
+        tone = "yellow"
+
+    return {
+        "status": "OK",
+        "bias": bias,
+        "tone": tone,
+        "text_ru": row.get("text_ru"),
+        "single_whale": single,
+        "n_long": row.get("whales_long"),
+        "n_short": row.get("whales_short"),
+        "long_usd": row.get("long_usd"),
+        "short_usd": row.get("short_usd"),
+        "long_m": round((row.get("long_usd") or 0) / 1e6, 2),
+        "short_m": round((row.get("short_usd") or 0) / 1e6, 2),
+        "crowd_vs_whales": div,
+        "crowd_vs_whales_ru": row.get("crowd_vs_whales_ru"),
+        "top_long": row.get("top_long") or [],
+        "top_short": row.get("top_short") or [],
+    }
+
+
+def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None):
     """
     Всё, что нужно модалке актива, уже готовым. Раньше браузер сам
     выводил фазу через flowRead и собирал конфликты — обе логики
@@ -238,6 +345,7 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref):
     perps = (hl or {}).get("tokens") or {}
     cvds = (cvd or {}).get("tokens") or {}
     prices = (pref or {}).get("tokens") or {}
+    whale_tokens = (whales or {}).get("by_token") or {}
 
     out = {}
     for token, d in decisions.items():
@@ -286,6 +394,7 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref):
             "vp_position": v.get("position") or {},
             "hl": perps.get(token) or {},
             "cvd_consensus": (cvds.get(token) or {}).get("consensus") or {},
+            "whales": build_whale_view(whale_tokens.get(token)),
             "data_quality": p.get("data_quality") or {"ok": True},
         }
 
@@ -302,6 +411,7 @@ def main():
     hl = load("hl_perps.json")
     cvd = load("cvd_multi.json")
     pref = load("price_reference.json")
+    whales = load("hl_whale_positions.json")
 
     missing = [n for n, v in [("decisions", dec), ("compass", comp),
                               ("volume_profile", vp), ("phase_analysis", pa)]
@@ -310,13 +420,15 @@ def main():
         print(f"⚠ Нет данных: {', '.join(missing)}\n")
 
     table = build_signals_table(dec, comp, vp, pa)
-    modal = build_modal_data(dec, comp, vp, pa, hl, cvd, pref)
+    whale_summary = build_whale_summary(whales)
+    modal = build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales)
 
     out = {
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "purpose": ("Готовые данные для отображения. Браузер только выводит, "
                     "никаких вычислений на его стороне."),
         "signals_table": table,
+        "whales": whale_summary,
         "modal": modal,
     }
 
