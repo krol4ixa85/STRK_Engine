@@ -29,6 +29,11 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Asset Compass · КАЖДЫЕ 30 МИНУТ, на :50. Сводит ончейн,
+    # деривативы и технику в одну шкалу от -100 (шорт) до +100 (лонг).
+    # Идёт последним в получасовом цикле — читает свежие phase_analyzer,
+    # hl_perps и cvd_multi. Ноль внешних запросов.
+    - cron: '50 * * * *'
     # Trade Journal · КАЖДЫЕ 6 ЧАСОВ. Пересчитывает открытые позиции,
     # плавающий PnL и сверку твоих сделок с решениями движка.
     # Ничего не исполняет — только читает записанное вручную.
@@ -109,6 +114,7 @@ on:
           - cvd_multi
           - decision_backtest
           - trade_journal
+          - asset_compass
           - decision_engine
           - decision_verify
           - archivist
@@ -1131,6 +1137,34 @@ jobs:
           [ -f data/cache/trade_journal.json ] && git add data/cache/trade_journal.json || echo "no journal"
           [ -f data/history/trades.jsonl ] && git add data/history/trades.jsonl || echo "no trades"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: trade journal [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # ASSET COMPASS · шкала LONG/SHORT каждые 30 мин · 0 кредитов
+  # Сводит три группы сигналов в один балл и показывает вклад каждой.
+  # Читает decisions.json и кладёт вердикт движка рядом со своим баллом,
+  # чтобы дашборд рисовал оба из одного файла и они не разошлись.
+  # ============================================================
+  asset_compass:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '50 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'asset_compass')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compute compass
+        run: python3 scripts/asset_compass.py
+      - name: Commit asset_compass.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/asset_compass.json ] && git add data/cache/asset_compass.json || echo "no compass"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: asset compass [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
