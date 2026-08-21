@@ -9,40 +9,78 @@
 <link href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🧪&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 :root {
-  --bg: #fafaf9;
-  --bg-elevated: #ffffff;
-  --bg-subtle: #f4f4f3;
-  --border: #e5e5e4;
-  --border-strong: #d4d4d3;
-  --text: #2e2e2c;
-  --text-secondary: #5a5a58;
-  --text-muted: #8a8a88;
-  --text-bright: #0d0d0c;
-  --green: #0f7938;
-  --green-bg: #eaf5ee;
-  --red: #b91c1c;
-  --red-bg: #fce8e8;
-  --yellow: #a16207;
-  --yellow-bg: #fef3c7;
-  --blue: #1e40af;
-  --blue-bg: #e0e7ff;
-  --orange: #FF9900;
-  --orange-bg: #fff4e0;
-  --orange-strong: #E58800;
-  --gray-bg: #f4f4f3;
+  /* ── Инструмент, а не витрина ──────────────────────────────────────
+     Направление: измерительный прибор. Не Bloomberg, не неоновая крипта,
+     не тёплый крем с засечками — три штампа, которые встречаются в любом
+     дашборде независимо от содержания.
+
+     Основа холодная графитовая, потому что здесь измеряют, а не
+     рассказывают. Тёплый беж уместен в журнале, не в приборе.
+
+     Семантические цвета ПРИГЛУШЕНЫ намеренно. Обычный терминал орёт
+     красным и зелёным, будто уверен. Эта система устроена наоборот:
+     пороги экспертные, выборки малы, точность не измерена. Кричащий
+     цвет обещал бы уверенность, которой нет.
+     ────────────────────────────────────────────────────────────────── */
+
+  /* Поверхности · холодный графит по бумаге */
+  --bg:            #f7f8f8;
+  --bg-elevated:   #ffffff;
+  --bg-subtle:     #eef0f1;
+  --border:        #dfe3e5;
+  --border-strong: #c3cacd;
+
+  /* Текст · три уровня, дальше не нужно */
+  --text:           #1f2528;
+  --text-secondary: #566065;
+  --text-muted:     #7d888d;
+  --text-bright:    #0b0f11;
+
+  /* Сигналы · приглушены до уровня «вероятно», а не «точно» */
+  --green:        #2b7355;
+  --green-bg:     #e8f2ed;
+  --red:          #a8443c;
+  --red-bg:       #f6eae8;
+  --yellow:       #96702a;
+  --yellow-bg:    #f7efdf;
+  --blue:         #2c5f7c;
+  --blue-bg:      #e6eef3;
+
+  /* Акцент · петролевый. Отмечает «прибор что-то нашёл».
+     Выбран за то, что не встречается ни в одном из трёх штампов. */
+  --accent:        #106b73;
+  --accent-bg:     #e4f0f0;
+  --accent-strong: #0b565d;
+
+  /* Совместимость со старой разметкой */
+  --orange:        #96702a;
+  --orange-bg:     #f7efdf;
+  --orange-strong: #7a5a20;
+  --gray-bg:       #eef0f1;
+
+  /* Ритм · три отступа и три скругления вместо восьми на глаз */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+
+  /* Шрифты · моноширинный для чисел, гротеск для прозы.
+     Цифры в приборе должны выстраиваться в колонку. */
+  --font-data: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 20px;
-  padding-bottom: 60px;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 24px 20px 72px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    /* Цифры одинаковой ширины даже в прозе — иначе суммы в тексте прыгают */
+    font-variant-numeric: tabular-nums;
+  }
 .container { max-width: 1280px; margin: 0 auto; }
 .header {
   display: flex;
@@ -229,11 +267,13 @@ body {
   .card-full { grid-column: 1 / -1; }
 }
 .card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-}
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px;
+    /* Едва заметный подъём: карточка лежит на поверхности, а не врезана в неё */
+    box-shadow: 0 1px 2px rgba(31, 37, 40, 0.04);
+  }
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -256,34 +296,41 @@ body {
   font-family: 'SF Mono', 'Menlo', monospace;
 }
 .layman-intro {
-  font-size: 12px;
-  color: var(--text-secondary);
-  padding: 8px 10px;
-  background: var(--bg-subtle);
-  border-radius: 6px;
-  margin-bottom: 12px;
-  line-height: 1.5;
-}
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 9px 12px;
+    background: transparent;
+    border-left: 2px solid var(--border-strong);
+    border-radius: 0;
+    margin-bottom: 14px;
+    line-height: 1.55;
+  }
 .table-wrapper { overflow-x: auto; margin: 0 -16px; padding: 0 16px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
 th {
-  text-align: left;
-  padding: 6px 4px;
-  color: var(--text-muted);
-  font-weight: 500;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-  font-family: 'SF Mono', 'Menlo', monospace;
-}
+    text-align: left;
+    padding: 7px 6px;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border-strong);
+    white-space: nowrap;
+    font-family: var(--font-data);
+  }
 td {
-  padding: 8px 4px;
-  border-bottom: 1px solid var(--border);
-  font-family: 'SF Mono', 'Menlo', monospace;
-  font-size: 11px;
-}
+    padding: 9px 6px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-data);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg-subtle); }
 .token-tag { font-weight: 600; color: var(--text-bright); }
@@ -310,7 +357,11 @@ tr:hover td { background: var(--bg-subtle); }
 .signal-DIVERGENCE { background: var(--yellow-bg); color: var(--yellow); }
 .signal-NEUTRAL_FLOW_UP { background: var(--gray-bg); color: var(--text-muted); }
 .signal-NEUTRAL { background: var(--gray-bg); color: var(--text-muted); }
-.number { text-align: right; font-family: 'SF Mono', 'Menlo', monospace; }
+.number {
+    text-align: right;
+    font-family: var(--font-data);
+    font-variant-numeric: tabular-nums;
+  }
 .pos { color: var(--green); }
 .neg { color: var(--red); }
 .muted { color: var(--text-muted); }
@@ -449,6 +500,129 @@ tr:hover td { background: var(--bg-subtle); }
       opacity: 1;
     }
 
+
+
+/* ══════════════════════════════════════════════════════════════════
+   ТИПОГРАФИКА · шкала из пяти размеров вместо десяти на глаз
+   Числа везде моноширинные и табличные: в приборе цифры выстраиваются
+   в колонку, иначе взгляд не может сравнить два значения без усилия.
+   ══════════════════════════════════════════════════════════════════ */
+
+.section-title {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text-bright);
+}
+
+.section-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  max-width: 70ch;
+}
+
+/* Метка уровня · не украшение, а место модуля в иерархии:
+   Level 0 — сводка, Level 3 — фон. Набрана как подпись на приборе. */
+.level-label,
+.section-badge {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  color: var(--text-bright);
+}
+
+.card-subtitle,
+.card-meta {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Крупные числа · главное, ради чего сюда смотрят */
+.hero-metric-value,
+.attention-number {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Пустое состояние · приглашение к действию, а не извинение */
+.empty,
+.loading {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 14px 2px;
+  font-style: normal;
+}
+
+/* Разделитель секции · тонкая линия прибора, без заливки */
+.section-divider {
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+/* Кнопки · плоские, реагируют на курсор, не прыгают */
+.btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Строки таблиц · подсветка при наведении помогает вести взгляд
+   по длинной строке до нужной колонки */
+tbody tr {
+  transition: background-color 0.1s ease;
+}
+tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+/* Значения роста и падения · приглушены, но различимы */
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.muted { color: var(--text-muted); }
+
+/* Ссылки внутри карточек */
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent-strong); }
+
+/* Уважение к настройке «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Узкий экран · таблицы прокручиваются, а не ломают вёрстку */
+@media (max-width: 640px) {
+  body { padding: 16px 12px 60px; }
+  .card { padding: 14px; border-radius: var(--r-md); }
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
 </style>
 
 <style id="section-reorder-css">
@@ -4245,7 +4419,7 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll] = await Promise.all([
+  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll, viewData] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
@@ -4258,6 +4432,7 @@ async function renderModalIntelligence(token) {
     _loadCache('volume_profile.json'),
     _loadCache('cvd_multi.json'),
     _loadCache('asset_compass.json'),
+    _loadCache('view_data.json'),
   ]);
 
   // Серверные данные v1.1: phase_analyzer + decision_engine + HL perps
@@ -5399,7 +5574,19 @@ function openDurationScanner(token) {
   renderTokenNewsInModal(upperTok);
   
   // v6: слои решения (фандинг, стакан, держатели, фаза, сектор)
-  renderModalIntelligence(upperTok);
+  // Ловим отказ промиса: без этого ошибка внутри async-функции уходит
+  // в никуда, и блок навсегда остаётся с надписью «Загружаю слои…».
+  // Именно так 21.08 пропала вся модалка AAVE — переменная viewData
+  // не была объявлена, ReferenceError утонул, экран замер.
+  renderModalIntelligence(upperTok).catch(e => {
+    console.error('[Modal] ошибка отрисовки:', e);
+    const el = document.getElementById('scanner-intel-content');
+    if (el) {
+      el.innerHTML = '<div style="padding: 12px; background: var(--red-bg); ' +
+        'border-radius: var(--r-md); color: var(--red); font-size: 12px; line-height: 1.5;">' +
+        'Не удалось собрать слои решения.<br><span style="font-size: 11px;">' + e + '</span></div>';
+    }
+  });
 }
 
 async function loadTokenScanCache(token) {
