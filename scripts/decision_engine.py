@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-decision_engine.py · v1.5 · 21.08.2026
+decision_engine.py · v1.6 · 21.08.2026
 STRK ENGINE · единственный автор торговых решений
 
 ЧТО ИЗМЕНИЛОСЬ ОТ v1.0
@@ -15,13 +15,16 @@ STRK ENGINE · единственный автор торговых решени
 import os, sys, json, glob, argparse
 from datetime import datetime, timezone, timedelta
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common.nodata import MISSING, is_missing, require  # noqa: E402
+
 CACHE = "data/cache"
 HISTORY = "data/history"
 DECISIONS_FILE = os.path.join(CACHE, "decisions.json")
 ACCURACY_FILE = os.path.join(CACHE, "decision_accuracy.json")
 LOG_FILE = os.path.join(HISTORY, "decision_log.jsonl")
 
-ENGINE_VERSION = "1.5"
+ENGINE_VERSION = "1.6"
 VERIFY_AFTER_DAYS = 7
 MOVE_THRESHOLD_PCT = 3.0
 MIN_N_FOR_ACCURACY = 20
@@ -216,7 +219,15 @@ def regime_multiplier(sig):
         "BEAR_BIAS": (0.5, "уклон вниз"), "BEAR_DEVELOPING": (0.3, "медвежий развивается"),
         "STRONG_BEAR": (0.0, "сильный медвежий — новых позиций не открываем"),
     }
-    mult, why = table.get(name, (0.8, "режим неизвестен"))
+    # ФИКС 21.08.2026 · было (0.8, "режим неизвестен").
+    # Отсутствие файла режима резало размер на 20% без единого
+    # основания — выдуманное число ровно того вида, который правило
+    # платформы запрещает. Нейтральный элемент умножения — 1.0:
+    # не знаем режим, значит не корректируем.
+    if name not in table:
+        return 1.0, (name or "НЕТ ДАННЫХ"), score, (
+            "режим рынка неизвестен — размер не корректируем")
+    mult, why = table[name]
     phase = sig.get("phase_total") or {}
     btcd = phase.get("btc_dominance") or phase.get("btc_d")
     if isinstance(btcd, (int, float)) and btcd > 57:
@@ -371,7 +382,22 @@ def decide(token, sig):
                 "invalidations": [], "rules_fired": []}
 
     pa_row = (sig["phase_analysis"].get("tokens") or {}).get(token) or {}
-    data_quality = pa_row.get("data_quality") or {"ok": True, "flags": []}
+    # ФИКС 21.08.2026 · было `or {"ok": True, "flags": []}`.
+    # Нет phase_analysis или нет токена в нём — и sanity-фильтр
+    # молча пропускал что угодно. Это тот самый случай ARB +1 717 040%,
+    # ради которого фильтр писался. Отсутствие проверки ≠ проверка пройдена.
+    _dq = require(pa_row, "data_quality")
+    if is_missing(_dq):
+        return {
+            "action": "НЕТ ДАННЫХ", "size_pct": 0,
+            "stage_code": "NO_DATA",
+            "notes": ["Нет данных о качестве входов по этому активу — "
+                      "проверить достоверность цен не на чем. "
+                      "Решение не выдаётся."],
+            "rules_fired": ["data_quality_missing"],
+            "data_quality_flags": [],
+        }
+    data_quality = _dq
 
     if not data_quality.get("ok"):
         return {
