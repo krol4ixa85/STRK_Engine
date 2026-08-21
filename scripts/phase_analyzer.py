@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-phase_analyzer.py · v1.1 · 21.08.2026
+phase_analyzer.py · v1.2 · 21.08.2026
 STRK ENGINE · быстрая часть анализа фазы, работает каждые 30 мин
 
 ЗАЧЕМ
@@ -103,10 +103,26 @@ def discover_tokens():
 # УСКОРЕНИЕ ПОТОКА · главное измерение
 # ─────────────────────────────────────────────────────────────
 
+# Лестница окон в неделях. Одно окно отвечает только «растёт или падает»,
+# а их набор показывает форму разгона: нарастает он, держится плато
+# или уже выдыхается. Это и есть «где мы внутри фазы».
+FLOW_WINDOWS = [
+    ("1w",  1),
+    ("2w",  2),
+    ("4w",  4),
+    ("8w",  8),
+    ("13w", 13),
+]
+
+
 def analyze_flow(scan):
     """
-    Дельты потока по окнам 4w/8w. Использует УЖЕ посчитанные recent_4w
-    и recent_8w из скана + сумму по weekly_history для предыдущих окон.
+    Дельты потока по лестнице окон. Каждое окно сравнивается с
+    предыдущим отрезком той же длины — так видно ускорение, а не
+    просто величину.
+
+    Данные берутся из weekly_history, который приходит с Dune-сканом.
+    Дополнительных запросов не нужно: 26 недель уже лежат в файле.
     """
     if not scan:
         return None
@@ -116,42 +132,133 @@ def analyze_flow(scan):
         return {"status": "NOT_ENOUGH_HISTORY", "weeks": len(weekly)}
 
     flows = [float(w.get("net_flow_m_usd") or 0) for w in weekly]
+    n = len(flows)
 
-    def sum_window(start_from_end, size):
-        """Сумма за size недель, начиная с start_from_end недель от конца."""
-        end = len(flows) - start_from_end
+    def window_sum(offset_from_end, size):
+        end = n - offset_from_end
         start = end - size
         if start < 0:
             return None
         return sum(flows[start:end])
 
-    # Последние 4 недели vs предыдущие 4
-    last_4 = sum_window(0, 4)
-    prev_4 = sum_window(4, 4)
-    last_8 = sum_window(0, 8)
-    prev_8 = sum_window(8, 8)
+    result = {"status": "OK", "weeks_available": n, "windows": {}}
 
-    result = {"status": "OK",
-              "weeks_available": len(weekly),
-              "last_4w_usd": round(last_4 * 1e6) if last_4 is not None else None,
-              "prev_4w_usd": round(prev_4 * 1e6) if prev_4 is not None else None,
-              "last_8w_usd": round(last_8 * 1e6) if last_8 is not None else None,
-              "prev_8w_usd": round(prev_8 * 1e6) if prev_8 is not None else None}
+    for label, size in FLOW_WINDOWS:
+        last = window_sum(0, size)
+        prev = window_sum(size, size)
+        if last is None:
+            continue
 
-    # Ускорение = свежее окно минус предыдущее того же размера
-    if last_4 is not None and prev_4 is not None:
-        accel_4w = (last_4 - prev_4) * 1e6
-        result["flow_accel_4w_usd"] = round(accel_4w)
-        result["flow_accel_4w_significant"] = abs(accel_4w) >= FLOW_ACCEL_NOISE_USD
-        # Средняя скорость $/неделю за последние 4
-        result["flow_velocity_weekly_usd"] = round(last_4 / 4 * 1e6)
+        entry = {
+            "weeks": size,
+            "days": size * 7,
+            "last_usd": round(last * 1e6),
+            "prev_usd": round(prev * 1e6) if prev is not None else None,
+            # Скорость в неделю — так окна разной длины сравнимы между собой
+            "velocity_weekly_usd": round(last / size * 1e6),
+        }
+        if prev is not None:
+            accel = (last - prev) * 1e6
+            entry["accel_usd"] = round(accel)
+            entry["significant"] = abs(accel) >= FLOW_ACCEL_NOISE_USD
+        result["windows"][label] = entry
 
-    if last_8 is not None and prev_8 is not None:
-        accel_8w = (last_8 - prev_8) * 1e6
-        result["flow_accel_8w_usd"] = round(accel_8w)
-        result["flow_accel_8w_significant"] = abs(accel_8w) >= FLOW_ACCEL_NOISE_USD
+    # Совместимость: старые поля продолжают работать, чтобы decision_engine
+    # и дашборд не сломались до того, как перейдут на новую структуру
+    w4 = result["windows"].get("4w") or {}
+    w8 = result["windows"].get("8w") or {}
+    result.update({
+        "last_4w_usd": w4.get("last_usd"),
+        "prev_4w_usd": w4.get("prev_usd"),
+        "last_8w_usd": w8.get("last_usd"),
+        "prev_8w_usd": w8.get("prev_usd"),
+        "flow_accel_4w_usd": w4.get("accel_usd"),
+        "flow_accel_4w_significant": w4.get("significant", False),
+        "flow_accel_8w_usd": w8.get("accel_usd"),
+        "flow_accel_8w_significant": w8.get("significant", False),
+        "flow_velocity_weekly_usd": w4.get("velocity_weekly_usd"),
+    })
 
+    result["shape"] = flow_shape(result["windows"])
     return result
+
+
+def flow_shape(windows):
+    """
+    Форма разгона по лестнице скоростей. Отвечает на вопрос, где мы
+    внутри фазы, а не только куда идёт поток.
+
+    Сравниваем скорость в неделю на коротких и длинных окнах:
+
+      скорость растёт к короткому концу → разгон нарастает, фаза молодая
+      скорости примерно равны            → плато, фаза зрелая
+      скорость падает к короткому концу  → разгон выдыхается, фаза к концу
+
+    Порог 25% выбран так, чтобы обычные недельные колебания не
+    выглядели сменой формы. На истории не проверялся.
+    """
+    v = {}
+    for label in ("1w", "2w", "4w", "8w", "13w"):
+        w = windows.get(label)
+        if w and w.get("velocity_weekly_usd") is not None:
+            v[label] = w["velocity_weekly_usd"]
+
+    if len(v) < 3:
+        return {"code": "UNKNOWN", "text_ru": "истории мало для формы разгона"}
+
+    short = v.get("1w", v.get("2w"))
+    mid = v.get("4w")
+    long = v.get("8w", v.get("13w"))
+
+    if short is None or mid is None or long is None:
+        return {"code": "UNKNOWN", "text_ru": "не хватает окон"}
+
+    # Направление берём по среднему окну — оно устойчивее недельного шума
+    direction = "IN" if mid > 0 else ("OUT" if mid < 0 else "FLAT")
+
+    def rel(a, b):
+        if b == 0:
+            return 0.0
+        return (a - b) / abs(b)
+
+    short_vs_mid = rel(short, mid)
+    mid_vs_long = rel(mid, long)
+
+    building = short_vs_mid > 0.25 and mid_vs_long > 0.25
+    fading = short_vs_mid < -0.25
+    plateau = abs(short_vs_mid) <= 0.25
+
+    if direction == "FLAT":
+        return {"code": "FLAT", "stage_pct": None,
+                "text_ru": "потока почти нет, о фазе говорить рано"}
+
+    if direction == "IN":
+        if building:
+            return {"code": "ACCUMULATION_BUILDING", "stage_pct": 25,
+                    "text_ru": "разгон притока нарастает — фаза молодая, "
+                               "самое начало"}
+        if plateau:
+            return {"code": "ACCUMULATION_MATURE", "stage_pct": 55,
+                    "text_ru": "приток идёт ровно — фаза зрелая, середина"}
+        if fading:
+            return {"code": "ACCUMULATION_FADING", "stage_pct": 85,
+                    "text_ru": "разгон притока выдыхается — фаза к концу, "
+                               "новые входы дороже"}
+        return {"code": "ACCUMULATION_MIXED", "stage_pct": 50,
+                "text_ru": "приток без чёткой формы"}
+
+    if building:
+        return {"code": "DISTRIBUTION_BUILDING", "stage_pct": 25,
+                "text_ru": "отток ускоряется — распродажа только началась"}
+    if plateau:
+        return {"code": "DISTRIBUTION_MATURE", "stage_pct": 55,
+                "text_ru": "отток идёт ровно — распродажа в разгаре"}
+    if fading:
+        return {"code": "DISTRIBUTION_FADING", "stage_pct": 85,
+                "text_ru": "отток замедляется — распродажа выдыхается, "
+                           "возможное дно"}
+    return {"code": "DISTRIBUTION_MIXED", "stage_pct": 50,
+            "text_ru": "отток без чёткой формы"}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -336,7 +443,7 @@ def analyze_all(only=None):
     tokens = only or discover_tokens()
 
     result = {"computed_at": now.isoformat(),
-              "engine_version": "phase_analyzer/1.1",
+              "engine_version": "phase_analyzer/1.2",
               "cost": "0 credits · locally-computed",
               "tokens_analyzed": 0,
               "tokens_suspicious": 0,
