@@ -1,6 +1,6 @@
 {
-  "computed_at": "2026-08-21T11:05:34.149422+00:00",
-  "engine_version": "1.2",
+  "computed_at": "2026-08-21T11:21:41.771164+00:00",
+  "engine_version": "1.3",
   "verify_after_days": 7,
   "regime": {
     "name": "NEUTRAL_MIXED",
@@ -9,7 +9,7 @@
     "why": "смешанные сигналы; доминация BTC 59.2% — альты под давлением"
   },
   "tokens_evaluated": 31,
-  "tokens_actionable": 6,
+  "tokens_actionable": 3,
   "tokens_suspicious_data": 6,
   "rules_status": "HYPOTHESIS · пороги вручную, на истории не проверены",
   "decisions": {
@@ -383,8 +383,8 @@
     },
     "CRV": {
       "token": "CRV",
-      "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 4,
+      "action": "ЖДАТЬ",
+      "size_pct": 0,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "ACCEL_UP",
@@ -398,7 +398,8 @@
         "Поток ускоряется → размер 25% → 31%.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%.",
         "CVD: лёгкий перевес продавцов — размер 17% → 8%.",
-        "Volume Profile: цена выше зоны стоимости на 21.0% — объёмной поддержки сверху нет. Цена на 58% выше справедливой — размер 8% → 4%."
+        "Volume Profile: цена выше зоны стоимости на 21.0% — объёмной поддержки сверху нет. Цена на 58% выше справедливой — размер 8% → 4%.",
+        "После всех корректировок осталось 4% — меньше практического минимума 10%. Слишком много правил против; входить в такую долю смысла нет, комиссии съедят."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -413,7 +414,8 @@
         "flow_accel_up_boost",
         "regime:NEUTRAL_MIXED",
         "cvd_sell_pressure_cut",
-        "vp_far_above_value_cut"
+        "vp_far_above_value_cut",
+        "below_min_practical_size"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -485,8 +487,8 @@
     },
     "EIGEN": {
       "token": "EIGEN",
-      "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 5,
+      "action": "ЖДАТЬ",
+      "size_pct": 0,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "STABLE_ZERO",
@@ -505,7 +507,8 @@
         "Динамика потока: поток около нуля, без сигнала.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%.",
         "CVD: лёгкий перевес продавцов — размер 14% → 7%.",
-        "Volume Profile: цена выше зоны стоимости на 5.6% — объёмной поддержки сверху нет — размер 7% → 5%."
+        "Volume Profile: цена выше зоны стоимости на 5.6% — объёмной поддержки сверху нет — размер 7% → 5%.",
+        "После всех корректировок осталось 5% — меньше практического минимума 10%. Слишком много правил против; входить в такую долю смысла нет, комиссии съедят."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -519,7 +522,8 @@
         "phase:EARLY_ACCUMULATION",
         "regime:NEUTRAL_MIXED",
         "cvd_sell_pressure_cut",
-        "vp_above_value_cut"
+        "vp_above_value_cut",
+        "below_min_practical_size"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1075,8 +1079,8 @@
     },
     "MNT": {
       "token": "MNT",
-      "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 8,
+      "action": "ЖДАТЬ",
+      "size_pct": 0,
       "stage": "EARLY_ACCUMULATION",
       "phase_verdict_dune": "EARLY_ACCUMULATION",
       "flow_regime": "ACCEL_UP",
@@ -1090,7 +1094,8 @@
         "Поток ускоряется → размер 25% → 31%.",
         "Дивергенция в нашу пользу: цена -52% за 30д, а деньги заходят $+0.5M — накопление на просадке.",
         "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%.",
-        "Volume Profile: цена выше зоны стоимости на 14.4% — объёмной поддержки сверху нет. Цена на 29% выше справедливой — размер 17% → 8%."
+        "Volume Profile: цена выше зоны стоимости на 14.4% — объёмной поддержки сверху нет. Цена на 29% выше справедливой — размер 17% → 8%.",
+        "После всех корректировок осталось 8% — меньше практического минимума 10%. Слишком много правил против; входить в такую долю смысла нет, комиссии съедят."
       ],
       "triggers": [
         "Режим рынка станет BULL_BIAS или лучше"
@@ -1105,7 +1110,8 @@
         "flow_accel_up_boost",
         "bullish_divergence_note",
         "regime:NEUTRAL_MIXED",
-        "vp_far_above_value_cut"
+        "vp_far_above_value_cut",
+        "below_min_practical_size"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
