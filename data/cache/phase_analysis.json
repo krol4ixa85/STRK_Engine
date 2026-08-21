@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-21T21:57:45.382893+00:00",
+  "computed_at": "2026-08-21T22:38:26.249135+00:00",
   "engine_version": "phase_analyzer/1.2",
   "cost": "0 credits · locally-computed",
   "tokens_analyzed": 31,
@@ -13,7 +13,7 @@
   "tokens": {
     "AAVE": {
       "phase_verdict_dune": "WEAKENING",
-      "phase_verdict_age_min": 1041,
+      "phase_verdict_age_min": 1082,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -21,73 +21,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 824300,
+            "last_usd": 1376497,
             "prev_usd": -453500,
-            "velocity_weekly_usd": 824300,
-            "accel_usd": 1277800,
+            "velocity_weekly_usd": 1376497,
+            "accel_usd": 1829997,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 370800,
+            "last_usd": 922997,
             "prev_usd": -3243000,
-            "velocity_weekly_usd": 185400,
-            "accel_usd": 3613800,
+            "velocity_weekly_usd": 461499,
+            "accel_usd": 4165997,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -2872200,
+            "last_usd": -2320003,
             "prev_usd": 2459400,
-            "velocity_weekly_usd": -718050,
-            "accel_usd": -5331600,
+            "velocity_weekly_usd": -580001,
+            "accel_usd": -4779403,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -412800,
+            "last_usd": 139397,
             "prev_usd": 2862800,
-            "velocity_weekly_usd": -51600,
-            "accel_usd": -3275600,
+            "velocity_weekly_usd": 17425,
+            "accel_usd": -2723403,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 3417300,
+            "last_usd": 3969497,
             "prev_usd": -4325300,
-            "velocity_weekly_usd": 262869,
-            "accel_usd": 7742600,
+            "velocity_weekly_usd": 305346,
+            "accel_usd": 8294797,
             "significant": true
           }
         },
-        "last_4w_usd": -2872200,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -2320003,
         "prev_4w_usd": 2459400,
-        "last_8w_usd": -412800,
+        "last_8w_usd": 139397,
         "prev_8w_usd": 2862800,
-        "flow_accel_4w_usd": -5331600,
+        "flow_accel_4w_usd": -4779403,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": -3275600,
+        "flow_accel_8w_usd": -2723403,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -718050,
+        "flow_velocity_weekly_usd": -580001,
         "shape": {
-          "code": "DISTRIBUTION_MIXED",
-          "stage_pct": 50,
-          "text_ru": "отток без чёткой формы"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 95,
+          "text_ru": "отток на последней неделе сменился притоком — распродажа закончилась",
+          "direction": "OUT",
+          "short_vs_mid": -3.373,
+          "mid_vs_long": 34.286,
+          "short_flipped": true
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "FLIPPING_DOWN",
+        "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": -3.0,
-        "flow_last_4w_usd": -2872200
+        "flow_last_4w_usd": -2320003
       },
       "data_quality": {
         "ok": true,
@@ -98,7 +107,7 @@
     },
     "AIXBT": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1033,
+      "phase_verdict_age_min": 1073,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -106,62 +115,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -8000,
+            "last_usd": -13340,
             "prev_usd": -29800,
-            "velocity_weekly_usd": -8000,
-            "accel_usd": 21800,
+            "velocity_weekly_usd": -13340,
+            "accel_usd": 16460,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -37800,
+            "last_usd": -43140,
             "prev_usd": 35500,
-            "velocity_weekly_usd": -18900,
-            "accel_usd": -73300,
+            "velocity_weekly_usd": -21570,
+            "accel_usd": -78640,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -2300,
+            "last_usd": -7640,
             "prev_usd": -1000,
-            "velocity_weekly_usd": -575,
-            "accel_usd": -1300,
+            "velocity_weekly_usd": -1910,
+            "accel_usd": -6640,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -3300,
+            "last_usd": -8640,
             "prev_usd": -84700,
-            "velocity_weekly_usd": -412,
-            "accel_usd": 81400,
+            "velocity_weekly_usd": -1080,
+            "accel_usd": 76060,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 28700,
+            "last_usd": 23360,
             "prev_usd": 344200,
-            "velocity_weekly_usd": 2208,
-            "accel_usd": -315500,
+            "velocity_weekly_usd": 1797,
+            "accel_usd": -320840,
             "significant": false
           }
         },
-        "last_4w_usd": -2300,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.6
+        },
+        "last_4w_usd": -7640,
         "prev_4w_usd": -1000,
-        "last_8w_usd": -3300,
+        "last_8w_usd": -8640,
         "prev_8w_usd": -84700,
-        "flow_accel_4w_usd": -1300,
+        "flow_accel_4w_usd": -6640,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": 81400,
+        "flow_accel_8w_usd": 76060,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -575,
+        "flow_velocity_weekly_usd": -1910,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_BUILDING",
+          "stage_pct": 25,
+          "text_ru": "отток ускоряется — распродажа только началась",
+          "direction": "OUT",
+          "short_vs_mid": 5.984,
+          "mid_vs_long": 0.769,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -171,8 +189,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 14.3,
-        "flow_last_4w_usd": -2300
+        "price_change_30d_pct": 15.1,
+        "flow_last_4w_usd": -7640
       },
       "data_quality": {
         "ok": true,
@@ -184,7 +202,7 @@
     },
     "AKT": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 2967,
+      "phase_verdict_age_min": 3008,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -192,62 +210,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 1300,
+            "last_usd": 3188,
             "prev_usd": 500,
-            "velocity_weekly_usd": 1300,
-            "accel_usd": 800,
+            "velocity_weekly_usd": 3188,
+            "accel_usd": 2688,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 1800,
+            "last_usd": 3688,
             "prev_usd": 800,
-            "velocity_weekly_usd": 900,
-            "accel_usd": 1000,
+            "velocity_weekly_usd": 1844,
+            "accel_usd": 2888,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 2600,
+            "last_usd": 4488,
             "prev_usd": -1900,
-            "velocity_weekly_usd": 650,
-            "accel_usd": 4500,
+            "velocity_weekly_usd": 1122,
+            "accel_usd": 6388,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 700,
+            "last_usd": 2588,
             "prev_usd": 10400,
-            "velocity_weekly_usd": 87,
-            "accel_usd": -9700,
+            "velocity_weekly_usd": 324,
+            "accel_usd": -7812,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 8200,
+            "last_usd": 10088,
             "prev_usd": 4800,
-            "velocity_weekly_usd": 631,
-            "accel_usd": 3400,
+            "velocity_weekly_usd": 776,
+            "accel_usd": 5288,
             "significant": false
           }
         },
-        "last_4w_usd": 2600,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.408
+        },
+        "last_4w_usd": 4488,
         "prev_4w_usd": -1900,
-        "last_8w_usd": 700,
+        "last_8w_usd": 2588,
         "prev_8w_usd": 10400,
-        "flow_accel_4w_usd": 4500,
+        "flow_accel_4w_usd": 6388,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -9700,
+        "flow_accel_8w_usd": -7812,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 650,
+        "flow_velocity_weekly_usd": 1122,
         "shape": {
           "code": "ACCUMULATION_BUILDING",
           "stage_pct": 25,
-          "text_ru": "разгон притока нарастает — фаза молодая, самое начало"
+          "text_ru": "разгон притока нарастает — фаза молодая, самое начало",
+          "direction": "IN",
+          "short_vs_mid": 1.841,
+          "mid_vs_long": 2.463,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -258,7 +285,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": -7.2,
-        "flow_last_4w_usd": 2600
+        "flow_last_4w_usd": 4488
       },
       "data_quality": {
         "ok": true,
@@ -269,7 +296,7 @@
     },
     "ARB": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1035,
+      "phase_verdict_age_min": 1076,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -277,73 +304,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 427100,
+            "last_usd": 712484,
             "prev_usd": -145400,
-            "velocity_weekly_usd": 427100,
-            "accel_usd": 572500,
+            "velocity_weekly_usd": 712484,
+            "accel_usd": 857884,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 281700,
+            "last_usd": 567084,
             "prev_usd": -33000,
-            "velocity_weekly_usd": 140850,
-            "accel_usd": 314700,
-            "significant": false
+            "velocity_weekly_usd": 283542,
+            "accel_usd": 600084,
+            "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 248700,
+            "last_usd": 534084,
             "prev_usd": -606600,
-            "velocity_weekly_usd": 62175,
-            "accel_usd": 855300,
+            "velocity_weekly_usd": 133521,
+            "accel_usd": 1140684,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -357900,
+            "last_usd": -72516,
             "prev_usd": -1617400,
-            "velocity_weekly_usd": -44737,
-            "accel_usd": 1259500,
+            "velocity_weekly_usd": -9065,
+            "accel_usd": 1544884,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -1178200,
+            "last_usd": -892816,
             "prev_usd": -716000,
-            "velocity_weekly_usd": -90631,
-            "accel_usd": -462200,
+            "velocity_weekly_usd": -68678,
+            "accel_usd": -176816,
             "significant": false
           }
         },
-        "last_4w_usd": 248700,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": 534084,
         "prev_4w_usd": -606600,
-        "last_8w_usd": -357900,
+        "last_8w_usd": -72516,
         "prev_8w_usd": -1617400,
-        "flow_accel_4w_usd": 855300,
+        "flow_accel_4w_usd": 1140684,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 1259500,
+        "flow_accel_8w_usd": 1544884,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": 62175,
+        "flow_velocity_weekly_usd": 133521,
         "shape": {
           "code": "ACCUMULATION_BUILDING",
           "stage_pct": 25,
-          "text_ru": "разгон притока нарастает — фаза молодая, самое начало"
+          "text_ru": "разгон притока нарастает — фаза молодая, самое начало",
+          "direction": "IN",
+          "short_vs_mid": 4.336,
+          "mid_vs_long": 15.729,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_UP",
-        "text_ru": "приток разгоняется — лучшее окно для входа"
+        "code": "FLIPPING_UP",
+        "text_ru": "развернулось из оттока в приток — молодой разворот"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 9.4,
-        "flow_last_4w_usd": 248700
+        "price_change_30d_pct": 10.7,
+        "flow_last_4w_usd": 534084
       },
       "data_quality": {
         "ok": true,
@@ -355,7 +391,7 @@
     },
     "AXS": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1040,
+      "phase_verdict_age_min": 1081,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -363,62 +399,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -14900,
+            "last_usd": -24876,
             "prev_usd": 26900,
-            "velocity_weekly_usd": -14900,
-            "accel_usd": -41800,
+            "velocity_weekly_usd": -24876,
+            "accel_usd": -51776,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 12000,
+            "last_usd": 2024,
             "prev_usd": 1000,
-            "velocity_weekly_usd": 6000,
-            "accel_usd": 11000,
+            "velocity_weekly_usd": 1012,
+            "accel_usd": 1024,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 13000,
+            "last_usd": 3024,
             "prev_usd": -60600,
-            "velocity_weekly_usd": 3250,
-            "accel_usd": 73600,
+            "velocity_weekly_usd": 756,
+            "accel_usd": 63624,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -47600,
+            "last_usd": -57576,
             "prev_usd": 121200,
-            "velocity_weekly_usd": -5950,
-            "accel_usd": -168800,
+            "velocity_weekly_usd": -7197,
+            "accel_usd": -178776,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 157500,
+            "last_usd": 147524,
             "prev_usd": -30500,
-            "velocity_weekly_usd": 12115,
-            "accel_usd": 188000,
+            "velocity_weekly_usd": 11348,
+            "accel_usd": 178024,
             "significant": false
           }
         },
-        "last_4w_usd": 13000,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": 3024,
         "prev_4w_usd": -60600,
-        "last_8w_usd": -47600,
+        "last_8w_usd": -57576,
         "prev_8w_usd": 121200,
-        "flow_accel_4w_usd": 73600,
+        "flow_accel_4w_usd": 63624,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -168800,
+        "flow_accel_8w_usd": -178776,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 3250,
+        "flow_velocity_weekly_usd": 756,
         "shape": {
           "code": "ACCUMULATION_FADING",
-          "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "stage_pct": 95,
+          "text_ru": "приток на последней неделе сменился оттоком — фаза сломана",
+          "direction": "IN",
+          "short_vs_mid": -33.905,
+          "mid_vs_long": 1.105,
+          "short_flipped": true
         }
       },
       "regime": {
@@ -428,8 +473,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 12.1,
-        "flow_last_4w_usd": 13000
+        "price_change_30d_pct": 13.1,
+        "flow_last_4w_usd": 3024
       },
       "data_quality": {
         "ok": true,
@@ -441,7 +486,7 @@
     },
     "BONK": {
       "phase_verdict_dune": "MID_ACCUMULATION",
-      "phase_verdict_age_min": 2963,
+      "phase_verdict_age_min": 3004,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -449,62 +494,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 46400,
+            "last_usd": 113670,
             "prev_usd": 152000,
-            "velocity_weekly_usd": 46400,
-            "accel_usd": -105600,
+            "velocity_weekly_usd": 113670,
+            "accel_usd": -38330,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 198400,
+            "last_usd": 265670,
             "prev_usd": 112100,
-            "velocity_weekly_usd": 99200,
-            "accel_usd": 86300,
+            "velocity_weekly_usd": 132835,
+            "accel_usd": 153570,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 310500,
+            "last_usd": 377770,
             "prev_usd": 206500,
-            "velocity_weekly_usd": 77625,
-            "accel_usd": 104000,
+            "velocity_weekly_usd": 94443,
+            "accel_usd": 171270,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 517000,
+            "last_usd": 584270,
             "prev_usd": 334100,
-            "velocity_weekly_usd": 64625,
-            "accel_usd": 182900,
+            "velocity_weekly_usd": 73034,
+            "accel_usd": 250170,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 729700,
+            "last_usd": 796970,
             "prev_usd": 283600,
-            "velocity_weekly_usd": 56131,
-            "accel_usd": 446100,
-            "significant": false
+            "velocity_weekly_usd": 61305,
+            "accel_usd": 513370,
+            "significant": true
           }
         },
-        "last_4w_usd": 310500,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.408
+        },
+        "last_4w_usd": 377770,
         "prev_4w_usd": 206500,
-        "last_8w_usd": 517000,
+        "last_8w_usd": 584270,
         "prev_8w_usd": 334100,
-        "flow_accel_4w_usd": 104000,
+        "flow_accel_4w_usd": 171270,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": 182900,
+        "flow_accel_8w_usd": 250170,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 77625,
+        "flow_velocity_weekly_usd": 94443,
         "shape": {
-          "code": "ACCUMULATION_FADING",
-          "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "code": "ACCUMULATION_MATURE",
+          "stage_pct": 55,
+          "text_ru": "приток идёт ровно — фаза зрелая, середина",
+          "direction": "IN",
+          "short_vs_mid": 0.204,
+          "mid_vs_long": 0.293,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -514,8 +568,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 3.0,
-        "flow_last_4w_usd": 310500
+        "price_change_30d_pct": 5.4,
+        "flow_last_4w_usd": 377770
       },
       "data_quality": {
         "ok": true,
@@ -527,7 +581,7 @@
     },
     "CFG": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 2984,
+      "phase_verdict_age_min": 3024,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -535,62 +589,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -75700,
+            "last_usd": -186378,
             "prev_usd": -8600,
-            "velocity_weekly_usd": -75700,
-            "accel_usd": -67100,
+            "velocity_weekly_usd": -186378,
+            "accel_usd": -177778,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -84300,
+            "last_usd": -194978,
             "prev_usd": -40200,
-            "velocity_weekly_usd": -42150,
-            "accel_usd": -44100,
+            "velocity_weekly_usd": -97489,
+            "accel_usd": -154778,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -124500,
+            "last_usd": -235178,
             "prev_usd": -54000,
-            "velocity_weekly_usd": -31125,
-            "accel_usd": -70500,
+            "velocity_weekly_usd": -58795,
+            "accel_usd": -181178,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -178500,
+            "last_usd": -289178,
             "prev_usd": 209900,
-            "velocity_weekly_usd": -22312,
-            "accel_usd": -388400,
+            "velocity_weekly_usd": -36147,
+            "accel_usd": -499078,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -183400,
+            "last_usd": -294078,
             "prev_usd": 481600,
-            "velocity_weekly_usd": -14108,
-            "accel_usd": -665000,
+            "velocity_weekly_usd": -22621,
+            "accel_usd": -775678,
             "significant": true
           }
         },
-        "last_4w_usd": -124500,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.406
+        },
+        "last_4w_usd": -235178,
         "prev_4w_usd": -54000,
-        "last_8w_usd": -178500,
+        "last_8w_usd": -289178,
         "prev_8w_usd": 209900,
-        "flow_accel_4w_usd": -70500,
+        "flow_accel_4w_usd": -181178,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -388400,
+        "flow_accel_8w_usd": -499078,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -31125,
+        "flow_velocity_weekly_usd": -58795,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_BUILDING",
+          "stage_pct": 25,
+          "text_ru": "отток ускоряется — распродажа только началась",
+          "direction": "OUT",
+          "short_vs_mid": 2.17,
+          "mid_vs_long": 0.627,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -601,7 +664,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": -14.0,
-        "flow_last_4w_usd": -124500
+        "flow_last_4w_usd": -235178
       },
       "data_quality": {
         "ok": true,
@@ -613,7 +676,7 @@
     },
     "CRV": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1040,
+      "phase_verdict_age_min": 1080,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -621,62 +684,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 489900,
+            "last_usd": 817849,
             "prev_usd": 332000,
-            "velocity_weekly_usd": 489900,
-            "accel_usd": 157900,
+            "velocity_weekly_usd": 817849,
+            "accel_usd": 485849,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 821900,
+            "last_usd": 1149849,
             "prev_usd": 284100,
-            "velocity_weekly_usd": 410950,
-            "accel_usd": 537800,
+            "velocity_weekly_usd": 574925,
+            "accel_usd": 865749,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 1106000,
+            "last_usd": 1433949,
             "prev_usd": -127900,
-            "velocity_weekly_usd": 276500,
-            "accel_usd": 1233900,
+            "velocity_weekly_usd": 358487,
+            "accel_usd": 1561849,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 978100,
+            "last_usd": 1306049,
             "prev_usd": 838100,
-            "velocity_weekly_usd": 122262,
-            "accel_usd": 140000,
+            "velocity_weekly_usd": 163256,
+            "accel_usd": 467949,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 1507100,
+            "last_usd": 1835049,
             "prev_usd": 188500,
-            "velocity_weekly_usd": 115931,
-            "accel_usd": 1318600,
+            "velocity_weekly_usd": 141158,
+            "accel_usd": 1646549,
             "significant": true
           }
         },
-        "last_4w_usd": 1106000,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": 1433949,
         "prev_4w_usd": -127900,
-        "last_8w_usd": 978100,
+        "last_8w_usd": 1306049,
         "prev_8w_usd": 838100,
-        "flow_accel_4w_usd": 1233900,
+        "flow_accel_4w_usd": 1561849,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 140000,
+        "flow_accel_8w_usd": 467949,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 276500,
+        "flow_velocity_weekly_usd": 358487,
         "shape": {
           "code": "ACCUMULATION_BUILDING",
           "stage_pct": 25,
-          "text_ru": "разгон притока нарастает — фаза молодая, самое начало"
+          "text_ru": "разгон притока нарастает — фаза молодая, самое начало",
+          "direction": "IN",
+          "short_vs_mid": 1.281,
+          "mid_vs_long": 1.196,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -686,8 +758,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 59.2,
-        "flow_last_4w_usd": 1106000
+        "price_change_30d_pct": 58.7,
+        "flow_last_4w_usd": 1433949
       },
       "data_quality": {
         "ok": true,
@@ -699,7 +771,7 @@
     },
     "DOGE": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1033,
+      "phase_verdict_age_min": 1074,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -707,73 +779,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 334000,
+            "last_usd": 556952,
             "prev_usd": 109900,
-            "velocity_weekly_usd": 334000,
-            "accel_usd": 224100,
+            "velocity_weekly_usd": 556952,
+            "accel_usd": 447052,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 443900,
+            "last_usd": 666852,
             "prev_usd": 77900,
-            "velocity_weekly_usd": 221950,
-            "accel_usd": 366000,
-            "significant": false
+            "velocity_weekly_usd": 333426,
+            "accel_usd": 588952,
+            "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 521800,
+            "last_usd": 744752,
             "prev_usd": 163800,
-            "velocity_weekly_usd": 130450,
-            "accel_usd": 358000,
-            "significant": false
+            "velocity_weekly_usd": 186188,
+            "accel_usd": 580952,
+            "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 685600,
+            "last_usd": 908552,
             "prev_usd": -1019200,
-            "velocity_weekly_usd": 85700,
-            "accel_usd": 1704800,
+            "velocity_weekly_usd": 113569,
+            "accel_usd": 1927752,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 239400,
+            "last_usd": 462352,
             "prev_usd": 56300,
-            "velocity_weekly_usd": 18415,
-            "accel_usd": 183100,
+            "velocity_weekly_usd": 35566,
+            "accel_usd": 406052,
             "significant": false
           }
         },
-        "last_4w_usd": 521800,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.6
+        },
+        "last_4w_usd": 744752,
         "prev_4w_usd": 163800,
-        "last_8w_usd": 685600,
+        "last_8w_usd": 908552,
         "prev_8w_usd": -1019200,
-        "flow_accel_4w_usd": 358000,
-        "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": 1704800,
+        "flow_accel_4w_usd": 580952,
+        "flow_accel_4w_significant": true,
+        "flow_accel_8w_usd": 1927752,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": 130450,
+        "flow_velocity_weekly_usd": 186188,
         "shape": {
           "code": "ACCUMULATION_BUILDING",
           "stage_pct": 25,
-          "text_ru": "разгон притока нарастает — фаза молодая, самое начало"
+          "text_ru": "разгон притока нарастает — фаза молодая, самое начало",
+          "direction": "IN",
+          "short_vs_mid": 1.991,
+          "mid_vs_long": 0.639,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "STEADY_UP",
-        "text_ru": "стабильный приток без ускорения"
+        "code": "ACCEL_UP",
+        "text_ru": "приток разгоняется — лучшее окно для входа"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 22.6,
-        "flow_last_4w_usd": 521800
+        "price_change_30d_pct": 26.0,
+        "flow_last_4w_usd": 744752
       },
       "data_quality": {
         "ok": true,
@@ -785,7 +866,7 @@
     },
     "EIGEN": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 2982,
+      "phase_verdict_age_min": 3023,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -793,62 +874,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 2600,
+            "last_usd": 6399,
             "prev_usd": -29000,
-            "velocity_weekly_usd": 2600,
-            "accel_usd": 31600,
+            "velocity_weekly_usd": 6399,
+            "accel_usd": 35399,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -26400,
+            "last_usd": -22601,
             "prev_usd": -72500,
-            "velocity_weekly_usd": -13200,
-            "accel_usd": 46100,
+            "velocity_weekly_usd": -11301,
+            "accel_usd": 49899,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -98900,
+            "last_usd": -95101,
             "prev_usd": 138400,
-            "velocity_weekly_usd": -24725,
-            "accel_usd": -237300,
+            "velocity_weekly_usd": -23775,
+            "accel_usd": -233501,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 39500,
+            "last_usd": 43299,
             "prev_usd": 926800,
-            "velocity_weekly_usd": 4938,
-            "accel_usd": -887300,
+            "velocity_weekly_usd": 5412,
+            "accel_usd": -883501,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 838600,
+            "last_usd": 842399,
             "prev_usd": 215600,
-            "velocity_weekly_usd": 64508,
-            "accel_usd": 623000,
+            "velocity_weekly_usd": 64800,
+            "accel_usd": 626799,
             "significant": true
           }
         },
-        "last_4w_usd": -98900,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.406
+        },
+        "last_4w_usd": -95101,
         "prev_4w_usd": 138400,
-        "last_8w_usd": 39500,
+        "last_8w_usd": 43299,
         "prev_8w_usd": 926800,
-        "flow_accel_4w_usd": -237300,
+        "flow_accel_4w_usd": -233501,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -887300,
+        "flow_accel_8w_usd": -883501,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -24725,
+        "flow_velocity_weekly_usd": -23775,
         "shape": {
-          "code": "DISTRIBUTION_MIXED",
-          "stage_pct": 50,
-          "text_ru": "отток без чёткой формы"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 95,
+          "text_ru": "отток на последней неделе сменился притоком — распродажа закончилась",
+          "direction": "OUT",
+          "short_vs_mid": -1.269,
+          "mid_vs_long": 5.393,
+          "short_flipped": true
         }
       },
       "regime": {
@@ -858,8 +948,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -7.0,
-        "flow_last_4w_usd": -98900
+        "price_change_30d_pct": -6.3,
+        "flow_last_4w_usd": -95101
       },
       "data_quality": {
         "ok": true,
@@ -871,7 +961,7 @@
     },
     "ETHFI": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 1037,
+      "phase_verdict_age_min": 1077,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -879,62 +969,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -115100,
+            "last_usd": -192053,
             "prev_usd": 424000,
-            "velocity_weekly_usd": -115100,
-            "accel_usd": -539100,
+            "velocity_weekly_usd": -192053,
+            "accel_usd": -616053,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 308900,
+            "last_usd": 231947,
             "prev_usd": -85200,
-            "velocity_weekly_usd": 154450,
-            "accel_usd": 394100,
+            "velocity_weekly_usd": 115974,
+            "accel_usd": 317147,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 223700,
+            "last_usd": 146747,
             "prev_usd": 860900,
-            "velocity_weekly_usd": 55925,
-            "accel_usd": -637200,
+            "velocity_weekly_usd": 36687,
+            "accel_usd": -714153,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 1084600,
+            "last_usd": 1007647,
             "prev_usd": 711200,
-            "velocity_weekly_usd": 135575,
-            "accel_usd": 373400,
+            "velocity_weekly_usd": 125956,
+            "accel_usd": 296447,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 1725000,
+            "last_usd": 1648047,
             "prev_usd": -177600,
-            "velocity_weekly_usd": 132692,
-            "accel_usd": 1902600,
+            "velocity_weekly_usd": 126773,
+            "accel_usd": 1825647,
             "significant": true
           }
         },
-        "last_4w_usd": 223700,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": 146747,
         "prev_4w_usd": 860900,
-        "last_8w_usd": 1084600,
+        "last_8w_usd": 1007647,
         "prev_8w_usd": 711200,
-        "flow_accel_4w_usd": -637200,
+        "flow_accel_4w_usd": -714153,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 373400,
+        "flow_accel_8w_usd": 296447,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 55925,
+        "flow_velocity_weekly_usd": 36687,
         "shape": {
           "code": "ACCUMULATION_FADING",
-          "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "stage_pct": 95,
+          "text_ru": "приток на последней неделе сменился оттоком — фаза сломана",
+          "direction": "IN",
+          "short_vs_mid": -6.235,
+          "mid_vs_long": -0.709,
+          "short_flipped": true
         }
       },
       "regime": {
@@ -945,7 +1044,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": 13.6,
-        "flow_last_4w_usd": 223700
+        "flow_last_4w_usd": 146747
       },
       "data_quality": {
         "ok": true,
@@ -956,7 +1055,7 @@
     },
     "FET": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1043,
+      "phase_verdict_age_min": 1084,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -964,62 +1063,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 2100,
+            "last_usd": 3508,
             "prev_usd": -55300,
-            "velocity_weekly_usd": 2100,
-            "accel_usd": 57400,
+            "velocity_weekly_usd": 3508,
+            "accel_usd": 58808,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -53200,
+            "last_usd": -51792,
             "prev_usd": -127200,
-            "velocity_weekly_usd": -26600,
-            "accel_usd": 74000,
+            "velocity_weekly_usd": -25896,
+            "accel_usd": 75408,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -180400,
+            "last_usd": -178992,
             "prev_usd": -247900,
-            "velocity_weekly_usd": -45100,
-            "accel_usd": 67500,
+            "velocity_weekly_usd": -44748,
+            "accel_usd": 68908,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -428300,
+            "last_usd": -426892,
             "prev_usd": 497800,
-            "velocity_weekly_usd": -53538,
-            "accel_usd": -926100,
+            "velocity_weekly_usd": -53362,
+            "accel_usd": -924692,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -42700,
+            "last_usd": -41292,
             "prev_usd": 278200,
-            "velocity_weekly_usd": -3285,
-            "accel_usd": -320900,
+            "velocity_weekly_usd": -3176,
+            "accel_usd": -319492,
             "significant": false
           }
         },
-        "last_4w_usd": -180400,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -178992,
         "prev_4w_usd": -247900,
-        "last_8w_usd": -428300,
+        "last_8w_usd": -426892,
         "prev_8w_usd": 497800,
-        "flow_accel_4w_usd": 67500,
+        "flow_accel_4w_usd": 68908,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -926100,
+        "flow_accel_8w_usd": -924692,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -45100,
+        "flow_velocity_weekly_usd": -44748,
         "shape": {
-          "code": "DISTRIBUTION_MIXED",
-          "stage_pct": 50,
-          "text_ru": "отток без чёткой формы"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 95,
+          "text_ru": "отток на последней неделе сменился притоком — распродажа закончилась",
+          "direction": "OUT",
+          "short_vs_mid": -1.078,
+          "mid_vs_long": -0.161,
+          "short_flipped": true
         }
       },
       "regime": {
@@ -1029,8 +1137,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 7.3,
-        "flow_last_4w_usd": -180400
+        "price_change_30d_pct": 7.0,
+        "flow_last_4w_usd": -178992
       },
       "data_quality": {
         "ok": true,
@@ -1042,7 +1150,7 @@
     },
     "FIL": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1046,
+      "phase_verdict_age_min": 1086,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1050,62 +1158,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 3200,
+            "last_usd": 5347,
             "prev_usd": 2800,
-            "velocity_weekly_usd": 3200,
-            "accel_usd": 400,
+            "velocity_weekly_usd": 5347,
+            "accel_usd": 2547,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 6000,
+            "last_usd": 8147,
             "prev_usd": -700,
-            "velocity_weekly_usd": 3000,
-            "accel_usd": 6700,
+            "velocity_weekly_usd": 4074,
+            "accel_usd": 8847,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 5300,
+            "last_usd": 7447,
             "prev_usd": 9500,
-            "velocity_weekly_usd": 1325,
-            "accel_usd": -4200,
+            "velocity_weekly_usd": 1862,
+            "accel_usd": -2053,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 14800,
+            "last_usd": 16947,
             "prev_usd": 87600,
-            "velocity_weekly_usd": 1850,
-            "accel_usd": -72800,
+            "velocity_weekly_usd": 2118,
+            "accel_usd": -70653,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 30900,
+            "last_usd": 33047,
             "prev_usd": 361500,
-            "velocity_weekly_usd": 2377,
-            "accel_usd": -330600,
+            "velocity_weekly_usd": 2542,
+            "accel_usd": -328453,
             "significant": false
           }
         },
-        "last_4w_usd": 5300,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.598
+        },
+        "last_4w_usd": 7447,
         "prev_4w_usd": 9500,
-        "last_8w_usd": 14800,
+        "last_8w_usd": 16947,
         "prev_8w_usd": 87600,
-        "flow_accel_4w_usd": -4200,
+        "flow_accel_4w_usd": -2053,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -72800,
+        "flow_accel_8w_usd": -70653,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 1325,
+        "flow_velocity_weekly_usd": 1862,
         "shape": {
           "code": "ACCUMULATION_MIXED",
           "stage_pct": 50,
-          "text_ru": "приток без чёткой формы"
+          "text_ru": "приток без чёткой формы",
+          "direction": "IN",
+          "short_vs_mid": 1.872,
+          "mid_vs_long": -0.121,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -1115,8 +1232,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 4.8,
-        "flow_last_4w_usd": 5300
+        "price_change_30d_pct": 5.5,
+        "flow_last_4w_usd": 7447
       },
       "data_quality": {
         "ok": true,
@@ -1128,7 +1245,7 @@
     },
     "GRT": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1042,
+      "phase_verdict_age_min": 1082,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1136,62 +1253,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -4200,
+            "last_usd": -7014,
             "prev_usd": -800,
-            "velocity_weekly_usd": -4200,
-            "accel_usd": -3400,
+            "velocity_weekly_usd": -7014,
+            "accel_usd": -6214,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -5000,
+            "last_usd": -7814,
             "prev_usd": -6000,
-            "velocity_weekly_usd": -2500,
-            "accel_usd": 1000,
+            "velocity_weekly_usd": -3907,
+            "accel_usd": -1814,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -11000,
+            "last_usd": -13814,
             "prev_usd": -72700,
-            "velocity_weekly_usd": -2750,
-            "accel_usd": 61700,
+            "velocity_weekly_usd": -3453,
+            "accel_usd": 58886,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -83700,
+            "last_usd": -86514,
             "prev_usd": 12600,
-            "velocity_weekly_usd": -10462,
-            "accel_usd": -96300,
+            "velocity_weekly_usd": -10814,
+            "accel_usd": -99114,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -100300,
+            "last_usd": -103114,
             "prev_usd": -57700,
-            "velocity_weekly_usd": -7715,
-            "accel_usd": -42600,
+            "velocity_weekly_usd": -7932,
+            "accel_usd": -45414,
             "significant": false
           }
         },
-        "last_4w_usd": -11000,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -13814,
         "prev_4w_usd": -72700,
-        "last_8w_usd": -83700,
+        "last_8w_usd": -86514,
         "prev_8w_usd": 12600,
-        "flow_accel_4w_usd": 61700,
+        "flow_accel_4w_usd": 58886,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -96300,
+        "flow_accel_8w_usd": -99114,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -2750,
+        "flow_velocity_weekly_usd": -3453,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_MIXED",
+          "stage_pct": 50,
+          "text_ru": "отток без чёткой формы",
+          "direction": "OUT",
+          "short_vs_mid": 1.031,
+          "mid_vs_long": -0.681,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -1202,7 +1328,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": -16.8,
-        "flow_last_4w_usd": -11000
+        "flow_last_4w_usd": -13814
       },
       "data_quality": {
         "ok": true,
@@ -1213,7 +1339,7 @@
     },
     "LDO": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1043,
+      "phase_verdict_age_min": 1084,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1221,73 +1347,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -1745100,
+            "last_usd": -2914905,
             "prev_usd": 199500,
-            "velocity_weekly_usd": -1745100,
-            "accel_usd": -1944600,
+            "velocity_weekly_usd": -2914905,
+            "accel_usd": -3114405,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -1545600,
+            "last_usd": -2715405,
             "prev_usd": -524200,
-            "velocity_weekly_usd": -772800,
-            "accel_usd": -1021400,
+            "velocity_weekly_usd": -1357702,
+            "accel_usd": -2191205,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -2069800,
+            "last_usd": -3239605,
             "prev_usd": 752400,
-            "velocity_weekly_usd": -517450,
-            "accel_usd": -2822200,
+            "velocity_weekly_usd": -809901,
+            "accel_usd": -3992005,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -1317400,
+            "last_usd": -2487205,
             "prev_usd": 164500,
-            "velocity_weekly_usd": -164675,
-            "accel_usd": -1481900,
+            "velocity_weekly_usd": -310901,
+            "accel_usd": -2651705,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -1365400,
+            "last_usd": -2535205,
             "prev_usd": -554700,
-            "velocity_weekly_usd": -105031,
-            "accel_usd": -810700,
+            "velocity_weekly_usd": -195016,
+            "accel_usd": -1980505,
             "significant": true
           }
         },
-        "last_4w_usd": -2069800,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -3239605,
         "prev_4w_usd": 752400,
-        "last_8w_usd": -1317400,
+        "last_8w_usd": -2487205,
         "prev_8w_usd": 164500,
-        "flow_accel_4w_usd": -2822200,
+        "flow_accel_4w_usd": -3992005,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": -1481900,
+        "flow_accel_8w_usd": -2651705,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -517450,
+        "flow_velocity_weekly_usd": -809901,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_BUILDING",
+          "stage_pct": 25,
+          "text_ru": "отток ускоряется — распродажа только началась",
+          "direction": "OUT",
+          "short_vs_mid": 2.599,
+          "mid_vs_long": 1.605,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "FLIPPING_DOWN",
+        "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -7.2,
-        "flow_last_4w_usd": -2069800
+        "price_change_30d_pct": -5.7,
+        "flow_last_4w_usd": -3239605
       },
       "data_quality": {
         "ok": true,
@@ -1299,7 +1434,7 @@
     },
     "LINK": {
       "phase_verdict_dune": "MID_ACCUMULATION_STRONG",
-      "phase_verdict_age_min": 641,
+      "phase_verdict_age_min": 681,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1307,85 +1442,93 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -2724000,
+            "last_usd": -4265483,
             "prev_usd": 25712500,
-            "velocity_weekly_usd": -2724000,
-            "accel_usd": -28436500,
+            "velocity_weekly_usd": -4265483,
+            "accel_usd": -29977983,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 22988500,
+            "last_usd": 21447017,
             "prev_usd": -8433200,
-            "velocity_weekly_usd": 11494250,
-            "accel_usd": 31421700,
+            "velocity_weekly_usd": 10723508,
+            "accel_usd": 29880217,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 14555300,
+            "last_usd": 13013817,
             "prev_usd": -2946700,
-            "velocity_weekly_usd": 3638825,
-            "accel_usd": 17502000,
+            "velocity_weekly_usd": 3253454,
+            "accel_usd": 15960517,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 11608600,
+            "last_usd": 10067117,
             "prev_usd": 22623700,
-            "velocity_weekly_usd": 1451075,
-            "accel_usd": -11015100,
+            "velocity_weekly_usd": 1258390,
+            "accel_usd": -12556583,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 11943700,
+            "last_usd": 10402217,
             "prev_usd": 208900,
-            "velocity_weekly_usd": 918746,
-            "accel_usd": 11734800,
+            "velocity_weekly_usd": 800171,
+            "accel_usd": 10193317,
             "significant": true
           }
         },
-        "last_4w_usd": 14555300,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.639
+        },
+        "last_4w_usd": 13013817,
         "prev_4w_usd": -2946700,
-        "last_8w_usd": 11608600,
+        "last_8w_usd": 10067117,
         "prev_8w_usd": 22623700,
-        "flow_accel_4w_usd": 17502000,
+        "flow_accel_4w_usd": 15960517,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": -11015100,
+        "flow_accel_8w_usd": -12556583,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": 3638825,
+        "flow_velocity_weekly_usd": 3253454,
         "shape": {
           "code": "ACCUMULATION_FADING",
-          "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "stage_pct": 95,
+          "text_ru": "приток на последней неделе сменился оттоком — фаза сломана",
+          "direction": "IN",
+          "short_vs_mid": -2.311,
+          "mid_vs_long": 1.585,
+          "short_flipped": true
         }
       },
       "regime": {
-        "code": "ACCEL_UP",
-        "text_ru": "приток разгоняется — лучшее окно для входа"
+        "code": "FLIPPING_UP",
+        "text_ru": "развернулось из оттока в приток — молодой разворот"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 39.8,
-        "flow_last_4w_usd": 14555300
+        "price_change_30d_pct": 20.8,
+        "flow_last_4w_usd": 13013817
       },
       "data_quality": {
         "ok": true,
-        "flags": [],
-        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
+        "flags": []
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.01
     },
     "MNT": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1035,
+      "phase_verdict_age_min": 1076,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1393,62 +1536,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 399400,
+            "last_usd": 666238,
             "prev_usd": 81000,
-            "velocity_weekly_usd": 399400,
-            "accel_usd": 318400,
-            "significant": false
+            "velocity_weekly_usd": 666238,
+            "accel_usd": 585238,
+            "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 480400,
+            "last_usd": 747238,
             "prev_usd": 33200,
-            "velocity_weekly_usd": 240200,
-            "accel_usd": 447200,
-            "significant": false
+            "velocity_weekly_usd": 373619,
+            "accel_usd": 714038,
+            "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 513600,
+            "last_usd": 780438,
             "prev_usd": -370900,
-            "velocity_weekly_usd": 128400,
-            "accel_usd": 884500,
+            "velocity_weekly_usd": 195109,
+            "accel_usd": 1151338,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 142700,
+            "last_usd": 409538,
             "prev_usd": -2909900,
-            "velocity_weekly_usd": 17838,
-            "accel_usd": 3052600,
+            "velocity_weekly_usd": 51192,
+            "accel_usd": 3319438,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -2029900,
+            "last_usd": -1763062,
             "prev_usd": -2578900,
-            "velocity_weekly_usd": -156146,
-            "accel_usd": 549000,
+            "velocity_weekly_usd": -135620,
+            "accel_usd": 815838,
             "significant": true
           }
         },
-        "last_4w_usd": 513600,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": 780438,
         "prev_4w_usd": -370900,
-        "last_8w_usd": 142700,
+        "last_8w_usd": 409538,
         "prev_8w_usd": -2909900,
-        "flow_accel_4w_usd": 884500,
+        "flow_accel_4w_usd": 1151338,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 3052600,
+        "flow_accel_8w_usd": 3319438,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": 128400,
+        "flow_velocity_weekly_usd": 195109,
         "shape": {
           "code": "ACCUMULATION_BUILDING",
           "stage_pct": 25,
-          "text_ru": "разгон притока нарастает — фаза молодая, самое начало"
+          "text_ru": "разгон притока нарастает — фаза молодая, самое начало",
+          "direction": "IN",
+          "short_vs_mid": 2.415,
+          "mid_vs_long": 2.811,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -1459,7 +1611,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": 21.0,
-        "flow_last_4w_usd": 513600
+        "flow_last_4w_usd": 780438
       },
       "data_quality": {
         "ok": true,
@@ -1471,7 +1623,7 @@
     },
     "MORPHO": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 1033,
+      "phase_verdict_age_min": 1074,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1479,73 +1631,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -485300,
+            "last_usd": -809301,
             "prev_usd": 551700,
-            "velocity_weekly_usd": -485300,
-            "accel_usd": -1037000,
+            "velocity_weekly_usd": -809301,
+            "accel_usd": -1361001,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 66400,
+            "last_usd": -257601,
             "prev_usd": 542000,
-            "velocity_weekly_usd": 33200,
-            "accel_usd": -475600,
-            "significant": false
+            "velocity_weekly_usd": -128800,
+            "accel_usd": -799601,
+            "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 608400,
+            "last_usd": 284399,
             "prev_usd": 635600,
-            "velocity_weekly_usd": 152100,
-            "accel_usd": -27200,
+            "velocity_weekly_usd": 71100,
+            "accel_usd": -351201,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 1244000,
+            "last_usd": 919999,
             "prev_usd": 3145400,
-            "velocity_weekly_usd": 155500,
-            "accel_usd": -1901400,
+            "velocity_weekly_usd": 115000,
+            "accel_usd": -2225401,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 1675600,
+            "last_usd": 1351599,
             "prev_usd": 5820100,
-            "velocity_weekly_usd": 128892,
-            "accel_usd": -4144500,
+            "velocity_weekly_usd": 103969,
+            "accel_usd": -4468501,
             "significant": true
           }
         },
-        "last_4w_usd": 608400,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.6
+        },
+        "last_4w_usd": 284399,
         "prev_4w_usd": 635600,
-        "last_8w_usd": 1244000,
+        "last_8w_usd": 919999,
         "prev_8w_usd": 3145400,
-        "flow_accel_4w_usd": -27200,
+        "flow_accel_4w_usd": -351201,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -1901400,
+        "flow_accel_8w_usd": -2225401,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": 152100,
+        "flow_velocity_weekly_usd": 71100,
         "shape": {
           "code": "ACCUMULATION_FADING",
-          "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "stage_pct": 95,
+          "text_ru": "приток на последней неделе сменился оттоком — фаза сломана",
+          "direction": "IN",
+          "short_vs_mid": -12.383,
+          "mid_vs_long": -0.382,
+          "short_flipped": true
         }
       },
       "regime": {
-        "code": "STEADY_UP",
-        "text_ru": "стабильный приток без ускорения"
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 22.8,
-        "flow_last_4w_usd": 608400
+        "price_change_30d_pct": 23.8,
+        "flow_last_4w_usd": 284399
       },
       "data_quality": {
         "ok": true,
@@ -1557,7 +1718,7 @@
     },
     "ONDO": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1036,
+      "phase_verdict_age_min": 1077,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1565,73 +1726,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -103000,
+            "last_usd": -171855,
             "prev_usd": -7200,
-            "velocity_weekly_usd": -103000,
-            "accel_usd": -95800,
+            "velocity_weekly_usd": -171855,
+            "accel_usd": -164655,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -110200,
+            "last_usd": -179055,
             "prev_usd": 9700,
-            "velocity_weekly_usd": -55100,
-            "accel_usd": -119900,
+            "velocity_weekly_usd": -89528,
+            "accel_usd": -188755,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -100500,
+            "last_usd": -169355,
             "prev_usd": 707800,
-            "velocity_weekly_usd": -25125,
-            "accel_usd": -808300,
+            "velocity_weekly_usd": -42339,
+            "accel_usd": -877155,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 607300,
+            "last_usd": 538445,
             "prev_usd": 1298500,
-            "velocity_weekly_usd": 75913,
-            "accel_usd": -691200,
+            "velocity_weekly_usd": 67306,
+            "accel_usd": -760055,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 238900,
+            "last_usd": 170045,
             "prev_usd": -490400,
-            "velocity_weekly_usd": 18377,
-            "accel_usd": 729300,
+            "velocity_weekly_usd": 13080,
+            "accel_usd": 660445,
             "significant": true
           }
         },
-        "last_4w_usd": -100500,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -169355,
         "prev_4w_usd": 707800,
-        "last_8w_usd": 607300,
+        "last_8w_usd": 538445,
         "prev_8w_usd": 1298500,
-        "flow_accel_4w_usd": -808300,
+        "flow_accel_4w_usd": -877155,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": -691200,
+        "flow_accel_8w_usd": -760055,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -25125,
+        "flow_velocity_weekly_usd": -42339,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_BUILDING",
+          "stage_pct": 25,
+          "text_ru": "отток ускоряется — распродажа только началась",
+          "direction": "OUT",
+          "short_vs_mid": 3.059,
+          "mid_vs_long": 1.629,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "FLIPPING_DOWN",
+        "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -5.4,
-        "flow_last_4w_usd": -100500
+        "price_change_30d_pct": -4.9,
+        "flow_last_4w_usd": -169355
       },
       "data_quality": {
         "ok": true,
@@ -1643,7 +1813,7 @@
     },
     "OP": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1038,
+      "phase_verdict_age_min": 1078,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1651,62 +1821,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 105200,
+            "last_usd": 175562,
             "prev_usd": -69400,
-            "velocity_weekly_usd": 105200,
-            "accel_usd": 174600,
+            "velocity_weekly_usd": 175562,
+            "accel_usd": 244962,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 35800,
+            "last_usd": 106162,
             "prev_usd": -123200,
-            "velocity_weekly_usd": 17900,
-            "accel_usd": 159000,
+            "velocity_weekly_usd": 53081,
+            "accel_usd": 229362,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -87400,
+            "last_usd": -17038,
             "prev_usd": -183400,
-            "velocity_weekly_usd": -21850,
-            "accel_usd": 96000,
+            "velocity_weekly_usd": -4260,
+            "accel_usd": 166362,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -270800,
+            "last_usd": -200438,
             "prev_usd": 152300,
-            "velocity_weekly_usd": -33850,
-            "accel_usd": -423100,
+            "velocity_weekly_usd": -25055,
+            "accel_usd": -352738,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -264300,
+            "last_usd": -193938,
             "prev_usd": 28200,
-            "velocity_weekly_usd": -20331,
-            "accel_usd": -292500,
+            "velocity_weekly_usd": -14918,
+            "accel_usd": -222138,
             "significant": false
           }
         },
-        "last_4w_usd": -87400,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -17038,
         "prev_4w_usd": -183400,
-        "last_8w_usd": -270800,
+        "last_8w_usd": -200438,
         "prev_8w_usd": 152300,
-        "flow_accel_4w_usd": 96000,
+        "flow_accel_4w_usd": 166362,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -423100,
+        "flow_accel_8w_usd": -352738,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -21850,
+        "flow_velocity_weekly_usd": -4260,
         "shape": {
-          "code": "DISTRIBUTION_BUILDING",
-          "stage_pct": 25,
-          "text_ru": "отток ускоряется — распродажа только началась"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 95,
+          "text_ru": "отток на последней неделе сменился притоком — распродажа закончилась",
+          "direction": "OUT",
+          "short_vs_mid": -42.212,
+          "mid_vs_long": -0.83,
+          "short_flipped": true
         }
       },
       "regime": {
@@ -1716,8 +1895,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 9.4,
-        "flow_last_4w_usd": -87400
+        "price_change_30d_pct": 10.3,
+        "flow_last_4w_usd": -17038
       },
       "data_quality": {
         "ok": true,
@@ -1729,7 +1908,7 @@
     },
     "PENDLE": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1032,
+      "phase_verdict_age_min": 1073,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1737,85 +1916,93 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 382400,
+            "last_usd": 637588,
             "prev_usd": -129300,
-            "velocity_weekly_usd": 382400,
-            "accel_usd": 511700,
+            "velocity_weekly_usd": 637588,
+            "accel_usd": 766888,
             "significant": true
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 253100,
+            "last_usd": 508288,
             "prev_usd": -443400,
-            "velocity_weekly_usd": 126550,
-            "accel_usd": 696500,
+            "velocity_weekly_usd": 254144,
+            "accel_usd": 951688,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -190300,
+            "last_usd": 64888,
             "prev_usd": 447900,
-            "velocity_weekly_usd": -47575,
-            "accel_usd": -638200,
-            "significant": true
+            "velocity_weekly_usd": 16222,
+            "accel_usd": -383012,
+            "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 257600,
+            "last_usd": 512788,
             "prev_usd": 7700,
-            "velocity_weekly_usd": 32200,
-            "accel_usd": 249900,
-            "significant": false
+            "velocity_weekly_usd": 64099,
+            "accel_usd": 505088,
+            "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -130100,
+            "last_usd": 125088,
             "prev_usd": 1285500,
-            "velocity_weekly_usd": -10008,
-            "accel_usd": -1415600,
+            "velocity_weekly_usd": 9622,
+            "accel_usd": -1160412,
             "significant": true
           }
         },
-        "last_4w_usd": -190300,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.6
+        },
+        "last_4w_usd": 64888,
         "prev_4w_usd": 447900,
-        "last_8w_usd": 257600,
+        "last_8w_usd": 512788,
         "prev_8w_usd": 7700,
-        "flow_accel_4w_usd": -638200,
-        "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 249900,
-        "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -47575,
+        "flow_accel_4w_usd": -383012,
+        "flow_accel_4w_significant": false,
+        "flow_accel_8w_usd": 505088,
+        "flow_accel_8w_significant": true,
+        "flow_velocity_weekly_usd": 16222,
         "shape": {
-          "code": "DISTRIBUTION_MIXED",
+          "code": "ACCUMULATION_MIXED",
           "stage_pct": 50,
-          "text_ru": "отток без чёткой формы"
+          "text_ru": "приток без чёткой формы",
+          "direction": "IN",
+          "short_vs_mid": 38.304,
+          "mid_vs_long": -0.747,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 1.4,
-        "flow_last_4w_usd": -190300
+        "price_change_30d_pct": -10.7,
+        "flow_last_4w_usd": 64888
       },
       "data_quality": {
         "ok": true,
-        "flags": [],
-        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
+        "flags": []
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.005
     },
     "PEPE": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 2153,
+      "phase_verdict_age_min": 2194,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1823,73 +2010,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -112200,
+            "last_usd": -229672,
             "prev_usd": -477600,
-            "velocity_weekly_usd": -112200,
-            "accel_usd": 365400,
+            "velocity_weekly_usd": -229672,
+            "accel_usd": 247928,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -589800,
+            "last_usd": -707272,
             "prev_usd": 346900,
-            "velocity_weekly_usd": -294900,
-            "accel_usd": -936700,
+            "velocity_weekly_usd": -353636,
+            "accel_usd": -1054172,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -242900,
+            "last_usd": -360372,
             "prev_usd": 1162600,
-            "velocity_weekly_usd": -60725,
-            "accel_usd": -1405500,
+            "velocity_weekly_usd": -90093,
+            "accel_usd": -1522972,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 919700,
+            "last_usd": 802228,
             "prev_usd": 778200,
-            "velocity_weekly_usd": 114963,
-            "accel_usd": 141500,
+            "velocity_weekly_usd": 100278,
+            "accel_usd": 24028,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 2109600,
+            "last_usd": 1992128,
             "prev_usd": -1884400,
-            "velocity_weekly_usd": 162277,
-            "accel_usd": 3994000,
+            "velocity_weekly_usd": 153241,
+            "accel_usd": 3876528,
             "significant": true
           }
         },
-        "last_4w_usd": -242900,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.489
+        },
+        "last_4w_usd": -360372,
         "prev_4w_usd": 1162600,
-        "last_8w_usd": 919700,
+        "last_8w_usd": 802228,
         "prev_8w_usd": 778200,
-        "flow_accel_4w_usd": -1405500,
+        "flow_accel_4w_usd": -1522972,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 141500,
+        "flow_accel_8w_usd": 24028,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -60725,
+        "flow_velocity_weekly_usd": -90093,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_BUILDING",
+          "stage_pct": 25,
+          "text_ru": "отток ускоряется — распродажа только началась",
+          "direction": "OUT",
+          "short_vs_mid": 1.549,
+          "mid_vs_long": 1.898,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "FLIPPING_DOWN",
+        "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 35.0,
-        "flow_last_4w_usd": -242900
+        "price_change_30d_pct": 36.4,
+        "flow_last_4w_usd": -360372
       },
       "data_quality": {
         "ok": true,
@@ -1901,7 +2097,7 @@
     },
     "RNDR": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 2160,
+      "phase_verdict_age_min": 2201,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1909,62 +2105,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -51100,
+            "last_usd": -104744,
             "prev_usd": -8500,
-            "velocity_weekly_usd": -51100,
-            "accel_usd": -42600,
+            "velocity_weekly_usd": -104744,
+            "accel_usd": -96244,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -59600,
+            "last_usd": -113244,
             "prev_usd": -74800,
-            "velocity_weekly_usd": -29800,
-            "accel_usd": 15200,
+            "velocity_weekly_usd": -56622,
+            "accel_usd": -38444,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -134400,
+            "last_usd": -188044,
             "prev_usd": -243000,
-            "velocity_weekly_usd": -33600,
-            "accel_usd": 108600,
+            "velocity_weekly_usd": -47011,
+            "accel_usd": 54956,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -377400,
+            "last_usd": -431044,
             "prev_usd": 376400,
-            "velocity_weekly_usd": -47175,
-            "accel_usd": -753800,
+            "velocity_weekly_usd": -53880,
+            "accel_usd": -807444,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -316500,
+            "last_usd": -370144,
             "prev_usd": 356900,
-            "velocity_weekly_usd": -24346,
-            "accel_usd": -673400,
+            "velocity_weekly_usd": -28473,
+            "accel_usd": -727044,
             "significant": true
           }
         },
-        "last_4w_usd": -134400,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.488
+        },
+        "last_4w_usd": -188044,
         "prev_4w_usd": -243000,
-        "last_8w_usd": -377400,
+        "last_8w_usd": -431044,
         "prev_8w_usd": 376400,
-        "flow_accel_4w_usd": 108600,
+        "flow_accel_4w_usd": 54956,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -753800,
+        "flow_accel_8w_usd": -807444,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -33600,
+        "flow_velocity_weekly_usd": -47011,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_MIXED",
+          "stage_pct": 50,
+          "text_ru": "отток без чёткой формы",
+          "direction": "OUT",
+          "short_vs_mid": 1.228,
+          "mid_vs_long": -0.127,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -1975,7 +2180,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": -14.3,
-        "flow_last_4w_usd": -134400
+        "flow_last_4w_usd": -188044
       },
       "data_quality": {
         "ok": true,
@@ -1986,7 +2191,7 @@
     },
     "RPL": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 2164,
+      "phase_verdict_age_min": 2204,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1994,62 +2199,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -300,
+            "last_usd": -615,
             "prev_usd": -17400,
-            "velocity_weekly_usd": -300,
-            "accel_usd": 17100,
+            "velocity_weekly_usd": -615,
+            "accel_usd": 16785,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -17700,
+            "last_usd": -18015,
             "prev_usd": -45800,
-            "velocity_weekly_usd": -8850,
-            "accel_usd": 28100,
+            "velocity_weekly_usd": -9008,
+            "accel_usd": 27785,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -63500,
+            "last_usd": -63815,
             "prev_usd": -2300,
-            "velocity_weekly_usd": -15875,
-            "accel_usd": -61200,
+            "velocity_weekly_usd": -15954,
+            "accel_usd": -61515,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -65800,
+            "last_usd": -66115,
             "prev_usd": 22600,
-            "velocity_weekly_usd": -8225,
-            "accel_usd": -88400,
+            "velocity_weekly_usd": -8264,
+            "accel_usd": -88715,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -33100,
+            "last_usd": -33415,
             "prev_usd": -129600,
-            "velocity_weekly_usd": -2546,
-            "accel_usd": 96500,
+            "velocity_weekly_usd": -2570,
+            "accel_usd": 96185,
             "significant": false
           }
         },
-        "last_4w_usd": -63500,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.488
+        },
+        "last_4w_usd": -63815,
         "prev_4w_usd": -2300,
-        "last_8w_usd": -65800,
+        "last_8w_usd": -66115,
         "prev_8w_usd": 22600,
-        "flow_accel_4w_usd": -61200,
+        "flow_accel_4w_usd": -61515,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -88400,
+        "flow_accel_8w_usd": -88715,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -15875,
+        "flow_velocity_weekly_usd": -15954,
         "shape": {
-          "code": "DISTRIBUTION_MIXED",
-          "stage_pct": 50,
-          "text_ru": "отток без чёткой формы"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 85,
+          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно",
+          "direction": "OUT",
+          "short_vs_mid": -0.961,
+          "mid_vs_long": 0.931,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -2060,7 +2274,7 @@
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
         "price_change_30d_pct": -21.2,
-        "flow_last_4w_usd": -63500
+        "flow_last_4w_usd": -63815
       },
       "data_quality": {
         "ok": true,
@@ -2071,7 +2285,7 @@
     },
     "SAND": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1034,
+      "phase_verdict_age_min": 1075,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2079,62 +2293,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -44000,
+            "last_usd": -73389,
             "prev_usd": -5000,
-            "velocity_weekly_usd": -44000,
-            "accel_usd": -39000,
+            "velocity_weekly_usd": -73389,
+            "accel_usd": -68389,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -49000,
+            "last_usd": -78389,
             "prev_usd": -16600,
-            "velocity_weekly_usd": -24500,
-            "accel_usd": -32400,
+            "velocity_weekly_usd": -39194,
+            "accel_usd": -61789,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -65600,
+            "last_usd": -94989,
             "prev_usd": -279400,
-            "velocity_weekly_usd": -16400,
-            "accel_usd": 213800,
+            "velocity_weekly_usd": -23747,
+            "accel_usd": 184411,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -345000,
+            "last_usd": -374389,
             "prev_usd": -17900,
-            "velocity_weekly_usd": -43125,
-            "accel_usd": -327100,
+            "velocity_weekly_usd": -46799,
+            "accel_usd": -356489,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -389600,
+            "last_usd": -418989,
             "prev_usd": -102600,
-            "velocity_weekly_usd": -29969,
-            "accel_usd": -287000,
+            "velocity_weekly_usd": -32230,
+            "accel_usd": -316389,
             "significant": false
           }
         },
-        "last_4w_usd": -65600,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.6
+        },
+        "last_4w_usd": -94989,
         "prev_4w_usd": -279400,
-        "last_8w_usd": -345000,
+        "last_8w_usd": -374389,
         "prev_8w_usd": -17900,
-        "flow_accel_4w_usd": 213800,
+        "flow_accel_4w_usd": 184411,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -327100,
+        "flow_accel_8w_usd": -356489,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -16400,
+        "flow_velocity_weekly_usd": -23747,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_MIXED",
+          "stage_pct": 50,
+          "text_ru": "отток без чёткой формы",
+          "direction": "OUT",
+          "short_vs_mid": 2.09,
+          "mid_vs_long": -0.493,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -2144,8 +2367,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 0.6,
-        "flow_last_4w_usd": -65600
+        "price_change_30d_pct": 1.1,
+        "flow_last_4w_usd": -94989
       },
       "data_quality": {
         "ok": true,
@@ -2157,7 +2380,7 @@
     },
     "STRK": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1038,
+      "phase_verdict_age_min": 1079,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2165,62 +2388,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -6900,
+            "last_usd": -11516,
             "prev_usd": -6200,
-            "velocity_weekly_usd": -6900,
-            "accel_usd": -700,
+            "velocity_weekly_usd": -11516,
+            "accel_usd": -5316,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -13100,
+            "last_usd": -17716,
             "prev_usd": -15700,
-            "velocity_weekly_usd": -6550,
-            "accel_usd": 2600,
+            "velocity_weekly_usd": -8858,
+            "accel_usd": -2016,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -28800,
+            "last_usd": -33416,
             "prev_usd": -58200,
-            "velocity_weekly_usd": -7200,
-            "accel_usd": 29400,
+            "velocity_weekly_usd": -8354,
+            "accel_usd": 24784,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -87000,
+            "last_usd": -91616,
             "prev_usd": -158200,
-            "velocity_weekly_usd": -10875,
-            "accel_usd": 71200,
+            "velocity_weekly_usd": -11452,
+            "accel_usd": 66584,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -162600,
+            "last_usd": -167216,
             "prev_usd": -147200,
-            "velocity_weekly_usd": -12508,
-            "accel_usd": -15400,
+            "velocity_weekly_usd": -12863,
+            "accel_usd": -20016,
             "significant": false
           }
         },
-        "last_4w_usd": -28800,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -33416,
         "prev_4w_usd": -58200,
-        "last_8w_usd": -87000,
+        "last_8w_usd": -91616,
         "prev_8w_usd": -158200,
-        "flow_accel_4w_usd": 29400,
+        "flow_accel_4w_usd": 24784,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": 71200,
+        "flow_accel_8w_usd": 66584,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -7200,
+        "flow_velocity_weekly_usd": -8354,
         "shape": {
-          "code": "DISTRIBUTION_MATURE",
-          "stage_pct": 55,
-          "text_ru": "отток идёт ровно — распродажа в разгаре"
+          "code": "DISTRIBUTION_MIXED",
+          "stage_pct": 50,
+          "text_ru": "отток без чёткой формы",
+          "direction": "OUT",
+          "short_vs_mid": 0.379,
+          "mid_vs_long": -0.271,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -2230,8 +2462,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -5.9,
-        "flow_last_4w_usd": -28800
+        "price_change_30d_pct": -5.6,
+        "flow_last_4w_usd": -33416
       },
       "data_quality": {
         "ok": true,
@@ -2243,7 +2475,7 @@
     },
     "TAO": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 2157,
+      "phase_verdict_age_min": 2198,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2251,62 +2483,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 800,
+            "last_usd": 1639,
             "prev_usd": -300,
-            "velocity_weekly_usd": 800,
-            "accel_usd": 1100,
+            "velocity_weekly_usd": 1639,
+            "accel_usd": 1939,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 500,
+            "last_usd": 1339,
             "prev_usd": 3800,
-            "velocity_weekly_usd": 250,
-            "accel_usd": -3300,
+            "velocity_weekly_usd": 669,
+            "accel_usd": -2461,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 4300,
+            "last_usd": 5139,
             "prev_usd": 37600,
-            "velocity_weekly_usd": 1075,
-            "accel_usd": -33300,
+            "velocity_weekly_usd": 1285,
+            "accel_usd": -32461,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 41900,
+            "last_usd": 42739,
             "prev_usd": 5700,
-            "velocity_weekly_usd": 5238,
-            "accel_usd": 36200,
+            "velocity_weekly_usd": 5342,
+            "accel_usd": 37039,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 67500,
+            "last_usd": 68339,
             "prev_usd": -23200,
-            "velocity_weekly_usd": 5192,
-            "accel_usd": 90700,
+            "velocity_weekly_usd": 5257,
+            "accel_usd": 91539,
             "significant": false
           }
         },
-        "last_4w_usd": 4300,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.488
+        },
+        "last_4w_usd": 5139,
         "prev_4w_usd": 37600,
-        "last_8w_usd": 41900,
+        "last_8w_usd": 42739,
         "prev_8w_usd": 5700,
-        "flow_accel_4w_usd": -33300,
+        "flow_accel_4w_usd": -32461,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": 36200,
+        "flow_accel_8w_usd": 37039,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": 1075,
+        "flow_velocity_weekly_usd": 1285,
         "shape": {
-          "code": "ACCUMULATION_FADING",
-          "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "code": "ACCUMULATION_MIXED",
+          "stage_pct": 50,
+          "text_ru": "приток без чёткой формы",
+          "direction": "IN",
+          "short_vs_mid": 0.275,
+          "mid_vs_long": -0.759,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -2316,8 +2557,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 16.5,
-        "flow_last_4w_usd": 4300
+        "price_change_30d_pct": 17.4,
+        "flow_last_4w_usd": 5139
       },
       "data_quality": {
         "ok": true,
@@ -2329,7 +2570,7 @@
     },
     "UNI": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 1044,
+      "phase_verdict_age_min": 1085,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2337,73 +2578,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -1242900,
+            "last_usd": -2076354,
             "prev_usd": -2435000,
-            "velocity_weekly_usd": -1242900,
-            "accel_usd": 1192100,
-            "significant": true
+            "velocity_weekly_usd": -2076354,
+            "accel_usd": 358646,
+            "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -3677900,
+            "last_usd": -4511354,
             "prev_usd": 3525200,
-            "velocity_weekly_usd": -1838950,
-            "accel_usd": -7203100,
+            "velocity_weekly_usd": -2255677,
+            "accel_usd": -8036554,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -152700,
+            "last_usd": -986154,
             "prev_usd": 3170600,
-            "velocity_weekly_usd": -38175,
-            "accel_usd": -3323300,
+            "velocity_weekly_usd": -246538,
+            "accel_usd": -4156754,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 3017900,
+            "last_usd": 2184446,
             "prev_usd": 5256200,
-            "velocity_weekly_usd": 377238,
-            "accel_usd": -2238300,
+            "velocity_weekly_usd": 273056,
+            "accel_usd": -3071754,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 5593600,
+            "last_usd": 4760146,
             "prev_usd": 1583700,
-            "velocity_weekly_usd": 430277,
-            "accel_usd": 4009900,
+            "velocity_weekly_usd": 366165,
+            "accel_usd": 3176446,
             "significant": true
           }
         },
-        "last_4w_usd": -152700,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -986154,
         "prev_4w_usd": 3170600,
-        "last_8w_usd": 3017900,
+        "last_8w_usd": 2184446,
         "prev_8w_usd": 5256200,
-        "flow_accel_4w_usd": -3323300,
+        "flow_accel_4w_usd": -4156754,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": -2238300,
+        "flow_accel_8w_usd": -3071754,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -38175,
+        "flow_velocity_weekly_usd": -246538,
         "shape": {
-          "code": "DISTRIBUTION_FADING",
-          "stage_pct": 85,
-          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно"
+          "code": "DISTRIBUTION_BUILDING",
+          "stage_pct": 25,
+          "text_ru": "отток ускоряется — распродажа только началась",
+          "direction": "OUT",
+          "short_vs_mid": 7.422,
+          "mid_vs_long": 1.903,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "FLIPPING_DOWN",
+        "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
-        "code": "ALIGNED",
-        "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 8.3,
-        "flow_last_4w_usd": -152700
+        "code": "BEARISH_DIV",
+        "text_ru": "цена +9% за 30д, но приток $-1.0M — рост без капитала",
+        "price_change_30d_pct": 9.4,
+        "flow_last_4w_usd": -986154
       },
       "data_quality": {
         "ok": true,
@@ -2415,7 +2665,7 @@
     },
     "VIRTUAL": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1038,
+      "phase_verdict_age_min": 1079,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2423,73 +2673,82 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": -186100,
+            "last_usd": -310584,
             "prev_usd": -776800,
-            "velocity_weekly_usd": -186100,
-            "accel_usd": 590700,
-            "significant": true
+            "velocity_weekly_usd": -310584,
+            "accel_usd": 466216,
+            "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": -962900,
+            "last_usd": -1087384,
             "prev_usd": -2504200,
-            "velocity_weekly_usd": -481450,
-            "accel_usd": 1541300,
+            "velocity_weekly_usd": -543692,
+            "accel_usd": 1416816,
             "significant": true
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -3467100,
+            "last_usd": -3591584,
             "prev_usd": 916000,
-            "velocity_weekly_usd": -866775,
-            "accel_usd": -4383100,
+            "velocity_weekly_usd": -897896,
+            "accel_usd": -4507584,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -2551100,
+            "last_usd": -2675584,
             "prev_usd": -594200,
-            "velocity_weekly_usd": -318888,
-            "accel_usd": -1956900,
+            "velocity_weekly_usd": -334448,
+            "accel_usd": -2081384,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -3611600,
+            "last_usd": -3736084,
             "prev_usd": 6550800,
-            "velocity_weekly_usd": -277815,
-            "accel_usd": -10162400,
+            "velocity_weekly_usd": -287391,
+            "accel_usd": -10286884,
             "significant": true
           }
         },
-        "last_4w_usd": -3467100,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": -3591584,
         "prev_4w_usd": 916000,
-        "last_8w_usd": -2551100,
+        "last_8w_usd": -2675584,
         "prev_8w_usd": -594200,
-        "flow_accel_4w_usd": -4383100,
+        "flow_accel_4w_usd": -4507584,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": -1956900,
+        "flow_accel_8w_usd": -2081384,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": -866775,
+        "flow_velocity_weekly_usd": -897896,
         "shape": {
-          "code": "DISTRIBUTION_MIXED",
-          "stage_pct": 50,
-          "text_ru": "отток без чёткой формы"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 85,
+          "text_ru": "отток замедляется — распродажа выдыхается, возможное дно",
+          "direction": "OUT",
+          "short_vs_mid": -0.654,
+          "mid_vs_long": 1.685,
+          "short_flipped": false
         }
       },
       "regime": {
-        "code": "ACCEL_DOWN",
-        "text_ru": "отток ускоряется — капитуляция или distribution"
+        "code": "FLIPPING_DOWN",
+        "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
         "code": "BEARISH_DIV",
-        "text_ru": "цена +14% за 30д, но приток $-3.5M — рост без капитала",
-        "price_change_30d_pct": 13.9,
-        "flow_last_4w_usd": -3467100
+        "text_ru": "цена +15% за 30д, но приток $-3.6M — рост без капитала",
+        "price_change_30d_pct": 14.6,
+        "flow_last_4w_usd": -3591584
       },
       "data_quality": {
         "ok": true,
@@ -2501,7 +2760,7 @@
     },
     "WIF": {
       "phase_verdict_dune": "MID_ACCUMULATION",
-      "phase_verdict_age_min": 1038,
+      "phase_verdict_age_min": 1079,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2509,62 +2768,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 3600,
+            "last_usd": 6009,
             "prev_usd": 1200,
-            "velocity_weekly_usd": 3600,
-            "accel_usd": 2400,
+            "velocity_weekly_usd": 6009,
+            "accel_usd": 4809,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 4800,
+            "last_usd": 7209,
             "prev_usd": 194800,
-            "velocity_weekly_usd": 2400,
-            "accel_usd": -190000,
+            "velocity_weekly_usd": 3604,
+            "accel_usd": -187591,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": 199600,
+            "last_usd": 202009,
             "prev_usd": 708500,
-            "velocity_weekly_usd": 49900,
-            "accel_usd": -508900,
+            "velocity_weekly_usd": 50502,
+            "accel_usd": -506491,
             "significant": true
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": 908100,
+            "last_usd": 910509,
             "prev_usd": 139900,
-            "velocity_weekly_usd": 113513,
-            "accel_usd": 768200,
+            "velocity_weekly_usd": 113814,
+            "accel_usd": 770609,
             "significant": true
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": 1059400,
+            "last_usd": 1061809,
             "prev_usd": 176600,
-            "velocity_weekly_usd": 81492,
-            "accel_usd": 882800,
+            "velocity_weekly_usd": 81678,
+            "accel_usd": 885209,
             "significant": true
           }
         },
-        "last_4w_usd": 199600,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.599
+        },
+        "last_4w_usd": 202009,
         "prev_4w_usd": 708500,
-        "last_8w_usd": 908100,
+        "last_8w_usd": 910509,
         "prev_8w_usd": 139900,
-        "flow_accel_4w_usd": -508900,
+        "flow_accel_4w_usd": -506491,
         "flow_accel_4w_significant": true,
-        "flow_accel_8w_usd": 768200,
+        "flow_accel_8w_usd": 770609,
         "flow_accel_8w_significant": true,
-        "flow_velocity_weekly_usd": 49900,
+        "flow_velocity_weekly_usd": 50502,
         "shape": {
           "code": "ACCUMULATION_FADING",
           "stage_pct": 85,
-          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже"
+          "text_ru": "разгон притока выдыхается — фаза к концу, новые входы дороже",
+          "direction": "IN",
+          "short_vs_mid": -0.881,
+          "mid_vs_long": -0.556,
+          "short_flipped": false
         }
       },
       "regime": {
@@ -2574,8 +2842,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 26.8,
-        "flow_last_4w_usd": 199600
+        "price_change_30d_pct": 28.0,
+        "flow_last_4w_usd": 202009
       },
       "data_quality": {
         "ok": true,
@@ -2587,7 +2855,7 @@
     },
     "ZK": {
       "phase_verdict_dune": "WEAKENING",
-      "phase_verdict_age_min": 2172,
+      "phase_verdict_age_min": 2213,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2595,62 +2863,71 @@
           "1w": {
             "weeks": 1,
             "days": 7,
-            "last_usd": 1200,
+            "last_usd": 2466,
             "prev_usd": -600,
-            "velocity_weekly_usd": 1200,
-            "accel_usd": 1800,
+            "velocity_weekly_usd": 2466,
+            "accel_usd": 3066,
             "significant": false
           },
           "2w": {
             "weeks": 2,
             "days": 14,
-            "last_usd": 600,
+            "last_usd": 1866,
             "prev_usd": -3300,
-            "velocity_weekly_usd": 300,
-            "accel_usd": 3900,
+            "velocity_weekly_usd": 933,
+            "accel_usd": 5166,
             "significant": false
           },
           "4w": {
             "weeks": 4,
             "days": 28,
-            "last_usd": -2700,
+            "last_usd": -1434,
             "prev_usd": -20500,
-            "velocity_weekly_usd": -675,
-            "accel_usd": 17800,
+            "velocity_weekly_usd": -359,
+            "accel_usd": 19066,
             "significant": false
           },
           "8w": {
             "weeks": 8,
             "days": 56,
-            "last_usd": -23200,
+            "last_usd": -21934,
             "prev_usd": -17600,
-            "velocity_weekly_usd": -2900,
-            "accel_usd": -5600,
+            "velocity_weekly_usd": -2742,
+            "accel_usd": -4334,
             "significant": false
           },
           "13w": {
             "weeks": 13,
             "days": 91,
-            "last_usd": -28300,
+            "last_usd": -27034,
             "prev_usd": -49100,
-            "velocity_weekly_usd": -2177,
-            "accel_usd": 20800,
+            "velocity_weekly_usd": -2080,
+            "accel_usd": 22066,
             "significant": false
           }
         },
-        "last_4w_usd": -2700,
+        "partial_last_week": {
+          "action": "scaled",
+          "week": "2026-08-17",
+          "fraction": 0.487
+        },
+        "last_4w_usd": -1434,
         "prev_4w_usd": -20500,
-        "last_8w_usd": -23200,
+        "last_8w_usd": -21934,
         "prev_8w_usd": -17600,
-        "flow_accel_4w_usd": 17800,
+        "flow_accel_4w_usd": 19066,
         "flow_accel_4w_significant": false,
-        "flow_accel_8w_usd": -5600,
+        "flow_accel_8w_usd": -4334,
         "flow_accel_8w_significant": false,
-        "flow_velocity_weekly_usd": -675,
+        "flow_velocity_weekly_usd": -359,
         "shape": {
-          "code": "DISTRIBUTION_BUILDING",
-          "stage_pct": 25,
-          "text_ru": "отток ускоряется — распродажа только началась"
+          "code": "DISTRIBUTION_FADING",
+          "stage_pct": 95,
+          "text_ru": "отток на последней неделе сменился притоком — распродажа закончилась",
+          "direction": "OUT",
+          "short_vs_mid": -7.869,
+          "mid_vs_long": -0.869,
+          "short_flipped": true
         }
       },
       "regime": {
@@ -2660,8 +2937,8 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -2.7,
-        "flow_last_4w_usd": -2700
+        "price_change_30d_pct": -2.1,
+        "flow_last_4w_usd": -1434
       },
       "data_quality": {
         "ok": true,
