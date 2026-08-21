@@ -1,0 +1,1077 @@
+{
+  "computed_at": "2026-08-21T09:47:54.650462+00:00",
+  "engine_version": "phase_analyzer/1.0",
+  "cost": "0 credits · locally-computed",
+  "tokens_analyzed": 31,
+  "tokens_suspicious": 6,
+  "sources": {
+    "token_scan": 31,
+    "hive_prices": true,
+    "funding": true,
+    "momentum": true
+  },
+  "tokens": {
+    "AAVE": {
+      "phase_verdict_dune": "WEAKENING",
+      "phase_verdict_age_min": 312,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -2872200,
+        "prev_4w_usd": 2459400,
+        "last_8w_usd": -412800,
+        "prev_8w_usd": 2862800,
+        "flow_accel_4w_usd": -5331600,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -718050,
+        "flow_accel_8w_usd": -3275600,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -3.0,
+        "flow_last_4w_usd": -2872200
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.01
+    },
+    "AIXBT": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 303,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -2300,
+        "prev_4w_usd": -1000,
+        "last_8w_usd": -3300,
+        "prev_8w_usd": -84700,
+        "flow_accel_4w_usd": -1300,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -575,
+        "flow_accel_8w_usd": 81400,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -0.2,
+        "flow_last_4w_usd": -2300
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "AKT": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 2238,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 2600,
+        "prev_4w_usd": -1900,
+        "last_8w_usd": 700,
+        "prev_8w_usd": 10400,
+        "flow_accel_4w_usd": 4500,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 650,
+        "flow_accel_8w_usd": -9700,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -7.2,
+        "flow_last_4w_usd": 2600
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "ARB": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 305,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 248700,
+        "prev_4w_usd": -606600,
+        "last_8w_usd": -357900,
+        "prev_8w_usd": -1617400,
+        "flow_accel_4w_usd": 855300,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": 62175,
+        "flow_accel_8w_usd": 1259500,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_UP",
+        "text_ru": "приток разгоняется — лучшее окно для входа"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -2.1,
+        "flow_last_4w_usd": 248700
+      },
+      "data_quality": {
+        "ok": false,
+        "flags": [
+          {
+            "source": "dune_sector_momentum",
+            "field": "price_change_7d_pct",
+            "value": 1717040.1,
+            "reason": "изменение цены 1717040% > 500% — единицы измерения сбились"
+          }
+        ]
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.00975
+    },
+    "AXS": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 310,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 13000,
+        "prev_4w_usd": -60600,
+        "last_8w_usd": -47600,
+        "prev_8w_usd": 121200,
+        "flow_accel_4w_usd": 73600,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 3250,
+        "flow_accel_8w_usd": -168800,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -2.7,
+        "flow_last_4w_usd": 13000
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "BONK": {
+      "phase_verdict_dune": "MID_ACCUMULATION",
+      "phase_verdict_age_min": 2233,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 310500,
+        "prev_4w_usd": 206500,
+        "last_8w_usd": 517000,
+        "prev_8w_usd": 334100,
+        "flow_accel_4w_usd": 104000,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 77625,
+        "flow_accel_8w_usd": 182900,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "DATA_SUSPICIOUS",
+        "price_change_30d_pct": 6230.0,
+        "note": "изменение цены больше 500% — данные подозрительны"
+      },
+      "data_quality": {
+        "ok": false,
+        "flags": [
+          {
+            "source": "token_scan",
+            "field": "price_30d_ago",
+            "value": 6229.968454258675,
+            "reason": "30-дневное изменение 6230% > 500%"
+          }
+        ]
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "CFG": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 2254,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -124500,
+        "prev_4w_usd": -54000,
+        "last_8w_usd": -178500,
+        "prev_8w_usd": 209900,
+        "flow_accel_4w_usd": -70500,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -31125,
+        "flow_accel_8w_usd": -388400,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -14.0,
+        "flow_last_4w_usd": -124500
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "CRV": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 310,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 1106000,
+        "prev_4w_usd": -127900,
+        "last_8w_usd": 978100,
+        "prev_8w_usd": 838100,
+        "flow_accel_4w_usd": 1233900,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": 276500,
+        "flow_accel_8w_usd": 140000,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "ACCEL_UP",
+        "text_ru": "приток разгоняется — лучшее окно для входа"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": 21.2,
+        "flow_last_4w_usd": 1106000
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "DOGE": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 303,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 521800,
+        "prev_4w_usd": 163800,
+        "last_8w_usd": 685600,
+        "prev_8w_usd": -1019200,
+        "flow_accel_4w_usd": 358000,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 130450,
+        "flow_accel_8w_usd": 1704800,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "STEADY_UP",
+        "text_ru": "стабильный приток без ускорения"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": 8.1,
+        "flow_last_4w_usd": 521800
+      },
+      "data_quality": {
+        "ok": false,
+        "flags": [
+          {
+            "source": "dune_sector_momentum",
+            "field": "price_change_7d_pct",
+            "value": 10423.1,
+            "reason": "изменение цены 10423% > 500% — единицы измерения сбились"
+          }
+        ]
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "EIGEN": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 2252,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -98900,
+        "prev_4w_usd": 138400,
+        "last_8w_usd": 39500,
+        "prev_8w_usd": 926800,
+        "flow_accel_4w_usd": -237300,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -24725,
+        "flow_accel_8w_usd": -887300,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -26.5,
+        "flow_last_4w_usd": -98900
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.005
+    },
+    "ETHFI": {
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "phase_verdict_age_min": 307,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 223700,
+        "prev_4w_usd": 860900,
+        "last_8w_usd": 1084600,
+        "prev_8w_usd": 711200,
+        "flow_accel_4w_usd": -637200,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": 55925,
+        "flow_accel_8w_usd": 373400,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STALLING_UP",
+        "text_ru": "приток есть, но темп падает — возможная вершина"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": 13.6,
+        "flow_last_4w_usd": 223700
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.005
+    },
+    "FET": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 314,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -180400,
+        "prev_4w_usd": -247900,
+        "last_8w_usd": -428300,
+        "prev_8w_usd": 497800,
+        "flow_accel_4w_usd": 67500,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -45100,
+        "flow_accel_8w_usd": -926100,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -16.9,
+        "flow_last_4w_usd": -180400
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "FIL": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 316,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 5300,
+        "prev_4w_usd": 9500,
+        "last_8w_usd": 14800,
+        "prev_8w_usd": 87600,
+        "flow_accel_4w_usd": -4200,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 1325,
+        "flow_accel_8w_usd": -72800,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -8.2,
+        "flow_last_4w_usd": 5300
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "GRT": {
+      "phase_verdict_dune": "MARKDOWN",
+      "phase_verdict_age_min": 312,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -11000,
+        "prev_4w_usd": -72700,
+        "last_8w_usd": -83700,
+        "prev_8w_usd": 12600,
+        "flow_accel_4w_usd": 61700,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -2750,
+        "flow_accel_8w_usd": -96300,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -16.8,
+        "flow_last_4w_usd": -11000
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "LDO": {
+      "phase_verdict_dune": "MARKDOWN",
+      "phase_verdict_age_min": 313,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -2069800,
+        "prev_4w_usd": 752400,
+        "last_8w_usd": -1317400,
+        "prev_8w_usd": 164500,
+        "flow_accel_4w_usd": -2822200,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -517450,
+        "flow_accel_8w_usd": -1481900,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -21.1,
+        "flow_last_4w_usd": -2069800
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.00327
+    },
+    "LINK": {
+      "phase_verdict_dune": "MID_ACCUMULATION_STRONG",
+      "phase_verdict_age_min": 306,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 8620100,
+        "prev_4w_usd": -2946700,
+        "last_8w_usd": 5673400,
+        "prev_8w_usd": 22623700,
+        "flow_accel_4w_usd": 11566800,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": 2155025,
+        "flow_accel_8w_usd": -16950300,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_UP",
+        "text_ru": "приток разгоняется — лучшее окно для входа"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": 16.6,
+        "flow_last_4w_usd": 8620100
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.01
+    },
+    "MNT": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 305,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 513600,
+        "prev_4w_usd": -370900,
+        "last_8w_usd": 142700,
+        "prev_8w_usd": -2909900,
+        "flow_accel_4w_usd": 884500,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": 128400,
+        "flow_accel_8w_usd": 3052600,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_UP",
+        "text_ru": "приток разгоняется — лучшее окно для входа"
+      },
+      "divergence": {
+        "code": "BULLISH_DIV",
+        "text_ru": "цена -52% за 30д, а деньги заходят $+0.5M — накопление на просадке",
+        "price_change_30d_pct": -52.3,
+        "flow_last_4w_usd": 513600
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "MORPHO": {
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "phase_verdict_age_min": 303,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 608400,
+        "prev_4w_usd": 635600,
+        "last_8w_usd": 1244000,
+        "prev_8w_usd": 3145400,
+        "flow_accel_4w_usd": -27200,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 152100,
+        "flow_accel_8w_usd": -1901400,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "STEADY_UP",
+        "text_ru": "стабильный приток без ускорения"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": 8.1,
+        "flow_last_4w_usd": 608400
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.005
+    },
+    "ONDO": {
+      "phase_verdict_dune": "MARKDOWN",
+      "phase_verdict_age_min": 307,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -100500,
+        "prev_4w_usd": 707800,
+        "last_8w_usd": 607300,
+        "prev_8w_usd": 1298500,
+        "flow_accel_4w_usd": -808300,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -25125,
+        "flow_accel_8w_usd": -691200,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -14.5,
+        "flow_last_4w_usd": -100500
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.005
+    },
+    "OP": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 308,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -87400,
+        "prev_4w_usd": -183400,
+        "last_8w_usd": -270800,
+        "prev_8w_usd": 152300,
+        "flow_accel_4w_usd": 96000,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -21850,
+        "flow_accel_8w_usd": -423100,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -4.4,
+        "flow_last_4w_usd": -87400
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.01
+    },
+    "PENDLE": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 302,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -190300,
+        "prev_4w_usd": 447900,
+        "last_8w_usd": 257600,
+        "prev_8w_usd": 7700,
+        "flow_accel_4w_usd": -638200,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -47575,
+        "flow_accel_8w_usd": 249900,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -10.7,
+        "flow_last_4w_usd": -190300
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.005
+    },
+    "PEPE": {
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "phase_verdict_age_min": 1424,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -242900,
+        "prev_4w_usd": 1162600,
+        "last_8w_usd": 919700,
+        "prev_8w_usd": 778200,
+        "flow_accel_4w_usd": -1405500,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -60725,
+        "flow_accel_8w_usd": 141500,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": 132.7,
+        "flow_last_4w_usd": -242900
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "RNDR": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 1430,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -134400,
+        "prev_4w_usd": -243000,
+        "last_8w_usd": -377400,
+        "prev_8w_usd": 376400,
+        "flow_accel_4w_usd": 108600,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -33600,
+        "flow_accel_8w_usd": -753800,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -14.3,
+        "flow_last_4w_usd": -134400
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "RPL": {
+      "phase_verdict_dune": "MARKDOWN",
+      "phase_verdict_age_min": 1434,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -63500,
+        "prev_4w_usd": -2300,
+        "last_8w_usd": -65800,
+        "prev_8w_usd": 22600,
+        "flow_accel_4w_usd": -61200,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -15875,
+        "flow_accel_8w_usd": -88400,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -21.2,
+        "flow_last_4w_usd": -63500
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "SAND": {
+      "phase_verdict_dune": "MARKDOWN",
+      "phase_verdict_age_min": 304,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -65600,
+        "prev_4w_usd": -279400,
+        "last_8w_usd": -345000,
+        "prev_8w_usd": -17900,
+        "flow_accel_4w_usd": 213800,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -16400,
+        "flow_accel_8w_usd": -327100,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -16.6,
+        "flow_last_4w_usd": -65600
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "STRK": {
+      "phase_verdict_dune": "MARKDOWN",
+      "phase_verdict_age_min": 308,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -28800,
+        "prev_4w_usd": -58200,
+        "last_8w_usd": -87000,
+        "prev_8w_usd": -158200,
+        "flow_accel_4w_usd": 29400,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -7200,
+        "flow_accel_8w_usd": 71200,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -20.9,
+        "flow_last_4w_usd": -28800
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.005
+    },
+    "TAO": {
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "phase_verdict_age_min": 1428,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 4300,
+        "prev_4w_usd": 37600,
+        "last_8w_usd": 41900,
+        "prev_8w_usd": 5700,
+        "flow_accel_4w_usd": -33300,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": 1075,
+        "flow_accel_8w_usd": 36200,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "DATA_SUSPICIOUS",
+        "price_change_30d_pct": 6446252.6,
+        "note": "изменение цены больше 500% — данные подозрительны"
+      },
+      "data_quality": {
+        "ok": false,
+        "flags": [
+          {
+            "source": "token_scan",
+            "field": "price_30d_ago",
+            "value": 6446252.638014285,
+            "reason": "30-дневное изменение 6446253% > 500%"
+          }
+        ]
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "UNI": {
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "phase_verdict_age_min": 314,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -152700,
+        "prev_4w_usd": 3170600,
+        "last_8w_usd": 3017900,
+        "prev_8w_usd": 5256200,
+        "flow_accel_4w_usd": -3323300,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -38175,
+        "flow_accel_8w_usd": -2238300,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -5.3,
+        "flow_last_4w_usd": -152700
+      },
+      "data_quality": {
+        "ok": false,
+        "flags": [
+          {
+            "source": "dune_sector_momentum",
+            "field": "price_change_7d_pct",
+            "value": 72285,
+            "reason": "изменение цены 72285% > 500% — единицы измерения сбились"
+          }
+        ]
+      },
+      "funding_bias": "NEUTRAL",
+      "funding_rate_pct": 0.01
+    },
+    "VIRTUAL": {
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "phase_verdict_age_min": 308,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -3467100,
+        "prev_4w_usd": 916000,
+        "last_8w_usd": -2551100,
+        "prev_8w_usd": -594200,
+        "flow_accel_4w_usd": -4383100,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": -866775,
+        "flow_accel_8w_usd": -1956900,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "ACCEL_DOWN",
+        "text_ru": "отток ускоряется — капитуляция или distribution"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -6.6,
+        "flow_last_4w_usd": -3467100
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "WIF": {
+      "phase_verdict_dune": "MID_ACCUMULATION",
+      "phase_verdict_age_min": 308,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": 199600,
+        "prev_4w_usd": 708500,
+        "last_8w_usd": 908100,
+        "prev_8w_usd": 139900,
+        "flow_accel_4w_usd": -508900,
+        "flow_accel_4w_significant": true,
+        "flow_velocity_weekly_usd": 49900,
+        "flow_accel_8w_usd": 768200,
+        "flow_accel_8w_significant": true
+      },
+      "regime": {
+        "code": "STALLING_UP",
+        "text_ru": "приток есть, но темп падает — возможная вершина"
+      },
+      "divergence": {
+        "code": "DATA_SUSPICIOUS",
+        "price_change_30d_pct": 2251.2,
+        "note": "изменение цены больше 500% — данные подозрительны"
+      },
+      "data_quality": {
+        "ok": false,
+        "flags": [
+          {
+            "source": "token_scan",
+            "field": "price_30d_ago",
+            "value": 2251.185921958684,
+            "reason": "30-дневное изменение 2251% > 500%"
+          }
+        ]
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    },
+    "ZK": {
+      "phase_verdict_dune": "WEAKENING",
+      "phase_verdict_age_min": 1443,
+      "flow": {
+        "status": "OK",
+        "weeks_available": 26,
+        "last_4w_usd": -2700,
+        "prev_4w_usd": -20500,
+        "last_8w_usd": -23200,
+        "prev_8w_usd": -17600,
+        "flow_accel_4w_usd": 17800,
+        "flow_accel_4w_significant": false,
+        "flow_velocity_weekly_usd": -675,
+        "flow_accel_8w_usd": -5600,
+        "flow_accel_8w_significant": false
+      },
+      "regime": {
+        "code": "STABLE_ZERO",
+        "text_ru": "поток около нуля, без сигнала"
+      },
+      "divergence": {
+        "code": "ALIGNED",
+        "text_ru": "цена и капитал движутся в одну сторону",
+        "price_change_30d_pct": -16.8,
+        "flow_last_4w_usd": -2700
+      },
+      "data_quality": {
+        "ok": true,
+        "flags": []
+      },
+      "funding_bias": null,
+      "funding_rate_pct": null
+    }
+  }
+}
