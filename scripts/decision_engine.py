@@ -21,10 +21,15 @@ DECISIONS_FILE = os.path.join(CACHE, "decisions.json")
 ACCURACY_FILE = os.path.join(CACHE, "decision_accuracy.json")
 LOG_FILE = os.path.join(HISTORY, "decision_log.jsonl")
 
-ENGINE_VERSION = "1.2"
+ENGINE_VERSION = "1.3"
 VERIFY_AFTER_DAYS = 7
 MOVE_THRESHOLD_PCT = 3.0
 MIN_N_FOR_ACCURACY = 20
+
+# Ниже этого размера вход не имеет смысла: комиссии и проскальзывание
+# съедают преимущество. Если правила срезали до такого — значит сигналов
+# против слишком много, честнее сказать "ждать".
+MIN_PRACTICAL_SIZE_PCT = 10
 
 PHASE_MAP = {
     "MID_ACCUMULATION_STRONG":     ("ВХОД ЧАСТЬЮ", 66, "Зрелое накопление подтверждено сигналами силы"),
@@ -373,6 +378,18 @@ def decide(token, sig):
         action, size = "ЖДАТЬ", 0
         notes.append(f"{hard} расхождения — дешевле подождать.")
         rules.append("conflict_gate")
+
+    # Минимальный практический размер. Позиция меньше MIN_PRACTICAL_SIZE_PCT
+    # съедается комиссиями и проскальзыванием — входить в неё смысла нет.
+    # Правила режут размер каждое по своей причине, и когда их набирается
+    # много, итог получается арифметически верным, но практически мёртвым.
+    if 0 < size < MIN_PRACTICAL_SIZE_PCT:
+        notes.append(f"После всех корректировок осталось {size}% — меньше "
+                     f"практического минимума {MIN_PRACTICAL_SIZE_PCT}%. "
+                     f"Слишком много правил против; входить в такую долю "
+                     f"смысла нет, комиссии съедят.")
+        rules.append("below_min_practical_size")
+        action, size = "ЖДАТЬ", 0
 
     if size == 0 and action == "ВХОД ЧАСТЬЮ":
         action = "ЖДАТЬ"
