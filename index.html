@@ -1330,6 +1330,39 @@ async function renderEngineSignals() {
 }
 
 // Тонкий рендер. Тон, тексты и сортировка приходят из view_data.py.
+let _knownVersion = null;
+
+async function startVersionWatch() {
+  const check = async () => {
+    try {
+      const r = await fetch('VERSION.txt?t=' + Date.now(), {cache: 'no-store'});
+      if (!r.ok) return;
+      const v = (await r.text()).trim().split('\n')[0];
+      if (!_knownVersion) { _knownVersion = v; return; }
+      if (v !== _knownVersion) showUpdateBanner();
+    } catch (e) { /* сеть моргнула — молчим, проверим через минуту */ }
+  };
+  await check();
+  setInterval(check, 60000);
+}
+
+function showUpdateBanner() {
+  if (document.getElementById('update-banner')) return;
+  const b = document.createElement('div');
+  b.id = 'update-banner';
+  b.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; ' +
+    'padding: 14px 18px; background: #059669; color: white; border-radius: 10px; ' +
+    'box-shadow: 0 4px 20px rgba(0,0,0,0.25); font-size: 13px; max-width: 320px; ' +
+    'display: flex; align-items: center; gap: 12px; font-family: inherit;';
+  b.innerHTML = '<div style="flex: 1; line-height: 1.4;">' +
+    '<strong>Вышла новая версия</strong><br>' +
+    '<span style="font-size: 11px; opacity: 0.9;">На странице старые данные</span></div>' +
+    '<button onclick="location.reload(true)" style="padding: 7px 13px; background: white; ' +
+    'color: #059669; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; ' +
+    'cursor: pointer; white-space: nowrap;">Обновить</button>';
+  document.body.appendChild(b);
+}
+
 async function renderWhales() {
   const el = document.getElementById('whales-content');
   if (!el) return;
@@ -3333,6 +3366,13 @@ async function loadAll(manual = false) {
   safeRender('Summaries', () => renderModuleSummaries());
   safeRender('EngineSignals', () => renderEngineSignals());
   safeRender('Whales', () => renderWhales());
+
+  // Слежение за версией. Кэш на сервере отключён правильно, но браузер
+  // всё равно держит открытую страницу и не перезапрашивает её сам.
+  // За сессию 21.08 это трижды выглядело как «ничего не появилось»,
+  // хотя данные были на месте. Проверяем VERSION.txt раз в минуту
+  // и говорим прямо, если файл на сервере изменился.
+  startVersionWatch();
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
