@@ -228,7 +228,15 @@ jobs:
       # STAGE 1.5 · DUNE COLLECTOR (Starknet ecosystem stats)
       # Cache 20h daily / 6d weekly / 5d monthly / 24h cex_flow — economy на free tier.
       # Тихо skipped если DUNE_API_KEY не установлен.
+      # Сторож бюджета Dune. Раньше он висел только на force_all_token_scan —
+      # самой редкой job — а остальные пять тратили кредиты, не проверяя
+      # остаток и НЕ РЕГИСТРИРУЯ расход. Из-за этого счётчик почти не рос
+      # и ярусные отключения не срабатывали никогда.
+      - name: Budget gate
+        id: gate
+        run: python3 scripts/dune_budget.py --check composite
       - name: Dune collector · Starknet stats
+        if: steps.gate.outputs.allowed == 'true'
         continue-on-error: true
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
@@ -243,7 +251,7 @@ jobs:
       # Экономим Analyst tier credits — не qazhe run
       - name: Dune sector collector (LAB)
         continue-on-error: true
-        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        if: steps.gate.outputs.allowed == 'true' && (github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *')
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_SECTOR_NETFLOW: ${{ secrets.DUNE_QUERY_ID_SECTOR_NETFLOW }}
@@ -314,13 +322,20 @@ jobs:
         continue-on-error: true
         # '0 12 * * 0' убран: такого cron в schedule нет, ветка была недостижима.
         # Рабочие триггеры — mode=lab и cron '30 8,20', они и оставлены.
-        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
+        if: steps.gate.outputs.allowed == 'true' && (github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *')
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_WHALE_HOLDINGS: ${{ secrets.DUNE_QUERY_ID_WHALE_HOLDINGS }}
           WHALE_HOLDINGS_MAX_TOKENS: "5"
           WHALE_HOLDINGS_MIN_INTERVAL_HOURS: "168"
         run: python3 scripts/collectors/whale_holdings_collector.py
+
+      # Регистрируем расход composite один раз за прогон. Оценка ~150
+      # кредитов из TIERS; точнее посчитать нельзя, Dune не возвращает
+      # стоимость исполнения в ответе.
+      - name: Register Dune spend
+        if: steps.gate.outputs.allowed == 'true'
+        run: python3 scripts/dune_budget.py --spend composite
 
       # STAGE 1.99 · SYSTEM HEALTH AUDIT
       # Проверяет что все collectors/detectors/pipeline работают.
@@ -653,16 +668,28 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install dune-client requests
+      # Сторож бюджета Dune. Раньше он висел только на force_all_token_scan —
+      # самой редкой job — а остальные пять тратили кредиты, не проверяя
+      # остаток и НЕ РЕГИСТРИРУЯ расход. Из-за этого счётчик почти не рос
+      # и ярусные отключения не срабатывали никогда.
+      - name: Budget gate
+        id: gate
+        run: python3 scripts/dune_budget.py --check weekly_token_scan
       - name: Run weekly token scan (all 18 tokens)
+        if: steps.gate.outputs.allowed == 'true'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
         run: python3 token_scan/token_scan_collector.py
+      - name: Register Dune spend
+        if: steps.gate.outputs.allowed == 'true'
+        run: python3 scripts/dune_budget.py --spend weekly_token_scan
       - name: Commit cache
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
+          [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
           git diff --cached --quiet || git commit -m "chore: weekly token scan cache refresh [skip ci]"
           # Пуш с повторами. Раньше здесь было
           #   git push || (git pull --rebase && git push) || echo "Push failed"
@@ -724,6 +751,7 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
           [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
+          [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
           git diff --cached --quiet || git commit -m "chore: FORCE all token scan refresh [skip ci]"
           # Пуш с повторами. Раньше здесь было
           #   git push || (git pull --rebase && git push) || echo "Push failed"
@@ -764,16 +792,28 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install dune-client requests
+      # Сторож бюджета Dune. Раньше он висел только на force_all_token_scan —
+      # самой редкой job — а остальные пять тратили кредиты, не проверяя
+      # остаток и НЕ РЕГИСТРИРУЯ расход. Из-за этого счётчик почти не рос
+      # и ярусные отключения не срабатывали никогда.
+      - name: Budget gate
+        id: gate
+        run: python3 scripts/dune_budget.py --check daily_token_scan
       - name: Run daily STRONG_BUY token refresh
+        if: steps.gate.outputs.allowed == 'true'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
         run: python3 token_scan/token_scan_collector.py --strong-buy-only
+      - name: Register Dune spend
+        if: steps.gate.outputs.allowed == 'true'
+        run: python3 scripts/dune_budget.py --spend daily_token_scan
       - name: Commit cache
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
+          [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
           git diff --cached --quiet || git commit -m "chore: daily STRONG_BUY token scan [skip ci]"
           # Пуш с повторами. Раньше здесь было
           #   git push || (git pull --rebase && git push) || echo "Push failed"
@@ -926,16 +966,28 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install dune-client requests
+      # Сторож бюджета Dune. Раньше он висел только на force_all_token_scan —
+      # самой редкой job — а остальные пять тратили кредиты, не проверяя
+      # остаток и НЕ РЕГИСТРИРУЯ расход. Из-за этого счётчик почти не рос
+      # и ярусные отключения не срабатывали никогда.
+      - name: Budget gate
+        id: gate
+        run: python3 scripts/dune_budget.py --check strk_avnu_scan
       - name: Fetch STRK from AVNU DEX (Starknet)
+        if: steps.gate.outputs.allowed == 'true'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_STRK_AVNU: ${{ secrets.DUNE_QUERY_ID_STRK_AVNU }}
         run: python3 token_scan/strk_avnu_collector.py
+      - name: Register Dune spend
+        if: steps.gate.outputs.allowed == 'true'
+        run: python3 scripts/dune_budget.py --spend strk_avnu_scan
       - name: Commit STRK.json cache
         run: |
           git config user.email "bot@github.com"
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/STRK.json
+          [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
           git diff --cached --quiet || git commit -m "chore: STRK AVNU scan [skip ci]"
           # Пуш с повторами. Раньше здесь было
           #   git push || (git pull --rebase && git push) || echo "Push failed"
@@ -2056,11 +2108,22 @@ jobs:
             exit 1
           fi
           echo "Сканирую ${{ github.event.inputs.token }}"
+      # Сторож бюджета Dune. Раньше он висел только на force_all_token_scan —
+      # самой редкой job — а остальные пять тратили кредиты, не проверяя
+      # остаток и НЕ РЕГИСТРИРУЯ расход. Из-за этого счётчик почти не рос
+      # и ярусные отключения не срабатывали никогда.
+      - name: Budget gate
+        id: gate
+        run: python3 scripts/dune_budget.py --check token_scan_single
       - name: Scan single token via Dune
+        if: steps.gate.outputs.allowed == 'true'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_TOKEN_SCAN: ${{ secrets.DUNE_QUERY_ID_TOKEN_SCAN }}
         run: python3 token_scan/token_scan_collector.py --token ${{ github.event.inputs.token }}
+      - name: Register Dune spend
+        if: steps.gate.outputs.allowed == 'true'
+        run: python3 scripts/dune_budget.py --spend token_scan_single
       - name: Commit token scan
         run: |
           git config user.email "bot@github.com"
