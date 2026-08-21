@@ -29,6 +29,10 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Trade Journal · КАЖДЫЕ 6 ЧАСОВ. Пересчитывает открытые позиции,
+    # плавающий PnL и сверку твоих сделок с решениями движка.
+    # Ничего не исполняет — только читает записанное вручную.
+    - cron: '45 2,8,14,20 * * *'
     # Decision Backtest · ВОСКРЕСЕНЬЕ 06:20 UTC. Прогон правил задним
     # числом по weekly_history. Идёт после воскресного weekly_token_scan
     # (00:00), поэтому история уже обновлена свежей неделей.
@@ -104,6 +108,7 @@ on:
           - volume_profile
           - cvd_multi
           - decision_backtest
+          - trade_journal
           - decision_engine
           - decision_verify
           - archivist
@@ -1095,6 +1100,37 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/rule_backtest.json ] && git add data/cache/rule_backtest.json || echo "no backtest"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: rule backtest [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # TRADE JOURNAL · каждые 6 часов · 0 кредитов
+  # Читает data/history/trades.jsonl (заполняется вручную или через
+  # Telegram) и сопоставляет с decision_log.jsonl.
+  #
+  # Отвечает на вопрос, которого не решает ни бэктест, ни форвард-тест:
+  # следовала ли ты сигналам, и что вышло когда не следовала.
+  # ============================================================
+  trade_journal:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '45 2,8,14,20 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'trade_journal')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reconcile trades with decisions
+        run: python3 scripts/trade_journal.py
+      - name: Commit trade_journal.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/trade_journal.json ] && git add data/cache/trade_journal.json || echo "no journal"
+          [ -f data/history/trades.jsonl ] && git add data/history/trades.jsonl || echo "no trades"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: trade journal [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
