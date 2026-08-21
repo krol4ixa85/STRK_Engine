@@ -998,10 +998,17 @@ function fmtInt(n) {
   if (n === null || n === undefined || isNaN(n)) return 'n/a';
   return Number(n).toLocaleString('ru-RU');
 }
-// v4: список файлов которые ожидаемо отсутствуют — silent 404
-const OPTIONAL_FILES = ['whale_holdings_alerts.jsonl'];
+// Файлы, которых в репозитории нет и не будет. Раньше они помечались
+// как «ожидаемо отсутствующие» и код молча глотал 404 — но браузер всё
+// равно печатает такой запрос красным в консоли, и он мешает читать
+// настоящие ошибки. Теперь просто не запрашиваем.
+const SKIP_FILES = ['whale_holdings_alerts.jsonl'];
+
+// Оставлено для совместимости: некоторые вызовы ещё ссылаются на список
+const OPTIONAL_FILES = SKIP_FILES;
 
 async function fetchJSON(path) {
+  if (SKIP_FILES.some(f => path.includes(f))) return null;
   const url = `${BASE_URL}/${path}?v=${CACHE_VERSION}`;
   const isOptional = OPTIONAL_FILES.some(f => path.includes(f));
   try {
@@ -1016,6 +1023,7 @@ async function fetchJSON(path) {
   } catch (e) { return null; }
 }
 async function fetchJSONL(path) {
+  if (SKIP_FILES.some(f => path.includes(f))) return [];
   const url = `${BASE_URL}/${path}?v=${CACHE_VERSION}`;
   const isOptional = OPTIONAL_FILES && OPTIONAL_FILES.some(f => path.includes(f));
   try {
