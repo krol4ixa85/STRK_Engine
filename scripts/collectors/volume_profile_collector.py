@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-volume_profile_collector.py · v2.1 · 21.08.2026
+volume_profile_collector.py · v2.2 · 21.08.2026
 STRK ENGINE · Volume Profile и магниты цены
 
 ЗАЧЕМ
@@ -597,8 +597,88 @@ def analyze_token(symbol, hl_name):
     return result
 
 
+# Насколько объём токена должен превышать ОБЩЕРЫНОЧНЫЙ, чтобы считать
+# выход вверх принятием цены, а не просто участием в общем движении.
+MARKUP_EXCESS_OVER_MARKET = 1.15
+
+# Абсолютный пол: даже если весь рынок спит, ниже этого объёма
+# говорить о принятии цены нельзя.
+MARKUP_VOL_FLOOR = 1.3
+
+# Меньше этого числа токенов — медиана не показательна, работаем
+# по абсолютному порогу как раньше.
+MARKET_CONTEXT_MIN_TOKENS = 8
+
+
+def normalize_markup(out_tokens):
+    """
+    Второй проход: MARKUP определяется ОТНОСИТЕЛЬНО рынка, а не абсолютно.
+
+    Зачем. 21.08 весь рынок шёл вверх, медиана объёмного расширения по
+    вселенной была 2.33 — и абсолютный порог 1.3 дал MARKUP у 38 токенов
+    из 40. Фильтр перестал различать: «пробой на объёме» превратился
+    в «сегодня на бирже людно». Это ровно та ошибка, за которую мы
+    переделывали шкалу глубины стакана с абсолютной на относительную.
+
+    Теперь токен считается MARKUP, только если его объёмное расширение
+    заметно выше того, чем живёт весь рынок в эту минуту.
+    """
+    ratios = []
+    for r in out_tokens.values():
+        if not isinstance(r, dict) or r.get("status") != "OK":
+            continue
+        for key in ("position", "position_90d"):
+            p = r.get(key) or {}
+            vr = p.get("vol_ratio_recent")
+            if vr is not None and key == "position":
+                ratios.append(vr)
+
+    if len(ratios) < MARKET_CONTEXT_MIN_TOKENS:
+        return {"status": "NOT_ENOUGH_TOKENS", "tokens": len(ratios)}
+
+    ratios.sort()
+    n = len(ratios)
+    median = ratios[n // 2] if n % 2 else (ratios[n // 2 - 1] + ratios[n // 2]) / 2
+    threshold = max(MARKUP_VOL_FLOOR, median * MARKUP_EXCESS_OVER_MARKET)
+
+    changed = 0
+    for r in out_tokens.values():
+        if not isinstance(r, dict) or r.get("status") != "OK":
+            continue
+        for key in ("position", "position_90d"):
+            p = r.get(key) or {}
+            if p.get("code") != "ABOVE_VALUE":
+                continue
+            vr = p.get("vol_ratio_recent")
+            if vr is None:
+                continue
+            was = p.get("above_kind")
+            if vr >= threshold:
+                p["above_kind"] = "MARKUP"
+                tail = (f"выход на объёме ×{vr} при медиане рынка ×{median:.2f} — "
+                        f"рынок принимает новую цену")
+            else:
+                p["above_kind"] = "EXTENDED"
+                tail = (f"объём ×{vr} не выделяется на фоне рынка (медиана ×{median:.2f}) — "
+                        f"движение не подтверждено, вероятен возврат в зону")
+            p["market_median_vol_ratio"] = round(median, 2)
+            p["markup_threshold"] = round(threshold, 2)
+            head = p.get("text_ru", "").split(" — ")[0]
+            p["text_ru"] = f"{head} — {tail}"
+            if was != p["above_kind"]:
+                changed += 1
+
+    return {
+        "status": "OK",
+        "tokens_measured": n,
+        "median_vol_ratio": round(median, 2),
+        "markup_threshold": round(threshold, 2),
+        "reclassified": changed,
+    }
+
+
 def main(only=None):
-    print("=== Volume Profile Collector v2.1 (HL candles, 0 кредитов) ===\n")
+    print("=== Volume Profile Collector v2.2 (HL candles, 0 кредитов) ===\n")
 
     tokens = {k: v for k, v in TOKEN_MAP.items() if not only or k in only}
     print(f"  Токенов: {len(tokens)} · окон на токен: {len(WINDOWS)}\n")
@@ -628,9 +708,12 @@ def main(only=None):
             failed += 1
             print(f"  {symbol:8} нет данных")
 
+    market_vol = normalize_markup(out_tokens)
+
     out = {
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "source": "hyperliquid_candles",
+        "market_volume_context": market_vol,
         "cost": "free · 0 credits",
         "value_area_pct": VALUE_AREA_PCT * 100,
         "windows": {k: {"days": v["days"], "interval": v["interval"]}
