@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-view_data.py · v1.2 · 21.08.2026
+view_data.py · v1.3 · 21.08.2026
 STRK ENGINE · готовые данные для отображения
 
 ЗАЧЕМ
@@ -338,6 +338,136 @@ def build_signals_table(dec, comp, vp, pa, whales=None):
 WHALE_MIN_TOTAL_USD = 1_000_000
 
 
+# Пять слоёв системы. Имена не технические, а смысловые: файл
+# называется phase_analyzer.py, но человеку важно «что делают деньги».
+# Этот список задаёт и структуру модалки, и объяснение системы —
+# через месяц по нему можно вспомнить, из чего собран вывод.
+LAYERS = [
+    ("flow",     "Поток",    "⛓",  "что делают деньги"),
+    ("pressure", "Давление", "⚔",  "кто агрессивнее прямо сейчас"),
+    ("levels",   "Уровни",   "📐", "куда тянет цена"),
+    ("context",  "Контекст", "🌍", "какой сейчас рынок"),
+    ("position", "Позиция",  "📍", "что у меня открыто"),
+]
+
+
+def build_layers(token, d, comp, pa, vp, cvd, hl, regime, advice):
+    """
+    Собирает пять слоёв с одной строкой смысла каждый.
+    Это не новые вычисления — только сведение готовых чисел
+    под понятные имена.
+    """
+    out = []
+    components = (comp or {}).get("components") or {}
+
+    # ── ПОТОК · фаза и ускорение ──
+    onchain = (components.get("onchain") or {}).get("score")
+    regime_row = (pa or {}).get("regime") or {}
+    shape = ((pa or {}).get("flow") or {}).get("shape") or {}
+    flow_bits = []
+    if d.get("stage"):
+        flow_bits.append(PHASE_RU.get(d["stage"], d["stage"]))
+    if regime_row.get("text_ru"):
+        flow_bits.append(regime_row["text_ru"])
+    if shape.get("stage_pct") is not None:
+        flow_bits.append(f"пройдено {shape['stage_pct']}% фазы")
+    out.append({
+        "key": "flow", "name": "Поток", "icon": "⛓",
+        "purpose": "что делают деньги",
+        "score": onchain,
+        "detail": ". ".join(b.capitalize() if i == 0 else b
+                            for i, b in enumerate(flow_bits)) or "нет данных",
+    })
+
+    # ── ДАВЛЕНИЕ · агрессия и перекос ──
+    deriv = (components.get("derivatives") or {}).get("score")
+    press_bits = []
+    cons = (cvd or {}).get("consensus") or {}
+    if cons.get("text_ru"):
+        press_bits.append(cons["text_ru"])
+    if hl and hl.get("status") == "OK":
+        prem = hl.get("premium_pct")
+        if prem is not None:
+            press_bits.append(f"премия HL {prem:+.3f}%")
+        apr = hl.get("funding_annualised_pct")
+        if apr is not None and abs(apr) > 20:
+            press_bits.append(f"фандинг {apr:.0f}% годовых")
+    out.append({
+        "key": "pressure", "name": "Давление", "icon": "⚔",
+        "purpose": "кто агрессивнее прямо сейчас",
+        "score": deriv,
+        "detail": " · ".join(press_bits) or "деривативов мало, сигнал слабый",
+    })
+
+    # ── УРОВНИ · объёмный профиль и цели ──
+    tech = (components.get("technical") or {}).get("score")
+    lvl_bits = []
+    pos = (vp or {}).get("position") or {}
+    if pos.get("text_ru"):
+        lvl_bits.append(pos["text_ru"])
+    targets = (vp or {}).get("targets") or {}
+    up = (targets.get("nearest_up") or [None])[0]
+    down = (targets.get("nearest_down") or [None])[0]
+    if up:
+        lvl_bits.append(f"вверх {up['distance_pct']:+.1f}%")
+    if down:
+        lvl_bits.append(f"вниз {down['distance_pct']:.1f}%")
+    out.append({
+        "key": "levels", "name": "Уровни", "icon": "📐",
+        "purpose": "куда тянет цена",
+        "score": tech,
+        "detail": " · ".join(lvl_bits) or "профиль не построен",
+    })
+
+    # ── КОНТЕКСТ · режим рынка ──
+    reg = (d.get("regime") or {})
+    mult = reg.get("multiplier")
+    ctx_score = None
+    if mult is not None:
+        # Множитель 0..1 переводим в шкалу слоёв −1..+1,
+        # чтобы он читался рядом с остальными
+        ctx_score = round((mult - 0.7) / 0.3, 2)
+        ctx_score = max(-1.0, min(1.0, ctx_score))
+    out.append({
+        "key": "context", "name": "Контекст", "icon": "🌍",
+        "purpose": "какой сейчас рынок",
+        "score": ctx_score,
+        "detail": (f"{reg.get('name', '—')} · размер ×{mult}"
+                   if mult is not None else "режим неизвестен"),
+    })
+
+    # ── ПОЗИЦИЯ · из журнала ──
+    adv = advice or {}
+    if adv:
+        pnl = adv.get("pnl_pct")
+        pos_score = None
+        if adv.get("aligned") is True:
+            pos_score = 0.6
+        elif adv.get("aligned") is False and adv.get("signal_direction") not in (None, "FLAT"):
+            pos_score = -0.6
+        detail = f"{adv.get('side', '')} от ${adv.get('entry_price')}"
+        if pnl is not None:
+            detail += f" · {pnl:+.2f}%"
+        if adv.get("action_ru"):
+            detail += f" · {adv['action_ru'].lower()}"
+        out.append({
+            "key": "position", "name": "Позиция", "icon": "📍",
+            "purpose": "что у меня открыто",
+            "score": pos_score,
+            "detail": detail,
+            "urgency": adv.get("urgency"),
+        })
+    else:
+        out.append({
+            "key": "position", "name": "Позиция", "icon": "📍",
+            "purpose": "что у меня открыто",
+            "score": None,
+            "detail": "позиции нет",
+        })
+
+    return out
+
+
 def build_whale_view(row):
     """
     Готовая карточка по крупным игрокам. Тон и текст решаются здесь,
@@ -392,7 +522,7 @@ def build_whale_view(row):
     }
 
 
-def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None):
+def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None, advice=None):
     """
     Всё, что нужно модалке актива, уже готовым. Раньше браузер сам
     выводил фазу через flowRead и собирал конфликты — обе логики
@@ -406,6 +536,7 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None):
     cvds = (cvd or {}).get("tokens") or {}
     prices = (pref or {}).get("tokens") or {}
     whale_tokens = (whales or {}).get("by_token") or {}
+    advice_tokens = (advice or {}).get("by_token") or {}
 
     out = {}
     for token, d in decisions.items():
@@ -455,6 +586,10 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None):
             "hl": perps.get(token) or {},
             "cvd_consensus": (cvds.get(token) or {}).get("consensus") or {},
             "whales": build_whale_view(whale_tokens.get(token)),
+            "advice": advice_tokens.get(token),
+            "layers": build_layers(token, d, compass.get(token), p, v,
+                                   cvds.get(token), perps.get(token),
+                                   d.get("regime"), advice_tokens.get(token)),
             "data_quality": p.get("data_quality") or {"ok": True},
         }
 
@@ -472,6 +607,7 @@ def main():
     cvd = load("cvd_multi.json")
     pref = load("price_reference.json")
     whales = load("hl_whale_positions.json")
+    advice = load("position_advice.json")
 
     missing = [n for n, v in [("decisions", dec), ("compass", comp),
                               ("volume_profile", vp), ("phase_analysis", pa)]
@@ -481,7 +617,7 @@ def main():
 
     table = build_signals_table(dec, comp, vp, pa, whales)
     whale_summary = build_whale_summary(whales)
-    modal = build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales)
+    modal = build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales, advice)
 
     out = {
         "computed_at": datetime.now(timezone.utc).isoformat(),
