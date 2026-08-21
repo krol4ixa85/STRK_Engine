@@ -80,12 +80,12 @@ on:
     - cron: '35 1,7,13,19 * * *'
     # CVD Multi · КАЖДЫЕ 30 МИНУТ. Агрессия покупателей/продавцов
     # по всем токенам через OKX taker-volume. Ловит дивергенции.
-    - cron: '0,30 * * * *'
+    - cron: '3,33 * * * *'
     # HL Trade Collector · КАЖДЫЕ 15 МИНУТ. Собирает публичные сделки
     # >$500 по 10 нашим ключевым токенам в append-only лог.
     # База для будущего whale-watchlist — за 2-3 дня накопится достаточно
     # адресов чтобы отслеживать их позиции.
-    - cron: '5,20,35,50 * * * *'
+    - cron: '5,20,35,51 * * * *'
     # HL Perps · КАЖДЫЕ 30 МИНУТ. Публичный API Hyperliquid, ноль ключей.
     # Даёт funding, premium (mark−oracle), OI по каждому активу.
     # Ключевой сигнал — premium: указывает давление ПРЯМО СЕЙЧАС,
@@ -102,7 +102,7 @@ on:
     - cron: '15,45 * * * *'
     # Funding per token · КАЖДЫЕ 30 МИНУТ. Источник OKX public — бесплатно,
     # ноль кредитов Hive и Dune. Единственный модуль такой частоты.
-    - cron: '*/30 * * * *'
+    - cron: '7,37 * * * *'
     # Force-all скан всех токенов · раз в 2 недели, суббота 03:00 UTC (~700 кредитов Dune)
     - cron: '0 3 */14 * *'
     # Архивариус · снимок + дельты + ретеншн. Ежедневно 03:50 UTC,
@@ -193,6 +193,13 @@ jobs:
       || (github.event_name == 'workflow_dispatch' 
         && contains(fromJson('["digest","liq","run","backtest","baseline","lab"]'), github.event.inputs.mode))
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-composite
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -222,24 +229,26 @@ jobs:
       # Cache 20h daily / 6d weekly / 5d monthly / 24h cex_flow — economy на free tier.
       # Тихо skipped если DUNE_API_KEY не установлен.
       - name: Dune collector · Starknet stats
+        continue-on-error: true
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_DAILY: ${{ secrets.DUNE_QUERY_ID_DAILY }}
           DUNE_QUERY_ID_WEEKLY: ${{ secrets.DUNE_QUERY_ID_WEEKLY }}
           DUNE_QUERY_ID_MONTHLY: ${{ secrets.DUNE_QUERY_ID_MONTHLY }}
           DUNE_QUERY_ID_CEX_FLOW: ${{ secrets.DUNE_QUERY_ID_CEX_FLOW }}
-        run: python3 scripts/collectors/dune_collector.py || true
+        run: python3 scripts/collectors/dune_collector.py
 
       # STAGE 1.55 · SECTOR ROTATION COLLECTOR (для LAB режима)
       # Запускается ТОЛЬКО при mode=lab или cron 08:30 UTC
       # Экономим Analyst tier credits — не qazhe run
       - name: Dune sector collector (LAB)
+        continue-on-error: true
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_SECTOR_NETFLOW: ${{ secrets.DUNE_QUERY_ID_SECTOR_NETFLOW }}
           DUNE_QUERY_ID_SECTOR_MOMENTUM: ${{ secrets.DUNE_QUERY_ID_SECTOR_MOMENTUM }}
-        run: python3 scripts/collectors/dune_sector_collector.py || true
+        run: python3 scripts/collectors/dune_sector_collector.py
 
       # STAGE 1.56 · ALT-CYCLE COLLECTOR (macro compass)
       # Собирает BTC.D + ETH/BTC + TOTAL3 из CoinGecko (free API).
@@ -247,25 +256,29 @@ jobs:
       # Cache 4h → запускается на every run, но реально API calls ~6x/day.
       # Показывается в dashboard как top-level macro context.
       - name: Alt-cycle collector (macro compass)
-        run: python3 scripts/collectors/alt_cycle_collector.py || true
+        continue-on-error: true
+        run: python3 scripts/collectors/alt_cycle_collector.py
 
       # STAGE 1.57 · DEFILLAMA COLLECTOR (TVL по chains)
       # Free API, показывает где реально капитал сидит в DeFi.
       # Cache 6h.
       - name: DeFiLlama collector (TVL)
-        run: python3 scripts/collectors/defillama_collector.py || true
+        continue-on-error: true
+        run: python3 scripts/collectors/defillama_collector.py
 
       # STAGE 1.58 · FUNDING COLLECTOR (perpetual funding rates)
       # CoinGecko derivatives — funding для major tokens + top gainers/losers.
       # Cache 30 min.
       - name: Funding collector (perp funding)
-        run: python3 scripts/collectors/funding_collector.py || true
+        continue-on-error: true
+        run: python3 scripts/collectors/funding_collector.py
 
       # STAGE 1.59 · STABLES COLLECTOR (dry powder tracking)
       # Общий marketcap стейблов = "сухой порох" рынка.
       # Cache 4h.
       - name: Stables collector (dry powder)
-        run: python3 scripts/collectors/stables_collector.py || true
+        continue-on-error: true
+        run: python3 scripts/collectors/stables_collector.py
 
       # STAGE 1.60 · DUNE EXTENDED (DISABLED · queries too heavy)
       # Fork community dashboards хорошая идея но:
@@ -298,20 +311,24 @@ jobs:
       # Weekly cron trigger внутри скрипта — safe даже если workflow runs daily
       # (просто skip если < 7 дней с last run).
       - name: Whale holdings collector (weekly)
-        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *' || github.event.schedule == '0 12 * * 0'
+        continue-on-error: true
+        # '0 12 * * 0' убран: такого cron в schedule нет, ветка была недостижима.
+        # Рабочие триггеры — mode=lab и cron '30 8,20', они и оставлены.
+        if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           DUNE_QUERY_ID_WHALE_HOLDINGS: ${{ secrets.DUNE_QUERY_ID_WHALE_HOLDINGS }}
           WHALE_HOLDINGS_MAX_TOKENS: "5"
           WHALE_HOLDINGS_MIN_INTERVAL_HOURS: "168"
-        run: python3 scripts/collectors/whale_holdings_collector.py || true
+        run: python3 scripts/collectors/whale_holdings_collector.py
 
       # STAGE 1.99 · SYSTEM HEALTH AUDIT
       # Проверяет что все collectors/detectors/pipeline работают.
       # Сохраняет data/cache/system_health.json для dashboard.
       # Запускается на every workflow run (быстро — только read операции).
       - name: System health audit
-        run: python3 scripts/audit_system.py || true
+        continue-on-error: true
+        run: python3 scripts/audit_system.py
 
       # STAGE 1.56 · ROTATION TRACKER (детектор изменений в LAB signals)
       # Читает snapshot от strk_lab.py (data/cache/strk_lab_report.json)
@@ -323,131 +340,167 @@ jobs:
       # Real-time каждый час — реагирует на flip, без Dune credits.
       # Alert в @strk_dynamic3_bot с dedup 24h.
       - name: CEX flow alert detector
-        run: python3 scripts/detectors/cex_flow_alert.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/cex_flow_alert.py
 
       # ============================================================
       # STAGE 2 · Liquidity/staking (в отдельной секции, у них своя логика)
       # ============================================================
+      # || true заменён на ::warning:: — цепочка по-прежнему не падает
+      # целиком из-за одного сбойного звена, но сбой теперь ВИДЕН
+      # в интерфейсе Actions, а не проглатывается молча.
       - name: Liquidity shift chain (ekubo + endur + native staking + shift)
         run: |
-          python3 scripts/collectors/ekubo_flow.py || true
-          python3 scripts/collectors/endur_lst_flow.py || true
-          python3 scripts/collectors/native_staking_flow.py || true
-          python3 scripts/detectors/liquidity_shift.py || true
+          python3 scripts/collectors/ekubo_flow.py || echo "::warning::ekubo_flow не отработал"
+          python3 scripts/collectors/endur_lst_flow.py || echo "::warning::endur_lst_flow не отработал"
+          python3 scripts/collectors/native_staking_flow.py || echo "::warning::native_staking_flow не отработал"
+          python3 scripts/detectors/liquidity_shift.py || echo "::warning::liquidity_shift не отработал"
 
       # ============================================================
       # STAGE 3 · ORCHESTRATOR (flow map from edges)
       # ============================================================
       - name: Orchestrator (flow map)
-        run: python3 scripts/orchestrator.py || true
+        continue-on-error: true
+        run: python3 scripts/orchestrator.py
 
       # ============================================================
       # STAGE 4 · DETECTORS
       # ============================================================
       - name: Auto-discovery
-        run: python3 scripts/detectors/auto_discovery.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/auto_discovery.py
 
       # Watchlist notifier — только при mode=digest (не спамить при каждом cron)
       # Так лента WATCH? синхронизируется с daily heartbeat, не с каждым LIQ/RUN
       - name: Watchlist notifier (WATCH? candidates)
-        if: github.event.inputs.mode == 'digest' || github.event.schedule == '0 18 * * *' || github.event_name == 'schedule' && github.event.schedule == '0 18 * * *'
-        run: python3 scripts/detectors/watchlist_notifier.py || true
+        continue-on-error: true
+        # '0 18 * * *' убран дважды: такого cron в schedule нет. Осталось то,
+        # что и написано в комментарии выше — только ручной mode=digest.
+        if: github.event.inputs.mode == 'digest'
+        run: python3 scripts/detectors/watchlist_notifier.py
 
       - name: Cross-window pattern
-        run: python3 scripts/detectors/cross_window_pattern.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/cross_window_pattern.py
 
       - name: Auto-decision layer
-        run: python3 scripts/detectors/decision_layer.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/decision_layer.py
 
       # ⚡ Composite v2 (main brain) — writes composite_signal_v2.json
       - name: Composite detector v2 (main brain)
+        continue-on-error: true
         env:
           COMPOSITE_SILENT: 'true'
-        run: python3 scripts/detectors/composite_detector_v2.py || true
+        run: python3 scripts/detectors/composite_detector_v2.py
 
       - name: Wyckoff phase
-        run: python3 scripts/detectors/wyckoff_phase.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/wyckoff_phase.py
 
       - name: Event calendar
-        run: python3 scripts/detectors/event_calendar.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/event_calendar.py
 
       - name: Concentration metrics
-        run: python3 scripts/detectors/concentration_metrics.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/concentration_metrics.py
 
       # ⚡ Bridge activity — writes bridge_activity.json
       - name: Bridge activity
-        run: python3 scripts/detectors/bridge_activity.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/bridge_activity.py
 
       - name: Effort/result
-        run: python3 scripts/detectors/effort_result.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/effort_result.py
 
       - name: CVD analysis
-        run: python3 scripts/detectors/cvd_analysis.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/cvd_analysis.py
 
       - name: CEX flow analysis
-        run: python3 scripts/detectors/cex_flow.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/cex_flow.py
 
       - name: Technical momentum
-        run: python3 scripts/detectors/technical_momentum.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/technical_momentum.py
 
       - name: Cross-token correlation
-        run: python3 scripts/detectors/cross_token_correlation.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/cross_token_correlation.py
 
       - name: News aggregator
-        run: python3 scripts/detectors/news_aggregator.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/news_aggregator.py
 
       - name: Twitter nitter
-        run: python3 scripts/detectors/twitter_nitter.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/twitter_nitter.py
 
       - name: Event layer
-        run: python3 scripts/detectors/event_layer.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/event_layer.py
 
       - name: Confluence Gate (multi-signal decision)
-        run: python3 scripts/detectors/confluence_gate.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/confluence_gate.py
 
       # STAGE 5 · SHADOW LAYER
       - name: Shadow postmortem
-        run: python3 scripts/detectors/shadow_postmortem.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/shadow_postmortem.py
       - name: Shadow voter
+        continue-on-error: true
         env:
           STRK_RUN_ID: shadow_${{ github.run_id }}
-        run: python3 scripts/detectors/shadow_voter.py || true
+        run: python3 scripts/detectors/shadow_voter.py
 
       # STAGE 6 · COVERT FLOW + HISTORY
       - name: Covert flow detector
-        run: python3 scripts/detectors/covert_flow_detector.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/covert_flow_detector.py
       - name: History postmortem
-        run: python3 scripts/history_postmortem.py || true
+        continue-on-error: true
+        run: python3 scripts/history_postmortem.py
       - name: History accumulator
+        continue-on-error: true
         env:
           STRK_RUN_ID: hist_${{ github.run_id }}_${{ github.run_number }}
-        run: python3 scripts/history_accumulator.py || true
+        run: python3 scripts/history_accumulator.py
 
       # STAGE 7 · SYNTHESIS
       - name: Interpretation layer
-        run: python3 scripts/detectors/interpretation_layer.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/interpretation_layer.py
       - name: Scenario engine
-        run: python3 scripts/scenario_engine.py || true
+        continue-on-error: true
+        run: python3 scripts/scenario_engine.py
       - name: Cohort tracker
-        run: python3 scripts/detectors/cohort_tracker.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/cohort_tracker.py
       - name: Whale auto-analysis
-        run: python3 scripts/detectors/whale_auto_analysis.py || true
+        continue-on-error: true
+        run: python3 scripts/detectors/whale_auto_analysis.py
 
-      # STAGE 7.5 · SQUEEZE DETECTION (отдельный стрим в @strk_dynamic3_bot)
-      - name: Squeeze detector (compute state)
-        run: python3 scripts/detectors/squeeze_detector.py || true
-
-      - name: Squeeze notifier (alert to @strk_dynamic3_bot)
-        run: python3 scripts/detectors/squeeze_notifier.py || true
-
-      # STAGE 7.6 · DYNAMIC EXIT SIGNALS (для активных squeeze positions)
-      - name: Dynamic exit signals
-        run: python3 scripts/detectors/dynamic_exit_signals.py || true
+      # STAGE 7.5-7.6 · SQUEEZE и DYNAMIC EXIT — УБРАНЫ ОТСЮДА 21.08.2026
+      #
+      # Эти три шага (squeeze_detector, squeeze_notifier, dynamic_exit_signals)
+      # дословно повторяли strk_squeeze.yml, который крутится каждые 30 минут.
+      # composite запускается 5 раз в сутки и пять раз в сутки совпадал
+      # со squeeze по времени: два раннера писали в squeeze_state.json и
+      # exit_signals.json одновременно (гарантированный конфликт rebase),
+      # а squeeze_notifier мог отправить дубль алерта в @strk_dynamic3_bot.
+      #
+      # Данные никуда не делись: squeeze обновляет их вдвое чаще, чем
+      # composite вообще запускается. Здесь они только читаются.
 
       # STAGE 7.9 · WEEKLY BACKTEST (только воскресенье 00:00 UTC или mode=backtest)
       - name: Weekly backtest
+        continue-on-error: true
         if: github.event.schedule == '0 0 * * 0' || github.event.inputs.mode == 'backtest'
-        run: python3 scripts/weekly_backtest.py || true
+        run: python3 scripts/weekly_backtest.py
 
       # STAGE 7.95 · BASELINE ANALYSIS (mode=baseline)
       - name: Install baseline deps
@@ -455,57 +508,64 @@ jobs:
         run: pip install pandas numpy ccxt pyarrow
 
       - name: STRK baseline analysis
+        continue-on-error: true
         if: github.event.inputs.mode == 'baseline'
-        run: python3 scripts/strk_baseline_analysis.py || true
+        run: python3 scripts/strk_baseline_analysis.py
 
       # STAGE 8 · HTML REPORT (генерируется ДО отправки, чтобы run mode мог прицепить)
       - name: Generate RUN report (HTML)
-        run: python3 scripts/run_report.py || true
+        continue-on-error: true
+        run: python3 scripts/run_report.py
 
       # STAGE 8.5 · LAB REPORT (Portfolio Rotation Compass)
       # Отправляется в @Lab_sector_bot (не @STRK_GUARDIAN_BOT)
       # Запускается при cron 08:30 UTC или ручном mode=lab
       # ВАЖНО: сохраняет data/cache/strk_lab_report.json для rotation_tracker
       - name: STRK LAB · Portfolio Rotation report
+        continue-on-error: true
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python3 scripts/strk_lab.py || true
+        run: python3 scripts/strk_lab.py
 
       # STAGE 8.6 · ROTATION TRACKER (детектор изменений от LAB snapshot)
       # Запускается после LAB чтобы прочитать свежий strk_lab_report.json
       # Alert в @Lab_sector_bot при: NEW_STRONG_BUY, DIVERGENCE_WARN, EXIT, CONFIRMED_HOLD_3D
       - name: Rotation tracker (LAB signals changes)
+        continue-on-error: true
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
         env:
           TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python3 scripts/detectors/rotation_tracker.py || true
+        run: python3 scripts/detectors/rotation_tracker.py
 
       # STAGE 8.7 · BACKTEST · RECORDER (записывает STRONG_BUY signals для measurement)
       # Каждый LAB run пишет currently STRONG_BUY tokens → lab_signals.jsonl (PENDING)
       # Через 7 дней verifier закрывает и считает HIT/MISS/NEUTRAL.
       - name: LAB signals recorder (backtest data collection)
+        continue-on-error: true
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
-        run: python3 scripts/detectors/lab_signals_recorder.py || true
+        run: python3 scripts/detectors/lab_signals_recorder.py
 
       # STAGE 8.8 · BACKTEST · VERIFIER (закрывает PENDING старше 7d + строит summary)
       # Reads current prices from momentum snapshot, updates records, writes summary.
       # Worker /check <TOKEN> читает summary для показа реальной precision.
       - name: LAB signals verifier (close PENDING, build summary)
+        continue-on-error: true
         if: github.event.inputs.mode == 'lab' || github.event.schedule == '30 8,20 * * *'
-        run: python3 scripts/detectors/lab_signals_verifier.py || true
+        run: python3 scripts/detectors/lab_signals_verifier.py
 
       # STAGE 8.9 · WEEKLY SUMMARY (воскресенье 21:00 UTC = 00:00 MSK понедельника)
       # Аггрегирует 7 дней LAB активности → отчёт в @Lab_sector_bot
       # Также обновляет data/cache/weekly_summary.json для команды /week
       - name: Weekly LAB summary
+        continue-on-error: true
         if: github.event.schedule == '0 21 * * 0' || github.event.inputs.mode == 'lab'
         env:
           TELEGRAM_LAB_SECTOR_BOT: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python3 scripts/weekly_summary.py || true
+        run: python3 scripts/weekly_summary.py
 
       # STAGE 9 · SEND (MODE = digest | liq | run)
       # SKIP если mode=backtest, baseline, lab (у них свои pipelines)
@@ -533,7 +593,23 @@ jobs:
             git diff --cached --stat
             git commit -m "chore: state update (mode=${{ github.event.inputs.mode || 'digest' }}) [skip ci]"
             # retry push с rebase если удалённое было обновлено параллельным run
-            git push || (git pull --rebase && git push) || echo "Push failed"
+            # Пуш с повторами. Раньше здесь было
+            #   git push || (git pull --rebase && git push) || echo "Push failed"
+            # — одна попытка rebase, и при конфликте содержимого echo глотал
+            # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+            # потерялся phase_analysis.json, и никто этого не увидел.
+            #
+            # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+            # перегенерируются целиком, построчное слияние бессмысленно.
+            for attempt in 1 2 3 4 5; do
+              git push && exit 0
+              echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+              git fetch origin main || true
+              git rebase -X theirs origin/main || { git rebase --abort || true; }
+              sleep $(( RANDOM % 7 + attempt * 4 ))
+            done
+            echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+            exit 1
           fi
 
       - name: Upload results
@@ -561,6 +637,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * 1')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_weekly')
     runs-on: ubuntu-latest
+    timeout-minutes: 35
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-weekly_token_scan
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -581,7 +664,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
           git diff --cached --quiet || git commit -m "chore: weekly token scan cache refresh [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   force_all_token_scan:
     # Раз в две недели, суббота 03:00 UTC. Не еженедельно: полный форс
@@ -591,6 +690,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '0 3 */14 * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_force_all')
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-force_all_token_scan
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -619,13 +725,36 @@ jobs:
           git add data/cache/token_scan/
           [ -f data/cache/dune_budget.json ] && git add data/cache/dune_budget.json || true
           git diff --cached --quiet || git commit -m "chore: FORCE all token scan refresh [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   daily_token_scan:
     if: >
       (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_daily')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-daily_token_scan
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -646,7 +775,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/
           git diff --cached --quiet || git commit -m "chore: daily STRONG_BUY token scan [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # v5.2 · FULL RUN Level 4 (weekly deep report)
@@ -656,6 +801,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'full_run')
     runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-full_run
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -673,7 +825,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add reports/
           git diff --cached --quiet || git commit -m "chore: FULL RUN weekly report [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
       - name: Telegram notify (best-effort)
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_LAB_SECTOR_BOT }}
@@ -693,6 +861,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '30 8,20 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'lab')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-strk_scenarios
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -708,7 +883,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/strk_scenarios.json
           git diff --cached --quiet || git commit -m "chore: scenarios [skip ci]"
-          git push
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # v5.4 · STRK-specific Scanner via AVNU (Starknet native DEX)
@@ -719,6 +910,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '30 3 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'strk_avnu')
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-strk_avnu_scan
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -739,7 +937,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/STRK.json
           git diff --cached --quiet || git commit -m "chore: STRK AVNU scan [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Type A #3 · News Impact Classifier · 4x/day
@@ -749,6 +963,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '0 0,6,12,18 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'news_impact')
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-news_impact
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -793,7 +1014,23 @@ jobs:
           [ -f data/cache/surf_events.json ] && git add data/cache/surf_events.json || echo "surf_events.json not found — v3 may have failed"
           [ -f data/cache/news_impact.json ] && git add data/cache/news_impact.json || echo "news_impact.json not found — v1 legacy"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: news impact update [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Module 1+2 · Macro Narratives + TOTAL Phase
@@ -805,6 +1042,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '15 0,6,12,18 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'macro_narratives')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-macro_narratives
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -827,7 +1071,23 @@ jobs:
           [ -f data/cache/macro_narratives.json ] && git add data/cache/macro_narratives.json || echo "no macro_narratives.json"
           [ -f data/cache/total_phase.json ] && git add data/cache/total_phase.json || echo "no total_phase.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: macro narratives + total phase [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Interpretation Layer · unified reading of all signals
@@ -838,6 +1098,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '20 0,6,12,18 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'interpretation')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-interpretation
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -857,7 +1124,23 @@ jobs:
           # его читает daily_digest.
           [ -f data/cache/unified_reading.json ] && git add data/cache/unified_reading.json || echo "no unified_reading.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: unified reading [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Hive Prices Collector · fix price discrepancy via managed CoinGecko
@@ -868,6 +1151,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '25 0,6,12,18 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hive_prices')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-hive_prices
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -887,7 +1177,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_prices.json ] && git add data/cache/hive_prices.json || echo "no hive_prices.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive prices update [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # ARCHIVIST · снимок истории, дельты к прошлому снимку, ретеншн.
@@ -899,6 +1205,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '50 3 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'archivist')
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-archivist
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -916,7 +1229,23 @@ jobs:
           [ -f data/cache/token_scan_deltas.json ] && git add data/cache/token_scan_deltas.json || echo "no deltas"
           [ -f data/cache/archive_status.json ] && git add data/cache/archive_status.json || echo "no status"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: archivist snapshot + deltas [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # DECISION ENGINE · единственный автор торговых решений
@@ -928,6 +1257,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '27 0,6,12,18 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'decision_engine')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-decision_engine
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -944,7 +1280,23 @@ jobs:
           [ -f data/cache/decisions.json ] && git add data/cache/decisions.json || echo "no decisions.json"
           [ -f data/history/decision_log.jsonl ] && git add data/history/decision_log.jsonl || echo "no decision_log.jsonl"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: decisions [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # DECISION VERIFY · закрывает прогнозы, у которых наступил срок.
@@ -955,6 +1307,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '40 5 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'decision_verify')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-decision_verify
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -971,7 +1330,23 @@ jobs:
           [ -f data/history/decision_log.jsonl ] && git add data/history/decision_log.jsonl || echo "no log"
           [ -f data/cache/decision_accuracy.json ] && git add data/cache/decision_accuracy.json || echo "no accuracy"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: decision accuracy [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # PHASE ANALYZER · каждые 30 минут · 0 кредитов Dune
@@ -984,6 +1359,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '15,45 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'phase_analyzer')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-phase_analyzer
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -999,7 +1381,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/phase_analysis.json ] && git add data/cache/phase_analysis.json || echo "no phase_analysis"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: phase deltas [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # HL PERPS · Hyperliquid перпы каждые 30 мин · 0 кредитов
@@ -1011,6 +1409,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '10,40 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hl_perps')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-hl_perps
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1028,7 +1433,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hl_perps.json ] && git add data/cache/hl_perps.json || echo "no hl_perps"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl perps [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # HL TRADE COLLECTOR · публичные сделки HL каждые 15 мин · 0 кредитов
@@ -1037,9 +1458,16 @@ jobs:
   # ============================================================
   hl_trades:
     if: >
-      (github.event_name == 'schedule' && github.event.schedule == '5,20,35,50 * * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '5,20,35,51 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hl_trades')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-hl_trades
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1059,7 +1487,23 @@ jobs:
           [ -f data/cache/hl_trades_status.json ] && git add data/cache/hl_trades_status.json || echo "no status"
           [ -f data/cache/.hl_seen_hashes.json ] && git add data/cache/.hl_seen_hashes.json || echo "no seen"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl trades [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # VOLUME PROFILE · POC/VAH/VAL/HVN каждые 6 часов · 0 кредитов
@@ -1071,6 +1515,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '35 1,7,13,19 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'volume_profile')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-volume_profile
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1088,7 +1539,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/volume_profile.json ] && git add data/cache/volume_profile.json || echo "no vp"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: volume profile [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # CVD MULTI · агрессия покупателей/продавцов каждые 30 мин · 0 кредитов
@@ -1097,9 +1564,16 @@ jobs:
   # ============================================================
   cvd_multi:
     if: >
-      (github.event_name == 'schedule' && github.event.schedule == '0,30 * * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '3,33 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'cvd_multi')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-cvd_multi
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1115,7 +1589,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/cvd_multi.json ] && git add data/cache/cvd_multi.json || echo "no cvd"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: cvd multi [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # DECISION BACKTEST · воскресенье 06:20 UTC · 0 кредитов
@@ -1133,6 +1623,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '20 6 * * 0')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'decision_backtest')
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-decision_backtest
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1148,7 +1645,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/rule_backtest.json ] && git add data/cache/rule_backtest.json || echo "no backtest"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: rule backtest [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # TRADE JOURNAL · каждые 6 часов · 0 кредитов
@@ -1163,6 +1676,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '45 2,8,14,20 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'trade_journal')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-trade_journal
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1179,7 +1699,23 @@ jobs:
           [ -f data/cache/trade_journal.json ] && git add data/cache/trade_journal.json || echo "no journal"
           [ -f data/history/trades.jsonl ] && git add data/history/trades.jsonl || echo "no trades"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: trade journal [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # ASSET COMPASS · шкала LONG/SHORT каждые 30 мин · 0 кредитов
@@ -1192,6 +1728,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '50 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'asset_compass')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-asset_compass
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1207,7 +1750,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/asset_compass.json ] && git add data/cache/asset_compass.json || echo "no compass"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: asset compass [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # PRICE REFERENCE · опорные цены каждые 30 мин · 0 кредитов
@@ -1219,6 +1778,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '12,42 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'price_reference')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-price_reference
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1236,7 +1802,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/price_reference.json ] && git add data/cache/price_reference.json || echo "no price ref"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: price reference [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # MODULE SUMMARIES · короткий вывод по каждому модулю · 0 кредитов
@@ -1249,6 +1831,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '55 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'module_summaries')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-module_summaries
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1264,7 +1853,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/module_summaries.json ] && git add data/cache/module_summaries.json || echo "no summaries"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: module summaries [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # VIEW DATA · готовые структуры для дашборда · 0 кредитов
@@ -1277,6 +1882,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '58 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'view_data')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-view_data
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1292,7 +1904,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/view_data.json ] && git add data/cache/view_data.json || echo "no view data"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: view data [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # HL WHALE POSITIONS · позиции крупных раз в час · 0 кредитов
@@ -1305,6 +1933,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '48 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hl_whales')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-hl_whales
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1322,7 +1957,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hl_whale_positions.json ] && git add data/cache/hl_whale_positions.json || echo "no whales"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hl whale positions [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # POSITION ADVISOR · советы по открытым позициям · 0 кредитов
@@ -1335,6 +1986,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '53 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'position_advisor')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-position_advisor
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1350,7 +2008,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/position_advice.json ] && git add data/cache/position_advice.json || echo "no advice"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: position advice [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Token scan · ОДИН токен по требованию (кнопка «Обновить» в модалке)
@@ -1359,6 +2033,13 @@ jobs:
   token_scan_single:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'token_scan_single'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-token_scan_single
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1386,7 +2067,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add data/cache/token_scan/ 2>/dev/null || true
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: single token scan ${{ github.event.inputs.token }} [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Funding per token · КАЖДЫЕ 30 МИНУТ · OKX public · 0 кредитов
@@ -1394,9 +2091,16 @@ jobs:
   # ============================================================
   funding_per_token:
     if: >
-      (github.event_name == 'schedule' && github.event.schedule == '*/30 * * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '7,37 * * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'funding_per_token')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-funding_per_token
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1414,7 +2118,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/funding_per_token.json ] && git add data/cache/funding_per_token.json || echo "no funding_per_token.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: funding per token [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Hive Health · MUST #18 (концентрация держателей) + MUST #19 (глубина 2%)
@@ -1425,6 +2145,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '0 2 * * 1')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hive_health')
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-hive_health
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1455,7 +2182,23 @@ jobs:
           [ -f data/cache/hive_token_health.json ] && git add data/cache/hive_token_health.json || echo "no hive_token_health.json"
           [ -f data/cache/hive_credits.json ] && git add data/cache/hive_credits.json || echo "no hive_credits.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive token health MUST18/19 [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Hive Catalog · разведка инструментов. НОЛЬ кредитов, только ручной запуск.
@@ -1464,6 +2207,13 @@ jobs:
   hive_health_catalog:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'hive_health_catalog'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-hive_health_catalog
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1483,7 +2233,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/hive_catalog.json ] && git add data/cache/hive_catalog.json || echo "no hive_catalog.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: hive catalog snapshot [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # Market Regime Calculator · weighted regime across all modules
@@ -1493,6 +2259,13 @@ jobs:
       (github.event_name == 'schedule' && github.event.schedule == '22 0,6,12,18 * * *')
       || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'market_regime')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-market_regime
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1508,7 +2281,23 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/market_regime.json ] && git add data/cache/market_regime.json || echo "no market_regime.json"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: market regime [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
 
   # ============================================================
   # VERSION UPDATE · auto-bump on every push (for cache busting)
@@ -1517,6 +2306,13 @@ jobs:
   version_update:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-version_update
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -1533,4 +2329,20 @@ jobs:
           git config user.name "STRK Engine Bot"
           git add VERSION.txt
           git diff --cached --quiet && echo "No version change" || git commit -m "chore: bump VERSION [skip ci]"
-          git push || (git pull --rebase && git push) || echo "Push failed"
+          # Пуш с повторами. Раньше здесь было
+          #   git push || (git pull --rebase && git push) || echo "Push failed"
+          # — одна попытка rebase, и при конфликте содержимого echo глотал
+          # ошибку: job зеленел, а результат прогона терялся. 21.08 так
+          # потерялся phase_analysis.json, и никто этого не увидел.
+          #
+          # -X theirs: при конфликте оставляем файл ЭТОЙ job. Файлы кэша
+          # перегенерируются целиком, построчное слияние бессмысленно.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
