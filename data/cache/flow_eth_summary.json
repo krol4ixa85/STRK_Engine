@@ -1,10 +1,10 @@
 {
-  "as_of": "2026-08-21T09:09:22.610703+00:00",
+  "as_of": "2026-08-21T14:32:11.399743+00:00",
   "chain": "ethereum",
   "token_contract": "0xca14007eff0db1f8135f4c25b34de49ab0d42766",
   "lookback_days": 7,
   "seeds_processed": 9,
-  "total_edges": 524,
+  "total_edges": 549,
   "not_checked": false,
   "flow_class": null,
   "route": null,
@@ -16,12 +16,12 @@
       "category": "l1_infrastructure",
       "role": "L1 StarkGate bridge to Starknet",
       "importance": "critical",
-      "edges_count": 71,
-      "vol_in_strk": 67681657.7803,
-      "vol_out_strk": 51480176.5061,
-      "net_flow_strk": 16201481.2741,
+      "edges_count": 69,
+      "vol_in_strk": 95364818.888,
+      "vol_out_strk": 51479776.5061,
+      "net_flow_strk": 43885042.3819,
       "unique_counterparties_in": 28,
-      "unique_counterparties_out": 16
+      "unique_counterparties_out": 15
     },
     {
       "seed_name": "custody_endpoint_1",
@@ -38,12 +38,14 @@
       "seed_name": "transit_bridger_1",
       "seed_address": "0xa8a5b3d0c320ac2ed724169b7f554e3740230586",
       "category": "custody_and_transit",
-      "edges_count": 0,
-      "vol_in_strk": 0,
-      "vol_out_strk": 0,
-      "net_flow_strk": 0,
-      "unique_counterparties_in": 0,
-      "unique_counterparties_out": 0
+      "role": "TRANSIT BRIDGER (100 STRK residual)",
+      "importance": "medium",
+      "edges_count": 2,
+      "vol_in_strk": 8554611.76,
+      "vol_out_strk": 28500000.0,
+      "net_flow_strk": -19945388.24,
+      "unique_counterparties_in": 1,
+      "unique_counterparties_out": 1
     },
     {
       "seed_name": "team_multisig",
@@ -84,12 +86,12 @@
       "category": "watchlist",
       "role": "Smart accumulator holding 12.96M STRK (from Rally #1 discovery)",
       "importance": "high",
-      "edges_count": 108,
-      "vol_in_strk": 21309201.2512,
-      "vol_out_strk": 24177593.9053,
-      "net_flow_strk": -2868392.6541,
-      "unique_counterparties_in": 22,
-      "unique_counterparties_out": 33
+      "edges_count": 121,
+      "vol_in_strk": 27788418.558,
+      "vol_out_strk": 29839807.1944,
+      "net_flow_strk": -2051388.6365,
+      "unique_counterparties_in": 24,
+      "unique_counterparties_out": 34
     },
     {
       "seed_name": "discovered_a4b9569b",
@@ -97,12 +99,12 @@
       "category": "watchlist",
       "role": "Auto-discovered ACCUMULATOR pattern",
       "importance": "medium",
-      "edges_count": 342,
-      "vol_in_strk": 15930386.6937,
-      "vol_out_strk": 6979076.1658,
-      "net_flow_strk": 8951310.5279,
-      "unique_counterparties_in": 44,
-      "unique_counterparties_out": 158
+      "edges_count": 354,
+      "vol_in_strk": 22799884.7312,
+      "vol_out_strk": 7219181.8199,
+      "net_flow_strk": 15580702.9113,
+      "unique_counterparties_in": 47,
+      "unique_counterparties_out": 155
     },
     {
       "seed_name": "discovered_76ec5a0d",

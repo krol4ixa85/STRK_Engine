@@ -1,49 +1,86 @@
 {
-  "as_of": "2026-08-21T09:11:04.557517+00:00",
+  "as_of": "2026-08-21T14:33:52.312176+00:00",
   "context_snapshot": {
     "phase": "ACCUMULATION",
     "sub_phase": "Phase D · Sign of Strength",
     "wyckoff_conf": "HIGH",
-    "price": 0.02673,
-    "high_14d": 0.02712,
+    "price": 0.02786,
+    "high_14d": 0.02834,
     "low_14d": 0.02221,
-    "slope_3d": 17.96,
-    "slope_accel": 18.48,
-    "vol_ratio_3d": 1.21,
-    "rsi": 77.58,
-    "pct_from_high": -1.44,
-    "pct_from_low": 20.35,
+    "slope_3d": 23.44,
+    "slope_accel": 25.06,
+    "vol_ratio_3d": 1.55,
+    "rsi": 82.19,
+    "pct_from_high": -1.69,
+    "pct_from_low": 25.44,
     "funding_apr": 0,
     "funding_min_7d": -11.33,
     "short_crowded": true,
     "long_crowded": false,
-    "hhi": 0.0496,
+    "hhi": 0.0489,
     "entropy": 5,
     "large_receivers_14d": 0,
-    "top5_share": 42.57,
+    "top5_share": 42.0,
     "cex_signal": "STRONG_DISTRIBUTION",
     "cex_net_7d": 0,
     "cex_consecutive": 0,
     "effort_signal": "NEUTRAL",
     "cvd_signal": "NEUTRAL",
-    "event_signal": "SLIGHT_BULLISH",
-    "event_bull": 4,
+    "event_signal": "POSITIVE_CATALYST",
+    "event_bull": 6,
     "event_bear": 1,
     "sector_signal": "SECTOR_MOMENTUM",
-    "strk_alpha_7d": -3.27,
+    "strk_alpha_7d": -0.65,
     "days_to_unlock": 24,
     "unlock_amount": 64000000,
     "supply_30d": 64000000,
-    "btc_price": 77985.5,
+    "btc_price": 77209.7,
     "btc_cycle": "UP",
-    "btc_dist200": 12.98
+    "btc_dist200": 11.86
   },
-  "patterns_matched": 0,
+  "patterns_matched": 1,
   "interpretation": {
-    "primary": null,
-    "summary": "Нет чёткого паттерна. Данные противоречивы или недостаточны.",
-    "position_hint": "STAY FLAT. Wait for pattern to emerge.",
-    "triggers": []
+    "primary": {
+      "name": "GENUINE_BREAKOUT",
+      "label": "Genuine breakout · Sign of Strength",
+      "confidence": 85,
+      "direction": "BULLISH_MID",
+      "hypothesis": "Настоящий markup: slope +23.4% на volume 1.6× среднего, CVD confirms.",
+      "narrative": "Cлайп +23.4% за 3 дня с acceleration +25.1%, volume 1.6× среднего. CVD: NEUTRAL. CEX flow: STRONG_DISTRIBUTION. Event layer: POSITIVE_CATALYST. Всё сходится — это не bull trap, а real move.",
+      "position_hint": "Long entries valid. Buy pullbacks к $$0.0270 area с stop под $0.0222. Trail higher lows.",
+      "triggers_watch": [
+        "Continued vol expansion + higher highs = trend intact",
+        "CEX flow flip to distribution = exhaustion warning",
+        "Funding > +30% ann = long crowded, take partial profit"
+      ],
+      "invalidation": "Break BELOW recent HL с closing на volume = breakout failed."
+    },
+    "secondary": null,
+    "tertiary": null,
+    "summary": "Cлайп +23.4% за 3 дня с acceleration +25.1%, volume 1.6× среднего. CVD: NEUTRAL. CEX flow: STRONG_DISTRIBUTION. Event layer: POSITIVE_CATALYST. Всё сходится — это не bull trap, а real move.",
+    "position_hint": "Long entries valid. Buy pullbacks к $$0.0270 area с stop под $0.0222. Trail higher lows.",
+    "triggers": [
+      "Continued vol expansion + higher highs = trend intact",
+      "CEX flow flip to distribution = exhaustion warning",
+      "Funding > +30% ann = long crowded, take partial profit"
+    ],
+    "invalidation": "Break BELOW recent HL с closing на volume = breakout failed."
   },
-  "all_matches": []
+  "all_matches": [
+    {
+      "name": "GENUINE_BREAKOUT",
+      "label": "Genuine breakout · Sign of Strength",
+      "confidence": 85,
+      "direction": "BULLISH_MID",
+      "hypothesis": "Настоящий markup: slope +23.4% на volume 1.6× среднего, CVD confirms.",
+      "narrative": "Cлайп +23.4% за 3 дня с acceleration +25.1%, volume 1.6× среднего. CVD: NEUTRAL. CEX flow: STRONG_DISTRIBUTION. Event layer: POSITIVE_CATALYST. Всё сходится — это не bull trap, а real move.",
+      "position_hint": "Long entries valid. Buy pullbacks к $$0.0270 area с stop под $0.0222. Trail higher lows.",
+      "triggers_watch": [
+        "Continued vol expansion + higher highs = trend intact",
+        "CEX flow flip to distribution = exhaustion warning",
+        "Funding > +30% ann = long crowded, take partial profit"
+      ],
+      "invalidation": "Break BELOW recent HL с closing на volume = breakout failed."
+    }
+  ]
 }
