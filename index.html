@@ -1372,12 +1372,35 @@ function showUpdateBanner() {
 }
 
 async function renderWhales() {
+  // Диагностика прямо в блоке. Раньше ошибка внутри async-функции
+  // терялась: safeRender синхронный, он вызывает fn() и не ждёт
+  // промис, поэтому исключение уходило в никуда и блок молча
+  // оставался с надписью Loading.
   const el = document.getElementById('whales-content');
-  if (!el) return;
+  if (!el) { console.error('[Whales] нет элемента whales-content'); return; }
 
-  const vd = await _loadCache('view_data.json');
-  const w = vd && vd.whales;
-  if (!w) { el.innerHTML = '<div class="empty">Данные не собраны</div>'; return; }
+  const fail = (msg) => {
+    console.error('[Whales]', msg);
+    el.innerHTML = `<div style="font-size: 12px; color: #DC2626; line-height: 1.5;">${msg}</div>`;
+  };
+
+  try {
+    console.log('[Whales] загружаю view_data.json');
+    const vd = await _loadCache('view_data.json');
+    if (!vd) { fail('view_data.json не загрузился (сеть или 404)'); return; }
+    console.log('[Whales] файл получен, ключи:', Object.keys(vd));
+
+    const w = vd.whales;
+    if (!w) { fail('в view_data.json нет раздела whales — запусти mode: view_data'); return; }
+    console.log('[Whales] статус:', w.status, '· строк:', (w.rows || []).length);
+
+    renderWhalesBody(el, w);
+  } catch (e) {
+    fail('ошибка отрисовки: ' + e);
+  }
+}
+
+function renderWhalesBody(el, w) {
 
   const ageEl = document.getElementById('whales-age');
   if (ageEl && w.computed_at) {
@@ -3338,7 +3361,15 @@ async function loadAll(manual = false) {
     const strkPrice = await fetchStrkPrice();
         // Wrap each render в try/catch — одна ошибка не должна ломать всё
     const safeRender = (name, fn) => {
-      try { fn(); } catch(e) { console.error('[' + name + '] render error:', e); }
+      // Ловим и синхронные ошибки, и отказы промисов. Раньше async-функции
+      // падали молча: fn() возвращал промис, try/catch его не видел,
+      // и блок навсегда оставался с надписью Loading.
+      try {
+        const r = fn();
+        if (r && typeof r.catch === 'function') {
+          r.catch(e => console.error('[' + name + '] async render error:', e));
+        }
+      } catch(e) { console.error('[' + name + '] render error:', e); }
     };
     // v4: renderHero disabled (replaced by Overview Panel)
     // v5.1: Store data in global cache for Duration Scanner
