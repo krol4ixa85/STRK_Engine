@@ -1516,7 +1516,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-21-22';
+const BUILD_STAMP = 'BUILD-2026-08-21-23';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
@@ -4685,31 +4685,18 @@ async function renderModalIntelligence(token) {
           ${adv.note ? `<span style="color: var(--text-muted);">${adv.note}</span>` : ''}
         </div>
 
-        <div style="margin-top: 11px; padding: 11px; background: rgba(255,255,255,0.55); border-radius: var(--r-md); font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
-          ${adv.body}
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 10px;">
-          <div style="padding: 9px; background: rgba(43,115,85,0.08); border-radius: var(--r-md);">
-            <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Ближайшая цель</div>
-            ${adv.next_target
-              ? `<div style="font-family: var(--font-data); font-weight: 700; color: var(--green); font-size: 14px;">$${fmtP(adv.next_target.price)}</div>
-                 <div style="font-size: 10px; color: var(--text-muted);">${adv.next_target.distance_pct.toFixed(1)}% · ${adv.next_target.label}</div>`
-              : '<div style="font-size: 12px; color: var(--text-muted);">нет уровня</div>'}
-          </div>
-          <div style="padding: 9px; background: rgba(168,68,60,0.07); border-radius: var(--r-md);">
-            <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Позиция сломана</div>
-            ${adv.invalidation
-              ? `<div style="font-family: var(--font-data); font-weight: 700; color: var(--red); font-size: 14px;">$${fmtP(adv.invalidation.price)}</div>
-                 <div style="font-size: 10px; color: var(--text-muted);">${adv.invalidation.distance_pct.toFixed(1)}% · ${adv.invalidation.label}</div>`
-              : '<div style="font-size: 12px; color: var(--text-muted);">нет уровня</div>'}
-          </div>
-        </div>
-
-        ${adv.remaining_rr != null ? `<div style="margin-top: 9px; font-size: 11px; color: var(--text-secondary);">
-          Осталось хода к риску: <strong style="font-family: var(--font-data); color: ${adv.remaining_rr >= 1.5 ? 'var(--green)' : 'var(--yellow)'};">${adv.remaining_rr}</strong>
-          ${adv.remaining_rr < 1 ? ' — до цели ближе, чем до слома. Держать дальше невыгодно.' : ''}
-        </div>` : ''}
+        ${(adv.plain && adv.plain.length) ? adv.plain.map(b => {
+          const T = {
+            red:    {bar: 'var(--red)',    bg: 'rgba(168,68,60,0.07)'},
+            green:  {bar: 'var(--green)',  bg: 'rgba(43,115,85,0.07)'},
+            yellow: {bar: 'var(--yellow)', bg: 'rgba(150,112,42,0.07)'},
+            muted:  {bar: 'var(--border)', bg: 'rgba(255,255,255,0.55)'},
+          }[b.tone] || {bar: 'var(--border)', bg: 'rgba(255,255,255,0.55)'};
+          return `<div style="margin-top: 9px; padding: 10px 12px; background: ${T.bg}; border-left: 3px solid ${T.bar}; border-radius: var(--r-md);">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 5px;">${b.q}</div>
+            ${b.lines.map(l => `<div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; margin-top: 3px;">${l}</div>`).join('')}
+          </div>`;
+        }).join('') : `<div style="margin-top: 11px; padding: 11px; background: rgba(255,255,255,0.55); border-radius: var(--r-md); font-size: 12px; color: var(--text-secondary); line-height: 1.6;">${adv.body || ''}</div>`}
 
         <div style="margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(0,0,0,0.07); font-size: 12px;">
           <strong style="color: ${U.c};">Действие:</strong> <span style="color: var(--text);">${adv.action_ru || '—'}</span>
