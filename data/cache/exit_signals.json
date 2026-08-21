@@ -1,8 +1,8 @@
 {
-  "ts": "2026-08-21T14:34:02.996582+00:00",
+  "ts": "2026-08-21T20:22:41.858722+00:00",
   "long_exit": {
     "level": "WARNING",
-    "active_count": 2,
+    "active_count": 1,
     "triggers": [
       {
         "id": "L1",
@@ -13,14 +13,14 @@
       {
         "id": "L2",
         "name": "SMART cohort distributing",
-        "active": true,
-        "evidence": "SMART 24h net -1.98M STRK (threshold -0.5M)"
+        "active": false,
+        "evidence": "SMART 24h net +2.69M STRK (threshold -0.5M)"
       },
       {
         "id": "L3",
         "name": "Volume divergence (weakness at top)",
         "active": false,
-        "evidence": "price_up_3d=False, vol_ratio=1.55"
+        "evidence": "price_up_3d=False, vol_ratio=1.78"
       },
       {
         "id": "L4",
@@ -32,7 +32,7 @@
   },
   "short_exit": {
     "level": "WARNING",
-    "active_count": 1,
+    "active_count": 2,
     "triggers": [
       {
         "id": "S1",
@@ -43,14 +43,14 @@
       {
         "id": "S2",
         "name": "SMART cohort accumulating",
-        "active": false,
-        "evidence": "SMART 24h net -1.98M STRK"
+        "active": true,
+        "evidence": "SMART 24h net +2.69M STRK"
       },
       {
         "id": "S3",
         "name": "Seller exhaustion (RSI<35 + vol low)",
         "active": false,
-        "evidence": "RSI 82.19, vol_ratio 1.55"
+        "evidence": "RSI 77.38, vol_ratio 1.78"
       },
       {
         "id": "S4",
