@@ -29,6 +29,10 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Module Summaries · КАЖДЫЕ 30 МИНУТ, на :55 — последним в цикле,
+    # чтобы читать уже свежие compass, decisions и volume_profile.
+    # Строит человеческий вывод по каждому модулю дашборда.
+    - cron: '55 * * * *'
     # Asset Compass · КАЖДЫЕ 30 МИНУТ, на :50. Сводит ончейн,
     # деривативы и технику в одну шкалу от -100 (шорт) до +100 (лонг).
     # Идёт последним в получасовом цикле — читает свежие phase_analyzer,
@@ -121,6 +125,7 @@ on:
           - trade_journal
           - asset_compass
           - price_reference
+          - module_summaries
           - decision_engine
           - decision_verify
           - archivist
@@ -1200,6 +1205,34 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/price_reference.json ] && git add data/cache/price_reference.json || echo "no price ref"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: price reference [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # MODULE SUMMARIES · короткий вывод по каждому модулю · 0 кредитов
+  # Дашборд показывает много данных и почти нигде не говорит, что они
+  # значат. Здесь для каждого модуля строится один абзац: что происходит
+  # и что это значит для входов. Тот же тон, что в модалке актива.
+  # ============================================================
+  module_summaries:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '55 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'module_summaries')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build module summaries
+        run: python3 scripts/module_summaries.py
+      - name: Commit module_summaries.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/module_summaries.json ] && git add data/cache/module_summaries.json || echo "no summaries"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: module summaries [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
