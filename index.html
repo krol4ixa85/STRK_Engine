@@ -1516,7 +1516,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-21-20';
+const BUILD_STAMP = 'BUILD-2026-08-21-21';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
@@ -4476,7 +4476,7 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll, viewData] = await Promise.all([
+  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll, viewData, posAdvice] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
@@ -4490,6 +4490,7 @@ async function renderModalIntelligence(token) {
     _loadCache('cvd_multi.json'),
     _loadCache('asset_compass.json'),
     _loadCache('view_data.json'),
+    _loadCache('position_advice.json'),
   ]);
 
   // Серверные данные v1.1: phase_analyzer + decision_engine + HL perps
@@ -4528,6 +4529,82 @@ async function renderModalIntelligence(token) {
 
   // ── 2 · ФАНДИНГ И ОТКРЫТЫЙ ИНТЕРЕС ─────────────────────────
   const f = funding && funding.tokens && funding.tokens[token];
+  // ═══════════════════════════════════════════════════════════════════
+  // 📍 ТВОЯ ПОЗИЦИЯ · совет с учётом направления
+  // Идёт первым, потому что «что делать с открытым» важнее, чем
+  // «стоит ли открывать». Блок ниже отвечает на второй вопрос и для
+  // шорта прямо вреден: он написан для лонга.
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    const adv = posAdvice && posAdvice.by_token && posAdvice.by_token[token];
+    if (adv) {
+      const U = {
+        critical: {c: '#DC2626', bg: 'rgba(220,38,38,0.09)', icon: '🚨'},
+        warning:  {c: 'var(--yellow)', bg: 'rgba(150,112,42,0.09)', icon: '⚠️'},
+        ok:       {c: 'var(--green)', bg: 'rgba(43,115,85,0.08)', icon: '✅'},
+        info:     {c: 'var(--blue)', bg: 'rgba(44,95,124,0.07)', icon: 'ℹ️'},
+      }[adv.urgency] || {c: 'var(--text-muted)', bg: 'var(--bg-subtle)', icon: '·'};
+
+      const pnl = adv.pnl_pct;
+      const pnlCol = pnl == null ? 'var(--text-muted)' : pnl >= 0 ? 'var(--green)' : 'var(--red)';
+      const sideCol = adv.side === 'SHORT' ? '#EA580C' : 'var(--green)';
+      const fmtP = (p) => p == null ? '—' : (p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2));
+
+      html += `<div style="padding: 16px; background: ${U.bg}; border-radius: var(--r-lg); border: 2px solid ${U.c}; margin-bottom: 14px;">
+        <div style="display: flex; align-items: flex-start; gap: 11px;">
+          <span style="font-size: 26px; line-height: 1;">${U.icon}</span>
+          <div style="flex: 1;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.08em;">📍 Твоя позиция</div>
+            <div style="font-size: 18px; font-weight: 700; color: ${U.c}; margin-top: 3px; line-height: 1.25;">${adv.headline}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 700; color: ${pnlCol}; font-family: var(--font-data);">${pnl == null ? '—' : (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%'}</div>
+            ${adv.pnl_usd != null ? `<div style="font-size: 11px; color: ${pnlCol}; font-family: var(--font-data);">${adv.pnl_usd >= 0 ? '+' : ''}$${Math.abs(adv.pnl_usd).toFixed(0)}</div>` : ''}
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 11px; font-size: 11px; font-family: var(--font-data); color: var(--text-secondary);">
+          <span style="color: ${sideCol}; font-weight: 700;">${adv.side}</span>
+          <span>вход $${fmtP(adv.entry_price)}</span>
+          <span>сейчас $${fmtP(adv.current_price)}</span>
+          ${adv.size_usd ? `<span>$${adv.size_usd.toLocaleString('ru-RU')}</span>` : ''}
+          ${adv.days_open != null ? `<span>${adv.days_open < 1 ? Math.round(adv.hours_open) + 'ч' : adv.days_open.toFixed(0) + 'д'} в позиции</span>` : ''}
+          ${adv.note ? `<span style="color: var(--text-muted);">${adv.note}</span>` : ''}
+        </div>
+
+        <div style="margin-top: 11px; padding: 11px; background: rgba(255,255,255,0.55); border-radius: var(--r-md); font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+          ${adv.body}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 10px;">
+          <div style="padding: 9px; background: rgba(43,115,85,0.08); border-radius: var(--r-md);">
+            <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Ближайшая цель</div>
+            ${adv.next_target
+              ? `<div style="font-family: var(--font-data); font-weight: 700; color: var(--green); font-size: 14px;">$${fmtP(adv.next_target.price)}</div>
+                 <div style="font-size: 10px; color: var(--text-muted);">${adv.next_target.distance_pct.toFixed(1)}% · ${adv.next_target.label}</div>`
+              : '<div style="font-size: 12px; color: var(--text-muted);">нет уровня</div>'}
+          </div>
+          <div style="padding: 9px; background: rgba(168,68,60,0.07); border-radius: var(--r-md);">
+            <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Позиция сломана</div>
+            ${adv.invalidation
+              ? `<div style="font-family: var(--font-data); font-weight: 700; color: var(--red); font-size: 14px;">$${fmtP(adv.invalidation.price)}</div>
+                 <div style="font-size: 10px; color: var(--text-muted);">${adv.invalidation.distance_pct.toFixed(1)}% · ${adv.invalidation.label}</div>`
+              : '<div style="font-size: 12px; color: var(--text-muted);">нет уровня</div>'}
+          </div>
+        </div>
+
+        ${adv.remaining_rr != null ? `<div style="margin-top: 9px; font-size: 11px; color: var(--text-secondary);">
+          Осталось хода к риску: <strong style="font-family: var(--font-data); color: ${adv.remaining_rr >= 1.5 ? 'var(--green)' : 'var(--yellow)'};">${adv.remaining_rr}</strong>
+          ${adv.remaining_rr < 1 ? ' — до цели ближе, чем до слома. Держать дальше невыгодно.' : ''}
+        </div>` : ''}
+
+        <div style="margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(0,0,0,0.07); font-size: 12px;">
+          <strong style="color: ${U.c};">Действие:</strong> <span style="color: var(--text);">${adv.action_ru || '—'}</span>
+        </div>
+      </div>`;
+    }
+  }
+
   // ═══════════════════════════════════════════════════════════════════
   // 💡 БЛОК LAYMAN · "Что делать сейчас" — человеческий язык
   // Комбинирует decision + phase_analysis + HL premium в один совет
