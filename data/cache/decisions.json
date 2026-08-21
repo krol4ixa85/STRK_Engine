@@ -1,15 +1,15 @@
 {
-  "computed_at": "2026-08-20T21:39:36.400631+00:00",
+  "computed_at": "2026-08-21T02:01:58.980073+00:00",
   "engine_version": "1.0",
   "verify_after_days": 7,
   "regime": {
     "name": "NEUTRAL_MIXED",
-    "score": 1.0,
+    "score": 7.8,
     "multiplier": 0.56,
-    "why": "смешанные сигналы по рынку — размер урезан; доминация BTC 58.7% — альты под давлением"
+    "why": "смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением"
   },
   "tokens_evaluated": 31,
-  "tokens_actionable": 1,
+  "tokens_actionable": 3,
   "rules_status": "HYPOTHESIS · пороги заданы вручную, на истории не проверены",
   "decisions": {
     "AAVE": {
@@ -49,7 +49,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -92,7 +92,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -135,7 +135,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -143,7 +143,7 @@
     },
     "ARB": {
       "token": "ARB",
-      "action": "НЕ ВХОДИТЬ",
+      "action": "ЖДАТЬ",
       "size_pct": 0,
       "stage": "Неопределённая · без явного перевеса",
       "stage_code": "UNCLEAR",
@@ -167,12 +167,12 @@
       ],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
-        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
+        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
       ],
       "triggers": [
         "Доля недель с притоком вырастет с 42% до 65%+",
         "Появится сигнал силы (SOS) в 8-недельном окне",
+        "Волна FOMO-заголовков спадёт",
         "Режим рынка перестанет давить на альты"
       ],
       "invalidations": [
@@ -181,20 +181,19 @@
         "Цена уйдёт ниже минимума последней недели с притоком"
       ],
       "rules_fired": [
-        "stage:UNCLEAR",
-        "unified_veto"
+        "stage:UNCLEAR"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": "AVOID",
+      "unified_verdict": "REVIEW",
       "price_at_decision": 0.088677
     },
     "AXS": {
       "token": "AXS",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
       "stage": "Неопределённая · без явного перевеса",
       "stage_code": "UNCLEAR",
@@ -212,7 +211,8 @@
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
+        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
       ],
       "triggers": [
         "Появится серия из 2+ недель подряд с притоком",
@@ -226,14 +226,15 @@
         "Цена уйдёт ниже минимума последней недели с притоком"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "stage:UNCLEAR",
+        "unified_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "AVOID",
       "price_at_decision": 0.85898135
     },
     "BONK": {
@@ -257,7 +258,7 @@
       "conflicts_warn": 0,
       "notes": [
         "Зрелое накопление: спрос держится много недель подряд.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 58.7% — альты под давлением. Размер 66% → 37%."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 66% → 37%."
       ],
       "triggers": [
         "Появится сигнал силы (SOS) в 8-недельном окне",
@@ -274,7 +275,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -318,7 +319,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -362,7 +363,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -370,8 +371,8 @@
     },
     "DOGE": {
       "token": "DOGE",
-      "action": "НЕ ВХОДИТЬ",
-      "size_pct": 0,
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 18,
       "stage": "Ранняя стадия · приток свежий",
       "stage_code": "EARLY_ACCUM",
       "flow": {
@@ -390,17 +391,22 @@
           "rule": "young_accumulation",
           "level": "info",
           "text": "Весь полугодовой приток пришёлся на последний месяц — до этого был отток. Разворот не подтверждён временем."
+        },
+        {
+          "rule": "fomo_wave",
+          "level": "warn",
+          "text": "2 новостей помечены FOMO-риском. Бычья фаза на волне хайпа чаще встречается у локальных вершин."
         }
       ],
-      "conflicts_warn": 0,
+      "conflicts_warn": 1,
       "notes": [
         "Ранняя фаза: приток свежий, но не подтверждён временем. Пробная часть, остальное по подтверждению.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 58.7% — альты под давлением. Размер 33% → 18%.",
-        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 33% → 18%."
       ],
       "triggers": [
         "Доля недель с притоком вырастет с 46% до 65%+",
         "Появится сигнал силы (SOS) в 8-недельном окне",
+        "Волна FOMO-заголовков спадёт",
         "Режим рынка перестанет давить на альты"
       ],
       "invalidations": [
@@ -410,15 +416,14 @@
       ],
       "rules_fired": [
         "stage:EARLY_ACCUM",
-        "regime:NEUTRAL_MIXED",
-        "unified_veto"
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": "AVOID",
+      "unified_verdict": "HOLD_STRONG",
       "price_at_decision": 0.07033571
     },
     "EIGEN": {
@@ -464,7 +469,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -491,7 +496,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $3.9M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "Открытый интерес $4.0M — деривативов почти нет, сигналам по фандингу веры мало."
         }
       ],
       "conflicts_warn": 0,
@@ -515,7 +520,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": "HOLD_STRONG",
@@ -559,7 +564,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -602,15 +607,15 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "HOLD",
       "price_at_decision": 0.64621695
     },
     "GRT": {
       "token": "GRT",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
       "stage": "Неопределённая · без явного перевеса",
       "stage_code": "UNCLEAR",
@@ -628,7 +633,8 @@
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
+        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
       ],
       "triggers": [
         "Появится серия из 2+ недель подряд с притоком",
@@ -642,14 +648,15 @@
         "Цена уйдёт ниже минимума последней недели с притоком"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "stage:UNCLEAR",
+        "unified_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "AVOID",
       "price_at_decision": 0.01344526
     },
     "LDO": {
@@ -673,7 +680,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $2.5M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "Открытый интерес $2.6M — деривативов почти нет, сигналам по фандингу веры мало."
         }
       ],
       "conflicts_warn": 0,
@@ -696,7 +703,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -704,8 +711,8 @@
     },
     "LINK": {
       "token": "LINK",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 18,
       "stage": "Ранняя стадия · приток свежий",
       "stage_code": "EARLY_ACCUM",
       "flow": {
@@ -731,27 +738,19 @@
           "text": "Весь полугодовой приток пришёлся на последний месяц — до этого был отток. Разворот не подтверждён временем."
         },
         {
-          "rule": "news_vs_flow",
-          "level": "warn",
-          "text": "2 новостных событий требуют урезать размер, пока потоки говорят о накоплении."
-        },
-        {
           "rule": "fomo_wave",
           "level": "warn",
           "text": "3 новостей помечены FOMO-риском. Бычья фаза на волне хайпа чаще встречается у локальных вершин."
         }
       ],
-      "conflicts_warn": 3,
+      "conflicts_warn": 2,
       "notes": [
         "Ранняя фаза: приток свежий, но не подтверждён временем. Пробная часть, остальное по подтверждению.",
-        "Новости срезали размер на 50%: 2 событий требуют уменьшить экспозицию.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 58.7% — альты под давлением. Размер 16% → 9%.",
-        "3 серьёзных расхождения между слоями. Когда столько сигналов спорят, дешевле подождать ясности."
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 33% → 18%."
       ],
       "triggers": [
         "Появится серия из 2+ недель подряд с притоком",
         "Доля недель с притоком вырастет с 50% до 65%+",
-        "Новостной фон перестанет требовать урезания размера",
         "Волна FOMO-заголовков спадёт",
         "Режим рынка перестанет давить на альты"
       ],
@@ -762,16 +761,14 @@
       ],
       "rules_fired": [
         "stage:EARLY_ACCUM",
-        "news_size_down",
-        "regime:NEUTRAL_MIXED",
-        "conflict_gate"
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": "REVIEW",
+      "unified_verdict": null,
       "price_at_decision": 10.63
     },
     "MNT": {
@@ -811,10 +808,10 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "HOLD",
       "price_at_decision": 0.56769757
     },
     "MORPHO": {
@@ -838,7 +835,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $2.3M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "Открытый интерес $2.2M — деривативов почти нет, сигналам по фандингу веры мало."
         }
       ],
       "conflicts_warn": 0,
@@ -860,7 +857,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -905,7 +902,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -943,6 +940,7 @@
         "Появится серия из 2+ недель подряд с притоком",
         "Доля недель с притоком вырастет с 38% до 65%+",
         "Появится сигнал силы (SOS) в 8-недельном окне",
+        "Волна FOMO-заголовков спадёт",
         "Режим рынка перестанет давить на альты"
       ],
       "invalidations": [
@@ -955,10 +953,10 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "HOLD_STRONG",
       "price_at_decision": 0.093518
     },
     "PENDLE": {
@@ -982,7 +980,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $1.5M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "Открытый интерес $1.7M — деривативов почти нет, сигналам по фандингу веры мало."
         }
       ],
       "conflicts_warn": 0,
@@ -992,6 +990,7 @@
       "triggers": [
         "Доля недель с притоком вырастет с 58% до 65%+",
         "Появится сигнал силы (SOS) в 8-недельном окне",
+        "Волна FOMO-заголовков спадёт",
         "Режим рынка перестанет давить на альты"
       ],
       "invalidations": [
@@ -1004,10 +1003,10 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "REVIEW",
       "price_at_decision": 1.48
     },
     "PEPE": {
@@ -1048,7 +1047,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -1092,7 +1091,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -1136,7 +1135,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -1180,7 +1179,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -1232,7 +1231,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": "FALSE_RALLY_WAIT",
@@ -1275,7 +1274,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -1283,7 +1282,7 @@
     },
     "UNI": {
       "token": "UNI",
-      "action": "НЕ ВХОДИТЬ",
+      "action": "ЖДАТЬ",
       "size_pct": 0,
       "stage": "Неопределённая · без явного перевеса",
       "stage_code": "UNCLEAR",
@@ -1301,8 +1300,7 @@
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
-        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
+        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
       ],
       "triggers": [
         "Появится серия из 2+ недель подряд с притоком",
@@ -1316,15 +1314,14 @@
         "Цена уйдёт ниже минимума последней недели с притоком"
       ],
       "rules_fired": [
-        "stage:UNCLEAR",
-        "unified_veto"
+        "stage:UNCLEAR"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": "AVOID",
+      "unified_verdict": null,
       "price_at_decision": 3.35244307
     },
     "VIRTUAL": {
@@ -1365,7 +1362,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
@@ -1373,7 +1370,7 @@
     },
     "WIF": {
       "token": "WIF",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
       "stage": "Неопределённая · без явного перевеса",
       "stage_code": "UNCLEAR",
@@ -1391,7 +1388,8 @@
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
+        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
       ],
       "triggers": [
         "Появится серия из 2+ недель подряд с притоком",
@@ -1404,14 +1402,15 @@
         "Цена уйдёт ниже минимума последней недели с притоком"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "stage:UNCLEAR",
+        "unified_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
-      "unified_verdict": null,
+      "unified_verdict": "AVOID",
       "price_at_decision": 0.00026231
     },
     "ZK": {
@@ -1451,7 +1450,7 @@
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
-        "score": 1.0,
+        "score": 7.8,
         "multiplier": 0.56
       },
       "unified_verdict": null,
