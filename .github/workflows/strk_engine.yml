@@ -29,6 +29,10 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Phase Analyzer · КАЖДЫЕ 30 МИНУТ. Считает ускорение потока и
+    # sanity-фильтр битых данных из уже собранных weekly-скана.
+    # Ноль Dune запросов — работает на локальных файлах.
+    - cron: '15,45 * * * *'
     # Funding per token · КАЖДЫЕ 30 МИНУТ. Источник OKX public — бесплатно,
     # ноль кредитов Hive и Dune. Единственный модуль такой частоты.
     - cron: '*/30 * * * *'
@@ -73,6 +77,7 @@ on:
           - hive_health_catalog
           - funding_per_token
           - token_scan_single
+          - phase_analyzer
           - decision_engine
           - decision_verify
           - archivist
@@ -887,6 +892,34 @@ jobs:
           [ -f data/history/decision_log.jsonl ] && git add data/history/decision_log.jsonl || echo "no log"
           [ -f data/cache/decision_accuracy.json ] && git add data/cache/decision_accuracy.json || echo "no accuracy"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: decision accuracy [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # PHASE ANALYZER · каждые 30 минут · 0 кредитов Dune
+  # Считает flow_accel_4w/8w, дивергенцию цена/капитал, sanity-фильтр.
+  # Читает phase_verdict из token_scan (Dune, обновляется раз в неделю)
+  # и считает "что делает поток прямо сейчас" на 30-минутном такте.
+  # ============================================================
+  phase_analyzer:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '15,45 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'phase_analyzer')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Analyze phase deltas
+        run: python3 scripts/phase_analyzer.py
+      - name: Commit phase_analysis.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/phase_analysis.json ] && git add data/cache/phase_analysis.json || echo "no phase_analysis"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: phase deltas [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
