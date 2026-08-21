@@ -551,6 +551,7 @@ body > * {
     <div class="level-label">Level 0 · weighted regime</div>
   </div>
 
+  <div id="regime-summary-slot"></div>
   <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(245, 158, 11, 0.05)); border: 2px solid rgba(16, 185, 129, 0.20); border-radius: 12px;">
     <div id="market-regime-content">Loading market regime...</div>
   </div>
@@ -587,6 +588,7 @@ body > * {
     <div class="level-label">Level 1 · macro context</div>
   </div>
 
+  <div id="market-summary-slot"></div>
   <div class="card" style="padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(59, 130, 246, 0.03)); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px;">
     <div id="global-context-content">Loading global context...</div>
   </div>
@@ -601,7 +603,7 @@ body > * {
 <div class="section-subtitle">Тезис ещё в силе? Куда идёт крипто-рынок, макро-циклы, нарративы</div>
 </div>
 <div class="section-badge">Level 3 · background</div>
-</div><div class="cards-grid" id="cards-macro" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;"><div id="macro-details" style="grid-column: 1 / -1; display: none;">
+</div><div id="macro-summary-slot" style="margin-bottom: 14px;"></div><div class="cards-grid" id="cards-macro" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;"><div id="macro-details" style="grid-column: 1 / -1;">
 <div id="macro-details-inner" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
 <div class="card">
 <div class="card-header">
@@ -680,7 +682,7 @@ body > * {
 <div class="loading" id="whale-content">Loading...</div>
 </div></div>
 </div><div id="macro-details-toggle" onclick="toggleMacroDetails()" style="grid-column: 1 / -1; padding: 10px 16px; background: var(--bg-subtle); border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; border: 1px dashed var(--border);">
-  ▼ Подробности: TVL · Funding · Stables · Movers · News · Alt-cycle detail
+  ▲ Скрыть подробности
 </div><div id="macro-essentials" style="grid-column: 1 / -1; padding: 16px; background: linear-gradient(135deg, rgba(88,166,255,0.06), rgba(88,166,255,0.02)); border-radius: 12px; border-left: 4px solid #58a6ff; margin-bottom: 12px;">
 <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 12px;">🌍 Macro Essentials · thesis check</div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
@@ -850,7 +852,7 @@ body > * {
 <div class="section-title">🔄 UTILITY ROTATION</div>
 <div class="section-subtitle">Где припарковать капитал пока STRK не готов. Смотрим STRONG_BUY / потоки / whale movement</div>
 </div>
-<div class="section-badge">Level 2 · тактика</div>
+<div class="section-badge">Level 2 · тактика</div><div id="universe-summary-slot" style="margin: 14px 0;"></div>
 </div><div class="cards-grid" id="cards-rotation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
 <div class="card card-wide card-full">
 <div class="card-header">
@@ -879,7 +881,7 @@ body > * {
 <div class="loading" id="rotation-content">Loading...</div>
 </div><div class="card card-wide card-full">
 <div class="card-header">
-<div class="card-title">💰 Куда идёт капитал · sector rotation</div>
+<div class="card-title">💰 Куда идёт капитал · sector rotation</div><div id="rotation-summary-slot" style="margin: 12px 0;"></div>
 <div class="card-subtitle" id="sector-flow-age">Loading...</div>
 </div>
 
@@ -3180,6 +3182,7 @@ async function loadAll(manual = false) {
   safeRender('Scenarios', () => renderScenarios());
   safeRender('StrkTargets', () => renderStrkTargets());
   safeRender('Trades', () => renderTrades());
+  safeRender('Summaries', () => renderModuleSummaries());
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
@@ -3522,11 +3525,64 @@ function toggleMacroDetails() {
   const details = document.getElementById('macro-details');
   const toggle = document.getElementById('macro-details-toggle');
   if (!details || !toggle) return;
+  // display пустой означает "показан" — блок теперь открыт по умолчанию,
+  // потому что макро задаёт контекст для всего остального на странице
   const isHidden = details.style.display === 'none';
   details.style.display = isHidden ? 'block' : 'none';
   toggle.innerHTML = isHidden 
     ? '▲ Скрыть подробности'
     : '▼ Подробности: TVL · Funding · Stables · Movers · News · Alt-cycle detail';
+}
+
+// Отрисовка готового вывода из module_summaries.json.
+// Текст целиком приходит из scripts/module_summaries.py — здесь только
+// цвет и вёрстка. По правилу: браузер рисует, Python считает.
+function summaryBlock(s) {
+  if (!s) return '';
+  const tones = {
+    positive: {c: '#059669', bg: 'rgba(16,185,129,0.07)', icon: '✅'},
+    caution:  {c: '#F59E0B', bg: 'rgba(245,158,11,0.07)', icon: '⚠️'},
+    negative: {c: '#DC2626', bg: 'rgba(220,38,38,0.07)', icon: '🚫'},
+    neutral:  {c: '#3B82F6', bg: 'rgba(59,130,246,0.06)', icon: 'ℹ️'},
+  };
+  const t = tones[s.tone] || tones.neutral;
+  return `<div style="padding: 14px 16px; background: ${t.bg}; border-radius: 10px; border-left: 4px solid ${t.c}; margin-bottom: 14px;">
+    <div style="display: flex; align-items: flex-start; gap: 10px;">
+      <span style="font-size: 20px; line-height: 1.2;">${t.icon}</span>
+      <div style="flex: 1;">
+        <div style="font-size: 15px; font-weight: 700; color: ${t.c}; line-height: 1.35;">${s.headline}</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.6;">${s.body}</div>
+        <div style="font-size: 13px; color: var(--text); margin-top: 8px; line-height: 1.6; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.06);">
+          <strong style="color: ${t.c};">Что это значит:</strong> ${s.action}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+let _summariesCache = null;
+async function getSummaries() {
+  if (_summariesCache) return _summariesCache;
+  _summariesCache = await _loadCache('module_summaries.json');
+  return _summariesCache;
+}
+
+async function renderModuleSummaries() {
+  const s = await getSummaries();
+  if (!s || !s.modules) return;
+  const m = s.modules;
+
+  const spots = [
+    ['macro-summary-slot',    m.macro],
+    ['market-summary-slot',   m.market],
+    ['regime-summary-slot',   m.regime],
+    ['universe-summary-slot', m.universe],
+    ['rotation-summary-slot', m.rotation],
+  ];
+  for (const [id, data] of spots) {
+    const el = document.getElementById(id);
+    if (el && data) el.innerHTML = summaryBlock(data);
+  }
 }
 
 function renderMacroEssentials(altCycleData, sectorFlowData, momentumData) {
