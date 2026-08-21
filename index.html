@@ -1512,20 +1512,76 @@ async function renderEngineSignals() {
 }
 
 // Тонкий рендер. Тон, тексты и сортировка приходят из view_data.py.
+// Отпечаток сборки. Ставится в шапку, чтобы одним взглядом понять,
+// свежая страница открыта или браузер держит старую из памяти.
+// За 21.08 мы трижды искали причину «не показывается» там, где её
+// не было: файл на сервере обновлялся, а вкладка оставалась прежней.
+const BUILD_STAMP = 'BUILD-2026-08-21-20';
+
+function showBuildStamp() {
+  const host = document.querySelector('.header-actions') ||
+               document.querySelector('.header') ||
+               document.body;
+  if (!host || document.getElementById('build-stamp')) return;
+  const s = document.createElement('span');
+  s.id = 'build-stamp';
+  s.style.cssText = 'font-family: var(--font-data); font-size: 9px; ' +
+    'color: var(--text-muted); letter-spacing: 0.06em; margin-left: 10px; ' +
+    'padding: 3px 7px; border: 1px solid var(--border); border-radius: var(--r-sm);';
+  s.textContent = BUILD_STAMP;
+  s.title = 'Отпечаток открытой сборки. Если он не менялся после заливки — браузер показывает страницу из памяти, нужно Ctrl+Shift+R.';
+  host.appendChild(s);
+}
+
 let _knownVersion = null;
 
 async function startVersionWatch() {
-  const check = async () => {
+  // Следим за VERSION.txt — он обновляется job version_update при каждой
+  // заливке index.html. Файл крошечный, опрос раз в 30 секунд ничего
+  // не стоит, в отличие от перезакачки всей страницы в 300 КБ.
+  const read = async () => {
     try {
       const r = await fetch('VERSION.txt?t=' + Date.now(), {cache: 'no-store'});
-      if (!r.ok) return;
-      const v = (await r.text()).trim().split('\n')[0];
-      if (!_knownVersion) { _knownVersion = v; return; }
-      if (v !== _knownVersion) showUpdateBanner();
-    } catch (e) { /* сеть моргнула — молчим, проверим через минуту */ }
+      if (!r.ok) return null;
+      return (await r.text()).trim().split('\n')[0];
+    } catch (e) { return null; }
   };
-  await check();
-  setInterval(check, 60000);
+
+  _knownVersion = await read();
+
+  setInterval(async () => {
+    const v = await read();
+    if (!v || !_knownVersion || v === _knownVersion) return;
+
+    // Страница изменилась. Перезагружаем сами, но только когда это
+    // безопасно: если человек печатает или заполнил форму сделки,
+    // перезагрузка стёрла бы введённое. В таком случае показываем
+    // плашку и ждём решения.
+    if (isSafeToReload()) {
+      console.log('[Version] новая сборка ' + v + ', обновляю страницу');
+      location.reload();
+    } else {
+      showUpdateBanner();
+    }
+  }, 30000);
+}
+
+function isSafeToReload() {
+  // Курсор в поле ввода — человек что-то печатает
+  const a = document.activeElement;
+  if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return false;
+
+  // Форма записи сделки заполнена, но не отправлена
+  for (const id of ['tr-token', 'tr-price', 'tr-size', 'tr-note']) {
+    const el = document.getElementById(id);
+    if (el && el.value && el.value.trim()) return false;
+  }
+
+  // Открыта модалка — человек читает разбор актива
+  const modal = document.getElementById('duration-scanner-modal');
+  if (modal && modal.style.display && modal.style.display !== 'none') return false;
+
+  return true;
 }
 
 function showUpdateBanner() {
@@ -1538,7 +1594,7 @@ function showUpdateBanner() {
     'display: flex; align-items: center; gap: 12px; font-family: inherit;';
   b.innerHTML = '<div style="flex: 1; line-height: 1.4;">' +
     '<strong>Вышла новая версия</strong><br>' +
-    '<span style="font-size: 11px; opacity: 0.9;">На странице старые данные</span></div>' +
+    '<span style="font-size: 11px; opacity: 0.9;">Обновлю, когда закончишь — или нажми сейчас</span></div>' +
     '<button onclick="location.reload(true)" style="padding: 7px 13px; background: white; ' +
     'color: #059669; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; ' +
     'cursor: pointer; white-space: nowrap;">Обновить</button>';
@@ -3504,6 +3560,7 @@ async function loadAll(manual = false) {
   // хотя данные были на месте. Проверяем VERSION.txt раз в минуту
   // и говорим прямо, если файл на сервере изменился.
   startVersionWatch();
+  showBuildStamp();
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
