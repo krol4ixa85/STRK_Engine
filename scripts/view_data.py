@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-view_data.py · v1.1 · 21.08.2026
+view_data.py · v1.2 · 21.08.2026
 STRK ENGINE · готовые данные для отображения
 
 ЗАЧЕМ
@@ -145,6 +145,9 @@ def build_whale_summary(whales):
 
     rows = []
     for t, a in active.items():
+        total = (a.get("long_usd") or 0) + (a.get("short_usd") or 0)
+        if total < WHALE_MIN_TOTAL_USD:
+            continue
         rows.append({
             "token": t,
             "bias": a.get("bias"),
@@ -189,7 +192,47 @@ def build_whale_summary(whales):
     }
 
 
-def build_signals_table(dec, comp, vp, pa):
+def build_whale_cell(row):
+    """
+    Короткая ячейка для таблицы: только значимые позиции.
+    Мелочь и отсутствие данных выглядят одинаково — прочерком,
+    потому что и то и другое означает «сигнала здесь нет».
+    """
+    if not row or row.get("status") != "OK":
+        return None
+
+    long_usd = row.get("long_usd") or 0
+    short_usd = row.get("short_usd") or 0
+    total = long_usd + short_usd
+    if total < WHALE_MIN_TOTAL_USD:
+        return None
+
+    bias = row.get("bias")
+    net = long_usd - short_usd
+    single = bias in ("SINGLE_WHALE_LONG", "SINGLE_WHALE_SHORT")
+
+    if single:
+        short_label, tone = "1 счёт", "yellow"
+    elif bias == "WHALES_LONG":
+        short_label, tone = "лонг", "green"
+    elif bias == "WHALES_SHORT":
+        short_label, tone = "шорт", "red"
+    else:
+        short_label, tone = "поровну", "muted"
+
+    return {
+        "label": short_label,
+        "tone": tone,
+        "net_m": round(net / 1e6, 2),
+        "total_m": round(total / 1e6, 2),
+        "n_long": row.get("whales_long"),
+        "n_short": row.get("whales_short"),
+        "divergent": row.get("crowd_vs_whales") == "DIVERGENT",
+        "text_ru": row.get("text_ru"),
+    }
+
+
+def build_signals_table(dec, comp, vp, pa, whales=None):
     """
     Строки таблицы, уже отсортированные по важности, плюс счётчики.
     Браузеру остаётся пройти циклом и вывести.
@@ -198,6 +241,7 @@ def build_signals_table(dec, comp, vp, pa):
     compass = (comp or {}).get("tokens") or {}
     profiles = (vp or {}).get("tokens") or {}
     phases = (pa or {}).get("tokens") or {}
+    whale_tokens = (whales or {}).get("by_token") or {}
 
     rows = []
     for token, d in decisions.items():
@@ -238,6 +282,9 @@ def build_signals_table(dec, comp, vp, pa):
                 "label": down.get("label"),
             } if down else None,
             "data_ok": (p.get("data_quality") or {}).get("ok", True),
+            # Киты прямо в строке актива — отдельная карточка показывала
+            # BTC и ETH, которыми мы не торгуем, и позиции по $200K
+            "whales": build_whale_cell(whale_tokens.get(token)),
         })
 
     # Сортировка: сначала то, что можно делать; внутри — по размеру,
@@ -285,6 +332,12 @@ def build_signals_table(dec, comp, vp, pa):
     }
 
 
+# Ниже этой суммы позиция не считается мнением крупного игрока.
+# Один адрес с $200K — это не кит, а обычный трейдер, и показывать
+# его как «крупные в лонгах» было бы враньём.
+WHALE_MIN_TOTAL_USD = 1_000_000
+
+
 def build_whale_view(row):
     """
     Готовая карточка по крупным игрокам. Тон и текст решаются здесь,
@@ -295,6 +348,13 @@ def build_whale_view(row):
         return {"status": "NONE",
                 "text_ru": "никто из отслеживаемых крупных адресов "
                            "не держит позицию по этому активу"}
+
+    total = (row.get("long_usd") or 0) + (row.get("short_usd") or 0)
+    if total < WHALE_MIN_TOTAL_USD:
+        return {"status": "TOO_SMALL",
+                "total_usd": total,
+                "text_ru": f"позиции крупных всего ${total/1e6:.2f}M — "
+                           f"мало, чтобы считать это сигналом"}
 
     bias = row.get("bias")
     single = bias in ("SINGLE_WHALE_LONG", "SINGLE_WHALE_SHORT")
@@ -419,7 +479,7 @@ def main():
     if missing:
         print(f"⚠ Нет данных: {', '.join(missing)}\n")
 
-    table = build_signals_table(dec, comp, vp, pa)
+    table = build_signals_table(dec, comp, vp, pa, whales)
     whale_summary = build_whale_summary(whales)
     modal = build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales)
 
