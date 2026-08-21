@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-volume_profile_collector.py · v2.0 · 21.08.2026
+volume_profile_collector.py · v2.1 · 21.08.2026
 STRK ENGINE · Volume Profile и магниты цены
 
 ЗАЧЕМ
@@ -323,15 +323,65 @@ def measured_move(candles, current):
     }
 
 
-def classify_position(current, levels):
-    """Где цена относительно value area — читаемо."""
+MARKUP_VOL_RATIO = 1.3   # объём последних 3 дней относительно среднего по окну
+
+
+def volume_expansion(candles, recent_n):
+    """
+    Во сколько раз объём последних recent_n свечей выше среднего по окну.
+
+    Нужно, чтобы отличить выход вверх ИЗ зоны стоимости на растущем
+    объёме (акцептанс, markup) от простого отрыва цены на тонком
+    объёме (растяжение, ждём возврата). Без этого различения любая
+    цена выше VAH читалась как «дорого» — и на пробое AAVE 21.08
+    движок штрафовал ровно то движение, которое и было markup.
+    """
+    if not candles or len(candles) < recent_n * 2:
+        return None
+    try:
+        vols = [float(c.get("v") or 0) for c in candles]
+    except (TypeError, ValueError):
+        return None
+    if not vols:
+        return None
+    avg_all = sum(vols) / len(vols)
+    if avg_all <= 0:
+        return None
+    avg_recent = sum(vols[-recent_n:]) / recent_n
+    return round(avg_recent / avg_all, 2)
+
+
+def classify_position(current, levels, vol_ratio=None):
+    """
+    Где цена относительно value area — читаемо.
+
+    ВАЖНО про ABOVE_VALUE. Код остаётся прежним (его знают потребители),
+    но добавлено поле above_kind:
+
+      MARKUP    цена вышла вверх на объёме выше обычного — рынок
+                принимает новую цену. Это НЕ повод штрафовать вход.
+      EXTENDED  цена ушла вверх, а объём не подтверждает — растяжение,
+                вероятен возврат в зону. Здесь штраф уместен.
+      None      объём посчитать не удалось → не утверждаем ничего.
+    """
     poc, vah, val = levels["poc"], levels["vah"], levels["val"]
     dist_poc = (current / poc - 1) * 100 if poc else None
+    above_kind = None
 
     if current > vah:
         code = "ABOVE_VALUE"
-        ru = (f"цена выше зоны стоимости на {(current/vah-1)*100:.1f}% — "
-              f"объёмной поддержки сверху нет")
+        if vol_ratio is None:
+            above_kind = None
+            tail = "объём не посчитан — характер выхода неизвестен"
+        elif vol_ratio >= MARKUP_VOL_RATIO:
+            above_kind = "MARKUP"
+            tail = (f"выход на объёме ×{vol_ratio} к среднему — "
+                    f"рынок принимает новую цену")
+        else:
+            above_kind = "EXTENDED"
+            tail = (f"объём ×{vol_ratio} к среднему, движение не подтверждено — "
+                    f"вероятен возврат в зону")
+        ru = f"цена выше зоны стоимости на {(current/vah-1)*100:.1f}% — {tail}"
     elif current < val:
         code = "BELOW_VALUE"
         ru = (f"цена ниже зоны стоимости на {(1-current/val)*100:.1f}% — "
@@ -343,6 +393,8 @@ def classify_position(current, levels):
 
     return {
         "code": code,
+        "above_kind": above_kind,
+        "vol_ratio_recent": vol_ratio,
         "text_ru": ru,
         "distance_to_poc_pct": round(dist_poc, 2) if dist_poc is not None else None,
     }
@@ -461,6 +513,10 @@ def build_targets(current, all_windows, structure=None):
 def analyze_token(symbol, hl_name):
     result = {"symbol": symbol, "hl_name": hl_name, "windows": {}}
     current = None
+    # None означает «не посчитали». Ноль здесь был бы утверждением
+    # «объёма нет», а это разные вещи.
+    vol_ratio_30d = None
+    vol_ratio_90d = None
 
     for wname, cfg in WINDOWS.items():
         candles = fetch_candles(hl_name, cfg["interval"], cfg["days"])
@@ -474,6 +530,14 @@ def analyze_token(symbol, hl_name):
                 current = float(candles[-1]["c"])
             except (KeyError, TypeError, ValueError):
                 pass
+
+        if wname == "30d":
+            # 4h-свечи: последние 3 дня = 18 свечей. Нужен для того,
+            # чтобы отличить markup от растяжения (см. classify_position)
+            vol_ratio_30d = volume_expansion(candles, 18)
+        elif wname == "90d":
+            # 1d-свечи: последние 3 дня = 3 свечи
+            vol_ratio_90d = volume_expansion(candles, 3)
 
         profile = build_profile(candles, cfg["bins"])
         if not profile:
@@ -497,10 +561,10 @@ def analyze_token(symbol, hl_name):
     # Положение относительно 30d value area — основное окно для свинга
     w30 = result["windows"].get("30d")
     if w30 and w30.get("levels"):
-        result["position"] = classify_position(current, w30["levels"])
+        result["position"] = classify_position(current, w30["levels"], vol_ratio_30d)
     w90 = result["windows"].get("90d")
     if w90 and w90.get("levels"):
-        result["position_90d"] = classify_position(current, w90["levels"])
+        result["position_90d"] = classify_position(current, w90["levels"], vol_ratio_90d)
 
     # Длинное окно только для структуры — объёмный профиль на нём не строим,
     # он был бы слишком размазан и бесполезен для свинга
@@ -534,7 +598,7 @@ def analyze_token(symbol, hl_name):
 
 
 def main(only=None):
-    print("=== Volume Profile Collector v1.0 (HL candles, 0 кредитов) ===\n")
+    print("=== Volume Profile Collector v2.1 (HL candles, 0 кредитов) ===\n")
 
     tokens = {k: v for k, v in TOKEN_MAP.items() if not only or k in only}
     print(f"  Токенов: {len(tokens)} · окон на токен: {len(WINDOWS)}\n")
