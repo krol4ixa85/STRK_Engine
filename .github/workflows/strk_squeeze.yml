@@ -115,6 +115,20 @@ jobs:
             echo "=== Squeeze fast scan changes: ==="
             git diff --cached --stat
             git commit -m "chore: squeeze fast scan (30-min) [skip ci]"
-            # Rebase перед push — конфликт возможен с main hourly workflow
-            git push || (git pull --rebase origin main && git push) || echo "Push failed, will retry next run"
+            # Пуш с повторами. Было: одна попытка rebase и echo, глотавший
+            # ошибку — потерянный результат выглядел как успешный прогон.
+            # -X theirs оставляет при конфликте файл ЭТОГО прогона: он
+            # пересобирает их целиком, построчное слияние бессмысленно.
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              if git push; then pushed=1; break; fi
+              echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+              git fetch origin main || true
+              git rebase -X theirs origin/main || { git rebase --abort || true; }
+              sleep $(( RANDOM % 7 + attempt * 4 ))
+            done
+            if [ "$pushed" != "1" ]; then
+              echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+              exit 1
+            fi
           fi
