@@ -884,13 +884,6 @@ STRONG_BUY здесь ставится по одному правилу: при�
 </div>
 <div class="layman-intro">Когда токен появляется/исчезает из STRONG_BUY — это события ротации капитала между секторами.</div>
 <div class="loading" id="rotation-content">Loading...</div>
-</div><div class="card">
-<div class="card-header">
-<div class="card-title">🐋 Крупные игроки Hyperliquid</div>
-<div class="card-subtitle" id="whales-age">—</div>
-</div>
-<div class="layman-intro">Позиции адресов с крупным оборотом. Собраны из публичных сделок — Hyperliquid показывает состояние любого счёта. Маркетмейкеры отсеяны.</div>
-<div class="loading" id="whales-content">Loading...</div>
 </div><div class="card card-wide card-full">
 <div class="card-header">
 <div class="card-title">💰 Куда идёт капитал · sector rotation</div><div id="rotation-summary-slot" style="margin: 12px 0;"></div>
@@ -1310,6 +1303,7 @@ async function renderEngineSignals() {
   out += `<div class="table-wrapper"><table><thead><tr>
     <th>Токен</th><th>Действие</th><th class="number">Размер</th>
     <th class="number">Компас</th><th>Фаза</th><th>Поток</th>
+    <th class="number">Киты</th>
     <th class="number">Цель ↑</th><th class="number">Стоп ↓</th>
   </tr></thead><tbody>`;
 
@@ -1325,13 +1319,19 @@ async function renderEngineSignals() {
       <td class="number" style="color: ${sCol}; font-weight: 700;">${r.compass_score == null ? '—' : (r.compass_score >= 0 ? '+' : '') + Math.round(r.compass_score)}</td>
       <td style="font-size: 10px; color: var(--text-muted);">${r.phase_ru}</td>
       <td style="font-size: 10px; color: ${fCol};">${r.flow_ru}</td>
+      <td class="number" style="font-size: 10px;">${r.whales
+        ? `<span style="color: ${C[r.whales.tone] || C.muted}; font-weight: 600;">${r.whales.label}</span>` +
+          `<div style="color: var(--text-muted); font-size: 9px;">$${Math.abs(r.whales.net_m)}M · ${r.whales.n_long}л/${r.whales.n_short}ш</div>` +
+          (r.whales.divergent ? '<div style="color: var(--yellow); font-size: 9px;">⚠ против толпы</div>' : '')
+        : '<span style="color: var(--text-muted);">—</span>'}</td>
       <td class="number" style="font-size: 11px;">${r.target_up ? '$' + r.target_up.price_fmt + ' <span style="color: var(--green);">+' + Math.round(r.target_up.distance_pct) + '%</span>' : '—'}</td>
       <td class="number" style="font-size: 11px;">${r.target_down ? '$' + r.target_down.price_fmt + ' <span style="color: var(--red);">' + Math.round(r.target_down.distance_pct) + '%</span>' : '—'}</td>
     </tr>`;
   }
   out += '</tbody></table></div>';
   out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 8px; font-style: italic;">
-    Клик по строке открывает разбор актива. Всё посчитано в scripts/view_data.py, обновляется каждые 30 минут.
+    Клик по строке открывает разбор актива. Всё посчитано в scripts/view_data.py, обновляется каждые 30 минут.<br>
+    Колонка «Киты» — позиции крупных адресов Hyperliquid. Прочерк значит, что суммарно там меньше $1M: слишком мало, чтобы считать сигналом.
   </div>`;
 
   el.innerHTML = out;
@@ -1371,90 +1371,9 @@ function showUpdateBanner() {
   document.body.appendChild(b);
 }
 
-async function renderWhales() {
-  // Диагностика прямо в блоке. Раньше ошибка внутри async-функции
-  // терялась: safeRender синхронный, он вызывает fn() и не ждёт
-  // промис, поэтому исключение уходило в никуда и блок молча
-  // оставался с надписью Loading.
-  const el = document.getElementById('whales-content');
-  if (!el) { console.error('[Whales] нет элемента whales-content'); return; }
 
-  const fail = (msg) => {
-    console.error('[Whales]', msg);
-    el.innerHTML = `<div style="font-size: 12px; color: #DC2626; line-height: 1.5;">${msg}</div>`;
-  };
 
-  try {
-    console.log('[Whales] загружаю view_data.json');
-    const vd = await _loadCache('view_data.json');
-    if (!vd) { fail('view_data.json не загрузился (сеть или 404)'); return; }
-    console.log('[Whales] файл получен, ключи:', Object.keys(vd));
 
-    const w = vd.whales;
-    if (!w) { fail('в view_data.json нет раздела whales — запусти mode: view_data'); return; }
-    console.log('[Whales] статус:', w.status, '· строк:', (w.rows || []).length);
-
-    renderWhalesBody(el, w);
-  } catch (e) {
-    fail('ошибка отрисовки: ' + e);
-  }
-}
-
-function renderWhalesBody(el, w) {
-
-  const ageEl = document.getElementById('whales-age');
-  if (ageEl && w.computed_at) {
-    const m = Math.round((Date.now() - new Date(w.computed_at).getTime()) / 60000);
-    ageEl.textContent = m < 60 ? m + ' мин назад' : Math.round(m / 60) + ' ч назад';
-  }
-
-  if (w.status === 'NOT_ENOUGH_DATA') {
-    el.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">${w.text_ru}<br><span style="font-size: 11px;">Сделок в логе: ${w.trades_in_log || 0}</span></div>`;
-    return;
-  }
-
-  const toneBg = {positive: 'rgba(16,185,129,0.07)', caution: 'rgba(245,158,11,0.08)', neutral: 'rgba(59,130,246,0.05)'};
-  const toneBd = {positive: 'var(--green)', caution: 'var(--yellow)', neutral: '#3B82F6'};
-
-  let out = `<div style="padding: 11px; background: ${toneBg[w.tone] || toneBg.neutral}; border-radius: 8px; border-left: 3px solid ${toneBd[w.tone] || toneBd.neutral}; margin-bottom: 10px;">
-    <div style="font-size: 13px; font-weight: 700; color: ${toneBd[w.tone] || toneBd.neutral};">${w.headline}</div>
-    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px; line-height: 1.5;">${w.action}</div>
-  </div>`;
-
-  out += `<div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
-    Направленных адресов: ${w.whales_directional} · маркетмейкеров отсеяно: ${w.market_makers_skipped} · сделок в базе: ${w.trades_in_log}
-  </div>`;
-
-  if (w.rows && w.rows.length) {
-    out += '<div class="table-wrapper"><table><thead><tr><th>Токен</th><th>Перевес</th><th class="number">Лонг</th><th class="number">Шорт</th></tr></thead><tbody>';
-    for (const r of w.rows) {
-      const bCol = r.bias === 'WHALES_LONG' ? 'var(--green)' :
-                   r.bias === 'WHALES_SHORT' ? 'var(--red)' :
-                   r.bias && r.bias.indexOf('SINGLE') === 0 ? 'var(--yellow)' : 'var(--text-muted)';
-      out += `<tr${r.divergent ? ' style="background: rgba(245,158,11,0.06);"' : ''}>
-        <td><strong>${r.token}</strong>${r.divergent ? ' <span style="color: var(--yellow); font-size: 10px;">⚠</span>' : ''}</td>
-        <td style="font-size: 10px; color: ${bCol}; font-weight: 600;">${r.bias}</td>
-        <td class="number" style="color: var(--green); font-size: 11px;">${r.n_long}шт · $${r.long_m}M</td>
-        <td class="number" style="color: var(--red); font-size: 11px;">${r.n_short}шт · $${r.short_m}M</td>
-      </tr>`;
-    }
-    out += '</tbody></table></div>';
-  }
-
-  const div = (w.rows || []).filter(r => r.divergent);
-  if (div.length) {
-    out += '<div style="margin-top: 10px;">';
-    for (const r of div) {
-      out += `<div style="padding: 8px; background: rgba(245,158,11,0.08); border-radius: 5px; margin: 4px 0; font-size: 11px; line-height: 1.5;">
-        <strong style="color: var(--yellow);">${r.token}:</strong>
-        <span style="color: var(--text-secondary);"> ${r.crowd_vs_whales_ru || ''}</span>
-      </div>`;
-    }
-    out += '</div>';
-  }
-
-  el.innerHTML = out;
-}
 
 function renderRotation(events) {
   const el = document.getElementById('rotation-content');
@@ -3404,7 +3323,6 @@ async function loadAll(manual = false) {
   safeRender('Trades', () => renderTrades());
   safeRender('Summaries', () => renderModuleSummaries());
   safeRender('EngineSignals', () => renderEngineSignals());
-  safeRender('Whales', () => renderWhales());
 
   // Слежение за версией. Кэш на сервере отключён правильно, но браузер
   // всё равно держит открытую страницу и не перезапрашивает её сам.
