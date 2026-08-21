@@ -21,7 +21,7 @@ DECISIONS_FILE = os.path.join(CACHE, "decisions.json")
 ACCURACY_FILE = os.path.join(CACHE, "decision_accuracy.json")
 LOG_FILE = os.path.join(HISTORY, "decision_log.jsonl")
 
-ENGINE_VERSION = "1.1"
+ENGINE_VERSION = "1.2"
 VERIFY_AFTER_DAYS = 7
 MOVE_THRESHOLD_PCT = 3.0
 MIN_N_FOR_ACCURACY = 20
@@ -63,6 +63,9 @@ def load_all_signals():
         "sector": load("dune_sector_netflow.json", {}) or {},
         "prices": load("hive_prices.json", {}) or {},
         "phase_total": load("total_phase.json", {}) or {},
+        "volume_profile": load("volume_profile.json", {}) or {},
+        "cvd": load("cvd_multi.json", {}) or {},
+        "hl_perps": load("hl_perps.json", {}) or {},
     }
 
 
@@ -157,6 +160,123 @@ def regime_multiplier(sig):
     return round(mult, 2), name, score, why
 
 
+def apply_cvd(size, cvd_row, notes, rules):
+    """
+    CVD ловит расхождение между ценой и агрессией.
+
+    DISTRIBUTION_DIV — цена растёт, но агрессивные ПРОДАЖИ преобладают.
+    Значит рост тянут мелкие покупатели, а крупные разгружаются лимитками.
+    Это классическая вершина, и она перевешивает бычью фазу.
+    """
+    if not cvd_row or cvd_row.get("status") != "OK":
+        return size
+
+    cons = cvd_row.get("consensus") or {}
+    code = cons.get("code")
+    score = cons.get("score", 0)
+
+    if code == "STRONG_SELL_PRESSURE" and size > 0:
+        notes.append(f"CVD: {cons.get('text_ru', '')} (score {score}). "
+                     f"Агрессия против входа — размер обнулён.")
+        rules.append("cvd_strong_sell_veto")
+        return 0
+
+    if code == "SELL_PRESSURE" and size > 0:
+        new_size = round(size * 0.5)
+        notes.append(f"CVD: {cons.get('text_ru', '')} — размер {size}% → {new_size}%.")
+        rules.append("cvd_sell_pressure_cut")
+        return new_size
+
+    if code == "STRONG_BUY_PRESSURE" and size > 0:
+        new_size = min(100, round(size * 1.2))
+        notes.append(f"CVD подтверждает: {cons.get('text_ru', '')} — "
+                     f"размер {size}% → {new_size}%.")
+        rules.append("cvd_strong_buy_boost")
+        return new_size
+
+    return size
+
+
+def apply_volume_profile(size, vp_row, notes, rules):
+    """
+    Volume Profile отвечает где цена относительно реально торгуемой зоны.
+
+    ABOVE_VALUE значит цена ушла выше области, где прошло 70% объёма.
+    Сверху нет объёмной поддержки: при развороте падать будет быстро,
+    потому что некому подхватить. Это не запрет на вход, но повод
+    урезать размер и держать стоп ближе.
+    """
+    if not vp_row or vp_row.get("status") != "OK":
+        return size
+
+    pos = vp_row.get("position") or {}
+    code = pos.get("code")
+    dist = pos.get("distance_to_poc_pct")
+
+    if code == "ABOVE_VALUE" and size > 0:
+        # Чем дальше от POC, тем сильнее режем
+        if dist is not None and dist > 25:
+            new_size = round(size * 0.5)
+            notes.append(f"Volume Profile: {pos.get('text_ru', '')}. "
+                         f"Цена на {dist:.0f}% выше справедливой — размер {size}% → {new_size}%.")
+            rules.append("vp_far_above_value_cut")
+            return new_size
+        new_size = round(size * 0.75)
+        notes.append(f"Volume Profile: {pos.get('text_ru', '')} — "
+                     f"размер {size}% → {new_size}%.")
+        rules.append("vp_above_value_cut")
+        return new_size
+
+    if code == "BELOW_VALUE" and size > 0:
+        notes.append(f"Volume Profile: {pos.get('text_ru', '')} — "
+                     f"цена ниже зоны объёма, потенциал к возврату есть.")
+        rules.append("vp_below_value_note")
+
+    return size
+
+
+def build_price_targets(vp_row, hl_row, current_price):
+    """
+    Собирает цели и стоп из Volume Profile.
+    Это ответ на вопрос "куда стремится цена".
+    """
+    if not vp_row or vp_row.get("status") != "OK":
+        return None
+
+    targets = vp_row.get("targets") or {}
+    ups = targets.get("nearest_up") or []
+    downs = targets.get("nearest_down") or []
+
+    out = {
+        "current_price": current_price,
+        "targets_up": ups[:3],
+        "targets_down": downs[:3],
+    }
+
+    # Первая цель вверх и первый уровень вниз как ориентир стопа
+    if ups:
+        out["first_target"] = {
+            "price": ups[0]["price"],
+            "distance_pct": ups[0]["distance_pct"],
+            "label": ups[0]["label"],
+        }
+    if downs:
+        out["suggested_stop"] = {
+            "price": downs[0]["price"],
+            "distance_pct": downs[0]["distance_pct"],
+            "label": downs[0]["label"],
+        }
+
+    # Соотношение риск/прибыль до первых уровней
+    if ups and downs:
+        reward = abs(ups[0]["distance_pct"])
+        risk = abs(downs[0]["distance_pct"])
+        if risk > 0:
+            out["risk_reward"] = round(reward / risk, 2)
+
+    return out
+
+
 def decide(token, sig):
     scan = load_token_scan(token)
     if not scan:
@@ -232,6 +352,14 @@ def decide(token, sig):
         notes.append(f"Режим рынка ({reg_name}): {reg_why}. {before}% → {size}%.")
         rules.append(f"regime:{reg_name}")
 
+    # CVD · агрессия покупателей vs продавцов
+    cvd_row = (sig["cvd"].get("tokens") or {}).get(token)
+    size = apply_cvd(size, cvd_row, notes, rules)
+
+    # Volume Profile · где цена относительно реально торгуемой зоны
+    vp_row = (sig["volume_profile"].get("tokens") or {}).get(token)
+    size = apply_volume_profile(size, vp_row, notes, rules)
+
     uv = next((v for v in (sig["unified"].get("per_asset_verdicts") or [])
                if v.get("asset") == token), None)
     if uv and any(k in str(uv.get("verdict", "")).upper()
@@ -288,6 +416,9 @@ def decide(token, sig):
         "unified_verdict": (uv or {}).get("verdict"),
         "price_at_decision": price,
         "flow_accel_4w_usd": (pa_row.get("flow") or {}).get("flow_accel_4w_usd"),
+        "cvd_consensus": (cvd_row or {}).get("consensus", {}).get("code") if cvd_row else None,
+        "vp_position": (vp_row or {}).get("position", {}).get("code") if vp_row else None,
+        "price_targets": build_price_targets(vp_row, None, price),
     }
 
 
