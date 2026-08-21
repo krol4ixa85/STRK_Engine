@@ -2491,6 +2491,82 @@ async function renderNewsImpact() {
   }
 }
 
+async function submitTrade() {
+  // Только сбор значений и отправка. Валидация и запись — на сервере.
+  const btn = document.getElementById('tr-submit');
+  const status = document.getElementById('tr-status');
+  const say = (text, color) => {
+    console.log('[TRADE]', text);
+    if (status) {
+      status.innerHTML = `<div style="padding: 10px; border-radius: 6px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; background: ${color}15; color: ${color}; border: 1px solid ${color}40;">${text}</div>`;
+    }
+  };
+
+  const token = (document.getElementById('tr-token').value || '').trim().toUpperCase();
+  const action = document.getElementById('tr-action').value;
+  const price = document.getElementById('tr-price').value;
+  const size = document.getElementById('tr-size').value;
+  const note = (document.getElementById('tr-note').value || '').trim();
+
+  if (!token) { say('Укажи токен', '#DC2626'); return; }
+  if (!price) { say('Укажи цену', '#DC2626'); return; }
+
+  let pin = null;
+  try { pin = localStorage.getItem('strk_scan_pin'); } catch (e) {}
+  if (!pin) {
+    pin = prompt('PIN (тот же, что для скана):');
+    if (!pin) { say('Отменено', '#6B7280'); return; }
+    try { localStorage.setItem('strk_scan_pin', pin); } catch (e) {}
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Записываю…';
+  say('Отправляю запись в журнал…', '#2563EB');
+
+  let r, data = {};
+  try {
+    r = await fetch(TRADE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Scan-Pin': pin },
+      body: JSON.stringify({
+        token, action,
+        price: Number(price),
+        size_usd: size ? Number(size) : null,
+        note,
+      }),
+    });
+    try { data = await r.json(); } catch (e) {}
+  } catch (e) {
+    console.error('[TRADE] сеть:', e);
+    say('Воркер недоступен\n\n' + e + '\n\nПроверь, что адрес ' + TRADE_ENDPOINT + ' открывается.', '#DC2626');
+    btn.disabled = false; btn.textContent = 'Записать в журнал';
+    return;
+  }
+
+  if (r.status === 403) {
+    try { localStorage.removeItem('strk_scan_pin'); } catch (e) {}
+    say('PIN не подошёл. Нажми ещё раз и введи заново.', '#DC2626');
+    btn.disabled = false; btn.textContent = 'Записать в журнал';
+    return;
+  }
+
+  if (!r.ok || !data.ok) {
+    say('Не записалось\n\nHTTP ' + r.status + '\n' + (data.error || 'нет деталей'), '#DC2626');
+    btn.disabled = false; btn.textContent = 'Записать в журнал';
+    return;
+  }
+
+  say('✓ Записано: ' + action + ' ' + token + ' @ ' + price +
+      '\n\nВсего записей: ' + data.total_records +
+      '\nСверка с движком обновится в ближайший прогон trade_journal (каждые 6 часов).', '#059669');
+
+  document.getElementById('tr-price').value = '';
+  document.getElementById('tr-size').value = '';
+  document.getElementById('tr-note').value = '';
+  btn.disabled = false;
+  btn.textContent = 'Записать в журнал';
+}
+
 async function renderTrades() {
   const el = document.getElementById('trades-content');
   if (!el) return;
@@ -2513,6 +2589,54 @@ async function renderTrades() {
 
   const fmt = (p) => p == null ? '—' : (p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2));
   let out = '';
+
+  // ── ФОРМА ЗАПИСИ ──
+  // Дашборд статический и в файлы писать не может. Форма отправляет
+  // в воркер, тот дописывает строку в trades.jsonl через GitHub API.
+  // Здесь только сбор значений — никаких расчётов.
+  out += `<details id="trade-form-wrap" style="margin-bottom: 16px;">
+    <summary style="cursor: pointer; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 13px; font-weight: 700; color: #059669; user-select: none;">
+      ➕ Записать сделку
+    </summary>
+    <div style="margin-top: 10px; padding: 14px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
+        <div>
+          <label style="display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Токен</label>
+          <input id="tr-token" type="text" placeholder="LINK" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 14px; text-transform: uppercase; box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Действие</label>
+          <select id="tr-action" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 14px; box-sizing: border-box;">
+            <option value="LONG">LONG · открыть лонг</option>
+            <option value="SHORT">SHORT · открыть шорт</option>
+            <option value="BUY">BUY · купить спот</option>
+            <option value="ADD">ADD · долить</option>
+            <option value="SELL">SELL · продать часть</option>
+            <option value="CLOSE">CLOSE · закрыть</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Цена</label>
+          <input id="tr-price" type="number" step="any" placeholder="11.38" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 14px; box-sizing: border-box;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Размер, $</label>
+          <input id="tr-size" type="number" step="any" placeholder="500" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 14px; box-sizing: border-box;">
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <label style="display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Заметка</label>
+        <input id="tr-note" type="text" placeholder="по сигналу движка / рискнула против" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 13px; box-sizing: border-box;">
+      </div>
+      <button onclick="submitTrade()" id="tr-submit" style="margin-top: 12px; width: 100%; padding: 10px; background: #059669; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;">
+        Записать в журнал
+      </button>
+      <div id="tr-status" style="margin-top: 10px;"></div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.5;">
+        Запись уходит в data/history/trades.jsonl. Система ничего не исполняет — только фиксирует то, что ты сделала сама.
+      </div>
+    </div>
+  </details>`;
 
   // ── ОТКРЫТЫЕ ПОЗИЦИИ ──
   out += `<div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Открытые позиции · ${open.length}</div>`;
@@ -4938,6 +5062,7 @@ async function loadTokenScanCache(token) {
 // переменных воркера — в этот файл он не попадает.
 // ═══════════════════════════════════════════════════════════════
 const SCAN_ENDPOINT = 'https://flat-night-190d.krol4ixa85.workers.dev/scan';
+const TRADE_ENDPOINT = 'https://flat-night-190d.krol4ixa85.workers.dev/trade';
 
 function _scanPin() {
   let pin = null;
