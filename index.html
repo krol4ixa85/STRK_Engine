@@ -766,6 +766,24 @@ body > * {
 <div class="loading" id="precision-content">Loading...</div>
 </div></div></div>
 
+<!-- 4.5 · STRK · ЦЕЛИ ЦЕНЫ -->
+<div class="section-strk-targets-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
+  <div class="section-header">
+    <div class="section-header-title" style="display: flex; align-items: center; gap: 8px;">
+      🎯 STRK · Куда стремится цена
+    </div>
+    <div class="section-header-desc">
+      Уровни объёма как магниты. Цена тянется туда, где реально торговали.
+      POC — справедливая цена, VAH/VAL — границы зоны 70% объёма.
+    </div>
+    <div class="level-label">Level 1 · targets</div>
+  </div>
+
+  <div class="card" style="padding: 20px; border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px;">
+    <div id="strk-targets-content">Loading targets...</div>
+  </div>
+</div>
+
 <!-- 5 · STRK SCENARIOS -->
 <div class="section-scenarios-wrap" style="max-width: 1200px; margin: 24px auto; padding: 0 16px;">
   <div class="section-header">
@@ -1152,6 +1170,8 @@ function renderStrkDetails(snap, strkPriceData) {
     }
     html += '</div>';
   }
+  html += `</div></details>`;
+
   el.innerHTML = html;
   const age = ago(snap.generated_at);
   document.getElementById('strk-snapshot-age').textContent = `Обновлено ${age.text}`;
@@ -2453,6 +2473,135 @@ async function renderNewsImpact() {
   }
 }
 
+async function renderStrkTargets() {
+  const el = document.getElementById('strk-targets-content');
+  if (!el) return;
+
+  const [vpAll, cvdAll, decAll] = await Promise.all([
+    _loadCache('volume_profile.json'),
+    _loadCache('cvd_multi.json'),
+    _loadCache('decisions.json'),
+  ]);
+
+  const vp = vpAll && vpAll.tokens && vpAll.tokens['STRK'] || null;
+  const cvd = cvdAll && cvdAll.tokens && cvdAll.tokens['STRK'] || null;
+  const dec = decAll && decAll.decisions && decAll.decisions['STRK'] || null;
+
+  if (!vp || vp.status !== 'OK') {
+    el.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">Данные Volume Profile ещё не собраны. Первый прогон происходит каждые 6 часов.</div>';
+    return;
+  }
+
+  const cur = vp.current_price;
+  const pos = vp.position || {};
+  const pos90 = vp.position_90d || {};
+  const tg = vp.targets || {};
+  const ups = tg.nearest_up || [];
+  const downs = tg.nearest_down || [];
+  const w30 = (vp.windows && vp.windows['30d'] && vp.windows['30d'].levels) || {};
+  const w90 = (vp.windows && vp.windows['90d'] && vp.windows['90d'].levels) || {};
+
+  const fmt = (p) => p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2);
+
+  let out = '';
+
+  // Заголовок с ценой и положением
+  const posColor = pos.code === 'ABOVE_VALUE' ? '#EA580C' :
+                   pos.code === 'BELOW_VALUE' ? '#059669' : '#3B82F6';
+  const posIcon = pos.code === 'ABOVE_VALUE' ? '⚠' :
+                  pos.code === 'BELOW_VALUE' ? '💎' : '⚖';
+
+  out += `<div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px;">
+    <span style="font-size: 28px; font-weight: 700;">$${fmt(cur)}</span>
+    <span style="font-size: 13px; color: ${posColor}; font-weight: 700;">${posIcon} ${pos.text_ru || ''}</span>
+  </div>`;
+
+  // Три окна в ряд
+  out += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 14px;">`;
+  for (const [wname, label] of [['7d', 'Неделя'], ['30d', 'Месяц'], ['90d', 'Квартал']]) {
+    const lv = (vp.windows && vp.windows[wname] && vp.windows[wname].levels) || null;
+    if (!lv) continue;
+    const dist = ((cur / lv.poc - 1) * 100);
+    out += `<div style="padding: 10px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border);">
+      <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">${label} · ${wname}</div>
+      <div style="font-size: 11px; margin-top: 6px; line-height: 1.6;">
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">POC</span><strong>$${fmt(lv.poc)}</strong></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">VAH</span><span>$${fmt(lv.vah)}</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">VAL</span><span>$${fmt(lv.val)}</span></div>
+        <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border); color: ${dist >= 0 ? '#EA580C' : '#059669'};">
+          цена ${dist >= 0 ? '+' : ''}${dist.toFixed(1)}% от POC
+        </div>
+      </div>
+    </div>`;
+  }
+  out += `</div>`;
+
+  // Цели вверх / вниз
+  out += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">`;
+
+  out += `<div style="padding: 12px; background: rgba(16, 185, 129, 0.06); border-radius: 8px; border-left: 3px solid #10B981;">
+    <div style="font-size: 11px; color: #059669; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">↑ Цели вверх</div>`;
+  if (ups.length) {
+    for (const t of ups.slice(0, 4)) {
+      out += `<div style="display: flex; justify-content: space-between; align-items: baseline; margin: 6px 0;">
+        <div><strong style="font-size: 14px;">$${fmt(t.price)}</strong><div style="font-size: 9px; color: var(--text-muted);">${t.label}</div></div>
+        <span style="color: #059669; font-weight: 700;">+${t.distance_pct.toFixed(1)}%</span>
+      </div>`;
+    }
+  } else {
+    out += `<div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Выше текущей цены объём не торговался — сопротивления нет, но и поддержки при развороте тоже.</div>`;
+  }
+  out += `</div>`;
+
+  out += `<div style="padding: 12px; background: rgba(220, 38, 38, 0.05); border-radius: 8px; border-left: 3px solid #DC2626;">
+    <div style="font-size: 11px; color: #DC2626; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">↓ Магниты вниз</div>`;
+  if (downs.length) {
+    for (const t of downs.slice(0, 4)) {
+      out += `<div style="display: flex; justify-content: space-between; align-items: baseline; margin: 6px 0;">
+        <div><strong style="font-size: 14px;">$${fmt(t.price)}</strong><div style="font-size: 9px; color: var(--text-muted);">${t.label}</div></div>
+        <span style="color: #DC2626; font-weight: 700;">${t.distance_pct.toFixed(1)}%</span>
+      </div>`;
+    }
+  } else {
+    out += `<div style="font-size: 12px; color: var(--text-muted);">Магнитов вниз нет</div>`;
+  }
+  out += `</div></div>`;
+
+  // CVD
+  if (cvd && cvd.status === 'OK' && cvd.consensus) {
+    const c = cvd.consensus;
+    const cvdColor = c.code.includes('BUY') ? '#059669' : c.code.includes('SELL') ? '#DC2626' : '#6B7280';
+    const d1 = (cvd.windows && cvd.windows['1D']) || null;
+    out += `<div style="margin-top: 12px; padding: 12px; background: ${c.code.includes('SELL') ? 'rgba(220,38,38,0.05)' : c.code.includes('BUY') ? 'rgba(16,185,129,0.05)' : 'rgba(107,114,128,0.04)'}; border-radius: 8px; border-left: 3px solid ${cvdColor};">
+      <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Кто давит на цену</div>
+      <div style="font-size: 14px; font-weight: 700; color: ${cvdColor}; margin-top: 4px;">${c.text_ru || c.code}</div>`;
+    if (d1 && (d1.signal === 'DISTRIBUTION_DIV' || d1.signal === 'ACCUMULATION_DIV')) {
+      out += `<div style="margin-top: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+        ${d1.signal === 'DISTRIBUTION_DIV'
+          ? `⚠ За месяц цена ${d1.price_change_pct >= 0 ? '+' : ''}${d1.price_change_pct}%, но агрессивные продажи преобладают — рост тянут мелкие покупатели, крупные разгружаются.`
+          : `💎 За месяц цена ${d1.price_change_pct}%, но агрессивные покупки преобладают — розница сдаёт, крупные подбирают.`}
+      </div>`;
+    }
+    out += `</div>`;
+  }
+
+  // Решение движка по STRK
+  if (dec) {
+    const ac = dec.action === 'ВХОД ЧАСТЬЮ' ? '#059669' :
+               dec.action === 'НЕ ВХОДИТЬ' ? '#DC2626' : '#F59E0B';
+    out += `<div style="margin-top: 12px; padding: 10px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px;">
+      <strong style="color: ${ac};">Решение движка: ${dec.action}${dec.size_pct > 0 ? ' · ' + dec.size_pct + '%' : ''}</strong>
+      <span style="color: var(--text-muted);"> · фаза ${dec.stage || '—'} · поток ${dec.flow_regime || '—'}</span>
+    </div>`;
+  }
+
+  out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+    Volume Profile обновляется каждые 6 часов, CVD каждые 30 минут. Оба источника бесплатны.
+  </div>`;
+
+  el.innerHTML = out;
+}
+
 async function renderScenarios() {
   const container = document.getElementById('scenarios-content');
   if (!container) return;
@@ -2651,6 +2800,7 @@ async function loadAll(manual = false) {
     safeRender('OverviewTodo', () => renderOverviewTodo(lab, confluence, momentum, rotation, altcycle));
     safeRender('AltCycle', () => renderAltCycleDetail(altcycle));
   safeRender('Scenarios', () => renderScenarios());
+  safeRender('StrkTargets', () => renderStrkTargets());
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
@@ -3513,7 +3663,7 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps] = await Promise.all([
+  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
@@ -3523,12 +3673,16 @@ async function renderModalIntelligence(token) {
     _loadCache('phase_analysis.json'),
     _loadCache('decisions.json'),
     _loadCache('hl_perps.json'),
+    _loadCache('volume_profile.json'),
+    _loadCache('cvd_multi.json'),
   ]);
 
   // Серверные данные v1.1: phase_analyzer + decision_engine + HL perps
   const pa = phaseAn && phaseAn.tokens && phaseAn.tokens[token] || null;
   const serverDecision = decisions && decisions.decisions && decisions.decisions[token] || null;
   const hl = hlPerps && hlPerps.tokens && hlPerps.tokens[token] || null;
+  const vp = volProfile && volProfile.tokens && volProfile.tokens[token] || null;
+  const cvd = cvdMulti && cvdMulti.tokens && cvdMulti.tokens[token] || null;
 
   // Новости по этому токену — нужны детектору противоречий.
   // Модуль News ниже рисует их сам, здесь мы их только считаем.
@@ -3751,6 +3905,123 @@ async function renderModalIntelligence(token) {
   }
 
   // ═══════════════════════════════════════════════════════════════════
+  // 🎯 КУДА СТРЕМИТСЯ ЦЕНА · цели из Volume Profile
+  // Отвечает на вопрос которого раньше не было: где брать профит,
+  // где ставить стоп, и адекватна ли текущая цена вообще.
+  // ═══════════════════════════════════════════════════════════════════
+  if (vp && vp.status === 'OK') {
+    const cur = vp.current_price;
+    const pos = vp.position || {};
+    const pos90 = vp.position_90d || {};
+    const tg = vp.targets || {};
+    const ups = tg.nearest_up || [];
+    const downs = tg.nearest_down || [];
+    const w30 = (vp.windows && vp.windows['30d'] && vp.windows['30d'].levels) || {};
+    const w90 = (vp.windows && vp.windows['90d'] && vp.windows['90d'].levels) || {};
+
+    // Цвет по положению относительно зоны стоимости
+    const posColor = pos.code === 'ABOVE_VALUE' ? '#EA580C' :
+                     pos.code === 'BELOW_VALUE' ? '#059669' : '#3B82F6';
+    const posIcon = pos.code === 'ABOVE_VALUE' ? '⚠' :
+                    pos.code === 'BELOW_VALUE' ? '💎' : '⚖';
+    const posLabel = pos.code === 'ABOVE_VALUE' ? 'Выше зоны объёма' :
+                     pos.code === 'BELOW_VALUE' ? 'Ниже зоны объёма' :
+                     'Внутри зоны объёма';
+
+    html += `<div style="padding: 14px; background: rgba(59, 130, 246, 0.06); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.25); margin-bottom: 14px;">
+      <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">🎯 Куда стремится цена</div>
+      
+      <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;">
+        <span style="font-size: 24px; font-weight: 700;">$${cur < 0.01 ? cur.toFixed(6) : cur < 1 ? cur.toFixed(4) : cur.toFixed(2)}</span>
+        <span style="font-size: 12px; color: ${posColor}; font-weight: 700;">${posIcon} ${posLabel}</span>
+      </div>
+      
+      <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+        ${pos.text_ru || ''}
+        ${pos.distance_to_poc_pct !== null && pos.distance_to_poc_pct !== undefined ? `<br><strong>Справедливая цена (POC 30д): $${w30.poc < 0.01 ? (w30.poc||0).toFixed(6) : w30.poc < 1 ? (w30.poc||0).toFixed(4) : (w30.poc||0).toFixed(2)}</strong> — текущая на ${pos.distance_to_poc_pct >= 0 ? '+' : ''}${pos.distance_to_poc_pct.toFixed(1)}% от неё` : ''}
+      </div>`;
+
+    // Две колонки: цели вверх и вниз
+    html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+    
+    // ЦЕЛИ ВВЕРХ
+    html += `<div style="padding: 8px; background: rgba(16, 185, 129, 0.08); border-radius: 6px; border-left: 3px solid #10B981;">
+      <div style="font-size: 10px; color: #059669; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">↑ Цели вверх</div>`;
+    if (ups.length) {
+      for (const t of ups.slice(0, 3)) {
+        const p = t.price;
+        html += `<div style="font-size: 11px; margin: 4px 0; display: flex; justify-content: space-between;">
+          <span style="font-weight: 700;">$${p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2)}</span>
+          <span style="color: #059669;">+${t.distance_pct.toFixed(1)}%</span>
+        </div>
+        <div style="font-size: 9px; color: var(--text-muted); margin-bottom: 4px;">${t.label}</div>`;
+      }
+    } else {
+      html += `<div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Целей нет — выше текущей цены объём не торговался. Значит сопротивления как такового нет, но и поддержки при развороте тоже.</div>`;
+    }
+    html += `</div>`;
+
+    // ЦЕЛИ ВНИЗ
+    html += `<div style="padding: 8px; background: rgba(220, 38, 38, 0.06); border-radius: 6px; border-left: 3px solid #DC2626;">
+      <div style="font-size: 10px; color: #DC2626; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">↓ Магниты вниз</div>`;
+    if (downs.length) {
+      for (const t of downs.slice(0, 3)) {
+        const p = t.price;
+        html += `<div style="font-size: 11px; margin: 4px 0; display: flex; justify-content: space-between;">
+          <span style="font-weight: 700;">$${p < 0.01 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p.toFixed(2)}</span>
+          <span style="color: #DC2626;">${t.distance_pct.toFixed(1)}%</span>
+        </div>
+        <div style="font-size: 9px; color: var(--text-muted); margin-bottom: 4px;">${t.label}</div>`;
+      }
+    } else {
+      html += `<div style="font-size: 11px; color: var(--text-muted);">Магнитов вниз нет</div>`;
+    }
+    html += `</div></div>`;
+
+    // Risk/Reward если есть обе стороны
+    if (serverDecision && serverDecision.price_targets && serverDecision.price_targets.risk_reward) {
+      const rr = serverDecision.price_targets.risk_reward;
+      const rrColor = rr >= 2 ? '#059669' : rr >= 1.5 ? '#F59E0B' : '#DC2626';
+      const rrText = rr >= 2 ? 'хорошее' : rr >= 1.5 ? 'приемлемое' : 'слабое';
+      html += `<div style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 4px; font-size: 11px;">
+        <strong>Риск / прибыль до первых уровней: <span style="color: ${rrColor};">${rr}</span></strong> — ${rrText}.
+        ${rr < 1.5 ? ' При таком соотношении даже верный сигнал не окупает риск.' : ''}
+      </div>`;
+    }
+
+    // CVD блок внутри целей — агрессия
+    if (cvd && cvd.status === 'OK' && cvd.consensus) {
+      const c = cvd.consensus;
+      const cvdColor = c.code.includes('BUY') ? '#059669' :
+                       c.code.includes('SELL') ? '#DC2626' : '#6B7280';
+      const cvdIcon = c.code.includes('STRONG') ? (c.code.includes('BUY') ? '💪' : '🔻') :
+                      c.code.includes('BUY') ? '↗' : c.code.includes('SELL') ? '↘' : '·';
+      
+      // Ищем дивергенцию на дневном окне — самый весомый сигнал
+      const d1 = (cvd.windows && cvd.windows['1D']) || null;
+      const isDiv = d1 && (d1.signal === 'DISTRIBUTION_DIV' || d1.signal === 'ACCUMULATION_DIV');
+      
+      html += `<div style="margin-top: 10px; padding: 10px; background: ${c.code.includes('SELL') ? 'rgba(220, 38, 38, 0.06)' : c.code.includes('BUY') ? 'rgba(16, 185, 129, 0.06)' : 'rgba(107, 114, 128, 0.05)'}; border-radius: 6px; border-left: 3px solid ${cvdColor};">
+        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Кто давит на цену прямо сейчас</div>
+        <div style="font-size: 13px; font-weight: 700; color: ${cvdColor}; margin-top: 4px;">${cvdIcon} ${c.text_ru || c.code}</div>`;
+      
+      if (isDiv) {
+        const divText = d1.signal === 'DISTRIBUTION_DIV'
+          ? `За месяц цена ${d1.price_change_pct >= 0 ? '+' : ''}${d1.price_change_pct}%, но агрессивные ПРОДАЖИ преобладают. Значит рост тянут мелкие покупатели, а крупные разгружаются лимитками. Классическая вершина.`
+          : `За месяц цена ${d1.price_change_pct}%, но агрессивные ПОКУПКИ преобладают. Розница сдаёт, крупные подбирают. Классическое дно.`;
+        html += `<div style="margin-top: 6px; padding: 8px; background: rgba(255,255,255,0.6); border-radius: 4px; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+          <strong style="color: ${d1.signal === 'DISTRIBUTION_DIV' ? '#DC2626' : '#059669'};">${d1.signal === 'DISTRIBUTION_DIV' ? '⚠ Расхождение цены и агрессии' : '💎 Расхождение в нашу пользу'}</strong><br>${divText}
+        </div>`;
+      }
+      html += `</div>`;
+    }
+
+    html += `<div style="font-size: 9px; color: var(--text-muted); margin-top: 8px; font-style: italic;">
+      Уровни из Volume Profile: цена тянется туда, где реально торговали. POC — самая торгуемая цена, VAH/VAL — границы зоны 70% объёма, HVN — узлы концентрации. Обновляется каждые 6 часов.
+    </div></div>`;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
   // 🎯 БЛОК ТЕХНИЧЕСКОГО РЕШЕНИЯ ДВИЖКА (сворачивается по клику)
   // Для тех кто хочет видеть цепочку правил, а не только совет
   // ═══════════════════════════════════════════════════════════════════
@@ -3775,6 +4046,17 @@ async function renderModalIntelligence(token) {
     }
     html += `</div></details>`;
   }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ▼ ТЕХНИЧЕСКИЕ ДЕТАЛИ · свёрнуты по умолчанию
+  // Всё что ниже — для проверки и разбора, а не для быстрого решения.
+  // Открывается по клику, чтобы главный ответ не тонул в данных.
+  // ═══════════════════════════════════════════════════════════════════
+  html += `<details style="margin-top: 6px;">
+    <summary style="cursor: pointer; padding: 10px 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-secondary); user-select: none;">
+      ▼ Все данные по активу · перекос, стакан, держатели, потоки, сектор, новости
+    </summary>
+    <div style="padding-top: 10px;">`;
 
   html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 14px 0 6px;">⚖️ Перекос позиций</div>';
   if (f && f.status === 'OK') {
