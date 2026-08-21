@@ -3513,14 +3513,22 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news, unified] = await Promise.all([
+  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
     _loadCache('dune_sector_netflow.json'),
     _loadCache('surf_events.json'),
     _loadCache('unified_reading.json'),
+    _loadCache('phase_analysis.json'),
+    _loadCache('decisions.json'),
+    _loadCache('hl_perps.json'),
   ]);
+
+  // Серверные данные v1.1: phase_analyzer + decision_engine + HL perps
+  const pa = phaseAn && phaseAn.tokens && phaseAn.tokens[token] || null;
+  const serverDecision = decisions && decisions.decisions && decisions.decisions[token] || null;
+  const hl = hlPerps && hlPerps.tokens && hlPerps.tokens[token] || null;
 
   // Новости по этому токену — нужны детектору противоречий.
   // Модуль News ниже рисует их сам, здесь мы их только считаем.
@@ -3550,6 +3558,224 @@ async function renderModalIntelligence(token) {
 
   // ── 2 · ФАНДИНГ И ОТКРЫТЫЙ ИНТЕРЕС ─────────────────────────
   const f = funding && funding.tokens && funding.tokens[token];
+  // ═══════════════════════════════════════════════════════════════════
+  // 💡 БЛОК LAYMAN · "Что делать сейчас" — человеческий язык
+  // Комбинирует decision + phase_analysis + HL premium в один совет
+  // ═══════════════════════════════════════════════════════════════════
+  if (serverDecision) {
+    const dec = serverDecision;
+    const flow = pa && pa.regime || {};
+    const flowCode = flow.code || 'UNKNOWN';
+    const div = pa && pa.divergence || {};
+    const divCode = div.code || null;
+    const hlBias = hl && hl.hl_bias || null;
+    const hlPrem = hl && (hl.premium_pct !== undefined && hl.premium_pct !== null ? hl.premium_pct : null);
+    const accel4w = (pa && pa.flow && pa.flow.flow_accel_4w_usd) || 0;
+    const last4w = (pa && pa.flow && pa.flow.last_4w_usd) || 0;
+
+    // Выбираем главное действие для человека
+    let mainAction, mainColor, mainBg, mainBorder, mainIcon;
+    let ifHave = '';   // что делать если позиция ЕСТЬ
+    let ifNone = '';   // что делать если позиции НЕТ
+    let whyText = '';  // объяснение простым языком
+    let monitor = '';  // что мониторить дальше
+    let redFlag = '';  // сигнал что пора действовать
+
+    if (dec.action === 'ДАННЫЕ ПОДОЗРИТЕЛЬНЫ') {
+      mainAction = 'НЕ ТОРГУЙ · данные битые';
+      mainColor = '#7C2D12'; mainBg = 'rgba(120, 45, 18, 0.10)'; mainBorder = '#7C2D12'; mainIcon = '⛔';
+      whyText = 'Источник данных выдал невозможные значения (например цена +1 000 000% за неделю). Это баг Dune-запроса, а не рынок. Дождись следующего обновления сканов.';
+      ifNone = 'Не заходи';
+      ifHave = 'Если позиция есть — держи по своему первоначальному плану, не решай на битых данных';
+      monitor = 'Данные обновятся через 4-6 часов (composite scan). Открой этот токен потом.';
+    }
+    else if (dec.action === 'НЕТ ДАННЫХ') {
+      mainAction = 'НЕТ ДАННЫХ';
+      mainColor = '#6B7280'; mainBg = 'rgba(107, 114, 128, 0.08)'; mainBorder = '#6B7280'; mainIcon = '❓';
+      whyText = 'По этому токену ещё нет свежих данных Dune-скана. Ничего не могу сказать содержательно.';
+      ifNone = 'Не заходи вслепую';
+      ifHave = 'Держи по плану, ждём данных';
+    }
+    else if (dec.action === 'НЕ ВХОДИТЬ') {
+      mainAction = 'НЕ ЗАХОДИ · выйди если стоишь';
+      mainColor = '#DC2626'; mainBg = 'rgba(220, 38, 38, 0.10)'; mainBorder = '#DC2626'; mainIcon = '🚫';
+      
+      // строим объяснение из главных сигналов
+      const parts = [];
+      if (dec.stage === 'MARKDOWN' || dec.stage === 'WEAKENING') {
+        parts.push(dec.stage === 'MARKDOWN' 
+          ? 'Крупные распродают на споте'
+          : 'Приток на споте иссякает');
+      }
+      if (flowCode === 'ACCEL_DOWN') {
+        parts.push('деньги УХОДЯТ и ускоряются (' + (accel4w/1e6).toFixed(1) + 'M$ ускорение оттока)');
+      } else if (flowCode === 'STEADY_DOWN') {
+        parts.push('стабильный отток');
+      }
+      if (divCode === 'BEARISH_DIV') {
+        parts.push('цена ещё растёт по инерции, но капитала за ней нет — ловушка для покупателей');
+      }
+      if (hlBias === 'LONG_HEAVY' && hlPrem !== null) {
+        parts.push('а на HL розница держит лонги (премия +' + hlPrem.toFixed(3) + '%) — их могут вынести каскадом');
+      }
+      whyText = parts.length ? parts.join('. ') + '.' : 'Общая картина против входа.';
+
+      ifNone = 'Не заходи под НИКАКИМ соусом. Даже если "выглядит дёшево" — до появления покупателей это ловушка.';
+      ifHave = 'Выходи в течение 1-3 дней. Не жди "отскока" — на распродаже отскок вредит.';
+      
+      if (hlBias === 'LONG_HEAVY') {
+        redFlag = 'Если HL premium резко упадёт к 0% или уйдёт в минус — начался каскад ликвидаций лонгов, цена дёрнется вниз ещё сильнее. Пик срочности выхода.';
+        monitor = 'HL premium (сейчас ' + (hlPrem !== null ? (hlPrem >= 0 ? '+' : '') + hlPrem.toFixed(3) + '%' : 'н/д') + '). Пока розница в лонгах — стоп-лоссы под ними ждут своего часа.';
+      } else {
+        monitor = 'Ускорение потока (сейчас ' + (accel4w/1e6).toFixed(1) + 'M$/4нед). Разворот к положительному значению — первый признак что распродажа затухает.';
+        redFlag = 'Если поток развернётся в приток на 2-3 недели подряд — можно смотреть заново.';
+      }
+    }
+    else if (dec.action === 'ЖДАТЬ') {
+      mainAction = 'ЖДАТЬ · не входить';
+      mainColor = '#F59E0B'; mainBg = 'rgba(245, 158, 11, 0.10)'; mainBorder = '#F59E0B'; mainIcon = '⏸';
+      
+      const parts = [];
+      if (dec.stage === 'MIXED_OR_NEUTRAL') {
+        parts.push('Структура потока без явного перевеса');
+      }
+      if (flowCode === 'ACCEL_DOWN' && (dec.stage || '').includes('ACCUMULATION')) {
+        parts.push('Dune видит "накопление", но deltа за 4 недели показывает УСКОРЕНИЕ оттока — фаза и деньги спорят');
+      } else if (flowCode === 'STALLING_UP') {
+        parts.push('Приток есть, но темп падает — возможная вершина');
+      } else if (flowCode === 'STABLE_ZERO') {
+        parts.push('Поток около нуля, никто явно не покупает и не продаёт');
+      }
+      whyText = parts.length ? parts.join('. ') + '.' : 'Слишком много противоречий чтобы уверенно входить.';
+      
+      ifNone = 'Не заходи. Свинг-трейдинг требует ясности — вход "на всякий случай" убивает результат серией мелких стопов.';
+      ifHave = 'Держи. Не добавляй и не сокращай пока сигналы не согласуются.';
+      
+      // триггеры из decision
+      if (dec.triggers && dec.triggers.length) {
+        monitor = 'Ждём: ' + dec.triggers.slice(0, 2).join('; ');
+      }
+    }
+    else if (dec.action === 'ВХОД ЧАСТЬЮ') {
+      mainAction = 'МОЖНО ЗАХОДИТЬ · ' + dec.size_pct + '% от плановой позиции';
+      mainColor = '#059669'; mainBg = 'rgba(16, 185, 129, 0.12)'; mainBorder = '#10B981'; mainIcon = '✅';
+      
+      const parts = [];
+      if (dec.stage === 'MID_ACCUMULATION_STRONG') {
+        parts.push('Зрелое накопление подтверждено сигналами силы');
+      } else if (dec.stage === 'MID_ACCUMULATION') {
+        parts.push('Устойчивое накопление');
+      } else if (dec.stage === 'EARLY_ACCUMULATION') {
+        parts.push('Ранняя фаза накопления');
+      } else if (dec.stage === 'ACCUMULATION_PHASE_B') {
+        parts.push('Wyckoff Phase B — строится база');
+      } else if (dec.stage === 'LATE_ACCUMULATION_OR_MARKUP') {
+        parts.push('Поздняя стадия — движение близко');
+      }
+      if (flowCode === 'ACCEL_UP') {
+        parts.push('приток разгоняется (+' + (accel4w/1e6).toFixed(1) + 'M$ ускорение)');
+      } else if (flowCode === 'STEADY_UP') {
+        parts.push('стабильный приток');
+      } else if (flowCode === 'STALLING_UP') {
+        parts.push('приток есть, но темп замедлился — не жадничай с размером');
+      }
+      if (divCode === 'BULLISH_DIV') {
+        parts.push('цена ещё в просадке, а деньги уже заходят — редкий сетап');
+      }
+      whyText = parts.length ? parts.join('. ') + '.' : 'Все сигналы согласуются в сторону покупки.';
+      
+      ifNone = 'Заходи ' + dec.size_pct + '% от плановой позиции. Оставшиеся ' + (100 - dec.size_pct) + '% добавляй по подтверждениям (следующий MID_ACC или ACCEL_UP на дельте).';
+      ifHave = 'Держи. Можешь добавить до ' + dec.size_pct + '% от плана если ещё не там.';
+      
+      if (hlBias === 'LONG_HEAVY' && hlPrem !== null && hlPrem > 0.10) {
+        redFlag = 'HL premium уже +' + hlPrem.toFixed(3) + '% — лонги на HL перегреты. Бери частичный профит если премия дойдёт до +0.15%.';
+      } else if (hlBias === 'LONG_HEAVY' && hlPrem !== null) {
+        redFlag = 'Если HL premium вырастет к +0.10% — толпа перегреется, готовься к откату. Сейчас +' + hlPrem.toFixed(3) + '%.';
+      }
+      
+      if (dec.invalidations && dec.invalidations.length) {
+        monitor = 'Сигнал сломается если: ' + dec.invalidations[0].toLowerCase();
+      }
+    }
+    
+    if (mainAction) {
+      html += `<div style="padding: 16px; background: ${mainBg}; border-radius: 8px; border: 2px solid ${mainBorder}; margin-bottom: 14px;">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span style="font-size: 32px; line-height: 1;">${mainIcon}</span>
+          <div style="flex: 1;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">💡 Что делать сейчас</div>
+            <div style="font-size: 20px; font-weight: 700; color: ${mainColor}; margin-top: 2px; line-height: 1.2;">${mainAction}</div>
+          </div>
+        </div>
+        <div style="margin-top: 12px; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">
+          <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+            <strong style="color: ${mainColor};">Почему:</strong> ${whyText}
+          </div>
+        </div>`;
+      
+      if (ifNone || ifHave) {
+        html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">`;
+        if (ifNone) {
+          html += `<div style="padding: 8px; background: rgba(255,255,255,0.4); border-radius: 4px;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Если позиции НЕТ</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">${ifNone}</div>
+          </div>`;
+        }
+        if (ifHave) {
+          html += `<div style="padding: 8px; background: rgba(255,255,255,0.4); border-radius: 4px;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Если позиция ЕСТЬ</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">${ifHave}</div>
+          </div>`;
+        }
+        html += `</div>`;
+      }
+      
+      if (monitor) {
+        html += `<div style="margin-top: 10px; padding: 8px; background: rgba(59, 130, 246, 0.08); border-radius: 4px; border-left: 3px solid #3B82F6;">
+          <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">📊 Мониторь</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5;">${monitor}</div>
+        </div>`;
+      }
+      
+      if (redFlag) {
+        html += `<div style="margin-top: 8px; padding: 8px; background: rgba(220, 38, 38, 0.08); border-radius: 4px; border-left: 3px solid #DC2626;">
+          <div style="font-size: 10px; color: #DC2626; text-transform: uppercase; font-weight: 700;">🚨 Красный флаг</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5;">${redFlag}</div>
+        </div>`;
+      }
+      
+      html += `<div style="font-size: 9px; color: var(--text-muted); margin-top: 10px; text-align: right; font-style: italic;">
+        Это анализ, не финансовая рекомендация. Все пороги задавались экспертно, качество будет измерено через 7 дней после первых прогнозов.
+      </div></div>`;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 🎯 БЛОК ТЕХНИЧЕСКОГО РЕШЕНИЯ ДВИЖКА (сворачивается по клику)
+  // Для тех кто хочет видеть цепочку правил, а не только совет
+  // ═══════════════════════════════════════════════════════════════════
+  if (serverDecision) {
+    const dec = serverDecision;
+    html += `<details style="margin-bottom: 14px; padding: 10px 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border);">
+      <summary style="cursor: pointer; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🎯 Детали решения движка v${dec.engine_version || '1.1'} · клик</summary>
+      <div style="margin-top: 10px; font-size: 11px; line-height: 1.6; color: var(--text-secondary);">
+        <div><strong>Действие:</strong> ${dec.action} · <strong>размер:</strong> ${dec.size_pct}% · <strong>фаза:</strong> ${dec.stage || '—'} · <strong>поток:</strong> ${dec.flow_regime || '—'}</div>
+        <div style="margin-top: 6px;"><strong>Цепочка правил:</strong> ${(dec.rules_fired || []).join(' → ')}</div>`;
+    if (dec.notes && dec.notes.length) {
+      html += `<div style="margin-top: 8px;"><strong>Почему движок так решил:</strong></div>`;
+      for (const n of dec.notes) {
+        html += `<div style="margin: 3px 0; padding-left: 12px;">· ${n}</div>`;
+      }
+    }
+    if (dec.triggers && dec.triggers.length) {
+      html += `<div style="margin-top: 8px;"><strong>Триггеры для пересмотра:</strong></div>`;
+      for (const t of dec.triggers) {
+        html += `<div style="margin: 3px 0; padding-left: 12px;">→ ${t}</div>`;
+      }
+    }
+    html += `</div></details>`;
+  }
+
   html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 14px 0 6px;">⚖️ Перекос позиций</div>';
   if (f && f.status === 'OK') {
     const ann = f.funding_annualised_pct;
@@ -3629,6 +3855,124 @@ async function renderModalIntelligence(token) {
   // тогда как вердикт сверху считает SOS за последние 8 недель.
   // Разные окна давали противоречие: вердикт "середина накопления"
   // и полоса "поздняя стадия" на одних и тех же данных.
+  // ═══════════════════════════════════════════════════════════════════
+  // ⚡ ДИНАМИКА ПОТОКА · phase_analyzer, обновляется каждые 30 мин
+  // ═══════════════════════════════════════════════════════════════════
+  if (pa && pa.regime && pa.regime.code) {
+    const flow = pa.flow || {};
+    const regime = pa.regime;
+    const accel = flow.flow_accel_4w_usd || 0;
+    const last4 = flow.last_4w_usd || 0;
+
+    const rc = ({
+      'ACCEL_UP':      {color: '#059669', bg: 'rgba(16, 185, 129, 0.08)', icon: '📈'},
+      'STEADY_UP':     {color: '#10B981', bg: 'rgba(16, 185, 129, 0.06)', icon: '↗'},
+      'STALLING_UP':   {color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.08)', icon: '⏸'},
+      'FLIPPING_UP':   {color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.08)', icon: '↺'},
+      'STABLE_ZERO':   {color: '#6B7280', bg: 'rgba(107, 114, 128, 0.05)', icon: '·'},
+      'FLIPPING_DOWN': {color: '#DC2626', bg: 'rgba(220, 38, 38, 0.08)', icon: '↺'},
+      'STALLING_DOWN': {color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.08)', icon: '⏸'},
+      'STEADY_DOWN':   {color: '#EA580C', bg: 'rgba(234, 88, 12, 0.06)', icon: '↘'},
+      'ACCEL_DOWN':    {color: '#DC2626', bg: 'rgba(220, 38, 38, 0.10)', icon: '📉'},
+    })[regime.code] || {color: '#6B7280', bg: 'rgba(107, 114, 128, 0.05)', icon: '·'};
+
+    html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">⚡ Динамика потока · ускоряется или затухает</div>';
+    html += `<div style="padding: 12px; background: ${rc.bg}; border-radius: 6px; border-left: 3px solid ${rc.color};">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 24px;">${rc.icon}</span>
+        <div style="flex: 1;">
+          <div style="font-weight: 700; font-size: 14px; color: ${rc.color};">${regime.text_ru || regime.code}</div>
+          <div style="font-size: 10px; color: var(--text-muted); font-family: monospace;">${regime.code}</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 11px;">
+        <div style="padding: 6px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+          <div style="color: var(--text-muted); font-size: 10px;">Ускорение за 4 нед</div>
+          <div style="font-weight: 700; font-size: 14px; color: ${accel >= 0 ? '#059669' : '#DC2626'};">${accel >= 0 ? '+' : ''}$${(accel/1e6).toFixed(2)}M</div>
+          <div style="font-size: 9px; color: var(--text-muted);">vs предыдущие 4 нед</div>
+        </div>
+        <div style="padding: 6px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+          <div style="color: var(--text-muted); font-size: 10px;">Поток за месяц</div>
+          <div style="font-weight: 700; font-size: 14px; color: ${last4 >= 0 ? '#059669' : '#DC2626'};">${last4 >= 0 ? '+' : ''}$${(last4/1e6).toFixed(2)}M</div>
+          <div style="font-size: 9px; color: var(--text-muted);">суммарно</div>
+        </div>
+      </div>`;
+
+    if (pa.divergence && pa.divergence.code && pa.divergence.code !== 'ALIGNED' && pa.divergence.code !== 'UNKNOWN') {
+      const dc = pa.divergence.code;
+      const divCol = dc === 'BEARISH_DIV' ? '#DC2626' : dc === 'BULLISH_DIV' ? '#059669' : '#F59E0B';
+      const divIco = dc === 'BULLISH_DIV' ? '💎' : dc === 'BEARISH_DIV' ? '⚠' : '⛔';
+      const divLabel = dc === 'BEARISH_DIV' ? 'Цена растёт, а деньги уходят' :
+                       dc === 'BULLISH_DIV' ? 'Цена в просадке, а деньги заходят' :
+                       'Данные подозрительны';
+      html += `<div style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 4px; font-size: 11px; border-left: 3px solid ${divCol};">
+        <span style="color: ${divCol}; font-weight: 700;">${divIco} ${divLabel}:</span>
+        <span style="color: var(--text-secondary);"> ${pa.divergence.text_ru || pa.divergence.note || ''}</span>
+      </div>`;
+    }
+    if (pa.data_quality && !pa.data_quality.ok) {
+      html += `<div style="margin-top: 10px; padding: 8px; background: rgba(220, 38, 38, 0.10); border-radius: 4px; font-size: 11px; border: 1px solid rgba(220, 38, 38, 0.3);">
+        <div style="color: #DC2626; font-weight: 700; margin-bottom: 4px;">⛔ ДАННЫЕ ПОДОЗРИТЕЛЬНЫ</div>`;
+      for (const fl of (pa.data_quality.flags || [])) {
+        html += `<div style="color: var(--text-secondary); font-size: 10px;">· ${fl.reason || ''}</div>`;
+      }
+      html += `<div style="color: var(--text-muted); font-size: 10px; margin-top: 4px;">Сигналы по этому токену не учитываются в решении.</div></div>`;
+    }
+    html += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">Обновляется каждые 30 мин · бесплатно</div></div>`;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 🐙 HYPERLIQUID · где сидят профи. Обновляется каждые 30 мин.
+  // ═══════════════════════════════════════════════════════════════════
+  if (hl && hl.status === 'OK') {
+    const biasCol = hl.hl_bias === 'LONG_HEAVY' ? '#EA580C' :
+                    hl.hl_bias === 'SHORT_HEAVY' ? '#059669' : '#6B7280';
+    const biasIco = hl.hl_bias === 'LONG_HEAVY' ? '🔴' :
+                    hl.hl_bias === 'SHORT_HEAVY' ? '🟢' : '⚪';
+    const biasLabel = hl.hl_bias === 'LONG_HEAVY' ? 'Лонги переплачивают' :
+                      hl.hl_bias === 'SHORT_HEAVY' ? 'Шорты переплачивают' :
+                      'Перекоса нет';
+    const premium = hl.premium_pct;
+    const oi = hl.open_interest_usd || 0;
+    const oiChg = hl.oi_change_pct;
+
+    html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">🐙 Hyperliquid · где сидят профи</div>';
+    html += `<div style="padding: 12px; background: rgba(139, 92, 246, 0.05); border-radius: 6px; border-left: 3px solid #8B5CF6;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 22px;">${biasIco}</span>
+        <div style="flex: 1;">
+          <div style="font-weight: 700; font-size: 14px; color: ${biasCol};">${biasLabel}</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">${hl.hl_bias_ru || ''}</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; font-size: 11px;">
+        <div style="padding: 6px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+          <div style="color: var(--text-muted); font-size: 10px;">Premium</div>
+          <div style="font-weight: 700; color: ${(premium || 0) >= 0 ? '#EA580C' : '#059669'};">${(premium || 0) >= 0 ? '+' : ''}${(premium || 0).toFixed(3)}%</div>
+          <div style="font-size: 9px; color: var(--text-muted);">mark − oracle</div>
+        </div>
+        <div style="padding: 6px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+          <div style="color: var(--text-muted); font-size: 10px;">Funding (год)</div>
+          <div style="font-weight: 700;">${(hl.funding_annualised_pct || 0) >= 0 ? '+' : ''}${(hl.funding_annualised_pct || 0).toFixed(0)}%</div>
+          <div style="font-size: 9px; color: var(--text-muted);">annualised</div>
+        </div>
+        <div style="padding: 6px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+          <div style="color: var(--text-muted); font-size: 10px;">Open Interest</div>
+          <div style="font-weight: 700;">$${(oi/1e6).toFixed(1)}M</div>
+          ${oiChg !== null && oiChg !== undefined ? `<div style="font-size: 9px; color: ${oiChg >= 0 ? '#059669' : '#DC2626'};">${oiChg >= 0 ? '+' : ''}${oiChg.toFixed(1)}% vs прошлый замер</div>` : ''}
+        </div>
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">
+        <strong>Premium</strong> — давление ПРЯМО СЕЙЧАС, без 8-часовой задержки как OKX/Binance.<br>
+        Обновляется каждые 30 мин.
+      </div>
+    </div>`;
+  } else if (hl && hl.status === 'NOT_LISTED') {
+    html += `<div style="font-size: 11px; color: var(--text-muted); margin: 10px 0; padding: 8px; background: rgba(107, 114, 128, 0.05); border-radius: 4px;">
+      🐙 На Hyperliquid нет контракта для этого токена
+    </div>`;
+  }
+
   html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 6px;">📐 Структура потока</div>';
   let flowRead = null;
   if (scan) {
