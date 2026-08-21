@@ -87,7 +87,9 @@ def evaluate_confluence():
     tech_features = tech.get('features', {})
     
     slope_3d = tech_features.get('slope_3d_pct', 0)
-    slope_accel = tech_features.get('slope_accel_pct', 0)
+    # None означает «истории не хватило». Раньше отсутствие данных
+    # приходило сюда нулём и участвовало в проверках как факт.
+    slope_accel = tech_features.get('slope_accel_pct')
     vol_ratio_3d = tech_features.get('vol_ratio_3d_vs_30d', 1)
     rsi = tech_features.get('rsi', 50)
     pct_from_high = tech_features.get('pct_from_high', 0)
@@ -117,10 +119,14 @@ def evaluate_confluence():
     # ==========================================================
     
     # RALLY HIGH: strict confluence (now 6 checks + event layer bonus)
+    #
+    # ФИКС 21.08.2026 · UNKNOWN больше не даёт очко.
+    # Раньше отсутствие фазы засчитывалось как «фаза подходящая» —
+    # то есть незнание работало как улика. Теперь нет данных = нет очка.
     rally_checks = {
-        'on_chain_ok': phase in ('ACCUMULATION', 'MARKUP') or phase == 'UNKNOWN',
+        'on_chain_ok': phase in ('ACCUMULATION', 'MARKUP'),
         'price_up_3d': slope_3d > 3,
-        'accelerating': slope_accel > 3,
+        'accelerating': slope_accel is not None and slope_accel > 3,
         'vol_expanding': vol_ratio_3d > 1.3,
         'not_distributing_cex': cex_signal not in ('STRONG_DISTRIBUTION',),
         'events_supportive': event_signal in ('POSITIVE_CATALYST', 'SLIGHT_BULLISH', 'CALM'),
@@ -151,18 +157,17 @@ def evaluate_confluence():
     strk_alpha_7d = ((cross_tok.get('strk_alpha') or {}).get('alpha_7d_pct') or 0)
     
     # Apply rally bonuses
+    #
+    # ФИКС 21.08.2026 · bridge_activity и cross_token здесь БОЛЬШЕ НЕ голосуют.
+    # Оба уже учтены внутри event_layer (bridge → event_layer.py:132,
+    # cross_token → event_layer.py:153), а оттуда попадают сюда через
+    # events_supportive / events_bearish. Двойной счёт давал одному
+    # сигналу два очка из пяти нужных — именно на этом CRASH набирался
+    # почти до порога без единого независимого подтверждения.
     if liq_direction in _liq_rally_values:
         rally_score += 1
         rally_checks['liquidity_shift_bullish'] = True
-    
-    if bridge_sig in _bridge_rally_values:
-        rally_score += 1
-        rally_checks['bridge_inflow_bullish'] = True
-    
-    if strk_alpha_7d >= 5.0:
-        rally_score += 1
-        rally_checks['strk_outperforming_l2_sector'] = True
-    
+
     # Bonus if capitulation setup + shorts crowded
     if pct_from_high < -20 and pct_from_low > 5 and short_crowded:
         rally_score += 1
@@ -174,32 +179,38 @@ def evaluate_confluence():
         rally_checks['strong_off_chain_bull'] = True
     
     # CRASH HIGH: strict confluence
+    #
+    # ФИКС 21.08.2026 · убраны две проверки, которые давали очки даром:
+    #
+    #   not_bouncing      = slope_accel < 3  → истина при флэте И при росте.
+    #                       При пустом кэше slope_accel = 0 → очко из воздуха.
+    #   not_extreme_short = not short_crowded or long_crowded → при
+    #                       отсутствии данных по позиционированию тоже истина.
+    #
+    # Вместе они стартовали счёт с 2 из 5 нужных на полностью пустых
+    # данных. У RALLY такой лазейки нет: там все проверки требуют
+    # реального движения. Это и есть источник асимметрии, которую
+    # показал бэктест: RALLY +20.6, CRASH -43.8 пункта к базовой линии.
+    #
+    # «Отсутствие опровержения» — не улика. Осталось 4 проверки, каждая
+    # требует положительного свидетельства.
     crash_checks = {
         'on_chain_distribution': phase in ('DISTRIBUTION', 'MARKDOWN'),
         'price_down_3d': slope_3d < -3,
-        'not_bouncing': slope_accel < 3,
         'cex_distribution': cex_signal in ('STRONG_DISTRIBUTION', 'MILD_DISTRIBUTION'),
-        'not_extreme_short': not short_crowded or long_crowded,
         'events_bearish': event_signal in ('NEGATIVE_CATALYST', 'SLIGHT_BEARISH', 'HIGH_VOL_WINDOW'),
     }
     crash_score = sum(1 for v in crash_checks.values() if v)
-    
+
     # ==========================================================
     # VOTER_WIRE_v1 · crash side of orphan bonuses
     # ==========================================================
-    
+    # bridge_activity и cross_token убраны — см. комментарий на rally-стороне
+
     if liq_direction in _liq_crash_values:
         crash_score += 1
         crash_checks['liquidity_shift_bearish'] = True
-    
-    if bridge_sig in _bridge_crash_values:
-        crash_score += 1
-        crash_checks['bridge_outflow_bearish'] = True
-    
-    if strk_alpha_7d <= -5.0:
-        crash_score += 1
-        crash_checks['strk_underperforming_l2_sector'] = True
-    
+
     # Bonus if event layer strongly bearish
     if event_signal == 'NEGATIVE_CATALYST':
         crash_score += 1
@@ -209,43 +220,57 @@ def evaluate_confluence():
     # DECISION (updated thresholds for 6+3 checks + bonuses)
     # ==========================================================
     
+    # Максимумы считаем, а не хардкодим: раньше в тексте стояло «/9+»
+    # при том что база менялась. Теперь знаменатель всегда правдивый.
+    RALLY_MAX = 6 + 3   # 6 базовых + liquidity_shift + post_capitulation + strong_bull
+    CRASH_MAX = 4 + 2   # 4 базовых + liquidity_shift + strong_bear
+
     if rally_score >= 5:
         signal = 'RALLY_HIGH_CONFLUENCE'
         confidence = 'HIGH'
-        summary = f'STRONG RALLY SETUP - {rally_score} independent checks agree'
+        summary = f'STRONG RALLY SETUP - {rally_score}/{RALLY_MAX} independent checks agree'
         checks_used = rally_checks
     elif crash_score >= 5:
         signal = 'CRASH_HIGH_CONFLUENCE'
         confidence = 'HIGH'
-        summary = f'STRONG CRASH SETUP - {crash_score} independent checks agree'
+        summary = f'STRONG CRASH SETUP - {crash_score}/{CRASH_MAX} independent checks agree'
         checks_used = crash_checks
     elif rally_score >= 4:
         signal = 'RALLY_MEDIUM'
         confidence = 'MEDIUM'
-        summary = f'Partial rally signals ({rally_score}/9+)'
+        summary = f'Partial rally signals ({rally_score}/{RALLY_MAX})'
         checks_used = rally_checks
     elif crash_score >= 4:
         signal = 'CRASH_MEDIUM'
         confidence = 'MEDIUM'
-        summary = f'Partial crash signals ({crash_score}/9+)'
+        summary = f'Partial crash signals ({crash_score}/{CRASH_MAX})'
         checks_used = crash_checks
     else:
         signal = 'NO_SIGNAL'
         confidence = 'LOW'
         summary = 'No clear confluence - stay flat'
         checks_used = {'rally_score': rally_score, 'crash_score': crash_score}
-    
+
     # ==========================================================
     # ACTIONABLE OUTPUT
     # ==========================================================
-    
+    #
+    # ФИКС 21.08.2026 · CRASH больше не выдаёт торговую инструкцию.
+    # На 220 закрытых наблюдениях CRASH_HIGH_CONFLUENCE попадал в 6%
+    # случаев при базовой линии 50% — преимущество -43.8 пункта.
+    # Сигнал отмечает не начало падения, а его конец. Пока он не
+    # переаттестован на новой выборке, он остаётся в логе как
+    # наблюдение, но не превращается в «Consider SHORT».
+
     action = 'STAY FLAT'
     if confidence == 'HIGH':
         if 'RALLY' in signal:
             action = f'Consider LONG on break above ${tech_features.get("high_14d", 0) * 0.99:.4f} with stop ${tech_features.get("low_14d", 0):.4f}'
         else:
-            action = f'Consider SHORT on break below ${tech_features.get("low_14d", 0):.4f} or REDUCE existing longs'
-    
+            action = ('OBSERVE ONLY - crash confluence is under review '
+                      '(backtest edge -43.8 pts, signal historically marks '
+                      'the END of a decline, not the start)')
+
     return {
         'as_of': now.isoformat(),
         'signal': signal,
@@ -304,8 +329,8 @@ def main():
     result = evaluate_confluence()
     
     logger.info(f"\nSignal: {result['signal']} · {result['confidence']}")
-    logger.info(f"Rally score: {result['rally_score']}/9+")
-    logger.info(f"Crash score: {result['crash_score']}/9+")
+    logger.info(f"Rally score: {result['rally_score']}/9")
+    logger.info(f"Crash score: {result['crash_score']}/6")
     logger.info(f"\nSummary: {result['summary']}")
     logger.info(f"Action: {result['action']}")
     logger.info(f"\nInputs:")
