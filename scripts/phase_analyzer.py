@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-phase_analyzer.py · v1.0 · 21.08.2026
+phase_analyzer.py · v1.1 · 21.08.2026
 STRK ENGINE · быстрая часть анализа фазы, работает каждые 30 мин
 
 ЗАЧЕМ
@@ -225,17 +225,20 @@ def classify_regime(flow):
 # ДИВЕРГЕНЦИЯ · цена vs капитал
 # ─────────────────────────────────────────────────────────────
 
-def price_flow_divergence(scan, flow, prices_hive):
+def price_flow_divergence(scan, flow, price_ref=None):
     """
     Классическая дивергенция: цена в одну сторону, деньги в другую.
     Правильный сигнал разворота, если направления рассогласовались.
     """
-    price_now = scan.get("price_now")
-    price_30d = scan.get("price_30d_ago")
-    if not price_now or not price_30d or price_30d <= 0:
-        return None
-
-    price_pct = (price_now / price_30d - 1) * 100
+    # Опорные цены с биржи имеют приоритет над ценами Dune
+    if price_ref and price_ref.get("status") == "OK" and price_ref.get("change_30d_pct") is not None:
+        price_pct = price_ref["change_30d_pct"]
+    else:
+        price_now = scan.get("price_now")
+        price_30d = scan.get("price_30d_ago")
+        if not price_now or not price_30d or price_30d <= 0:
+            return None
+        price_pct = (price_now / price_30d - 1) * 100
     last_flow = flow.get("last_4w_usd") if flow else None
 
     if last_flow is None:
@@ -269,7 +272,7 @@ def price_flow_divergence(scan, flow, prices_hive):
 # КАЧЕСТВО ДАННЫХ · чёрный список
 # ─────────────────────────────────────────────────────────────
 
-def check_data_quality(scan, momentum_row):
+def check_data_quality(scan, momentum_row, price_ref=None):
     """
     Отделяет реальные сигналы от артефактов Dune-момента.
 
@@ -278,6 +281,16 @@ def check_data_quality(scan, momentum_row):
     Такие цифры не бывают у настоящих активов — фильтруем.
     """
     flags = []
+
+    # Если есть проверенная опорная цена с биржи, битые цены Dune больше
+    # не повод браковать токен: потоки Dune остаются пригодными, а цены
+    # мы берём из другого места. Раньше из-за этого выпадали шесть
+    # токенов целиком — ARB, BONK, DOGE, TAO, UNI, WIF.
+    ref_ok = bool(price_ref and price_ref.get("status") == "OK"
+                  and (price_ref.get("sanity") or {}).get("ok"))
+    if ref_ok:
+        return {"ok": True, "flags": [],
+                "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"}
 
     if momentum_row and momentum_row.get("price_change_7d_pct") is not None:
         pct = momentum_row["price_change_7d_pct"]
@@ -307,6 +320,10 @@ def check_data_quality(scan, momentum_row):
 def analyze_all(only=None):
     now = datetime.now(timezone.utc)
     prices_hive = load_json(os.path.join(CACHE, "hive_prices.json"), {})
+    # Опорные цены с биржи. Появились после того, как выяснилось, что Dune
+    # выводит цену из отдельных DEX-сделок и на ARB/UNI/DOGE даёт мусор
+    # (+1 717 040% за неделю). Если файл есть — цены берём отсюда.
+    price_ref = load_json(os.path.join(CACHE, "price_reference.json"), {}) or {}
     funding = load_json(os.path.join(CACHE, "funding_per_token.json"), {})
     momentum = load_json(os.path.join(CACHE, "dune_sector_momentum.json"), {})
 
@@ -319,7 +336,7 @@ def analyze_all(only=None):
     tokens = only or discover_tokens()
 
     result = {"computed_at": now.isoformat(),
-              "engine_version": "phase_analyzer/1.0",
+              "engine_version": "phase_analyzer/1.1",
               "cost": "0 credits · locally-computed",
               "tokens_analyzed": 0,
               "tokens_suspicious": 0,
@@ -340,8 +357,9 @@ def analyze_all(only=None):
 
         flow = analyze_flow(scan)
         regime = classify_regime(flow) if flow else {"code": "NO_DATA"}
-        divergence = price_flow_divergence(scan, flow, prices_hive)
-        quality = check_data_quality(scan, momentum_by_token.get(t))
+        pref = (price_ref.get("tokens") or {}).get(t)
+        divergence = price_flow_divergence(scan, flow, pref)
+        quality = check_data_quality(scan, momentum_by_token.get(t), pref)
 
         f = (funding.get("tokens") or {}).get(t) or {}
 
