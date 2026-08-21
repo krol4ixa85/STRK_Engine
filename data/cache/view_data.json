@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-21T20:22:03.446354+00:00",
+  "computed_at": "2026-08-21T20:37:35.524156+00:00",
   "purpose": "Готовые данные для отображения. Браузер только выводит, никаких вычислений на его стороне.",
   "signals_table": {
     "rows": [
@@ -1056,18 +1056,18 @@
         "symbol": "AAVE",
         "hl_name": "AAVE",
         "status": "OK",
-        "mark_price": 110.04,
-        "oracle_price": 109.9253,
-        "funding_rate_pct": 0.00243,
-        "funding_annualised_pct": 21.3,
-        "premium_pct": 0.123,
-        "open_interest_usd": 67397808,
-        "open_interest_base": 612484.62,
-        "oi_change_pct": -0.07,
-        "day_volume_usd": 49130832,
-        "volume_share_of_oi": 0.73,
+        "mark_price": 111.98,
+        "oracle_price": 111.845,
+        "funding_rate_pct": 0.00474,
+        "funding_annualised_pct": 41.56,
+        "premium_pct": 0.0731,
+        "open_interest_usd": 68650367,
+        "open_interest_base": 613059.18,
+        "oi_change_pct": 1.86,
+        "day_volume_usd": 49075923,
+        "volume_share_of_oi": 0.71,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.123%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.073%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -1083,6 +1083,49 @@
         "total_usd": 95124,
         "text_ru": "позиции крупных всего $0.10M — мало, чтобы считать это сигналом"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -1.0,
+          "detail": "Ослабление. отток ускоряется — капитуляция или distribution. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.4,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.073% · фандинг 42% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 8.8% — объёмной поддержки сверху нет · вверх +2.8% · вниз -1.4%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -1282,15 +1325,15 @@
         "symbol": "AIXBT",
         "hl_name": "AIXBT",
         "status": "OK",
-        "mark_price": 0.02098,
-        "oracle_price": 0.020985,
+        "mark_price": 0.021049,
+        "oracle_price": 0.02104,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 584476,
-        "open_interest_base": 27858732.0,
-        "oi_change_pct": -0.3,
-        "day_volume_usd": 211967,
+        "open_interest_usd": 585120,
+        "open_interest_base": 27798006.0,
+        "oi_change_pct": 0.11,
+        "day_volume_usd": 213345,
         "volume_share_of_oi": 0.36,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
@@ -1308,6 +1351,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.0,
+          "detail": "Без перевеса. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 16.2% — объёмной поддержки сверху нет · вверх +0.7% · вниз -8.7%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -1397,6 +1483,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.2,
+          "detail": "Ранняя стадия. поток около нуля, без сигнала. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "деривативов мало, сигнал слабый"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": 0.0,
+          "detail": "профиль не построен"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": []
@@ -1610,18 +1739,18 @@
         "symbol": "ARB",
         "hl_name": "ARB",
         "status": "OK",
-        "mark_price": 0.09503,
-        "oracle_price": 0.09506,
+        "mark_price": 0.09664,
+        "oracle_price": 0.0967,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0,
-        "open_interest_usd": 4179880,
-        "open_interest_base": 43984848.8,
-        "oi_change_pct": -0.54,
-        "day_volume_usd": 4894220,
-        "volume_share_of_oi": 1.17,
+        "premium_pct": -0.0103,
+        "open_interest_usd": 4241976,
+        "open_interest_base": 43894620.4,
+        "oi_change_pct": 1.49,
+        "day_volume_usd": 4910422,
+        "volume_share_of_oi": 1.16,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.000%"
+        "hl_bias_ru": "перекоса нет: премия -0.010%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -1636,6 +1765,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.3,
+          "detail": "Без перевеса. приток разгоняется — лучшее окно для входа. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL -0.010%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 14.0% — объёмной поддержки сверху нет · вверх +6.8% · вниз -1.7%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -1834,18 +2006,18 @@
         "symbol": "AXS",
         "hl_name": "AXS",
         "status": "OK",
-        "mark_price": 1.0025,
-        "oracle_price": 1.0019,
+        "mark_price": 1.0151,
+        "oracle_price": 1.0143,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.023,
-        "open_interest_usd": 1057924,
-        "open_interest_base": 1055285.4,
-        "oi_change_pct": -0.51,
-        "day_volume_usd": 1119867,
-        "volume_share_of_oi": 1.06,
+        "premium_pct": 0.0,
+        "open_interest_usd": 1070540,
+        "open_interest_base": 1054615.6,
+        "oi_change_pct": 1.19,
+        "day_volume_usd": 1119402,
+        "volume_share_of_oi": 1.05,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.023%"
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "SELL_PRESSURE",
@@ -1859,6 +2031,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.0,
+          "detail": "Без перевеса. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "лёгкий перевес продавцов · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.6,
+          "detail": "цена выше зоны стоимости на 10.7% — объёмной поддержки сверху нет · вверх +1.3% · вниз -2.1%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -2058,16 +2273,16 @@
         "symbol": "BONK",
         "hl_name": "kBONK",
         "status": "OK",
-        "mark_price": 0.002967,
-        "oracle_price": 0.002968,
+        "mark_price": 0.003042,
+        "oracle_price": 0.003042,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 6440824,
-        "open_interest_base": 2170820518.0,
-        "oi_change_pct": 0.0,
-        "day_volume_usd": 5629968,
-        "volume_share_of_oi": 0.87,
+        "open_interest_usd": 6650646,
+        "open_interest_base": 2186274176.0,
+        "oi_change_pct": 3.26,
+        "day_volume_usd": 5747156,
+        "volume_share_of_oi": 0.86,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
@@ -2083,6 +2298,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.5,
+          "detail": "Накопление. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "лёгкий перевес продавцов · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.1,
+          "detail": "цена внутри зоны стоимости, в 71% от нижней границы · вверх +7.0% · вниз -1.6%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -2185,6 +2443,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.0,
+          "detail": "Без перевеса. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "профиль не построен"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -2390,18 +2691,18 @@
         "symbol": "CRV",
         "hl_name": "CRV",
         "status": "OK",
-        "mark_price": 0.32849,
-        "oracle_price": 0.328,
-        "funding_rate_pct": 0.00901,
-        "funding_annualised_pct": 78.89,
-        "premium_pct": 0.122,
-        "open_interest_usd": 14737580,
-        "open_interest_base": 44864622.2,
-        "oi_change_pct": 2.1,
-        "day_volume_usd": 24428506,
-        "volume_share_of_oi": 1.66,
+        "mark_price": 0.33002,
+        "oracle_price": 0.32957,
+        "funding_rate_pct": 0.00697,
+        "funding_annualised_pct": 61.02,
+        "premium_pct": 0.1153,
+        "open_interest_usd": 14755551,
+        "open_interest_base": 44711080.6,
+        "oi_change_pct": 0.12,
+        "day_volume_usd": 24927995,
+        "volume_share_of_oi": 1.69,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.122% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.115% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -2416,6 +2717,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.5,
+          "detail": "Ранняя стадия. приток разгоняется — лучшее окно для входа. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.6,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.115% · фандинг 61% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -1.0,
+          "detail": "цена выше зоны стоимости на 23.5% — объёмной поддержки сверху нет · вверх +31.0% · вниз -12.0%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -2621,18 +2965,18 @@
         "symbol": "DOGE",
         "hl_name": "DOGE",
         "status": "OK",
-        "mark_price": 0.084848,
-        "oracle_price": 0.084765,
-        "funding_rate_pct": 0.00436,
-        "funding_annualised_pct": 38.23,
-        "premium_pct": 0.0991,
-        "open_interest_usd": 46847613,
-        "open_interest_base": 552135734.0,
-        "oi_change_pct": 0.74,
-        "day_volume_usd": 72900868,
-        "volume_share_of_oi": 1.56,
+        "mark_price": 0.086939,
+        "oracle_price": 0.086825,
+        "funding_rate_pct": 0.01023,
+        "funding_annualised_pct": 89.59,
+        "premium_pct": 0.0737,
+        "open_interest_usd": 49079339,
+        "open_interest_base": 564526154.0,
+        "oi_change_pct": 4.76,
+        "day_volume_usd": 75075552,
+        "volume_share_of_oi": 1.53,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.099%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.074% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -2644,6 +2988,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.35,
+          "detail": "Ранняя стадия. стабильный приток без ускорения. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.4,
+          "detail": "окна не согласованы · премия HL +0.074% · фандинг 90% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "цена выше зоны стоимости на 13.6% — объёмной поддержки сверху нет · вверх +1.2% · вниз -1.0%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -2844,18 +3231,18 @@
         "symbol": "EIGEN",
         "hl_name": "EIGEN",
         "status": "OK",
-        "mark_price": 0.2147,
-        "oracle_price": 0.2144,
+        "mark_price": 0.2158,
+        "oracle_price": 0.2154,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0466,
-        "open_interest_usd": 5222962,
-        "open_interest_base": 24326789.16,
-        "oi_change_pct": 0.07,
-        "day_volume_usd": 1288261,
+        "premium_pct": 0.0929,
+        "open_interest_usd": 5237140,
+        "open_interest_base": 24268489.22,
+        "oi_change_pct": 0.27,
+        "day_volume_usd": 1305057,
         "volume_share_of_oi": 0.25,
-        "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.047%"
+        "hl_bias": "LONG_HEAVY",
+        "hl_bias_ru": "лонги переплачивают: премия +0.093%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -2869,6 +3256,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.2,
+          "detail": "Ранняя стадия. поток около нуля, без сигнала. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.093%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 6.5% — объёмной поддержки сверху нет · вверх +3.7% · вниз -4.1%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -3080,18 +3510,18 @@
         "symbol": "ETHFI",
         "hl_name": "ETHFI",
         "status": "OK",
-        "mark_price": 0.58437,
-        "oracle_price": 0.58344,
-        "funding_rate_pct": 0.00125,
-        "funding_annualised_pct": 10.95,
-        "premium_pct": 0.1028,
-        "open_interest_usd": 15179289,
-        "open_interest_base": 25975475.4,
-        "oi_change_pct": 2.56,
-        "day_volume_usd": 9444361,
-        "volume_share_of_oi": 0.62,
-        "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.103%"
+        "mark_price": 0.60746,
+        "oracle_price": 0.6067,
+        "funding_rate_pct": 0.00639,
+        "funding_annualised_pct": 55.96,
+        "premium_pct": 0.0,
+        "open_interest_usd": 15600322,
+        "open_interest_base": 25681233.6,
+        "oi_change_pct": 2.77,
+        "day_volume_usd": 11245985,
+        "volume_share_of_oi": 0.72,
+        "hl_bias": "NEUTRAL",
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -3106,6 +3536,49 @@
         "total_usd": 207128,
         "text_ru": "позиции крупных всего $0.21M — мало, чтобы считать это сигналом"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.2,
+          "detail": "База строится. приток есть, но темп падает — возможная вершина. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.2,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000% · фандинг 56% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -1.0,
+          "detail": "цена выше зоны стоимости на 20.2% — объёмной поддержки сверху нет · вверх +2.5% · вниз -4.7%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -3300,18 +3773,18 @@
         "symbol": "FET",
         "hl_name": "FET",
         "status": "OK",
-        "mark_price": 0.1605,
-        "oracle_price": 0.16015,
-        "funding_rate_pct": 0.01025,
-        "funding_annualised_pct": 89.78,
-        "premium_pct": 0.1218,
-        "open_interest_usd": 6258793,
-        "open_interest_base": 38995594.0,
-        "oi_change_pct": 0.32,
-        "day_volume_usd": 4039727,
-        "volume_share_of_oi": 0.65,
+        "mark_price": 0.16442,
+        "oracle_price": 0.16399,
+        "funding_rate_pct": 0.0175,
+        "funding_annualised_pct": 153.33,
+        "premium_pct": 0.2787,
+        "open_interest_usd": 6831259,
+        "open_interest_base": 41547618.0,
+        "oi_change_pct": 9.15,
+        "day_volume_usd": 4280848,
+        "volume_share_of_oi": 0.63,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.122% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.279% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -3323,6 +3796,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.0,
+          "detail": "Без перевеса. поток около нуля, без сигнала. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.6,
+          "detail": "окна не согласованы · премия HL +0.279% · фандинг 153% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "цена выше зоны стоимости на 2.9% — объёмной поддержки сверху нет · вверх +9.6% · вниз -0.7%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -3491,18 +4007,18 @@
         "symbol": "FIL",
         "hl_name": "FIL",
         "status": "OK",
-        "mark_price": 0.77858,
-        "oracle_price": 0.779,
+        "mark_price": 0.79051,
+        "oracle_price": 0.7912,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": -0.0244,
-        "open_interest_usd": 1959610,
-        "open_interest_base": 2516902.6,
-        "oi_change_pct": 0.22,
-        "day_volume_usd": 1304572,
-        "volume_share_of_oi": 0.67,
-        "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия -0.024%"
+        "premium_pct": -0.1062,
+        "open_interest_usd": 1995115,
+        "open_interest_base": 2523832.8,
+        "oi_change_pct": 1.81,
+        "day_volume_usd": 1299417,
+        "volume_share_of_oi": 0.65,
+        "hl_bias": "SHORT_HEAVY",
+        "hl_bias_ru": "шорты переплачивают: премия -0.106%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -3517,6 +4033,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.2,
+          "detail": "Ранняя стадия. поток около нуля, без сигнала. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL -0.106%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 6.3% — объёмной поддержки сверху нет · вверх +11.0% · вниз -0.9%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -3620,6 +4179,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.8,
+          "detail": "Падение. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "профиль не построен"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": []
@@ -3816,18 +4418,18 @@
         "symbol": "LDO",
         "hl_name": "LDO",
         "status": "OK",
-        "mark_price": 0.35797,
-        "oracle_price": 0.3576,
+        "mark_price": 0.36531,
+        "oracle_price": 0.365,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0727,
-        "open_interest_usd": 10362141,
-        "open_interest_base": 28946952.8,
-        "oi_change_pct": -0.56,
-        "day_volume_usd": 4961035,
-        "volume_share_of_oi": 0.48,
+        "premium_pct": 0.0685,
+        "open_interest_usd": 10623940,
+        "open_interest_base": 29081985.0,
+        "oi_change_pct": 2.53,
+        "day_volume_usd": 5046313,
+        "volume_share_of_oi": 0.47,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.073%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.068%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -3842,6 +4444,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -1.0,
+          "detail": "Падение. отток ускоряется — капитуляция или distribution. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.2,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.069%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 2.0% — объёмной поддержки сверху нет · вверх +0.6% · вниз -1.9%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -4064,18 +4709,18 @@
         "symbol": "LINK",
         "hl_name": "LINK",
         "status": "OK",
-        "mark_price": 11.652,
-        "oracle_price": 11.639,
-        "funding_rate_pct": 0.00515,
-        "funding_annualised_pct": 45.12,
-        "premium_pct": 0.0885,
-        "open_interest_usd": 66594571,
-        "open_interest_base": 5715291.0,
-        "oi_change_pct": -0.36,
-        "day_volume_usd": 39332487,
-        "volume_share_of_oi": 0.59,
+        "mark_price": 11.77056,
+        "oracle_price": 11.75933,
+        "funding_rate_pct": 0.00341,
+        "funding_annualised_pct": 29.87,
+        "premium_pct": 0.0947,
+        "open_interest_usd": 66462879,
+        "open_interest_base": 5646535.0,
+        "oi_change_pct": -0.2,
+        "day_volume_usd": 39921388,
+        "volume_share_of_oi": 0.6,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.088% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.095%"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -4090,6 +4735,49 @@
         "total_usd": 215584,
         "text_ru": "позиции крупных всего $0.22M — мало, чтобы считать это сигналом"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 1.0,
+          "detail": "Зрелое накопление. приток разгоняется — лучшее окно для входа. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.4,
+          "detail": "окна не согласованы · премия HL +0.095% · фандинг 30% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.6,
+          "detail": "цена выше зоны стоимости на 17.2% — объёмной поддержки сверху нет · вверх +23.6% · вниз -6.1%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -4289,24 +4977,67 @@
         "symbol": "MNT",
         "hl_name": "MNT",
         "status": "OK",
-        "mark_price": 0.50297,
-        "oracle_price": 0.50295,
+        "mark_price": 0.5044,
+        "oracle_price": 0.50378,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0,
-        "open_interest_usd": 3479423,
-        "open_interest_base": 6917755.0,
-        "oi_change_pct": -0.18,
-        "day_volume_usd": 1109801,
+        "premium_pct": 0.0397,
+        "open_interest_usd": 3491682,
+        "open_interest_base": 6922445.8,
+        "oi_change_pct": 0.35,
+        "day_volume_usd": 1131512,
         "volume_share_of_oi": 0.32,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.000%"
+        "hl_bias_ru": "перекоса нет: премия +0.040%"
       },
       "cvd_consensus": {},
       "whales": {
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.5,
+          "detail": "Ранняя стадия. приток разгоняется — лучшее окно для входа. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "премия HL +0.040%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "цена выше зоны стоимости на 9.8% — объёмной поддержки сверху нет · вверх +2.3% · вниз -3.1%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -4505,18 +5236,18 @@
         "symbol": "MORPHO",
         "hl_name": "MORPHO",
         "status": "OK",
-        "mark_price": 2.3172,
-        "oracle_price": 2.313,
-        "funding_rate_pct": 0.00654,
-        "funding_annualised_pct": 57.31,
-        "premium_pct": 0.1159,
-        "open_interest_usd": 5897879,
-        "open_interest_base": 2545261.2,
-        "oi_change_pct": -0.36,
-        "day_volume_usd": 4482659,
+        "mark_price": 2.3331,
+        "oracle_price": 2.3285,
+        "funding_rate_pct": 0.00644,
+        "funding_annualised_pct": 56.42,
+        "premium_pct": 0.1044,
+        "open_interest_usd": 6050387,
+        "open_interest_base": 2593282.4,
+        "oi_change_pct": 2.59,
+        "day_volume_usd": 4572024,
         "volume_share_of_oi": 0.76,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.116% · фандинг подтверждает"
+        "hl_bias_ru": "лонги переплачивают: премия +0.104% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "BUY_PRESSURE",
@@ -4530,6 +5261,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.45,
+          "detail": "База строится. стабильный приток без ускорения. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.6,
+          "detail": "лёгкий перевес покупателей · премия HL +0.104% · фандинг 56% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.2,
+          "detail": "цена выше зоны стоимости на 12.6% — объёмной поддержки сверху нет · вверх +2.0% · вниз -0.5%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -4725,18 +5499,18 @@
         "symbol": "ONDO",
         "hl_name": "ONDO",
         "status": "OK",
-        "mark_price": 0.378428,
-        "oracle_price": 0.37805,
-        "funding_rate_pct": 0.00125,
-        "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0815,
-        "open_interest_usd": 25445190,
-        "open_interest_base": 67239184.0,
-        "oi_change_pct": -0.49,
-        "day_volume_usd": 30427961,
-        "volume_share_of_oi": 1.2,
+        "mark_price": 0.38471,
+        "oracle_price": 0.38431,
+        "funding_rate_pct": 0.00243,
+        "funding_annualised_pct": 21.32,
+        "premium_pct": 0.0851,
+        "open_interest_usd": 25904403,
+        "open_interest_base": 67334884.0,
+        "oi_change_pct": 1.8,
+        "day_volume_usd": 30671514,
+        "volume_share_of_oi": 1.18,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.081%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.085%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -4751,6 +5525,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -1.0,
+          "detail": "Падение. отток ускоряется — капитуляция или distribution. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.2,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.085% · фандинг 21% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.3,
+          "detail": "цена внутри зоны стоимости, в 39% от нижней границы · вверх +3.6% · вниз -3.0%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -4956,18 +5773,18 @@
         "symbol": "OP",
         "hl_name": "OP",
         "status": "OK",
-        "mark_price": 0.10232,
-        "oracle_price": 0.10238,
-        "funding_rate_pct": -0.00179,
-        "funding_annualised_pct": -15.71,
-        "premium_pct": -0.0293,
-        "open_interest_usd": 3131360,
-        "open_interest_base": 30603598.8,
-        "oi_change_pct": -1.37,
-        "day_volume_usd": 1648284,
-        "volume_share_of_oi": 0.53,
-        "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия -0.029%"
+        "mark_price": 0.10359,
+        "oracle_price": 0.10368,
+        "funding_rate_pct": 0.00125,
+        "funding_annualised_pct": 10.95,
+        "premium_pct": -0.0675,
+        "open_interest_usd": 3168462,
+        "open_interest_base": 30586560.4,
+        "oi_change_pct": 1.18,
+        "day_volume_usd": 1628432,
+        "volume_share_of_oi": 0.51,
+        "hl_bias": "SHORT_HEAVY",
+        "hl_bias_ru": "шорты переплачивают: премия -0.068%"
       },
       "cvd_consensus": {
         "code": "MIXED",
@@ -4979,6 +5796,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.0,
+          "detail": "Без перевеса. поток около нуля, без сигнала. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "окна не согласованы · премия HL -0.068%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "цена выше зоны стоимости на 11.2% — объёмной поддержки сверху нет · вверх +2.9% · вниз -3.8%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -5186,18 +6046,18 @@
         "symbol": "PENDLE",
         "hl_name": "PENDLE",
         "status": "OK",
-        "mark_price": 1.6088,
-        "oracle_price": 1.6075,
+        "mark_price": 1.63525,
+        "oracle_price": 1.634,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0367,
-        "open_interest_usd": 6062824,
-        "open_interest_base": 3768538.0,
-        "oi_change_pct": -0.26,
-        "day_volume_usd": 4419962,
-        "volume_share_of_oi": 0.73,
+        "premium_pct": 0.0,
+        "open_interest_usd": 6140351,
+        "open_interest_base": 3754992.0,
+        "oi_change_pct": 1.28,
+        "day_volume_usd": 4581620,
+        "volume_share_of_oi": 0.75,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.037%"
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -5211,6 +6071,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.2,
+          "detail": "Ранняя стадия. отток ускоряется — капитуляция или distribution. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.8,
+          "detail": "цена выше зоны стоимости на 8.0% — объёмной поддержки сверху нет · вверх +4.3% · вниз -2.4%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -5399,18 +6302,18 @@
         "symbol": "PEPE",
         "hl_name": "kPEPE",
         "status": "OK",
-        "mark_price": 0.003781,
-        "oracle_price": 0.003778,
-        "funding_rate_pct": 0.00198,
-        "funding_annualised_pct": 17.39,
-        "premium_pct": 0.1323,
-        "open_interest_usd": 31784602,
-        "open_interest_base": 8406400856.0,
-        "oi_change_pct": -0.93,
-        "day_volume_usd": 36249537,
-        "volume_share_of_oi": 1.14,
-        "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.132%"
+        "mark_price": 0.003858,
+        "oracle_price": 0.003855,
+        "funding_rate_pct": 0.00125,
+        "funding_annualised_pct": 10.95,
+        "premium_pct": 0.0259,
+        "open_interest_usd": 32580749,
+        "open_interest_base": 8444984150.0,
+        "oi_change_pct": 2.5,
+        "day_volume_usd": 35990736,
+        "volume_share_of_oi": 1.1,
+        "hl_bias": "NEUTRAL",
+        "hl_bias_ru": "перекоса нет: премия +0.026%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -5424,6 +6327,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.1,
+          "detail": "База строится. отток ускоряется — капитуляция или distribution. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.2,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.026%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -1.0,
+          "detail": "цена выше зоны стоимости на 26.2% — объёмной поддержки сверху нет · вверх +8.8% · вниз -1.6%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -5534,6 +6480,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.0,
+          "detail": "Без перевеса. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "деривативов мало, сигнал слабый"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": 0.0,
+          "detail": "профиль не построен"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": []
@@ -5631,6 +6620,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.8,
+          "detail": "Падение. поток около нуля, без сигнала. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "окна не согласованы"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": 0.0,
+          "detail": "профиль не построен"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": []
@@ -5800,18 +6832,18 @@
         "symbol": "SAND",
         "hl_name": "SAND",
         "status": "OK",
-        "mark_price": 0.046822,
-        "oracle_price": 0.04688,
+        "mark_price": 0.047148,
+        "oracle_price": 0.0472,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": -0.032,
-        "open_interest_usd": 294174,
-        "open_interest_base": 6282808.0,
-        "oi_change_pct": 0.22,
-        "day_volume_usd": 304807,
-        "volume_share_of_oi": 1.04,
+        "premium_pct": -0.0275,
+        "open_interest_usd": 298210,
+        "open_interest_base": 6324970.0,
+        "oi_change_pct": 1.37,
+        "day_volume_usd": 307359,
+        "volume_share_of_oi": 1.03,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия -0.032%"
+        "hl_bias_ru": "перекоса нет: премия -0.028%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -5826,6 +6858,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.8,
+          "detail": "Падение. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL -0.028%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.3,
+          "detail": "вверх +0.8% · вниз -0.8%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -6032,16 +7107,16 @@
         "symbol": "STRK",
         "hl_name": "STRK",
         "status": "OK",
-        "mark_price": 0.0274,
-        "oracle_price": 0.02738,
+        "mark_price": 0.02784,
+        "oracle_price": 0.02781,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
         "premium_pct": 0.0,
-        "open_interest_usd": 2437651,
-        "open_interest_base": 88965364.0,
-        "oi_change_pct": -0.01,
-        "day_volume_usd": 1074904,
-        "volume_share_of_oi": 0.44,
+        "open_interest_usd": 2530564,
+        "open_interest_base": 90896695.2,
+        "oi_change_pct": 3.81,
+        "day_volume_usd": 1144844,
+        "volume_share_of_oi": 0.45,
         "hl_bias": "NEUTRAL",
         "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
@@ -6057,6 +7132,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.8,
+          "detail": "Падение. поток около нуля, без сигнала. пройдено 55% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "окна не согласованы · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.4,
+          "detail": "цена выше зоны стоимости на 5.3% — объёмной поддержки сверху нет · вверх +4.1% · вниз -0.6%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -6258,18 +7376,18 @@
         "symbol": "TAO",
         "hl_name": "TAO",
         "status": "OK",
-        "mark_price": 224.29,
-        "oracle_price": 224.05,
-        "funding_rate_pct": 0.00419,
-        "funding_annualised_pct": 36.68,
-        "premium_pct": 0.0826,
-        "open_interest_usd": 36175095,
-        "open_interest_base": 161287.15,
-        "oi_change_pct": -1.61,
-        "day_volume_usd": 23929886,
-        "volume_share_of_oi": 0.66,
+        "mark_price": 226.66,
+        "oracle_price": 226.363,
+        "funding_rate_pct": 0.00614,
+        "funding_annualised_pct": 53.75,
+        "premium_pct": 0.0928,
+        "open_interest_usd": 36341454,
+        "open_interest_base": 160334.66,
+        "oi_change_pct": 0.46,
+        "day_volume_usd": 24476954,
+        "volume_share_of_oi": 0.67,
         "hl_bias": "LONG_HEAVY",
-        "hl_bias_ru": "лонги переплачивают: премия +0.083%"
+        "hl_bias_ru": "лонги переплачивают: премия +0.093% · фандинг подтверждает"
       },
       "cvd_consensus": {
         "code": "STRONG_BUY_PRESSURE",
@@ -6284,6 +7402,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.2,
+          "detail": "Ранняя стадия. поток около нуля, без сигнала. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": -0.4,
+          "detail": "агрессия покупателей на нескольких окнах · премия HL +0.093% · фандинг 54% годовых"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": 0.0,
+          "detail": "цена выше зоны стоимости на 9.6% — объёмной поддержки сверху нет · вверх +11.6% · вниз -3.8%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -6481,18 +7642,18 @@
         "symbol": "UNI",
         "hl_name": "UNI",
         "status": "OK",
-        "mark_price": 3.9715,
-        "oracle_price": 3.97,
+        "mark_price": 4.0105,
+        "oracle_price": 4.00882,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0126,
-        "open_interest_usd": 20855496,
-        "open_interest_base": 5251289.4,
-        "oi_change_pct": 0.13,
-        "day_volume_usd": 19746536,
-        "volume_share_of_oi": 0.95,
+        "premium_pct": 0.0035,
+        "open_interest_usd": 20680612,
+        "open_interest_base": 5156617.0,
+        "oi_change_pct": -0.84,
+        "day_volume_usd": 20101505,
+        "volume_share_of_oi": 0.97,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.013%"
+        "hl_bias_ru": "перекоса нет: премия +0.003%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -6507,6 +7668,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.1,
+          "detail": "База строится. отток ускоряется — капитуляция или distribution. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.004%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.3,
+          "detail": "цена внутри зоны стоимости, в 55% от нижней границы · вверх +0.7% · вниз -1.4%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -6702,18 +7906,18 @@
         "symbol": "VIRTUAL",
         "hl_name": "VIRTUAL",
         "status": "OK",
-        "mark_price": 0.69329,
-        "oracle_price": 0.6927,
+        "mark_price": 0.70415,
+        "oracle_price": 0.7037,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0289,
-        "open_interest_usd": 10037820,
-        "open_interest_base": 14478529.6,
-        "oi_change_pct": -0.05,
-        "day_volume_usd": 4320482,
-        "volume_share_of_oi": 0.43,
+        "premium_pct": 0.0441,
+        "open_interest_usd": 10147518,
+        "open_interest_base": 14411017.8,
+        "oi_change_pct": 1.09,
+        "day_volume_usd": 4304687,
+        "volume_share_of_oi": 0.42,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.029%"
+        "hl_bias_ru": "перекоса нет: премия +0.044%"
       },
       "cvd_consensus": {
         "code": "SELL_PRESSURE",
@@ -6727,6 +7931,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.7,
+          "detail": "Без перевеса. отток ускоряется — капитуляция или distribution. пройдено 50% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "лёгкий перевес продавцов · премия HL +0.044%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.6,
+          "detail": "цена выше зоны стоимости на 15.1% — объёмной поддержки сверху нет · вверх +0.9% · вниз -2.4%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -6940,18 +8187,18 @@
         "symbol": "WIF",
         "hl_name": "WIF",
         "status": "OK",
-        "mark_price": 0.18514,
-        "oracle_price": 0.18497,
+        "mark_price": 0.19244,
+        "oracle_price": 0.19225,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0254,
-        "open_interest_usd": 4090841,
-        "open_interest_base": 22095932.0,
-        "oi_change_pct": -0.01,
-        "day_volume_usd": 4371247,
-        "volume_share_of_oi": 1.07,
+        "premium_pct": 0.0,
+        "open_interest_usd": 4342372,
+        "open_interest_base": 22564808.0,
+        "oi_change_pct": 6.15,
+        "day_volume_usd": 4366489,
+        "volume_share_of_oi": 1.01,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.025%"
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "STRONG_SELL_PRESSURE",
@@ -6966,6 +8213,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": 0.4,
+          "detail": "Накопление. приток есть, но темп падает — возможная вершина. пройдено 85% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "агрессия продавцов на нескольких окнах · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -1.0,
+          "detail": "цена выше зоны стоимости на 17.1% — объёмной поддержки сверху нет · вверх +0.6% · вниз -1.5%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
@@ -7162,18 +8452,18 @@
         "symbol": "ZK",
         "hl_name": "ZK",
         "status": "OK",
-        "mark_price": 0.009213,
-        "oracle_price": 0.009202,
+        "mark_price": 0.009233,
+        "oracle_price": 0.009226,
         "funding_rate_pct": 0.00125,
         "funding_annualised_pct": 10.95,
-        "premium_pct": 0.0435,
-        "open_interest_usd": 723618,
-        "open_interest_base": 78543138.0,
-        "oi_change_pct": -0.03,
-        "day_volume_usd": 381030,
+        "premium_pct": 0.0,
+        "open_interest_usd": 724627,
+        "open_interest_base": 78482244.0,
+        "oi_change_pct": 0.14,
+        "day_volume_usd": 383260,
         "volume_share_of_oi": 0.53,
         "hl_bias": "NEUTRAL",
-        "hl_bias_ru": "перекоса нет: премия +0.043%"
+        "hl_bias_ru": "перекоса нет: премия +0.000%"
       },
       "cvd_consensus": {
         "code": "SELL_PRESSURE",
@@ -7187,6 +8477,49 @@
         "status": "NONE",
         "text_ru": "никто из отслеживаемых крупных адресов не держит позицию по этому активу"
       },
+      "advice": null,
+      "layers": [
+        {
+          "key": "flow",
+          "name": "Поток",
+          "icon": "⛓",
+          "purpose": "что делают деньги",
+          "score": -0.5,
+          "detail": "Ослабление. поток около нуля, без сигнала. пройдено 25% фазы"
+        },
+        {
+          "key": "pressure",
+          "name": "Давление",
+          "icon": "⚔",
+          "purpose": "кто агрессивнее прямо сейчас",
+          "score": 0.0,
+          "detail": "лёгкий перевес продавцов · премия HL +0.000%"
+        },
+        {
+          "key": "levels",
+          "name": "Уровни",
+          "icon": "📐",
+          "purpose": "куда тянет цена",
+          "score": -0.6,
+          "detail": "цена выше зоны стоимости на 11.8% — объёмной поддержки сверху нет · вверх +9.0% · вниз -1.0%"
+        },
+        {
+          "key": "context",
+          "name": "Контекст",
+          "icon": "🌍",
+          "purpose": "какой сейчас рынок",
+          "score": -0.47,
+          "detail": "NEUTRAL_MIXED · размер ×0.56"
+        },
+        {
+          "key": "position",
+          "name": "Позиция",
+          "icon": "📍",
+          "purpose": "что у меня открыто",
+          "score": null,
+          "detail": "позиции нет"
+        }
+      ],
       "data_quality": {
         "ok": true,
         "flags": [],
