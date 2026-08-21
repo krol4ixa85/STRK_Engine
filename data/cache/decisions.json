@@ -1,51 +1,43 @@
 {
-  "computed_at": "2026-08-21T07:13:53.643337+00:00",
-  "engine_version": "1.0",
+  "computed_at": "2026-08-21T09:48:57.571493+00:00",
+  "engine_version": "1.1",
   "verify_after_days": 7,
   "regime": {
     "name": "NEUTRAL_MIXED",
     "score": 7.8,
     "multiplier": 0.56,
-    "why": "смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением"
+    "why": "смешанные сигналы; доминация BTC 59.2% — альты под давлением"
   },
   "tokens_evaluated": 31,
-  "tokens_actionable": 3,
-  "rules_status": "HYPOTHESIS · пороги заданы вручную, на истории не проверены",
+  "tokens_actionable": 8,
+  "tokens_suspicious_data": 6,
+  "rules_status": "HYPOTHESIS · пороги вручную, на истории не проверены",
   "decisions": {
     "AAVE": {
       "token": "AAVE",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 34.6,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -2872200.0,
-        "netflow_180d_usd": -907999.9999999999,
-        "recency_ratio": null
-      },
+      "stage": "WEAKENING",
+      "phase_verdict_dune": "WEAKENING",
+      "flow_regime": "ACCEL_DOWN",
+      "flow_regime_text": "отток ускоряется — капитуляция или distribution",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: WEAKENING. Ослабление — приток исчерпывается",
+        "Динамика потока: отток ускоряется — капитуляция или distribution."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 35% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:WEAKENING"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -53,42 +45,35 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 99.72
+      "price_at_decision": 100.7,
+      "flow_accel_4w_usd": -5331600
     },
     "AIXBT": {
       "token": "AIXBT",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 65.4,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -2299.9999999999964,
-        "netflow_180d_usd": 372900.00000000006,
-        "recency_ratio": -0.006
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -96,42 +81,36 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.01836441
+      "price_at_decision": 0.01836441,
+      "flow_accel_4w_usd": -1300
     },
     "AKT": {
       "token": "AKT",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 53.8,
-        "streak_weeks": 3,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 2700.0,
-        "netflow_180d_usd": 13000.000000000005,
-        "recency_ratio": 0.208
-      },
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 14,
+      "stage": "EARLY_ACCUMULATION",
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
+        "Динамика потока: поток около нуля, без сигнала.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 54% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:EARLY_ACCUMULATION",
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -139,94 +118,60 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.50419424
+      "price_at_decision": 0.50419424,
+      "flow_accel_4w_usd": 4500
     },
     "ARB": {
       "token": "ARB",
-      "action": "ЖДАТЬ",
+      "action": "ДАННЫЕ ПОДОЗРИТЕЛЬНЫ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 42.3,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 248700.0,
-        "netflow_180d_usd": -1894199.9999999995,
-        "recency_ratio": null
-      },
-      "conflicts": [
-        {
-          "rule": "no_derivatives",
-          "level": "info",
-          "text": "Открытый интерес $4.4M — деривативов почти нет, сигналам по фандингу веры мало."
-        }
-      ],
-      "conflicts_warn": 0,
+      "stage": "DATA_SUSPICIOUS",
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Данные не прошли sanity-фильтр — сигнал отвергнут:",
+        "  изменение цены 1717040% > 500% — единицы измерения сбились"
       ],
-      "triggers": [
-        "Доля недель с притоком вырастет с 42% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
+      "conflicts": [],
+      "triggers": [],
+      "invalidations": [],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "data_quality_reject"
       ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": "REVIEW",
-      "price_at_decision": 0.091357
+      "data_quality_flags": [
+        {
+          "source": "dune_sector_momentum",
+          "field": "price_change_7d_pct",
+          "value": 1717040.1,
+          "reason": "изменение цены 1717040% > 500% — единицы измерения сбились"
+        }
+      ]
     },
     "AXS": {
       "token": "AXS",
       "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 38.5,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 13000.000000000002,
-        "netflow_180d_usd": 127000.00000000003,
-        "recency_ratio": 0.102
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
-        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: поток около нуля, без сигнала.",
+        "Общая картина ставит вето: AVOID."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 38% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR",
+        "phase:MIXED_OR_NEUTRAL",
         "unified_veto"
       ],
       "regime": {
@@ -235,87 +180,59 @@
         "multiplier": 0.56
       },
       "unified_verdict": "AVOID",
-      "price_at_decision": 0.88719743
+      "price_at_decision": 0.88719743,
+      "flow_accel_4w_usd": 73600
     },
     "BONK": {
       "token": "BONK",
-      "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 37,
-      "stage": "Зрелое накопление",
-      "stage_code": "MATURE_ACCUM",
-      "flow": {
-        "stage": "Зрелое накопление",
-        "code": "MATURE_ACCUM",
-        "pct_positive_180d": 80.8,
-        "streak_weeks": 6,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 378600.0,
-        "netflow_180d_usd": 1013299.9999999999,
-        "recency_ratio": 0.374
-      },
-      "conflicts": [],
-      "conflicts_warn": 0,
+      "action": "ДАННЫЕ ПОДОЗРИТЕЛЬНЫ",
+      "size_pct": 0,
+      "stage": "DATA_SUSPICIOUS",
       "notes": [
-        "Зрелое накопление: спрос держится много недель подряд.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 66% → 37%."
+        "Данные не прошли sanity-фильтр — сигнал отвергнут:",
+        "  30-дневное изменение 6230% > 500%"
       ],
-      "triggers": [
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
+      "conflicts": [],
+      "triggers": [],
+      "invalidations": [],
       "rules_fired": [
-        "stage:MATURE_ACCUM",
-        "regime:NEUTRAL_MIXED"
+        "data_quality_reject"
       ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": null,
-      "price_at_decision": 0.00020066
+      "data_quality_flags": [
+        {
+          "source": "token_scan",
+          "field": "price_30d_ago",
+          "value": 6229.968454258675,
+          "reason": "30-дневное изменение 6230% > 500%"
+        }
+      ]
     },
     "CFG": {
       "token": "CFG",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 42.3,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -52900.0,
-        "netflow_180d_usd": 298200.0000000001,
-        "recency_ratio": -0.177
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 42% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -323,42 +240,38 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.135707
+      "price_at_decision": 0.144705,
+      "flow_accel_4w_usd": -70500
     },
     "CRV": {
       "token": "CRV",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 61.5,
-        "streak_weeks": 3,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 1106000.0,
-        "netflow_180d_usd": 1695600.0,
-        "recency_ratio": 0.652
-      },
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 17,
+      "stage": "EARLY_ACCUMULATION",
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "flow_regime": "ACCEL_UP",
+      "flow_regime_text": "приток разгоняется — лучшее окно для входа",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
+        "Динамика потока: приток разгоняется — лучшее окно для входа.",
+        "Поток ускоряется → размер 25% → 31%.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 62% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:EARLY_ACCUMULATION",
+        "flow_accel_up_boost",
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -366,55 +279,117 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.25803166
+      "price_at_decision": 0.25803166,
+      "flow_accel_4w_usd": 1233900
     },
     "DOGE": {
       "token": "DOGE",
+      "action": "ДАННЫЕ ПОДОЗРИТЕЛЬНЫ",
+      "size_pct": 0,
+      "stage": "DATA_SUSPICIOUS",
+      "notes": [
+        "Данные не прошли sanity-фильтр — сигнал отвергнут:",
+        "  изменение цены 10423% > 500% — единицы измерения сбились"
+      ],
+      "conflicts": [],
+      "triggers": [],
+      "invalidations": [],
+      "rules_fired": [
+        "data_quality_reject"
+      ],
+      "data_quality_flags": [
+        {
+          "source": "dune_sector_momentum",
+          "field": "price_change_7d_pct",
+          "value": 10423.1,
+          "reason": "изменение цены 10423% > 500% — единицы измерения сбились"
+        }
+      ]
+    },
+    "EIGEN": {
+      "token": "EIGEN",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 18,
-      "stage": "Ранняя стадия · приток свежий",
-      "stage_code": "EARLY_ACCUM",
-      "flow": {
-        "stage": "Ранняя стадия · приток свежий",
-        "code": "EARLY_ACCUM",
-        "pct_positive_180d": 46.2,
-        "streak_weeks": 3,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 521800.00000000006,
-        "netflow_180d_usd": 295699.99999999994,
-        "recency_ratio": 1.765
-      },
+      "size_pct": 14,
+      "stage": "EARLY_ACCUMULATION",
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [
         {
-          "rule": "young_accumulation",
+          "rule": "no_derivatives",
           "level": "info",
-          "text": "Весь полугодовой приток пришёлся на последний месяц — до этого был отток. Разворот не подтверждён временем."
-        },
+          "text": "OI $1.1M — фандинг слабый сигнал."
+        }
+      ],
+      "conflicts_warn": 0,
+      "notes": [
+        "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
+        "Динамика потока: поток около нуля, без сигнала.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%."
+      ],
+      "triggers": [
+        "Режим рынка станет BULL_BIAS или лучше"
+      ],
+      "invalidations": [
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
+      ],
+      "rules_fired": [
+        "phase:EARLY_ACCUMULATION",
+        "regime:NEUTRAL_MIXED"
+      ],
+      "regime": {
+        "name": "NEUTRAL_MIXED",
+        "score": 7.8,
+        "multiplier": 0.56
+      },
+      "unified_verdict": null,
+      "price_at_decision": 0.209072,
+      "flow_accel_4w_usd": -237300
+    },
+    "ETHFI": {
+      "token": "ETHFI",
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 9,
+      "stage": "ACCUMULATION_PHASE_B",
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "flow_regime": "STALLING_UP",
+      "flow_regime_text": "приток есть, но темп падает — возможная вершина",
+      "divergence": "ALIGNED",
+      "conflicts": [
         {
           "rule": "fomo_wave",
           "level": "warn",
-          "text": "2 новостей помечены FOMO-риском. Бычья фаза на волне хайпа чаще встречается у локальных вершин."
+          "text": "3 новостей помечены FOMO-риском."
+        },
+        {
+          "rule": "no_derivatives",
+          "level": "info",
+          "text": "OI $4.1M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 1,
       "notes": [
-        "Ранняя фаза: приток свежий, но не подтверждён временем. Пробная часть, остальное по подтверждению.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 33% → 18%."
+        "Фаза Dune: ACCUMULATION_PHASE_B. Wyckoff Phase B — построение базы",
+        "Динамика потока: приток есть, но темп падает — возможная вершина.",
+        "Приток есть, но темп падает — вершина возможна. Размер 33% → 16%.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 16% → 9%."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 46% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
         "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:EARLY_ACCUM",
+        "phase:ACCUMULATION_PHASE_B",
+        "flow_stalling_cut",
         "regime:NEUTRAL_MIXED"
       ],
       "regime": {
@@ -423,142 +398,35 @@
         "multiplier": 0.56
       },
       "unified_verdict": "HOLD_STRONG",
-      "price_at_decision": 0.07685279
-    },
-    "EIGEN": {
-      "token": "EIGEN",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 57.7,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -38400.00000000001,
-        "netflow_180d_usd": 1054200.0,
-        "recency_ratio": -0.036
-      },
-      "conflicts": [
-        {
-          "rule": "no_derivatives",
-          "level": "info",
-          "text": "Открытый интерес $1.2M — деривативов почти нет, сигналам по фандингу веры мало."
-        }
-      ],
-      "conflicts_warn": 0,
-      "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
-      ],
-      "triggers": [
-        "Доля недель с притоком вырастет с 58% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
-      "rules_fired": [
-        "stage:UNCLEAR"
-      ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": null,
-      "price_at_decision": 0.197619
-    },
-    "ETHFI": {
-      "token": "ETHFI",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 53.8,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 223700.0,
-        "netflow_180d_usd": 1547400.0,
-        "recency_ratio": 0.145
-      },
-      "conflicts": [
-        {
-          "rule": "no_derivatives",
-          "level": "info",
-          "text": "Открытый интерес $4.3M — деривативов почти нет, сигналам по фандингу веры мало."
-        }
-      ],
-      "conflicts_warn": 0,
-      "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
-      ],
-      "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 54% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
-      "rules_fired": [
-        "stage:UNCLEAR"
-      ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": "HOLD_STRONG",
-      "price_at_decision": 0.539623
+      "price_at_decision": 0.556656,
+      "flow_accel_4w_usd": -637200
     },
     "FET": {
       "token": "FET",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 46.2,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -180400.0,
-        "netflow_180d_usd": 235499.99999999988,
-        "recency_ratio": -0.766
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 46% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -566,41 +434,36 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.1283935
+      "price_at_decision": 0.1283935,
+      "flow_accel_4w_usd": 67500
     },
     "FIL": {
       "token": "FIL",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 69.2,
-        "streak_weeks": 3,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 5300.0,
-        "netflow_180d_usd": 392400.0000000001,
-        "recency_ratio": 0.014
-      },
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 14,
+      "stage": "EARLY_ACCUMULATION",
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
+        "Динамика потока: поток около нуля, без сигнала.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 25% → 14%."
       ],
       "triggers": [
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:EARLY_ACCUMULATION",
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -608,44 +471,35 @@
         "multiplier": 0.56
       },
       "unified_verdict": "HOLD",
-      "price_at_decision": 0.67056584
+      "price_at_decision": 0.67056584,
+      "flow_accel_4w_usd": -4200
     },
     "GRT": {
       "token": "GRT",
       "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 26.9,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -11000.0,
-        "netflow_180d_usd": -157999.99999999997,
-        "recency_ratio": null
-      },
+      "stage": "MARKDOWN",
+      "phase_verdict_dune": "MARKDOWN",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
-        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
+        "Фаза Dune: MARKDOWN. Фаза распределения / падения",
+        "Динамика потока: поток около нуля, без сигнала.",
+        "Общая картина ставит вето: AVOID."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 27% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR",
+        "phase:MARKDOWN",
         "unified_veto"
       ],
       "regime": {
@@ -654,49 +508,40 @@
         "multiplier": 0.56
       },
       "unified_verdict": "AVOID",
-      "price_at_decision": 0.01361961
+      "price_at_decision": 0.01361961,
+      "flow_accel_4w_usd": 61700
     },
     "LDO": {
       "token": "LDO",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 42.3,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -2069799.9999999998,
-        "netflow_180d_usd": -1920100.0000000002,
-        "recency_ratio": null
-      },
+      "stage": "MARKDOWN",
+      "phase_verdict_dune": "MARKDOWN",
+      "flow_regime": "ACCEL_DOWN",
+      "flow_regime_text": "отток ускоряется — капитуляция или distribution",
+      "divergence": "ALIGNED",
       "conflicts": [
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $2.8M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "OI $3.2M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MARKDOWN. Фаза распределения / падения",
+        "Динамика потока: отток ускоряется — капитуляция или distribution."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 42% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MARKDOWN"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -704,60 +549,44 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.338933
+      "price_at_decision": 0.343068,
+      "flow_accel_4w_usd": -2822200
     },
     "LINK": {
       "token": "LINK",
       "action": "ВХОД ЧАСТЬЮ",
-      "size_pct": 18,
-      "stage": "Ранняя стадия · приток свежий",
-      "stage_code": "EARLY_ACCUM",
-      "flow": {
-        "stage": "Ранняя стадия · приток свежий",
-        "code": "EARLY_ACCUM",
-        "pct_positive_180d": 50.0,
-        "streak_weeks": 0,
-        "sos_8w": 1,
-        "dist_8w": 0,
-        "netflow_30d_usd": 8620099.999999998,
-        "netflow_180d_usd": 6217400.0,
-        "recency_ratio": 1.386
-      },
+      "size_pct": 46,
+      "stage": "MID_ACCUMULATION_STRONG",
+      "phase_verdict_dune": "MID_ACCUMULATION_STRONG",
+      "flow_regime": "ACCEL_UP",
+      "flow_regime_text": "приток разгоняется — лучшее окно для входа",
+      "divergence": "ALIGNED",
       "conflicts": [
-        {
-          "rule": "short_window_only",
-          "level": "warn",
-          "text": "Фаза бычья только на коротком окне: за полгода недель с притоком 50%, серия нулевая."
-        },
-        {
-          "rule": "young_accumulation",
-          "level": "info",
-          "text": "Весь полугодовой приток пришёлся на последний месяц — до этого был отток. Разворот не подтверждён временем."
-        },
         {
           "rule": "fomo_wave",
           "level": "warn",
-          "text": "3 новостей помечены FOMO-риском. Бычья фаза на волне хайпа чаще встречается у локальных вершин."
+          "text": "3 новостей помечены FOMO-риском."
         }
       ],
-      "conflicts_warn": 2,
+      "conflicts_warn": 1,
       "notes": [
-        "Ранняя фаза: приток свежий, но не подтверждён временем. Пробная часть, остальное по подтверждению.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 33% → 18%."
+        "Фаза Dune: MID_ACCUMULATION_STRONG. Зрелое накопление подтверждено сигналами силы",
+        "Динамика потока: приток разгоняется — лучшее окно для входа.",
+        "Поток ускоряется → размер 66% → 82%.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 82% → 46%."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 50% до 65%+",
         "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:EARLY_ACCUM",
+        "phase:MID_ACCUMULATION_STRONG",
+        "flow_accel_up_boost",
         "regime:NEUTRAL_MIXED"
       ],
       "regime": {
@@ -766,42 +595,40 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 10.8
+      "price_at_decision": 11.08,
+      "flow_accel_4w_usd": 11566800
     },
     "MNT": {
       "token": "MNT",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 23.1,
-        "streak_weeks": 3,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 513599.99999999994,
-        "netflow_180d_usd": -4608799.999999999,
-        "recency_ratio": null
-      },
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 17,
+      "stage": "EARLY_ACCUMULATION",
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "flow_regime": "ACCEL_UP",
+      "flow_regime_text": "приток разгоняется — лучшее окно для входа",
+      "divergence": "BULLISH_DIV",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
+        "Динамика потока: приток разгоняется — лучшее окно для входа.",
+        "Поток ускоряется → размер 25% → 31%.",
+        "Дивергенция в нашу пользу: цена -52% за 30д, а деньги заходят $+0.5M — накопление на просадке.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 31% → 17%."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 23% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:EARLY_ACCUMULATION",
+        "flow_accel_up_boost",
+        "bullish_divergence_note",
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -809,48 +636,43 @@
         "multiplier": 0.56
       },
       "unified_verdict": "HOLD",
-      "price_at_decision": 0.55421455
+      "price_at_decision": 0.55421455,
+      "flow_accel_4w_usd": 884500
     },
     "MORPHO": {
       "token": "MORPHO",
-      "action": "ЖДАТЬ",
-      "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 69.2,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 608400.0,
-        "netflow_180d_usd": 7495700.000000001,
-        "recency_ratio": 0.081
-      },
+      "action": "ВХОД ЧАСТЬЮ",
+      "size_pct": 18,
+      "stage": "ACCUMULATION_PHASE_B",
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "flow_regime": "STEADY_UP",
+      "flow_regime_text": "стабильный приток без ускорения",
+      "divergence": "ALIGNED",
       "conflicts": [
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $2.1M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "OI $2.1M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: ACCUMULATION_PHASE_B. Wyckoff Phase B — построение базы",
+        "Динамика потока: стабильный приток без ускорения.",
+        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы; доминация BTC 59.2% — альты под давлением. 33% → 18%."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:ACCUMULATION_PHASE_B",
+        "regime:NEUTRAL_MIXED"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -858,44 +680,35 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 2.3
+      "price_at_decision": 2.27,
+      "flow_accel_4w_usd": -27200
     },
     "ONDO": {
       "token": "ONDO",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 46.2,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -100499.99999999999,
-        "netflow_180d_usd": -251499.99999999974,
-        "recency_ratio": null
-      },
+      "stage": "MARKDOWN",
+      "phase_verdict_dune": "MARKDOWN",
+      "flow_regime": "ACCEL_DOWN",
+      "flow_regime_text": "отток ускоряется — капитуляция или distribution",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MARKDOWN. Фаза распределения / падения",
+        "Динамика потока: отток ускоряется — капитуляция или distribution."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 46% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
         "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MARKDOWN"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -903,49 +716,42 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.363305
+      "price_at_decision": 0.367172,
+      "flow_accel_4w_usd": -808300
     },
     "OP": {
       "token": "OP",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 42.3,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -87399.99999999999,
-        "netflow_180d_usd": -236099.99999999997,
-        "recency_ratio": null
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $4.3M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "OI $4.3M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 42% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
         "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -953,49 +759,43 @@
         "multiplier": 0.56
       },
       "unified_verdict": "HOLD_STRONG",
-      "price_at_decision": 0.097601
+      "price_at_decision": 0.098372,
+      "flow_accel_4w_usd": 96000
     },
     "PENDLE": {
       "token": "PENDLE",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 57.7,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -190299.99999999997,
-        "netflow_180d_usd": 1155400.0,
-        "recency_ratio": -0.165
-      },
+      "stage": "EARLY_ACCUMULATION",
+      "phase_verdict_dune": "EARLY_ACCUMULATION",
+      "flow_regime": "ACCEL_DOWN",
+      "flow_regime_text": "отток ускоряется — капитуляция или distribution",
+      "divergence": "ALIGNED",
       "conflicts": [
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $1.7M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "OI $1.7M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: EARLY_ACCUMULATION. Ранняя фаза — приток только начал появляться",
+        "Динамика потока: отток ускоряется — капитуляция или distribution.",
+        "Отток ускоряется — вето несмотря на фазу."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 58% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
         "Волна FOMO-заголовков спадёт",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:EARLY_ACCUMULATION",
+        "flow_accel_down_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1003,43 +803,37 @@
         "multiplier": 0.56
       },
       "unified_verdict": "REVIEW",
-      "price_at_decision": 1.54
+      "price_at_decision": 1.55,
+      "flow_accel_4w_usd": -638200
     },
     "PEPE": {
       "token": "PEPE",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 53.8,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -242900.00000000003,
-        "netflow_180d_usd": 225200.00000000015,
-        "recency_ratio": -1.079
-      },
+      "stage": "ACCUMULATION_PHASE_B",
+      "phase_verdict_dune": "ACCUMULATION_PHASE_B",
+      "flow_regime": "ACCEL_DOWN",
+      "flow_regime_text": "отток ускоряется — капитуляция или distribution",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: ACCUMULATION_PHASE_B. Wyckoff Phase B — построение базы",
+        "Динамика потока: отток ускоряется — капитуляция или distribution.",
+        "Отток ускоряется — вето несмотря на фазу."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 54% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:ACCUMULATION_PHASE_B",
+        "flow_accel_down_veto"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1047,43 +841,35 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 5.674e-05
+      "price_at_decision": 5.674e-05,
+      "flow_accel_4w_usd": -1405500
     },
     "RNDR": {
       "token": "RNDR",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 42.3,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -134400.00000000003,
-        "netflow_180d_usd": 40400.00000000003,
-        "recency_ratio": -3.327
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 42% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1091,43 +877,34 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 1.27308658
+      "price_at_decision": 1.27308658,
+      "flow_accel_4w_usd": 108600
     },
     "RPL": {
       "token": "RPL",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 38.5,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -63500.0,
-        "netflow_180d_usd": -162699.99999999997,
-        "recency_ratio": null
-      },
+      "stage": "MARKDOWN",
+      "phase_verdict_dune": "MARKDOWN",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MARKDOWN. Фаза распределения / падения",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 38% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MARKDOWN"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1135,43 +912,34 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 1.382889
+      "price_at_decision": 1.382889,
+      "flow_accel_4w_usd": -61200
     },
     "SAND": {
       "token": "SAND",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 23.1,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -65599.99999999999,
-        "netflow_180d_usd": -492199.99999999994,
-        "recency_ratio": null
-      },
+      "stage": "MARKDOWN",
+      "phase_verdict_dune": "MARKDOWN",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MARKDOWN. Фаза распределения / падения",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 23% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MARKDOWN"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1179,50 +947,41 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.03980162
+      "price_at_decision": 0.03980162,
+      "flow_accel_4w_usd": 213800
     },
     "STRK": {
       "token": "STRK",
       "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 7.7,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -28800.0,
-        "netflow_180d_usd": -309799.99999999994,
-        "recency_ratio": null
-      },
+      "stage": "MARKDOWN",
+      "phase_verdict_dune": "MARKDOWN",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "Открытый интерес $1.2M — деривативов почти нет, сигналам по фандингу веры мало."
+          "text": "OI $1.2M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу.",
-        "Общая картина ставит вето: FALSE_RALLY_WAIT. Это перекрывает сигнал фазы."
+        "Фаза Dune: MARKDOWN. Фаза распределения / падения",
+        "Динамика потока: поток около нуля, без сигнала.",
+        "Общая картина ставит вето: FALSE_RALLY_WAIT."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 8% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR",
+        "phase:MARKDOWN",
         "unified_veto"
       ],
       "regime": {
@@ -1231,130 +990,83 @@
         "multiplier": 0.56
       },
       "unified_verdict": "FALSE_RALLY_WAIT",
-      "price_at_decision": 0.02589147
+      "price_at_decision": 0.02614882,
+      "flow_accel_4w_usd": 29400
     },
     "TAO": {
       "token": "TAO",
-      "action": "ЖДАТЬ",
+      "action": "ДАННЫЕ ПОДОЗРИТЕЛЬНЫ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 46.2,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 4300.000000000001,
-        "netflow_180d_usd": 44300.0,
-        "recency_ratio": 0.097
-      },
-      "conflicts": [],
-      "conflicts_warn": 0,
+      "stage": "DATA_SUSPICIOUS",
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Данные не прошли sanity-фильтр — сигнал отвергнут:",
+        "  30-дневное изменение 6446253% > 500%"
       ],
-      "triggers": [
-        "Доля недель с притоком вырастет с 46% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
+      "conflicts": [],
+      "triggers": [],
+      "invalidations": [],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "data_quality_reject"
       ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": null,
-      "price_at_decision": 196.65178894
+      "data_quality_flags": [
+        {
+          "source": "token_scan",
+          "field": "price_30d_ago",
+          "value": 6446252.638014285,
+          "reason": "30-дневное изменение 6446253% > 500%"
+        }
+      ]
     },
     "UNI": {
       "token": "UNI",
-      "action": "ЖДАТЬ",
+      "action": "ДАННЫЕ ПОДОЗРИТЕЛЬНЫ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 50.0,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -152700.00000000006,
-        "netflow_180d_usd": 7177300.0,
-        "recency_ratio": -0.021
-      },
-      "conflicts": [],
-      "conflicts_warn": 0,
+      "stage": "DATA_SUSPICIOUS",
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Данные не прошли sanity-фильтр — сигнал отвергнут:",
+        "  изменение цены 72285% > 500% — единицы измерения сбились"
       ],
-      "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 50% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
+      "conflicts": [],
+      "triggers": [],
+      "invalidations": [],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "data_quality_reject"
       ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": null,
-      "price_at_decision": 3.54350687
+      "data_quality_flags": [
+        {
+          "source": "dune_sector_momentum",
+          "field": "price_change_7d_pct",
+          "value": 72285,
+          "reason": "изменение цены 72285% > 500% — единицы измерения сбились"
+        }
+      ]
     },
     "VIRTUAL": {
       "token": "VIRTUAL",
       "action": "ЖДАТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 50.0,
-        "streak_weeks": 0,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -3467100.0000000005,
-        "netflow_180d_usd": 2939200.0000000005,
-        "recency_ratio": -1.18
-      },
+      "stage": "MIXED_OR_NEUTRAL",
+      "phase_verdict_dune": "MIXED_OR_NEUTRAL",
+      "flow_regime": "ACCEL_DOWN",
+      "flow_regime_text": "отток ускоряется — капитуляция или distribution",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: MIXED_OR_NEUTRAL. Без явного перевеса — вход это ставка на удачу",
+        "Динамика потока: отток ускоряется — капитуляция или distribution."
       ],
       "triggers": [
-        "Появится серия из 2+ недель подряд с притоком",
-        "Доля недель с притоком вырастет с 50% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Dune-фаза перейдёт в MID_ACCUMULATION",
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:MIXED_OR_NEUTRAL"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1362,88 +1074,58 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.58870855
+      "price_at_decision": 0.58870855,
+      "flow_accel_4w_usd": -4383100
     },
     "WIF": {
       "token": "WIF",
-      "action": "НЕ ВХОДИТЬ",
+      "action": "ДАННЫЕ ПОДОЗРИТЕЛЬНЫ",
       "size_pct": 0,
-      "stage": "Зрелое накопление",
-      "stage_code": "MATURE_ACCUM",
-      "flow": {
-        "stage": "Зрелое накопление",
-        "code": "MATURE_ACCUM",
-        "pct_positive_180d": 69.2,
-        "streak_weeks": 5,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": 199599.99999999997,
-        "netflow_180d_usd": 1236000.0000000005,
-        "recency_ratio": 0.161
-      },
-      "conflicts": [],
-      "conflicts_warn": 0,
+      "stage": "DATA_SUSPICIOUS",
       "notes": [
-        "Зрелое накопление: спрос держится много недель подряд.",
-        "Режим рынка (NEUTRAL_MIXED): смешанные сигналы по рынку — размер урезан; доминация BTC 59.2% — альты под давлением. Размер 66% → 37%.",
-        "Общая картина ставит вето: AVOID. Это перекрывает сигнал фазы."
+        "Данные не прошли sanity-фильтр — сигнал отвергнут:",
+        "  30-дневное изменение 2251% > 500%"
       ],
-      "triggers": [
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
-      ],
-      "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
-      ],
+      "conflicts": [],
+      "triggers": [],
+      "invalidations": [],
       "rules_fired": [
-        "stage:MATURE_ACCUM",
-        "regime:NEUTRAL_MIXED",
-        "unified_veto"
+        "data_quality_reject"
       ],
-      "regime": {
-        "name": "NEUTRAL_MIXED",
-        "score": 7.8,
-        "multiplier": 0.56
-      },
-      "unified_verdict": "AVOID",
-      "price_at_decision": 0.0003073
+      "data_quality_flags": [
+        {
+          "source": "token_scan",
+          "field": "price_30d_ago",
+          "value": 2251.185921958684,
+          "reason": "30-дневное изменение 2251% > 500%"
+        }
+      ]
     },
     "ZK": {
       "token": "ZK",
-      "action": "ЖДАТЬ",
+      "action": "НЕ ВХОДИТЬ",
       "size_pct": 0,
-      "stage": "Неопределённая · без явного перевеса",
-      "stage_code": "UNCLEAR",
-      "flow": {
-        "stage": "Неопределённая · без явного перевеса",
-        "code": "UNCLEAR",
-        "pct_positive_180d": 30.8,
-        "streak_weeks": 1,
-        "sos_8w": 0,
-        "dist_8w": 0,
-        "netflow_30d_usd": -2700.0,
-        "netflow_180d_usd": -77399.99999999999,
-        "recency_ratio": null
-      },
+      "stage": "WEAKENING",
+      "phase_verdict_dune": "WEAKENING",
+      "flow_regime": "STABLE_ZERO",
+      "flow_regime_text": "поток около нуля, без сигнала",
+      "divergence": "ALIGNED",
       "conflicts": [],
       "conflicts_warn": 0,
       "notes": [
-        "Структура потока без перевеса. Вход здесь — ставка на удачу, а не на фазу."
+        "Фаза Dune: WEAKENING. Ослабление — приток исчерпывается",
+        "Динамика потока: поток около нуля, без сигнала."
       ],
       "triggers": [
-        "Доля недель с притоком вырастет с 31% до 65%+",
-        "Появится сигнал силы (SOS) в 8-недельном окне",
-        "Режим рынка перестанет давить на альты"
+        "Режим рынка станет BULL_BIAS или лучше"
       ],
       "invalidations": [
-        "Появится сигнал распределения (Dist) в 8-недельном окне",
-        "Месячный приток станет отрицательным",
-        "Цена уйдёт ниже минимума последней недели с притоком"
+        "Ускорение потока перевернётся в ACCEL_DOWN",
+        "Появится дивергенция BEARISH_DIV",
+        "Dune-фаза перейдёт в WEAKENING или MARKDOWN"
       ],
       "rules_fired": [
-        "stage:UNCLEAR"
+        "phase:WEAKENING"
       ],
       "regime": {
         "name": "NEUTRAL_MIXED",
@@ -1451,7 +1133,8 @@
         "multiplier": 0.56
       },
       "unified_verdict": null,
-      "price_at_decision": 0.00770216
+      "price_at_decision": 0.00770216,
+      "flow_accel_4w_usd": 17800
     }
   }
 }
