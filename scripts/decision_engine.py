@@ -21,7 +21,7 @@ DECISIONS_FILE = os.path.join(CACHE, "decisions.json")
 ACCURACY_FILE = os.path.join(CACHE, "decision_accuracy.json")
 LOG_FILE = os.path.join(HISTORY, "decision_log.jsonl")
 
-ENGINE_VERSION = "1.3"
+ENGINE_VERSION = "1.4"
 VERIFY_AFTER_DAYS = 7
 MOVE_THRESHOLD_PCT = 3.0
 MIN_N_FOR_ACCURACY = 20
@@ -110,6 +110,66 @@ def apply_flow_regime(base_size, regime_code, notes, rules):
         notes.append("Отток замедляется — возможное дно, но подтверждения ещё нет.")
         rules.append("flow_stalling_down_note")
     return base_size
+
+
+def apply_flow_shape(size, shape, notes, rules):
+    """
+    Форма разгона отвечает на вопрос, где мы ВНУТРИ фазы.
+
+    Обычные окна показывают направление: приток есть или нет. Но окно
+    в четыре недели не отличает «приток идёт прямо сейчас» от «приток
+    был три недели назад, а на этой неделе уже отток» — в сумме обе
+    картины дают плюс.
+
+    Для свинга на 3-14 дней это решающая разница. LINK 21.08: за
+    4 недели +$14.5M, выглядит бычьим, но вся сумма пришла две недели
+    назад, а последняя неделя дала −$2.7M. Вход по такому сигналу —
+    вход на исходе движения.
+
+    stage_pct — сколько пути фазы пройдено: 25% начало, 55% середина,
+    85% конец. Пороги экспертные, на истории не проверялись.
+    """
+    if not shape:
+        return size
+
+    code = shape.get("code")
+    stage = shape.get("stage_pct")
+
+    if code == "ACCUMULATION_FADING" and size > 0:
+        new_size = round(size * 0.4)
+        notes.append(f"Форма разгона: {shape.get('text_ru', '')} "
+                     f"(пройдено {stage}% фазы). Приток был, но выдохся — "
+                     f"размер {size}% → {new_size}%.")
+        rules.append("shape_accumulation_fading")
+        return new_size
+
+    if code == "ACCUMULATION_BUILDING" and size > 0:
+        new_size = min(100, round(size * 1.2))
+        notes.append(f"Форма разгона: {shape.get('text_ru', '')} "
+                     f"(пройдено {stage}% фазы) — размер {size}% → {new_size}%.")
+        rules.append("shape_accumulation_building")
+        return new_size
+
+    if code == "ACCUMULATION_MATURE" and size > 0:
+        notes.append(f"Форма разгона: {shape.get('text_ru', '')} "
+                     f"(пройдено {stage}% фазы).")
+        rules.append("shape_accumulation_mature")
+        return size
+
+    if code == "DISTRIBUTION_FADING":
+        notes.append(f"Форма разгона: {shape.get('text_ru', '')} "
+                     f"(пройдено {stage}% фазы). Дно возможно, "
+                     f"но подтверждения ещё нет.")
+        rules.append("shape_distribution_fading")
+        return size
+
+    if code == "DISTRIBUTION_BUILDING" and size > 0:
+        notes.append(f"Форма разгона: {shape.get('text_ru', '')} — "
+                     f"распродажа только началась, вход отменён.")
+        rules.append("shape_distribution_building_veto")
+        return 0
+
+    return size
 
 
 def find_conflicts(token, phase_verdict, base_size, phase_analysis, sig):
@@ -315,6 +375,11 @@ def decide(token, sig):
         notes.append(f"Динамика потока: {regime.get('text_ru', regime_code)}.")
         size = apply_flow_regime(size, regime_code, notes, rules)
 
+    # Форма разгона по лестнице окон 1w/2w/4w/8w/13w. Смотрит на то,
+    # где мы внутри фазы, а не только куда идёт поток.
+    shape = (pa_row.get("flow") or {}).get("shape")
+    size = apply_flow_shape(size, shape, notes, rules)
+
     div = pa_row.get("divergence") or {}
     div_code = div.get("code")
     if div_code == "BEARISH_DIV" and size > 0:
@@ -433,6 +498,8 @@ def decide(token, sig):
         "unified_verdict": (uv or {}).get("verdict"),
         "price_at_decision": price,
         "flow_accel_4w_usd": (pa_row.get("flow") or {}).get("flow_accel_4w_usd"),
+        "flow_shape": (pa_row.get("flow") or {}).get("shape"),
+        "flow_windows": (pa_row.get("flow") or {}).get("windows"),
         "cvd_consensus": (cvd_row or {}).get("consensus", {}).get("code") if cvd_row else None,
         "vp_position": (vp_row or {}).get("position", {}).get("code") if vp_row else None,
         "price_targets": build_price_targets(vp_row, None, price),
