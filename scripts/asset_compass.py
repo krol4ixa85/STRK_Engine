@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-asset_compass.py · v1.0 · 21.08.2026
+asset_compass.py · v1.1 · 21.08.2026
 STRK ENGINE · шкала LONG / SHORT по каждому активу
 
 ЗАЧЕМ
@@ -234,12 +234,34 @@ def score_technical(vp, cvd):
         dist = pos.get("distance_to_poc_pct")
 
         if code == "ABOVE_VALUE":
-            if dist is not None and dist > 30:
-                v = -0.60
-                d = f"цена на {dist:.0f}% выше справедливой, поддержки сверху нет"
+            # ФИКС 21.08.2026 · выход вверх на объёме — это markup,
+            # а не «дорого». Раньше любая цена выше VAH давала минус,
+            # причём вдвое сильнее, чем BELOW_VALUE давало плюс.
+            kind = pos.get("above_kind")
+            vr = pos.get("vol_ratio_recent")
+            if kind == "MARKUP":
+                v = 0.20
+                d = (f"цена вышла вверх из зоны объёма на объёме ×{vr} — "
+                     f"рынок принимает новую цену")
+            elif kind == "EXTENDED":
+                if dist is not None and dist > 30:
+                    v = -0.60
+                    d = (f"цена на {dist:.0f}% выше справедливой, "
+                         f"объём не подтверждает (×{vr})")
+                else:
+                    v = -0.40
+                    d = f"цена выше зоны объёма, объём не подтверждает (×{vr})"
             else:
-                v = -0.40
-                d = "цена выше зоны объёма"
+                # above_kind ещё нет — volume_profile.json старой версии.
+                # До первого прогона нового коллектора (максимум 6 часов)
+                # ведём себя как раньше, чтобы миграция ничего не сдвинула
+                # молча в сторону меньшей осторожности.
+                if dist is not None and dist > 30:
+                    v = -0.60
+                    d = f"цена на {dist:.0f}% выше справедливой, поддержки сверху нет"
+                else:
+                    v = -0.40
+                    d = "цена выше зоны объёма"
         elif code == "BELOW_VALUE":
             v = 0.40
             d = "цена ниже зоны объёма — потенциал возврата вверх"
@@ -352,7 +374,7 @@ def discover_tokens():
 
 
 def main(only=None):
-    print("=== Asset Compass v1.0 ===\n")
+    print("=== Asset Compass v1.1 ===\n")
 
     sig = {
         "phase": load("phase_analysis.json", {}) or {},
