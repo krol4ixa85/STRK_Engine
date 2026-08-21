@@ -117,8 +117,16 @@ def check(job):
     st = load_state()
     meta = TIERS.get(job)
     if not meta:
-        print(f"⚠ Задача '{job}' не описана в TIERS — пропускаю без блокировки")
-        gh_output("allowed", "true")
+        # ФИКС 21.08.2026 · раньше здесь стояло allowed=true.
+        # Опечатка в имени задачи в workflow бесшумно снимала сторож
+        # целиком — при том что весь смысл этого файла в том, что хуже
+        # неработающей защиты только защита, которая выглядит рабочей.
+        # Теперь неизвестное имя блокирует прогон и называет известные.
+        print(f"⛔ Задача '{job}' не описана в TIERS — блокирую.")
+        print(f"   Известные задачи: {', '.join(sorted(TIERS))}")
+        print("   Проверь имя в workflow или добавь задачу в TIERS.")
+        gh_output("allowed", "false")
+        gh_output("reason", f"unknown job '{job}' — not in TIERS")
         return 0
 
     used_pct = st["used"] / MONTHLY_BUDGET * 100 if MONTHLY_BUDGET else 0
