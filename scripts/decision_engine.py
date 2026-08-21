@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-decision_engine.py · v1.1 · 21.08.2026
+decision_engine.py · v1.5 · 21.08.2026
 STRK ENGINE · единственный автор торговых решений
 
 ЧТО ИЗМЕНИЛОСЬ ОТ v1.0
@@ -21,7 +21,7 @@ DECISIONS_FILE = os.path.join(CACHE, "decisions.json")
 ACCURACY_FILE = os.path.join(CACHE, "decision_accuracy.json")
 LOG_FILE = os.path.join(HISTORY, "decision_log.jsonl")
 
-ENGINE_VERSION = "1.4"
+ENGINE_VERSION = "1.5"
 VERIFY_AFTER_DAYS = 7
 MOVE_THRESHOLD_PCT = 3.0
 MIN_N_FOR_ACCURACY = 20
@@ -278,7 +278,28 @@ def apply_volume_profile(size, vp_row, notes, rules):
     code = pos.get("code")
     dist = pos.get("distance_to_poc_pct")
 
+    kind = pos.get("above_kind")
+
+    # ФИКС 21.08.2026 · пробой вверх на объёме больше не режется.
+    # Раньше любая цена выше VAH резала размер вдвое — и движок
+    # штрафовал ровно те движения, которые и есть markup. AAVE 21.08:
+    # объём 4.9x к среднему, пробой 90-дневного максимума, а движок
+    # видел «дорого» и урезал.
+    if code == "ABOVE_VALUE" and kind == "MARKUP":
+        notes.append(f"Volume Profile: {pos.get('text_ru', '')} — "
+                     f"пробой подтверждён объёмом, размер не режем.")
+        rules.append("vp_markup_no_cut")
+        return size
+
+    # kind is None бывает, пока volume_profile.json ещё старой версии
+    # (поле above_kind появляется после первого прогона нового коллектора,
+    # максимум через 6 часов). В этом окне ведём себя КАК РАНЬШЕ и режем:
+    # неизвестность не должна незаметно ослаблять риск-контроль.
+    if code == "ABOVE_VALUE" and kind is None:
+        rules.append("vp_above_value_kind_unknown")
+
     if code == "ABOVE_VALUE" and size > 0:
+        # EXTENDED: цена ушла, объём не подтверждает.
         # Чем дальше от POC, тем сильнее режем
         if dist is not None and dist > 25:
             new_size = round(size * 0.5)
@@ -545,6 +566,23 @@ def write_log(recs):
         for r in recs: f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
+def _parse_utc(value):
+    """
+    ISO-строка → timezone-aware UTC. Наивные даты считаем UTC.
+    Возвращает None, если разобрать нельзя — вызывающий обязан это
+    обработать, а не падать посреди прогона.
+    """
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except Exception:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
 def verify():
     recs = read_log()
     if not recs:
@@ -554,9 +592,13 @@ def verify():
     closed = 0
     for r in recs:
         if r.get("status") != "PENDING": continue
-        try: va = datetime.fromisoformat(r["verify_after"])
-        except Exception: continue
-        if va > now: continue
+        # Наивные даты (без таймзоны) раньше роняли весь прогон через
+        # TypeError при сравнении с aware-now. Приводим к UTC явно,
+        # и сравнение тоже держим внутри try.
+        va = _parse_utc(r.get("verify_after"))
+        if va is None or va > now: continue
+        decided = _parse_utc(r.get("issued_at") or r.get("decided_at") or r.get("ts"))
+        elapsed_days = round((now - decided).total_seconds() / 86400.0, 1) if decided else None
         row = prices.get(r["token"]) or {}
         p_now = row.get("price_usd") or (load_token_scan(r["token"]) or {}).get("price_now")
         if not p_now or not r.get("price_at_decision"):
@@ -564,16 +606,37 @@ def verify():
             r["outcome"] = "нет цены для оценки"; closed += 1; continue
         change = (p_now - r["price_at_decision"]) / r["price_at_decision"] * 100
         thr = r.get("threshold_pct", MOVE_THRESHOLD_PCT)
-        if r["expectation"] == "UP":
+
+        # ФИКС 21.08.2026 · симметричный коридор нейтральности
+        # для ВСЕХ ожиданий.
+        #
+        # Было: для DOWN_OR_FLAT и FLAT условия ok и miss взаимно
+        # дополнительны — NEUTRAL недостижим. А build_accuracy считает
+        # hit/(hit+miss), то есть выбрасывает нейтралки. Получалось,
+        # что у правил входа нейтралки выбрасываются, а у правил
+        # ожидания нет: точность входов систематически завышена
+        # относительно ожиданий, и сравнивать их было нельзя.
+        #
+        # Стало: и «ВХОД», и «ЖДАТЬ»/«НЕ ВХОДИТЬ» — это утверждения о
+        # направлении. Оцениваем их зеркально, с одинаковым коридором
+        # ±thr, внутри которого не произошло ничего и правило не право
+        # и не виновато.
+        #
+        # Побочно закрыт второй дефект: раньше FLAT засчитывал падение
+        # на 50% как HIT по ветке `change < 0` — теперь это тоже HIT,
+        # но осознанно (ожидание «вверх не пойдёт» подтвердилось),
+        # а рост на 1% больше не считается победой.
+        exp = r["expectation"]
+        if exp == "UP":
             ok, miss = change >= thr, change <= -thr
-        elif r["expectation"] == "DOWN_OR_FLAT":
-            ok, miss = change <= thr, change > thr
-        else:
-            ok, miss = (abs(change) < thr or change < 0), change >= thr
+        else:  # DOWN_OR_FLAT и FLAT — оба утверждают «вверх не пойдёт»
+            ok, miss = change <= -thr, change >= thr
         r["status"] = "HIT" if ok else ("MISS" if miss else "NEUTRAL")
         r["price_at_verify"] = p_now; r["price_change_pct"] = round(change, 2)
         r["evaluated_at"] = now.isoformat()
-        r["outcome"] = f"цена {change:+.2f}% за {VERIFY_AFTER_DAYS} дней"
+        r["elapsed_days"] = elapsed_days
+        _d = f"{elapsed_days} дней" if elapsed_days is not None else f"~{VERIFY_AFTER_DAYS} дней"
+        r["outcome"] = f"цена {change:+.2f}% за {_d}"
         closed += 1
         print(f"  {r['token']:8} {r['action']:12} → {r['status']:8} ({change:+.2f}%)")
     write_log(recs)
