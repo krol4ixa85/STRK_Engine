@@ -29,6 +29,11 @@ on:
     - cron: '22 0,6,12,18 * * *'
     # Hive Prices · fix price discrepancy, 4x/day (5 min после interpretation)
     - cron: '25 0,6,12,18 * * *'
+    # Decision Backtest · ВОСКРЕСЕНЬЕ 06:20 UTC. Прогон правил задним
+    # числом по weekly_history. Идёт после воскресного weekly_token_scan
+    # (00:00), поэтому история уже обновлена свежей неделей.
+    # Ноль внешних запросов — только локальные файлы.
+    - cron: '20 6 * * 0'
     # Volume Profile · КАЖДЫЕ 6 ЧАСОВ. POC/VAH/VAL/HVN из бесплатных
     # свечей Hyperliquid. Даёт ЦЕЛИ — куда стремится цена.
     - cron: '35 1,7,13,19 * * *'
@@ -98,6 +103,7 @@ on:
           - hl_trades
           - volume_profile
           - cvd_multi
+          - decision_backtest
           - decision_engine
           - decision_verify
           - archivist
@@ -1056,6 +1062,39 @@ jobs:
           git config user.name "STRK Engine Bot"
           [ -f data/cache/cvd_multi.json ] && git add data/cache/cvd_multi.json || echo "no cvd"
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: cvd multi [skip ci]"
+          git push || (git pull --rebase && git push) || echo "Push failed"
+
+  # ============================================================
+  # DECISION BACKTEST · воскресенье 06:20 UTC · 0 кредитов
+  # Прогоняет правила движка по истории weekly_history без заглядывания
+  # в будущее и считает hit-rate, медиану и Sharpe-подобную метрику.
+  #
+  # Проверяются только правила с историей: режимы потока, серии,
+  # дивергенция цена/поток. phase_verdict, CVD, Volume Profile и режим
+  # рынка истории не имеют — их проверяет только форвард-тест.
+  #
+  # Выборка растёт сама: каждый weekly-скан добавляет неделю в историю.
+  # ============================================================
+  decision_backtest:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '20 6 * * 0')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'decision_backtest')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Replay rules over history
+        run: python3 scripts/decision_backtest.py
+      - name: Commit rule_backtest.json
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          [ -f data/cache/rule_backtest.json ] && git add data/cache/rule_backtest.json || echo "no backtest"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: rule backtest [skip ci]"
           git push || (git pull --rebase && git push) || echo "Push failed"
 
   # ============================================================
