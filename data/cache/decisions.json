@@ -1,6 +1,6 @@
 {
-  "computed_at": "2026-08-21T22:58:37.389379+00:00",
-  "engine_version": "1.5",
+  "computed_at": "2026-08-21T23:57:43.592853+00:00",
+  "engine_version": "1.6",
   "verify_after_days": 7,
   "regime": {
     "name": "NEUTRAL_MIXED",
@@ -1536,6 +1536,11 @@
           "rule": "fomo_wave",
           "level": "warn",
           "text": "3 новостей помечены FOMO-риском."
+        },
+        {
+          "rule": "no_derivatives",
+          "level": "info",
+          "text": "OI $4.8M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 1,
@@ -2128,7 +2133,7 @@
         {
           "rule": "no_derivatives",
           "level": "info",
-          "text": "OI $3.4M — фандинг слабый сигнал."
+          "text": "OI $3.6M — фандинг слабый сигнал."
         }
       ],
       "conflicts_warn": 0,
@@ -2211,7 +2216,7 @@
           "significant": true
         }
       },
-      "cvd_consensus": "STRONG_SELL_PRESSURE",
+      "cvd_consensus": "SELL_PRESSURE",
       "vp_position": "ABOVE_VALUE",
       "price_targets": {
         "current_price": 0.360444,
