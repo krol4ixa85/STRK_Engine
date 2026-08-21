@@ -867,10 +867,15 @@ body > * {
 <div id="rot-exited" style="color: var(--red); font-weight: 600;">EXITED: Loading...</div>
 </div>
 </div>
+<div id="engine-signals" style="margin-top: 12px;">Loading engine signals...</div>
 <div id="signals-toggle" onclick="toggleSignalsTable()" style="margin-top: 12px; padding: 10px 16px; background: var(--bg-subtle); border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; border: 1px dashed var(--border);">
   ▼ Показать полную таблицу сигналов (все STRONG_BUY / DIVERGENCE / STRONG_SELL)
 </div>
-<div id="signals-wrapper" style="display: none; margin-top: 12px;"><div class="layman-intro">STRONG_BUY — покупают активно · DIVERGENCE — цена вверх без покупок (осторожно) · STRONG_SELL — продают. Данные из DEX за 7 дней.</div>
+<div id="signals-wrapper" style="display: none; margin-top: 12px;"><div class="layman-intro" style="border-left: 3px solid var(--yellow); padding-left: 10px;">
+<strong>Старая таблица · историческая</strong><br>
+STRONG_BUY здесь ставится по одному правилу: приток за 7 дней больше нуля и цена выросла больше 5%. Это значит «выросло уже», а не «вырастет». Обновляется дважды в сутки и использует цены Dune, которые на части токенов битые.<br>
+Смотри блок выше — там вердикт движка по восьми факторам, обновляется каждые 30 минут.
+</div>
 <div class="loading" id="signals-content">Loading...</div></div>
 </div><div class="card">
 <div class="card-header">
@@ -1244,6 +1249,79 @@ function renderPrecision(summary) {
   </div>`;
   el.innerHTML = html;
 }
+// Таблица сигналов движка. Заменяет собой правило «цена +5% за неделю»,
+// которое отмечало рост уже случившийся. Все данные готовые:
+// решение из decisions.json, балл из asset_compass.json, цели из
+// volume_profile.json. Здесь только сортировка и раскраска.
+// Тонкий рендер. Сортировка, счётчики и переводы приходят готовыми
+// из scripts/view_data.py. Здесь только вывод — по правилу из
+// ПРАВИЛО_вычисления.md.
+async function renderEngineSignals() {
+  const el = document.getElementById('engine-signals');
+  if (!el) return;
+
+  const vd = await _loadCache('view_data.json');
+  const t = vd && vd.signals_table;
+  if (!t || !t.rows || !t.rows.length) {
+    el.innerHTML = '<div class="empty">Данные движка ещё не собраны</div>';
+    return;
+  }
+
+  const C = {green: 'var(--green)', red: 'var(--red)',
+             yellow: 'var(--yellow)', muted: 'var(--text-muted)'};
+  const ago = iso => {
+    if (!iso) return '—';
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    return m < 60 ? m + ' мин назад' : Math.round(m / 60) + ' ч назад';
+  };
+  const c = t.counts;
+
+  let out = `<div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">⚙️ Вердикт движка v${t.engine_version || ''} · все ${t.total} активов</div>
+    <div style="font-size: 10px; color: var(--text-muted);">решения ${ago(t.decisions_at)} · компас ${ago(t.compass_at)}</div>
+  </div>`;
+
+  out += `<div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; font-size: 12px;">
+    <span><strong style="color: var(--green);">${c.enter}</strong> к входу</span>
+    <span><strong style="color: var(--yellow);">${c.wait}</strong> ждать</span>
+    <span><strong style="color: var(--red);">${c.avoid}</strong> не входить</span>
+    ${c.bad_data ? `<span style="color: var(--text-muted);">${c.bad_data} данные битые</span>` : ''}
+  </div>`;
+
+  const toneBg = {positive: 'rgba(16,185,129,0.08)', caution: 'rgba(245,158,11,0.08)', neutral: 'rgba(59,130,246,0.06)'};
+  const toneBd = {positive: 'var(--green)', caution: 'var(--yellow)', neutral: '#3B82F6'};
+  out += `<div style="padding: 11px 13px; background: ${toneBg[t.tone] || toneBg.neutral}; border-radius: 8px; border-left: 3px solid ${toneBd[t.tone] || toneBd.neutral}; font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">${t.headline}</div>`;
+
+  out += `<div class="table-wrapper"><table><thead><tr>
+    <th>Токен</th><th>Действие</th><th class="number">Размер</th>
+    <th class="number">Компас</th><th>Фаза</th><th>Поток</th>
+    <th class="number">Цель ↑</th><th class="number">Стоп ↓</th>
+  </tr></thead><tbody>`;
+
+  for (const r of t.rows) {
+    const aCol = C[r.action_color] || C.muted;
+    const sCol = r.compass_score == null ? C.muted :
+                 r.compass_score > 10 ? C.green : r.compass_score < -10 ? C.red : C.muted;
+    const fCol = C[r.flow_tone] || C.muted;
+    out += `<tr style="cursor: pointer;" onclick="openDurationScanner('${r.token}')">
+      <td><strong>${r.token}</strong></td>
+      <td style="color: ${aCol}; font-weight: 600; font-size: 11px;">${r.action}</td>
+      <td class="number">${r.size_pct ? r.size_pct + '%' : '—'}</td>
+      <td class="number" style="color: ${sCol}; font-weight: 700;">${r.compass_score == null ? '—' : (r.compass_score >= 0 ? '+' : '') + Math.round(r.compass_score)}</td>
+      <td style="font-size: 10px; color: var(--text-muted);">${r.phase_ru}</td>
+      <td style="font-size: 10px; color: ${fCol};">${r.flow_ru}</td>
+      <td class="number" style="font-size: 11px;">${r.target_up ? '$' + r.target_up.price_fmt + ' <span style="color: var(--green);">+' + Math.round(r.target_up.distance_pct) + '%</span>' : '—'}</td>
+      <td class="number" style="font-size: 11px;">${r.target_down ? '$' + r.target_down.price_fmt + ' <span style="color: var(--red);">' + Math.round(r.target_down.distance_pct) + '%</span>' : '—'}</td>
+    </tr>`;
+  }
+  out += '</tbody></table></div>';
+  out += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 8px; font-style: italic;">
+    Клик по строке открывает разбор актива. Всё посчитано в scripts/view_data.py, обновляется каждые 30 минут.
+  </div>`;
+
+  el.innerHTML = out;
+}
+
 function renderRotation(events) {
   const el = document.getElementById('rotation-content');
   if (!events || events.length === 0) { el.innerHTML = '<div class="empty">Нет событий</div>'; return; }
@@ -3183,6 +3261,7 @@ async function loadAll(manual = false) {
   safeRender('StrkTargets', () => renderStrkTargets());
   safeRender('Trades', () => renderTrades());
   safeRender('Summaries', () => renderModuleSummaries());
+  safeRender('EngineSignals', () => renderEngineSignals());
   safeRender('NewsImpact', () => renderNewsImpact());
   safeRender('MarketRegime', () => renderMarketRegime());
   safeRender('Interpretation', () => renderInterpretation());
