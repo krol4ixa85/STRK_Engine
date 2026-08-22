@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-position_advisor.py · v1.1 · 21.08.2026
+position_advisor.py · v1.2 · 22.08.2026
 STRK ENGINE · советы по ОТКРЫТОЙ позиции
 
 ЗАЧЕМ
@@ -219,12 +219,26 @@ def build_plain(out, sig, dec, pa, vp, comp, hl, targets):
         lines.append(f"За тебя ближайшее — ${fmt_price(g0['price'])} "
                      f"({d_help:.1f}%), {g0['label']}.")
 
+    # ФИКС 22.08.2026 · раньше здесь стояло простое «что ближе, то и
+    # лучше»: ближняя выгода красилась зелёным. На живом примере это
+    # прочиталось неверно — шорт LINK, до ближайшей поддержки 1.4%,
+    # до ближайшего сопротивления 21%. Блок сказал «выгода ближе» и
+    # покрасил зелёным, хотя означает это ровно обратное: ход в твою
+    # сторону упирается в уровень через процент, а против тебя структуры
+    # нет вообще на пятой части хода. Близкая цель — это МАЛО ОСТАЛОСЬ,
+    # а далёкая помеха — это НЕЧЕМУ ОСТАНОВИТЬ.
     if d_hurt is not None and d_help is not None:
         if d_help > d_hurt:
             tone = "red"
             lines.append(f"Помеха ближе выгоды: {d_hurt:.1f}% против "
-                         f"{d_help:.1f}%. Идти позиции дальше, чем "
+                         f"{d_help:.1f}%. Позиции идти дальше, чем "
                          f"до первого сопротивления.")
+        elif d_hurt > d_help * 3:
+            tone = "yellow"
+            lines.append(f"Ход в твою сторону упирается в уровень через "
+                         f"{d_help:.1f}%, а против тебя структуры нет "
+                         f"на {d_hurt:.1f}%. Осталось мало, а останавливать "
+                         f"движение против позиции нечему.")
         else:
             tone = "green"
             lines.append(f"Выгода ближе помехи: {d_help:.1f}% против "
@@ -233,6 +247,16 @@ def build_plain(out, sig, dec, pa, vp, comp, hl, targets):
         h1 = hurts[1]
         lines.append(f"Следующее против тебя — ${fmt_price(h1['price'])} "
                      f"({abs(h1['distance_pct']):.1f}%), {h1['label']}.")
+
+    # Ближайший уровень часто мелкий свинг. Настоящие магниты — зоны
+    # объёма: там реально торговали, туда цену тянет.
+    vol_kinds = ("POC", "VAH", "VAL", "HVN")
+    vol_helps = [x for x in helps if x.get("kind") in vol_kinds]
+    if vol_helps:
+        v0 = vol_helps[0]
+        lines.append(f"Ближайший объёмный магнит в твою сторону — "
+                     f"${fmt_price(v0['price'])} ({abs(v0['distance_pct']):.1f}%), "
+                     f"{v0['label']}. Свинги мельче, объёмные зоны держат сильнее.")
     if not lines:
         lines = ["Уровней по этому активу нет — расстояния посчитать не из чего."]
     else:
@@ -347,10 +371,36 @@ def advise(pos, sig):
     pa = (sig["phase"].get("tokens") or {}).get(token) or {}
     hl = (sig["hl"].get("tokens") or {}).get(token) or {}
 
-    price = vp.get("current_price")
-    if not price:
-        pref = (sig["prices"].get("tokens") or {}).get(token) or {}
-        price = pref.get("price_now")
+    # ФИКС 22.08.2026 · цена бралась из volume_profile, который считается
+    # раз в 6 часов, и только при её отсутствии — из price_reference,
+    # который обновляется каждые 30 минут.
+    #
+    # Цена этого выбора видна на живом примере: шорт LINK от $12.11,
+    # реальная цена $11.87 (плюс 2%), а карточка показывала $12.21 из
+    # шестичасового кэша — то есть минус 0.8%. Человек принимает решение
+    # по позиции, глядя на знак прибыли, и знак был неверный.
+    #
+    # Теперь берём самую свежую из доступных.
+    def _fresh(source_dict, key, ts_key="computed_at"):
+        row = (source_dict.get("tokens") or {}).get(token) or {}
+        val = row.get(key)
+        if val is None:
+            return None, None
+        return val, source_dict.get(ts_key) or source_dict.get("collected_at")
+
+    cands = []
+    p_vp, t_vp = _fresh(sig["vp"], "current_price")
+    if p_vp:
+        cands.append((t_vp or "", p_vp, "volume_profile"))
+    p_pr, t_pr = _fresh(sig["prices"], "price_now")
+    if p_pr:
+        cands.append((t_pr or "", p_pr, "price_reference"))
+
+    price, price_source = None, None
+    if cands:
+        cands.sort(key=lambda x: x[0], reverse=True)
+        _, price, price_source = cands[0]
+    out_price_source = price_source
 
     out = {
         "token": token,
@@ -359,6 +409,7 @@ def advise(pos, sig):
         "current_price": price,
         "size_usd": pos.get("size_usd"),
         "note": pos.get("note"),
+        "price_source": out_price_source,
     }
 
     # Сколько держим
@@ -537,7 +588,7 @@ def advise(pos, sig):
 
 
 def main():
-    print("=== Position Advisor v1.1 ===\n")
+    print("=== Position Advisor v1.2 ===\n")
 
     trades = read_trades()
     positions = build_open_positions(trades)
