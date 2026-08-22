@@ -1459,7 +1459,32 @@ async function renderMarketContext() {
     _loadCache('market_context.json'),
     _loadCache('position_advice.json'),
   ]);
-  if (!mc) { el.innerHTML = ''; return; }
+  // Пустой блок неотличим от «всё спокойно». Если данных нет или
+  // расчёт упал — говорим это прямо, а не показываем ничего.
+  if (!mc || mc.status === 'ERROR') {
+    el.innerHTML = `<div style="padding:14px 18px;background:var(--bg-subtle);
+      border:1px solid var(--border);border-left:5px solid var(--yellow);
+      border-radius:12px;font-size:13.5px;color:var(--text-secondary);">
+      <b style="color:var(--text-bright);">Контекст рынка не посчитан.</b>
+      ${mc && mc.error_ru ? ' ' + mc.error_ru + '.' : ''}
+      Запусти <code>scripts/market_context.py</code> или прогон
+      <b>STRK Feature Snapshot</b> в Actions.</div>`;
+    return;
+  }
+
+  // Возраст данных. Перпы освежаются каждые 30 минут отдельным быстрым
+  // прогоном, остальное — раз в 8 часов по дневным свечам, поэтому у
+  // них разные отметки времени и разный смысл «свежести».
+  const ago = (iso) => {
+    if (!iso) return null;
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (!isFinite(m) || m < 0) return null;
+    return m < 60 ? m + ' мин назад'
+         : m < 1440 ? Math.round(m / 60) + ' ч назад'
+         : Math.round(m / 1440) + ' дн назад';
+  };
+  const fundAge = ago(mc.funding_updated_at || mc.computed_at);
+  const fullAge = ago(mc.computed_at);
 
   const s = mc.synchrony, b = mc.breadth, f = mc.funding;
   const unl = mc.unloved && mc.unloved.ranked || [];
@@ -1498,8 +1523,33 @@ async function renderMarketContext() {
       ${s ? chip('синхронность', s.pct_with_market.toFixed(0) + '%') : ''}
       ${s ? chip('рынок за день', (s.market_move_pct >= 0 ? '+' : '') + s.market_move_pct + '%') : ''}
       ${b ? chip('выше месячной середины', b.above_30d_median + '/' + b.tokens) : ''}
-      ${f ? chip('плечо в перпах', (f.median_annual_pct >= 0 ? '+' : '') + f.median_annual_pct.toFixed(0) + '% годовых') : ''}
     </div>`;
+
+  // ── перпы отдельной строкой: они живут минутами, остальное — сутками
+  if (f) {
+    const oiCh = f.oi_change_pct;
+    const oiCol = oiCh == null ? 'var(--text-muted)'
+                : oiCh > 0 ? '#EA580C' : 'var(--green)';
+    html += `<div style="margin-top:14px;padding:11px 14px;background:var(--bg-subtle);
+      border-radius:9px;display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;">
+      <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;
+        letter-spacing:.09em;font-weight:700;">Перпы</span>
+      <span style="font-size:13.5px;">фандинг
+        <b style="font-family:var(--font-data);">${f.median_annual_pct >= 0 ? '+' : ''}${f.median_annual_pct.toFixed(1)}%</b>
+        годовых · ${f.skew_ru}</span>
+      <span style="font-size:13.5px;">открытый интерес
+        <b style="font-family:var(--font-data);">$${(f.oi_total_usd / 1e9).toFixed(2)} млрд</b>
+        ${oiCh == null ? '' : `<b style="font-family:var(--font-data);color:${oiCol};">${oiCh >= 0 ? '+' : ''}${oiCh.toFixed(2)}%</b>`}</span>
+      ${fundAge ? `<span style="font-size:12px;color:var(--text-muted);
+        margin-left:auto;">обновлено ${fundAge}</span>` : ''}
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:6px;max-width:76ch;">
+      Фандинг и открытый интерес освежаются каждые 30 минут. Куда пойдёт цена,
+      они не говорят — связь измерена и равна нулю. Что они показывают: набивается
+      плечо или разгружается. Растущий открытый интерес при перекошенном фандинге —
+      это про риск резкого движения, а не про его направление.
+    </div>`;
+  }
 
   // ── позиции
   const open = pos && pos.by_token ? Object.entries(pos.by_token) : [];
@@ -1564,7 +1614,8 @@ async function renderMarketContext() {
     font-size:12px;color:var(--text-muted);max-width:78ch;">
     Движок сейчас не выбирает вход: право голоса имеют 0 правил из 12, остальные ещё не проверены.
     Что он делает — показывает состояние рынка, структуру уровней и следит за открытыми позициями.
-    Всё ниже на странице — справка к этому, а не команда.</div>`;
+    Всё ниже на странице — справка к этому, а не команда.
+    ${fullAge ? `<br>Синхронность, ширина и список — посчитаны ${fullAge} по дневным свечам.` : ''}</div>`;
 
   html += '</div>';
   el.innerHTML = html;
@@ -1648,7 +1699,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-22-05';
+const BUILD_STAMP = 'BUILD-2026-08-22-06';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
