@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-22T01:00:04.312891+00:00",
+  "computed_at": "2026-08-22T05:40:11.353103+00:00",
   "horizon_days": 28,
   "assets": 11,
   "method": "перцентиль MVRV считается только по прошлому; наблюдения не пересекаются (шаг = горизонт)",
@@ -71,7 +71,7 @@
   "overlapping_for_comparison": [
     {
       "rule": "mvrv_p10 · исторически дёшево",
-      "n": 4787,
+      "n": 4789,
       "median_pct": 1.12,
       "edge_vs_baseline_pts": 2.86,
       "sharpe": 0.167,
@@ -83,7 +83,7 @@
       "rule": "mvrv_p75 · выше своей нормы",
       "n": 2464,
       "median_pct": -0.86,
-      "edge_vs_baseline_pts": 0.89,
+      "edge_vs_baseline_pts": 0.88,
       "sharpe": 0.193,
       "psr": 1.0,
       "dsr": 1.0,
@@ -93,7 +93,7 @@
       "rule": "mvrv_p90 · исторически дорого",
       "n": 511,
       "median_pct": 4.69,
-      "edge_vs_baseline_pts": 6.44,
+      "edge_vs_baseline_pts": 6.43,
       "sharpe": 0.309,
       "psr": 1.0,
       "dsr": 1.0,
@@ -111,9 +111,9 @@
     },
     {
       "rule": "mvrv_p25 · ниже своей нормы",
-      "n": 9991,
+      "n": 9995,
       "median_pct": -0.3,
-      "edge_vs_baseline_pts": 1.45,
+      "edge_vs_baseline_pts": 1.44,
       "sharpe": 0.122,
       "psr": 1.0,
       "dsr": 0.998,
@@ -121,12 +121,12 @@
     },
     {
       "rule": "mvrv < 1 · держатели в убытке",
-      "n": 13560,
-      "median_pct": -1.11,
+      "n": 13563,
+      "median_pct": -1.1,
       "edge_vs_baseline_pts": 0.64,
       "sharpe": 0.105,
       "psr": 1.0,
-      "dsr": 0.889,
+      "dsr": 0.895,
       "verdict": "возможно, нужно больше"
     }
   ]

@@ -1,7 +1,61 @@
 {
-  "computed_at": "2026-08-21T23:59:21.484512+00:00",
-  "trades_recorded": 2,
-  "open_positions": [],
+  "computed_at": "2026-08-22T09:04:45.267171+00:00",
+  "trades_recorded": 3,
+  "open_positions": [
+    {
+      "token": "STRK",
+      "side": "SHORT",
+      "entry_price": 0.028,
+      "entry_ts": "2026-08-22T09:04:35.245Z",
+      "size_usd": 15000,
+      "note": "",
+      "events": [
+        {
+          "id": "STRK-2026-08-22T090435245Z",
+          "ts": "2026-08-22T09:04:35.245Z",
+          "token": "STRK",
+          "action": "SHORT",
+          "price": 0.028,
+          "note": "",
+          "size_usd": 15000
+        }
+      ],
+      "current_price": 0.02878564,
+      "unrealized_pnl_pct": -2.73,
+      "unrealized_pnl_usd": -409.39,
+      "days_open": 0.0,
+      "match": {
+        "category": "OWN_CALL",
+        "text_ru": "шорт при сигнале НЕ ВХОДИТЬ — движок коротких сигналов не даёт, это твоё решение",
+        "decision": {
+          "id": "STRK-20260822T070603Z",
+          "token": "STRK",
+          "issued_at": "2026-08-22T07:06:03.017490+00:00",
+          "verify_after": "2026-08-29T07:06:03.017490+00:00",
+          "engine_version": "1.6",
+          "action": "НЕ ВХОДИТЬ",
+          "size_pct": 0,
+          "stage_code": "MARKDOWN",
+          "flow_regime": "STABLE_ZERO",
+          "rules_fired": [
+            "phase:MARKDOWN",
+            "shape_distribution_fading",
+            "unified_veto"
+          ],
+          "conflicts_warn": 0,
+          "regime": "NEUTRAL_MIXED",
+          "price_at_decision": 0.02932265,
+          "expectation": "DOWN_OR_FLAT",
+          "threshold_pct": 3.0,
+          "status": "PENDING",
+          "outcome": null,
+          "price_at_verify": null,
+          "evaluated_at": null,
+          "_gap_hours": 2.0
+        }
+      }
+    }
+  ],
   "closed_positions": [
     {
       "token": "AAVE",
@@ -76,7 +130,7 @@
   },
   "match_stats": {
     "OWN_CALL": {
-      "n": 1,
+      "n": 2,
       "n_closed": 1,
       "avg_pnl_pct": -5.74,
       "win_rate_pct": 0.0
@@ -88,64 +142,56 @@
       "issued_at": "2026-08-21T02:01:58.980073+00:00",
       "size_pct": 18,
       "price_at_signal": 0.07033571,
-      "current_price": 0.094408,
-      "would_be_pnl_pct": 34.22
+      "current_price": 0.093117,
+      "would_be_pnl_pct": 32.39
     },
     {
       "token": "CRV",
       "issued_at": "2026-08-21T09:48:57.571493+00:00",
       "size_pct": 17,
       "price_at_signal": 0.25803166,
-      "current_price": 0.33933,
-      "would_be_pnl_pct": 31.51
+      "current_price": 0.3233,
+      "would_be_pnl_pct": 25.29
     },
     {
       "token": "FIL",
       "issued_at": "2026-08-21T09:48:57.571493+00:00",
       "size_pct": 14,
       "price_at_signal": 0.67056584,
-      "current_price": 0.81629,
-      "would_be_pnl_pct": 21.73
+      "current_price": 0.78791,
+      "would_be_pnl_pct": 17.5
     },
     {
       "token": "TAO",
       "issued_at": "2026-08-21T22:39:08.000271+00:00",
       "size_pct": 17,
       "price_at_signal": 196.65178894,
-      "current_price": 233.9,
-      "would_be_pnl_pct": 18.94
+      "current_price": 229.2,
+      "would_be_pnl_pct": 16.55
     },
     {
       "token": "LINK",
       "issued_at": "2026-08-21T02:01:58.980073+00:00",
       "size_pct": 18,
       "price_at_signal": 10.63,
-      "current_price": 11.57,
-      "would_be_pnl_pct": 8.84
-    },
-    {
-      "token": "MORPHO",
-      "issued_at": "2026-08-21T09:48:57.571493+00:00",
-      "size_pct": 18,
-      "price_at_signal": 2.27,
-      "current_price": 2.36,
-      "would_be_pnl_pct": 3.96
+      "current_price": 11.89,
+      "would_be_pnl_pct": 11.85
     },
     {
       "token": "EIGEN",
       "issued_at": "2026-08-21T09:48:57.571493+00:00",
       "size_pct": 14,
       "price_at_signal": 0.209072,
-      "current_price": 0.212512,
-      "would_be_pnl_pct": 1.65
+      "current_price": 0.21959,
+      "would_be_pnl_pct": 5.03
     },
     {
       "token": "ETHFI",
       "issued_at": "2026-08-21T09:48:57.571493+00:00",
       "size_pct": 9,
       "price_at_signal": 0.556656,
-      "current_price": 0.564914,
-      "would_be_pnl_pct": 1.48
+      "current_price": 0.580585,
+      "would_be_pnl_pct": 4.3
     },
     {
       "token": "AKT",
@@ -156,12 +202,20 @@
       "would_be_pnl_pct": 0.0
     },
     {
+      "token": "MORPHO",
+      "issued_at": "2026-08-21T09:48:57.571493+00:00",
+      "size_pct": 18,
+      "price_at_signal": 2.27,
+      "current_price": 2.27,
+      "would_be_pnl_pct": 0.0
+    },
+    {
       "token": "MNT",
       "issued_at": "2026-08-21T09:48:57.571493+00:00",
       "size_pct": 17,
       "price_at_signal": 0.55421455,
-      "current_price": 0.51463,
-      "would_be_pnl_pct": -7.14
+      "current_price": 0.49764,
+      "would_be_pnl_pct": -10.21
     }
   ],
   "note": "Журнал заполняется вручную и ничего не исполняет. Сверка сопоставляет твои записи с решениями движка в окне 24 часа до сделки."

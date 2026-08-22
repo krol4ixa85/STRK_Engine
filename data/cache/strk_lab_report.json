@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-08-21T20:55:23.019737+00:00",
+  "generated_at": "2026-08-22T09:00:49.394249+00:00",
   "strk_status": {
-    "verdict": "EARLY_INFLECTION",
-    "triggers_hit": 1,
+    "verdict": "STILL_ACCUMULATION",
+    "triggers_hit": 0,
     "triggers_total": 4,
-    "recommendation": "Один сигнал шума. Продолжать rotation.",
-    "wyckoff_phase": "MARKUP",
+    "recommendation": "STRK в accumulation. Ротировать капитал в active sectors.",
+    "wyckoff_phase": "ACCUMULATION",
     "dune_monthly_signal": "BEARISH_BREAKDOWN",
-    "cex_signal": "STRONG_DISTRIBUTION",
+    "cex_signal": "MILD_DISTRIBUTION",
     "strk_price": null,
     "bearish_30d": 28
   },
   "re_entry_triggers": {
     "trigger_list": [
       [
-        "✓",
+        "✗",
         "Wyckoff",
-        "MARKUP"
+        "ACCUMULATION (need MARKUP/ACC)"
       ],
       [
         "✗",
@@ -26,7 +26,7 @@
       [
         "✗",
         "CEX flow",
-        "STRONG_DISTRIBUTION (need ACCUMULATION)"
+        "MILD_DISTRIBUTION (need ACCUMULATION)"
       ],
       [
         "✗",
@@ -37,176 +37,185 @@
   },
   "strong_buy": [
     {
-      "sector": "L2",
-      "token": "ARB",
-      "net_flow_m_usd": 0.45,
-      "price_change_7d_pct": 1717040.1,
-      "tx_count": 110585,
+      "sector": "DeFi",
+      "token": "AAVE",
+      "net_flow_m_usd": 4.59,
+      "price_change_7d_pct": 41.6,
+      "tx_count": 179375,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "RWA",
+      "token": "LINK",
+      "net_flow_m_usd": 2.07,
+      "price_change_7d_pct": 23.1,
+      "tx_count": 299045,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "DeFi",
+      "token": "UNI",
+      "net_flow_m_usd": 1.75,
+      "price_change_7d_pct": 73392.7,
+      "tx_count": 175694,
       "signal": "STRONG_BUY"
     },
     {
       "sector": "L2",
-      "token": "MNT",
-      "net_flow_m_usd": 0.33,
-      "price_change_7d_pct": 16.6,
-      "tx_count": 8448,
+      "token": "ARB",
+      "net_flow_m_usd": 0.96,
+      "price_change_7d_pct": 26.1,
+      "tx_count": 169228,
       "signal": "STRONG_BUY"
     },
     {
       "sector": "MEME",
       "token": "DOGE",
-      "net_flow_m_usd": 0.31,
-      "price_change_7d_pct": 10423.1,
-      "tx_count": 53266,
+      "net_flow_m_usd": 0.82,
+      "price_change_7d_pct": 11887.6,
+      "tx_count": 104615,
       "signal": "STRONG_BUY"
     },
     {
-      "sector": "LST",
-      "token": "ETHFI",
-      "net_flow_m_usd": 0.3,
-      "price_change_7d_pct": 20.9,
-      "tx_count": 29639,
-      "signal": "STRONG_BUY"
-    },
-    {
-      "sector": "L2",
-      "token": "OP",
-      "net_flow_m_usd": 0.01,
-      "price_change_7d_pct": 10,
-      "tx_count": 195202,
-      "signal": "STRONG_BUY"
-    },
-    {
-      "sector": "DEPIN",
-      "token": "FIL",
-      "net_flow_m_usd": 0.01,
-      "price_change_7d_pct": 9.2,
-      "tx_count": 29818,
+      "sector": "DeFi",
+      "token": "CRV",
+      "net_flow_m_usd": 0.64,
+      "price_change_7d_pct": 29.3,
+      "tx_count": 86326,
       "signal": "STRONG_BUY"
     },
     {
       "sector": "DeFi",
       "token": "PENDLE",
+      "net_flow_m_usd": 0.54,
+      "price_change_7d_pct": 27.1,
+      "tx_count": 79828,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "L2",
+      "token": "OP",
+      "net_flow_m_usd": 0.32,
+      "price_change_7d_pct": 28.7,
+      "tx_count": 265096,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "L2",
+      "token": "MNT",
+      "net_flow_m_usd": 0.3,
+      "price_change_7d_pct": 13.4,
+      "tx_count": 8219,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "AI_AGENTS",
+      "token": "VIRTUAL",
+      "net_flow_m_usd": 0.14,
+      "price_change_7d_pct": 22.9,
+      "tx_count": 811764,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "LST",
+      "token": "ETHFI",
+      "net_flow_m_usd": 0.07,
+      "price_change_7d_pct": 21,
+      "tx_count": 29662,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "AI_AGENTS",
+      "token": "FET",
+      "net_flow_m_usd": 0.04,
+      "price_change_7d_pct": 31.1,
+      "tx_count": 15131,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "INFRA",
+      "token": "GRT",
       "net_flow_m_usd": 0.01,
-      "price_change_7d_pct": 14,
-      "tx_count": 58294,
+      "price_change_7d_pct": 24.2,
+      "tx_count": 6248,
+      "signal": "STRONG_BUY"
+    },
+    {
+      "sector": "AI_AGENTS",
+      "token": "AIXBT",
+      "net_flow_m_usd": 0.01,
+      "price_change_7d_pct": 18.9,
+      "tx_count": 14411,
       "signal": "STRONG_BUY"
     }
   ],
   "divergence": [
     {
-      "sector": "INFRA",
-      "token": "GRT",
+      "sector": "DEPIN",
+      "token": "FIL",
       "net_flow_m_usd": 0,
-      "price_change_7d_pct": 9.5,
-      "tx_count": 5014,
+      "price_change_7d_pct": 13.8,
+      "tx_count": 36213,
       "signal": "DIVERGENCE"
     },
     {
       "sector": "MEME",
       "token": "WIF",
       "net_flow_m_usd": -0.01,
-      "price_change_7d_pct": 18.4,
-      "tx_count": 12930,
+      "price_change_7d_pct": 46.4,
+      "tx_count": 12338,
       "signal": "DIVERGENCE"
     },
     {
       "sector": "GAMING",
       "token": "AXS",
-      "net_flow_m_usd": -0.01,
-      "price_change_7d_pct": 7.4,
-      "tx_count": 29301,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "AI_AGENTS",
-      "token": "AIXBT",
-      "net_flow_m_usd": -0.02,
-      "price_change_7d_pct": 9.5,
-      "tx_count": 12089,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "GAMING",
-      "token": "SAND",
-      "net_flow_m_usd": -0.04,
-      "price_change_7d_pct": 9.3,
-      "tx_count": 14563,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "AI_AGENTS",
-      "token": "FET",
-      "net_flow_m_usd": -0.08,
-      "price_change_7d_pct": 6.3,
-      "tx_count": 10171,
+      "net_flow_m_usd": -0.05,
+      "price_change_7d_pct": 15.9,
+      "tx_count": 34403,
       "signal": "DIVERGENCE"
     },
     {
       "sector": "RWA",
       "token": "ONDO",
+      "net_flow_m_usd": -0.1,
+      "price_change_7d_pct": 14.9,
+      "tx_count": 7406,
+      "signal": "DIVERGENCE"
+    },
+    {
+      "sector": "GAMING",
+      "token": "SAND",
       "net_flow_m_usd": -0.11,
-      "price_change_7d_pct": 8.1,
-      "tx_count": 5636,
+      "price_change_7d_pct": 20.5,
+      "tx_count": 42703,
       "signal": "DIVERGENCE"
     },
     {
       "sector": "DeFi",
       "token": "MORPHO",
-      "net_flow_m_usd": -0.15,
-      "price_change_7d_pct": 21.2,
-      "tx_count": 57300,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "DeFi",
-      "token": "CRV",
-      "net_flow_m_usd": -0.17,
-      "price_change_7d_pct": 17,
-      "tx_count": 61269,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "DeFi",
-      "token": "AAVE",
-      "net_flow_m_usd": -0.57,
-      "price_change_7d_pct": 13.6,
-      "tx_count": 93610,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "RWA",
-      "token": "LINK",
-      "net_flow_m_usd": -0.82,
-      "price_change_7d_pct": 18.5,
-      "tx_count": 221984,
+      "net_flow_m_usd": -0.46,
+      "price_change_7d_pct": 14.7,
+      "tx_count": 75235,
       "signal": "DIVERGENCE"
     },
     {
       "sector": "LST",
       "token": "LDO",
-      "net_flow_m_usd": -1.61,
-      "price_change_7d_pct": 13.7,
-      "tx_count": 21167,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "AI_AGENTS",
-      "token": "VIRTUAL",
-      "net_flow_m_usd": -2.29,
-      "price_change_7d_pct": 12.6,
-      "tx_count": 623441,
-      "signal": "DIVERGENCE"
-    },
-    {
-      "sector": "DeFi",
-      "token": "UNI",
-      "net_flow_m_usd": -3.21,
-      "price_change_7d_pct": 72285,
-      "tx_count": 140696,
+      "net_flow_m_usd": -1.63,
+      "price_change_7d_pct": 22.1,
+      "tx_count": 27629,
       "signal": "DIVERGENCE"
     }
   ],
-  "buy_pressure": [],
+  "buy_pressure": [
+    {
+      "sector": "MEME",
+      "token": "PEPE",
+      "net_flow_m_usd": 1.86,
+      "net_flow_pct": 6.5,
+      "tx_count": 99688,
+      "signal": "BUY_PRESSURE"
+    }
+  ],
   "sell": []
 }
