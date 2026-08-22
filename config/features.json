@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "comment": "Контракт коллекторов. Каждая фича = одно число или строка из кэша, с адресом, сроком годности и единицей измерения. Правила ссылаются ТОЛЬКО на имена отсюда. Если фича протухла или её нет — правило, которому она нужна, не голосует. Не срабатывает 'нет' — именно НЕ ГОЛОСУЕТ.",
+  "features": {
+    "price": {
+      "file": "price_reference.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.price_usd",
+      "fallback_path": "tokens.{T}.hive_price_usd",
+      "max_age_h": 2,
+      "unit": "USD",
+      "collector": "scripts/collectors/price_reference.py"
+    },
+    "price_status": {
+      "file": "price_reference.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.status",
+      "max_age_h": 2,
+      "unit": "OK|SUSPICIOUS|FAILED",
+      "collector": "scripts/collectors/price_reference.py"
+    },
+
+    "flow_1w_usd": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.1w.last_usd",
+      "max_age_h": 30,
+      "unit": "USD за неделю",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_accel_1w_usd": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.1w.accel_usd",
+      "max_age_h": 30,
+      "unit": "USD, изменение скорости",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_1w_significant": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.1w.significant",
+      "max_age_h": 30,
+      "unit": "bool",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_4w_usd": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.4w.last_usd",
+      "max_age_h": 30,
+      "unit": "USD за 4 недели",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_weeks_available": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.weeks_available",
+      "max_age_h": 30,
+      "unit": "недель истории",
+      "collector": "scripts/phase_analyzer.py"
+    },
+
+    "vp_position": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.code",
+      "max_age_h": 8,
+      "unit": "ABOVE_VALUE|IN_VALUE|BELOW_VALUE",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_above_kind": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.above_kind",
+      "max_age_h": 8,
+      "unit": "MARKUP|EXTENDED",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_vol_ratio": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.vol_ratio_recent",
+      "max_age_h": 8,
+      "unit": "× к своему среднему",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_market_median_vol_ratio": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "market_volume_context.median_vol_ratio",
+      "max_age_h": 8,
+      "unit": "× медиана по рынку",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_dist_to_poc_pct": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.distance_to_poc_pct",
+      "max_age_h": 8,
+      "unit": "% до самого торгуемого уровня",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+
+    "funding_annual_pct": {
+      "file": "funding_per_token.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.funding_annualised_pct",
+      "max_age_h": 10,
+      "unit": "% годовых",
+      "collector": "scripts/collectors/funding_collector.py"
+    },
+    "oi_change_pct": {
+      "file": "funding_per_token.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.oi_change_pct",
+      "max_age_h": 10,
+      "unit": "% изменения открытого интереса",
+      "collector": "scripts/collectors/funding_collector.py"
+    },
+
+    "mvrv": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.current.mvrv",
+      "max_age_h": 48,
+      "unit": "отношение",
+      "collector": "scripts/onchain_indicators.py"
+    },
+    "mvrv_pct": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.current.mvrv_percentile",
+      "max_age_h": 48,
+      "unit": "перцентиль собственной истории",
+      "collector": "scripts/onchain_indicators.py"
+    },
+    "nupl": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.current.nupl",
+      "max_age_h": 48,
+      "unit": "доля бумажной прибыли",
+      "collector": "scripts/onchain_indicators.py"
+    },
+    "onchain_days": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.days",
+      "max_age_h": 48,
+      "unit": "дней истории",
+      "collector": "scripts/onchain_indicators.py"
+    }
+  }
+}
