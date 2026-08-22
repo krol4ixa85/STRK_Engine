@@ -236,7 +236,7 @@ def funding_now():
     try:
         meta, ctxs = post({"type": "metaAndAssetCtxs"})
     except Exception as e:
-        return None, str(e)[:100]
+        return None, str(e)[:100], []
     rows = []
     for u, c in zip(meta.get("universe", []), ctxs):
         try:
@@ -247,7 +247,7 @@ def funding_now():
         except (KeyError, TypeError, ValueError):
             continue
     if not rows:
-        return None, "пустой ответ"
+        return None, "пустой ответ", []
     med = statistics.median([r["annual_pct"] for r in rows])
     longs = sum(1 for r in rows if r["annual_pct"] > 0)
     if med >= 20:
@@ -269,7 +269,111 @@ def funding_now():
         "not_a_forecast": "связь с будущей доходностью измерена: "
                           "корреляция +0.03 / +0.09 / -0.05 на 7/14/28 днях. "
                           "Это контекст, а не прогноз",
-    }, None
+    }, None, rows
+
+
+def unloved(prices, dates, fund_rows):
+    """
+    ЕДИНСТВЕННАЯ ЗАКОНОМЕРНОСТЬ, КОТОРАЯ ПОВТОРИЛАСЬ ЧЕТЫРЕ РАЗА
+
+    За неделю платформу проверили четырьмя независимыми способами на
+    четырёх разных наборах данных:
+
+      strategy_search   126 кандидатов, 9 лет   выиграл MVRV в нижних 20%
+      ic_analysis       11 активов, 9 лет       выиграла низкая волатильность
+      detector_backtest 41 токен, 198 тыс. баров выиграл RSI < 30
+      perp_pressure     42 токена, 2 года       выиграл низкий фандинг
+
+    Разные данные, разные методы, один ответ: лучше идёт то, что толпе
+    сейчас не нравится. Ни одна проверка НЕ прошла порог DSR 0.95 —
+    лучшая 0.62. Но повторяемость на четырёх источниках — это больше,
+    чем есть у любого другого правила в движке.
+
+    Здесь три доступных признака «нелюбимости» складываются в один
+    порядок. Это НЕ сигнал на покупку. Это ответ на вопрос «если уж
+    смотреть, то куда смотреть в первую очередь».
+    """
+    fmap = {r["coin"]: r["annual_pct"] for r in (fund_rows or [])}
+
+    # Токены с протухшей ценой отсекаются ДО ранжирования. Иначе
+    # делистнутый токен с замороженной ценой выглядит идеально:
+    # волатильность нулевая, RSI ровно 50, фандинг нулевой — то есть
+    # по всем трём признакам «максимально нелюбимый». Первый прогон
+    # поставил на первое место FXS с последней свечой за 6 января.
+    last_day = dates[-1]
+    fresh_cut = sorted(dates)[-4] if len(dates) > 4 else dates[0]
+
+    raw = {}
+    for t, m in prices.items():
+        token_last = max(m) if m else None
+        if not token_last or token_last < fresh_cut:
+            continue
+        series = [m[d] for d in dates if d in m]
+        if len(series) < 40:
+            continue
+        rets = [series[i] / series[i - 1] - 1 for i in range(1, len(series))
+                if series[i - 1]]
+        if len(rets) < 35:
+            continue
+        vol30 = statistics.pstdev(rets[-30:])
+
+        gains = [max(series[i] - series[i - 1], 0) for i in range(-14, 0)]
+        losses = [max(series[i - 1] - series[i], 0) for i in range(-14, 0)]
+        ag, al = sum(gains) / 14, sum(losses) / 14
+        rsi = 100 - 100 / (1 + ag / max(al, 1e-9))
+
+        raw[t] = {"vol_30": vol30, "rsi": rsi, "funding": fmap.get(t)}
+
+    _ = last_day
+    if len(raw) < 8:
+        return []
+
+    def ranks(key):
+        """
+        Перцентиль со СРЕДНИМИ рангами для одинаковых значений.
+
+        Без этого связки ранжируются по случайному порядку словаря.
+        Сегодня это видно прямо: у большинства монет фандинг стоит на
+        базовой ставке Hyperliquid, +10.95% годовых, то есть значения
+        одинаковые. При наивном ранжировании один из них получил бы
+        ранг 5, другой 60 — из ничего.
+        """
+        vals = [(t, d[key]) for t, d in raw.items() if d.get(key) is not None]
+        if not vals:
+            return {}
+        vals.sort(key=lambda z: z[1])
+        n = len(vals)
+        out, i = {}, 0
+        while i < n:
+            j = i
+            while j + 1 < n and vals[j + 1][1] == vals[i][1]:
+                j += 1
+            avg = (i + j) / 2.0 / max(n - 1, 1) * 100
+            for k in range(i, j + 1):
+                out[vals[k][0]] = avg
+            i = j + 1
+        return out
+
+    r_vol, r_rsi, r_fund = ranks("vol_30"), ranks("rsi"), ranks("funding")
+
+    out = []
+    for t, d in raw.items():
+        parts = [r for r in (r_vol.get(t), r_rsi.get(t), r_fund.get(t))
+                 if r is not None]
+        if len(parts) < 2:
+            continue
+        out.append({
+            "token": t,
+            "score": round(100 - statistics.mean(parts), 1),
+            "vol_pct": round(r_vol.get(t), 0) if t in r_vol else None,
+            "rsi": round(d["rsi"], 1),
+            "rsi_pct": round(r_rsi.get(t), 0) if t in r_rsi else None,
+            "funding_annual_pct": (round(d["funding"], 1)
+                                   if d["funding"] is not None else None),
+            "funding_pct": round(r_fund.get(t), 0) if t in r_fund else None,
+        })
+    out.sort(key=lambda z: -z["score"])
+    return out
 
 
 def main(days):
@@ -287,7 +391,7 @@ def main(days):
     shares = r2_share(rets, mkt)
     sync = synchrony(rets, mkt, sorted(mkt))
     brd = breadth(prices, dates)
-    fund, ferr = funding_now()
+    fund, ferr, fund_rows = funding_now()
 
     print("=== Контекст рынка ===\n")
     print(f"  Источник цен: {src} · токенов {len(prices)}\n")
@@ -339,6 +443,20 @@ def main(days):
         }
         _ = share
 
+    unl = unloved(prices, dates, fund_rows)
+    if unl:
+        print(f"\n  Куда смотреть в первую очередь · "
+              f"единственная закономерность, повторившаяся 4 раза")
+        print(f"    {'ТОКЕН':9}{'балл':>6}{'RSI':>7}{'фандинг':>10}  волатильность")
+        print("    " + "─" * 50)
+        for r in unl[:8]:
+            fn = (f"{r['funding_annual_pct']:+.0f}%"
+                  if r['funding_annual_pct'] is not None else "—")
+            vp = (f"тише {100 - r['vol_pct']:.0f}% рынка"
+                  if r['vol_pct'] is not None else "—")
+            print(f"    {r['token']:9}{r['score']:>6.0f}{r['rsi']:>7.0f}{fn:>10}  {vp}")
+        print("    Это НЕ сигнал на покупку: лучший DSR среди четырёх проверок 0.62")
+
     os.makedirs("data/cache", exist_ok=True)
     with open(OUT_FILE, "w", encoding="utf-8") as f:
         json.dump({
@@ -351,6 +469,19 @@ def main(days):
             "breadth": brd,
             "funding": fund,
             "market_share_of_movement": shares,
+            "unloved": {
+                "method": "три признака нелюбимости толпой — низкая "
+                          "волатильность, низкий RSI, низкий фандинг — "
+                          "сведены в один порядок по перцентилям внутри "
+                          "сегодняшней вселенной токенов",
+                "evidence": "закономерность повторилась в четырёх "
+                            "независимых проверках (strategy_search, "
+                            "ic_analysis, detector_backtest, perp_pressure)",
+                "honest_caveat": "ни одна из четырёх не прошла порог "
+                                 "DSR 0.95; лучшая 0.62. Это порядок "
+                                 "просмотра, а не сигнал на покупку",
+                "ranked": unl,
+            },
             "tokens": per_token,
         }, f, indent=2, ensure_ascii=False)
     print(f"\n✓ {OUT_FILE}")
