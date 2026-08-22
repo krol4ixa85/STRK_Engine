@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-22T03:05:15.458229+00:00",
+  "computed_at": "2026-08-22T03:54:01.006367+00:00",
   "engine_version": "phase_analyzer/1.2",
   "cost": "0 credits · locally-computed",
   "tokens_analyzed": 31,
@@ -13,7 +13,7 @@
   "tokens": {
     "AAVE": {
       "phase_verdict_dune": "WEAKENING",
-      "phase_verdict_age_min": 1349,
+      "phase_verdict_age_min": 1398,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -93,21 +93,22 @@
         "text_ru": "приток закончился, пошёл отток — сигнал выхода"
       },
       "divergence": {
-        "code": "ALIGNED",
-        "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -3.0,
+        "code": "BEARISH_DIV",
+        "text_ru": "цена +34% за 30д, но приток $-2.3M — рост без капитала",
+        "price_change_30d_pct": 34.3,
         "flow_last_4w_usd": -2320003
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.01
     },
     "AIXBT": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1340,
+      "phase_verdict_age_min": 1389,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -189,7 +190,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 21.3,
+        "price_change_30d_pct": 26.3,
         "flow_last_4w_usd": -7640
       },
       "data_quality": {
@@ -202,7 +203,7 @@
     },
     "AKT": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 3275,
+      "phase_verdict_age_min": 3324,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -296,7 +297,7 @@
     },
     "ARB": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1343,
+      "phase_verdict_age_min": 1392,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -378,7 +379,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 16.2,
+        "price_change_30d_pct": 19.1,
         "flow_last_4w_usd": 534084
       },
       "data_quality": {
@@ -391,7 +392,7 @@
     },
     "AXS": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1348,
+      "phase_verdict_age_min": 1396,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -473,7 +474,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 18.0,
+        "price_change_30d_pct": 21.1,
         "flow_last_4w_usd": 3024
       },
       "data_quality": {
@@ -486,7 +487,7 @@
     },
     "BONK": {
       "phase_verdict_dune": "MID_ACCUMULATION",
-      "phase_verdict_age_min": 3271,
+      "phase_verdict_age_min": 3319,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -568,7 +569,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 12.3,
+        "price_change_30d_pct": 13.6,
         "flow_last_4w_usd": 377770
       },
       "data_quality": {
@@ -581,7 +582,7 @@
     },
     "CFG": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 3291,
+      "phase_verdict_age_min": 3340,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -676,7 +677,7 @@
     },
     "CRV": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1347,
+      "phase_verdict_age_min": 1396,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -758,7 +759,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 63.2,
+        "price_change_30d_pct": 65.9,
         "flow_last_4w_usd": 1433949
       },
       "data_quality": {
@@ -771,7 +772,7 @@
     },
     "DOGE": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1340,
+      "phase_verdict_age_min": 1389,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -853,7 +854,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 32.6,
+        "price_change_30d_pct": 35.6,
         "flow_last_4w_usd": 744752
       },
       "data_quality": {
@@ -866,7 +867,7 @@
     },
     "EIGEN": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 3290,
+      "phase_verdict_age_min": 3338,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -948,19 +949,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -26.5,
+        "price_change_30d_pct": 6.7,
         "flow_last_4w_usd": -95101
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.005
     },
     "ETHFI": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 1344,
+      "phase_verdict_age_min": 1393,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1042,19 +1044,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 13.6,
+        "price_change_30d_pct": 39.0,
         "flow_last_4w_usd": 146747
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.005
     },
     "FET": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1351,
+      "phase_verdict_age_min": 1400,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1136,7 +1139,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 14.3,
+        "price_change_30d_pct": 15.5,
         "flow_last_4w_usd": -178992
       },
       "data_quality": {
@@ -1149,7 +1152,7 @@
     },
     "FIL": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1353,
+      "phase_verdict_age_min": 1402,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1231,7 +1234,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 13.2,
+        "price_change_30d_pct": 15.5,
         "flow_last_4w_usd": 7447
       },
       "data_quality": {
@@ -1244,7 +1247,7 @@
     },
     "GRT": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1349,
+      "phase_verdict_age_min": 1398,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1338,7 +1341,7 @@
     },
     "LDO": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1351,
+      "phase_verdict_age_min": 1399,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1420,19 +1423,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -21.1,
+        "price_change_30d_pct": 0.6,
         "flow_last_4w_usd": -3239605
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.01
     },
     "LINK": {
       "phase_verdict_dune": "MID_ACCUMULATION_STRONG",
-      "phase_verdict_age_min": 948,
+      "phase_verdict_age_min": 997,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1514,7 +1518,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 42.4,
+        "price_change_30d_pct": 44.8,
         "flow_last_4w_usd": 13013817
       },
       "data_quality": {
@@ -1527,7 +1531,7 @@
     },
     "MNT": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1342,
+      "phase_verdict_age_min": 1391,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1609,7 +1613,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 25.9,
+        "price_change_30d_pct": 30.0,
         "flow_last_4w_usd": 780438
       },
       "data_quality": {
@@ -1622,7 +1626,7 @@
     },
     "MORPHO": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 1341,
+      "phase_verdict_age_min": 1390,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1704,7 +1708,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 23.2,
+        "price_change_30d_pct": 24.5,
         "flow_last_4w_usd": 284399
       },
       "data_quality": {
@@ -1717,7 +1721,7 @@
     },
     "ONDO": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1344,
+      "phase_verdict_age_min": 1393,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1799,19 +1803,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -14.5,
+        "price_change_30d_pct": 3.6,
         "flow_last_4w_usd": -169355
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.005
     },
     "OP": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1345,
+      "phase_verdict_age_min": 1394,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1893,19 +1898,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -4.4,
+        "price_change_30d_pct": 22.2,
         "flow_last_4w_usd": -17038
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.01
     },
     "PENDLE": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 1340,
+      "phase_verdict_age_min": 1388,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -1987,19 +1993,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -10.7,
+        "price_change_30d_pct": 10.1,
         "flow_last_4w_usd": 64888
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.005
     },
     "PEPE": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 2461,
+      "phase_verdict_age_min": 2510,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2081,7 +2088,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 49.4,
+        "price_change_30d_pct": 50.8,
         "flow_last_4w_usd": -360372
       },
       "data_quality": {
@@ -2094,7 +2101,7 @@
     },
     "RNDR": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 2468,
+      "phase_verdict_age_min": 2516,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2188,7 +2195,7 @@
     },
     "RPL": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 2471,
+      "phase_verdict_age_min": 2520,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2282,7 +2289,7 @@
     },
     "SAND": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1342,
+      "phase_verdict_age_min": 1391,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2364,7 +2371,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -0.4,
+        "price_change_30d_pct": 7.4,
         "flow_last_4w_usd": -94989
       },
       "data_quality": {
@@ -2377,7 +2384,7 @@
     },
     "STRK": {
       "phase_verdict_dune": "MARKDOWN",
-      "phase_verdict_age_min": 1346,
+      "phase_verdict_age_min": 1394,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2459,19 +2466,20 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": -20.9,
+        "price_change_30d_pct": 5.7,
         "flow_last_4w_usd": -33416
       },
       "data_quality": {
         "ok": true,
-        "flags": []
+        "flags": [],
+        "note": "цены взяты из price_reference (биржа), Dune-цены игнорируются"
       },
       "funding_bias": "NEUTRAL",
       "funding_rate_pct": 0.005
     },
     "TAO": {
       "phase_verdict_dune": "EARLY_ACCUMULATION",
-      "phase_verdict_age_min": 2465,
+      "phase_verdict_age_min": 2514,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2553,7 +2561,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 19.1,
+        "price_change_30d_pct": 27.0,
         "flow_last_4w_usd": 5139
       },
       "data_quality": {
@@ -2566,7 +2574,7 @@
     },
     "UNI": {
       "phase_verdict_dune": "ACCUMULATION_PHASE_B",
-      "phase_verdict_age_min": 1351,
+      "phase_verdict_age_min": 1400,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2647,8 +2655,8 @@
       },
       "divergence": {
         "code": "BEARISH_DIV",
-        "text_ru": "цена +13% за 30д, но приток $-1.0M — рост без капитала",
-        "price_change_30d_pct": 12.6,
+        "text_ru": "цена +17% за 30д, но приток $-1.0M — рост без капитала",
+        "price_change_30d_pct": 17.1,
         "flow_last_4w_usd": -986154
       },
       "data_quality": {
@@ -2661,7 +2669,7 @@
     },
     "VIRTUAL": {
       "phase_verdict_dune": "MIXED_OR_NEUTRAL",
-      "phase_verdict_age_min": 1345,
+      "phase_verdict_age_min": 1394,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2742,8 +2750,8 @@
       },
       "divergence": {
         "code": "BEARISH_DIV",
-        "text_ru": "цена +20% за 30д, но приток $-3.6M — рост без капитала",
-        "price_change_30d_pct": 20.4,
+        "text_ru": "цена +22% за 30д, но приток $-3.6M — рост без капитала",
+        "price_change_30d_pct": 22.1,
         "flow_last_4w_usd": -3591584
       },
       "data_quality": {
@@ -2756,7 +2764,7 @@
     },
     "WIF": {
       "phase_verdict_dune": "MID_ACCUMULATION",
-      "phase_verdict_age_min": 1346,
+      "phase_verdict_age_min": 1395,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2838,7 +2846,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 46.3,
+        "price_change_30d_pct": 53.4,
         "flow_last_4w_usd": 202009
       },
       "data_quality": {
@@ -2851,7 +2859,7 @@
     },
     "ZK": {
       "phase_verdict_dune": "WEAKENING",
-      "phase_verdict_age_min": 2480,
+      "phase_verdict_age_min": 2529,
       "flow": {
         "status": "OK",
         "weeks_available": 26,
@@ -2933,7 +2941,7 @@
       "divergence": {
         "code": "ALIGNED",
         "text_ru": "цена и капитал движутся в одну сторону",
-        "price_change_30d_pct": 2.1,
+        "price_change_30d_pct": 5.7,
         "flow_last_4w_usd": -1434
       },
       "data_quality": {
