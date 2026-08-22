@@ -1,0 +1,724 @@
+{
+  "computed_at": "2026-08-22T11:46:38.410950+00:00",
+  "funding_updated_at": "2026-08-22T11:46:38.410962+00:00",
+  "status": "OK",
+  "mode_last": "full",
+  "source": "hyperliquid · hyperliquid (живой запрос)",
+  "cost": "free · 0 credits",
+  "measured": "медианно 57% дневного движения токена — это рынок (42 токена, 5.5 лет)",
+  "synchrony": {
+    "date": "2026-08-22",
+    "pct_with_market": 87.5,
+    "tokens": 40,
+    "up": 5,
+    "down": 35,
+    "market_move_pct": -2.69,
+    "state": "ОДНИМ КУСКОМ",
+    "text_ru": "рынок идёт одним куском — персональные сигналы по токенам сейчас почти ничего не значат"
+  },
+  "breadth": {
+    "above_30d_median": 39,
+    "tokens": 40,
+    "pct": 97.5,
+    "text_ru": "ВЕСЬ рынок выше своей месячной середины — так широко бывает редко, обычно ближе к концу движения, а не к началу"
+  },
+  "funding": {
+    "median_annual_pct": 10.95,
+    "coins": 232,
+    "positive_share_pct": 74.6,
+    "oi_total_usd": 9240239480,
+    "skew_ru": "толпа в лонге",
+    "not_a_forecast": "связь с будущей доходностью измерена: корреляция +0.03 / +0.09 / -0.05 на 7/14/28 днях. Это контекст, а не прогноз"
+  },
+  "market_share_of_movement": {
+    "AAVE": 52.7,
+    "AIXBT": 39.5,
+    "APT": 79.6,
+    "ARB": 58.0,
+    "AXS": 22.8,
+    "BONK": 58.7,
+    "BTC": 68.5,
+    "COMP": 31.1,
+    "CRV": 47.3,
+    "DOGE": 67.6,
+    "DYDX": 8.6,
+    "EIGEN": 41.2,
+    "ENA": 46.7,
+    "ETH": 68.7,
+    "ETHFI": 34.2,
+    "FET": 60.4,
+    "FIL": 66.8,
+    "GMX": 44.6,
+    "INJ": 35.9,
+    "JTO": 10.5,
+    "LDO": 35.1,
+    "LINK": 81.1,
+    "MNT": 46.1,
+    "MORPHO": 20.0,
+    "ONDO": 33.9,
+    "OP": 65.6,
+    "PENDLE": 40.7,
+    "PEPE": 73.2,
+    "SAND": 63.8,
+    "SEI": 58.0,
+    "SNX": 39.3,
+    "SOL": 74.3,
+    "STRK": 52.9,
+    "SUI": 64.4,
+    "TAO": 54.9,
+    "TIA": 64.4,
+    "UNI": 44.3,
+    "VIRTUAL": 57.7,
+    "WIF": 67.0,
+    "ZK": 66.4
+  },
+  "unloved": {
+    "method": "три признака нелюбимости толпой — низкая волатильность, низкий RSI, низкий фандинг — сведены в один порядок по перцентилям внутри сегодняшней вселенной токенов",
+    "evidence": "закономерность повторилась в четырёх независимых проверках (strategy_search, ic_analysis, detector_backtest, perp_pressure)",
+    "honest_caveat": "ни одна из четырёх не прошла порог DSR 0.95; лучшая 0.62. Это порядок просмотра, а не сигнал на покупку",
+    "ranked": [
+      {
+        "token": "APT",
+        "score": 79.4,
+        "vol_pct": 26.0,
+        "rsi": 57.7,
+        "rsi_pct": 5.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "SAND",
+        "score": 78.6,
+        "vol_pct": 46.0,
+        "rsi": 60.4,
+        "rsi_pct": 18.0,
+        "funding_annual_pct": 10.3,
+        "funding_pct": 0.0
+      },
+      {
+        "token": "DYDX",
+        "score": 75.1,
+        "vol_pct": 23.0,
+        "rsi": 61.1,
+        "rsi_pct": 21.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "ONDO",
+        "score": 75.1,
+        "vol_pct": 41.0,
+        "rsi": 56.0,
+        "rsi_pct": 3.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "SNX",
+        "score": 75.1,
+        "vol_pct": 13.0,
+        "rsi": 62.3,
+        "rsi_pct": 31.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "AXS",
+        "score": 74.3,
+        "vol_pct": 31.0,
+        "rsi": 59.7,
+        "rsi_pct": 15.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "SEI",
+        "score": 70.8,
+        "vol_pct": 15.0,
+        "rsi": 67.5,
+        "rsi_pct": 41.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "FIL",
+        "score": 68.3,
+        "vol_pct": 51.0,
+        "rsi": 59.1,
+        "rsi_pct": 13.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "COMP",
+        "score": 66.6,
+        "vol_pct": 8.0,
+        "rsi": 72.9,
+        "rsi_pct": 62.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "MNT",
+        "score": 64.7,
+        "vol_pct": 21.0,
+        "rsi": 61.8,
+        "rsi_pct": 23.0,
+        "funding_annual_pct": 11.8,
+        "funding_pct": 62.0
+      },
+      {
+        "token": "BTC",
+        "score": 60.6,
+        "vol_pct": 0.0,
+        "rsi": 82.5,
+        "rsi_pct": 87.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "STRK",
+        "score": 60.6,
+        "vol_pct": 77.0,
+        "rsi": 59.1,
+        "rsi_pct": 10.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "MORPHO",
+        "score": 59.6,
+        "vol_pct": 5.0,
+        "rsi": 70.4,
+        "rsi_pct": 51.0,
+        "funding_annual_pct": 13.1,
+        "funding_pct": 65.0
+      },
+      {
+        "token": "ZK",
+        "score": 58.9,
+        "vol_pct": 44.0,
+        "rsi": 68.5,
+        "rsi_pct": 49.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "AIXBT",
+        "score": 58.0,
+        "vol_pct": 69.0,
+        "rsi": 61.9,
+        "rsi_pct": 26.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "TAO",
+        "score": 57.5,
+        "vol_pct": 10.0,
+        "rsi": 63.8,
+        "rsi_pct": 33.0,
+        "funding_annual_pct": 69.7,
+        "funding_pct": 84.0
+      },
+      {
+        "token": "TIA",
+        "score": 56.3,
+        "vol_pct": 54.0,
+        "rsi": 68.1,
+        "rsi_pct": 46.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "SOL",
+        "score": 55.5,
+        "vol_pct": 3.0,
+        "rsi": 87.1,
+        "rsi_pct": 100.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "VIRTUAL",
+        "score": 55.5,
+        "vol_pct": 67.0,
+        "rsi": 65.5,
+        "rsi_pct": 36.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "EIGEN",
+        "score": 53.7,
+        "vol_pct": 64.0,
+        "rsi": 67.5,
+        "rsi_pct": 44.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "OP",
+        "score": 52.0,
+        "vol_pct": 56.0,
+        "rsi": 71.4,
+        "rsi_pct": 56.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "UNI",
+        "score": 51.0,
+        "vol_pct": 79.0,
+        "rsi": 53.6,
+        "rsi_pct": 0.0,
+        "funding_annual_pct": 24.7,
+        "funding_pct": 68.0
+      },
+      {
+        "token": "JTO",
+        "score": 50.3,
+        "vol_pct": 59.0,
+        "rsi": 72.2,
+        "rsi_pct": 59.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "ETH",
+        "score": 49.5,
+        "vol_pct": 38.0,
+        "rsi": 81.5,
+        "rsi_pct": 82.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "PENDLE",
+        "score": 48.3,
+        "vol_pct": 28.0,
+        "rsi": 71.3,
+        "rsi_pct": 54.0,
+        "funding_annual_pct": 40.9,
+        "funding_pct": 73.0
+      },
+      {
+        "token": "INJ",
+        "score": 47.2,
+        "vol_pct": 62.0,
+        "rsi": 58.8,
+        "rsi_pct": 8.0,
+        "funding_annual_pct": 73.6,
+        "funding_pct": 89.0
+      },
+      {
+        "token": "ARB",
+        "score": 42.6,
+        "vol_pct": 72.0,
+        "rsi": 76.1,
+        "rsi_pct": 69.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "DOGE",
+        "score": 42.4,
+        "vol_pct": 18.0,
+        "rsi": 82.1,
+        "rsi_pct": 85.0,
+        "funding_annual_pct": 34.6,
+        "funding_pct": 70.0
+      },
+      {
+        "token": "GMX",
+        "score": 41.9,
+        "vol_pct": 49.0,
+        "rsi": 62.1,
+        "rsi_pct": 28.0,
+        "funding_annual_pct": 120.4,
+        "funding_pct": 97.0
+      },
+      {
+        "token": "SUI",
+        "score": 40.5,
+        "vol_pct": 36.0,
+        "rsi": 74.2,
+        "rsi_pct": 64.0,
+        "funding_annual_pct": 46.9,
+        "funding_pct": 78.0
+      },
+      {
+        "token": "LDO",
+        "score": 39.2,
+        "vol_pct": 74.0,
+        "rsi": 80.0,
+        "rsi_pct": 77.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "WIF",
+        "score": 29.8,
+        "vol_pct": 85.0,
+        "rsi": 86.9,
+        "rsi_pct": 95.0,
+        "funding_annual_pct": 11.0,
+        "funding_pct": 31.0
+      },
+      {
+        "token": "BONK",
+        "score": 25.6,
+        "vol_pct": 82.0,
+        "rsi": 75.1,
+        "rsi_pct": 67.0,
+        "funding_annual_pct": null,
+        "funding_pct": null
+      },
+      {
+        "token": "LINK",
+        "score": 24.9,
+        "vol_pct": 33.0,
+        "rsi": 87.0,
+        "rsi_pct": 97.0,
+        "funding_annual_pct": 109.6,
+        "funding_pct": 95.0
+      },
+      {
+        "token": "FET",
+        "score": 24.8,
+        "vol_pct": 87.0,
+        "rsi": 66.8,
+        "rsi_pct": 38.0,
+        "funding_annual_pct": 165.7,
+        "funding_pct": 100.0
+      },
+      {
+        "token": "CRV",
+        "score": 19.1,
+        "vol_pct": 90.0,
+        "rsi": 77.0,
+        "rsi_pct": 72.0,
+        "funding_annual_pct": 69.7,
+        "funding_pct": 81.0
+      },
+      {
+        "token": "ETHFI",
+        "score": 17.5,
+        "vol_pct": 92.0,
+        "rsi": 80.5,
+        "rsi_pct": 79.0,
+        "funding_annual_pct": 44.5,
+        "funding_pct": 76.0
+      },
+      {
+        "token": "PEPE",
+        "score": 14.1,
+        "vol_pct": 97.0,
+        "rsi": 78.3,
+        "rsi_pct": 74.0,
+        "funding_annual_pct": null,
+        "funding_pct": null
+      },
+      {
+        "token": "AAVE",
+        "score": 7.8,
+        "vol_pct": 95.0,
+        "rsi": 84.4,
+        "rsi_pct": 90.0,
+        "funding_annual_pct": 104.1,
+        "funding_pct": 92.0
+      },
+      {
+        "token": "ENA",
+        "score": 7.1,
+        "vol_pct": 100.0,
+        "rsi": 86.2,
+        "rsi_pct": 92.0,
+        "funding_annual_pct": 70.0,
+        "funding_pct": 86.0
+      }
+    ]
+  },
+  "tokens": {
+    "AAVE": {
+      "market_share_pct": 52.7,
+      "move_pct": -0.2,
+      "market_part_pct": -2.69,
+      "own_part_pct": 2.5,
+      "text_ru": "из -0.20% сегодня рынок дал -2.69%, сам токен +2.50%"
+    },
+    "AIXBT": {
+      "market_share_pct": 39.5,
+      "move_pct": -1.75,
+      "market_part_pct": -2.69,
+      "own_part_pct": 0.94,
+      "text_ru": "из -1.75% сегодня рынок дал -2.69%, сам токен +0.94%"
+    },
+    "APT": {
+      "market_share_pct": 79.6,
+      "move_pct": -1.42,
+      "market_part_pct": -2.69,
+      "own_part_pct": 1.28,
+      "text_ru": "из -1.42% сегодня рынок дал -2.69%, сам токен +1.28%"
+    },
+    "ARB": {
+      "market_share_pct": 58.0,
+      "move_pct": -0.04,
+      "market_part_pct": -2.69,
+      "own_part_pct": 2.65,
+      "text_ru": "из -0.04% сегодня рынок дал -2.69%, сам токен +2.65%"
+    },
+    "AXS": {
+      "market_share_pct": 22.8,
+      "move_pct": -5.73,
+      "market_part_pct": -2.69,
+      "own_part_pct": -3.03,
+      "text_ru": "из -5.73% сегодня рынок дал -2.69%, сам токен -3.03%"
+    },
+    "BONK": {
+      "market_share_pct": 58.7,
+      "move_pct": 1.93,
+      "market_part_pct": -2.69,
+      "own_part_pct": 4.62,
+      "text_ru": "из +1.93% сегодня рынок дал -2.69%, сам токен +4.62%"
+    },
+    "BTC": {
+      "market_share_pct": 68.5,
+      "move_pct": -1.52,
+      "market_part_pct": -2.69,
+      "own_part_pct": 1.17,
+      "text_ru": "из -1.52% сегодня рынок дал -2.69%, сам токен +1.17%"
+    },
+    "COMP": {
+      "market_share_pct": 31.1,
+      "move_pct": -2.95,
+      "market_part_pct": -2.69,
+      "own_part_pct": -0.25,
+      "text_ru": "из -2.95% сегодня рынок дал -2.69%, сам токен -0.25%"
+    },
+    "CRV": {
+      "market_share_pct": 47.3,
+      "move_pct": -2.37,
+      "market_part_pct": -2.69,
+      "own_part_pct": 0.33,
+      "text_ru": "из -2.37% сегодня рынок дал -2.69%, сам токен +0.33%"
+    },
+    "DOGE": {
+      "market_share_pct": 67.6,
+      "move_pct": -1.61,
+      "market_part_pct": -2.69,
+      "own_part_pct": 1.08,
+      "text_ru": "из -1.61% сегодня рынок дал -2.69%, сам токен +1.08%"
+    },
+    "DYDX": {
+      "market_share_pct": 8.6,
+      "move_pct": 0.46,
+      "market_part_pct": -2.69,
+      "own_part_pct": 3.16,
+      "text_ru": "из +0.46% сегодня рынок дал -2.69%, сам токен +3.16%"
+    },
+    "EIGEN": {
+      "market_share_pct": 41.2,
+      "move_pct": -3.95,
+      "market_part_pct": -2.69,
+      "own_part_pct": -1.26,
+      "text_ru": "из -3.95% сегодня рынок дал -2.69%, сам токен -1.26%"
+    },
+    "ENA": {
+      "market_share_pct": 46.7,
+      "move_pct": 7.92,
+      "market_part_pct": -2.69,
+      "own_part_pct": 10.62,
+      "text_ru": "из +7.92% сегодня рынок дал -2.69%, сам токен +10.62%"
+    },
+    "ETH": {
+      "market_share_pct": 68.7,
+      "move_pct": -3.68,
+      "market_part_pct": -2.69,
+      "own_part_pct": -0.99,
+      "text_ru": "из -3.68% сегодня рынок дал -2.69%, сам токен -0.99%"
+    },
+    "ETHFI": {
+      "market_share_pct": 34.2,
+      "move_pct": -5.38,
+      "market_part_pct": -2.69,
+      "own_part_pct": -2.69,
+      "text_ru": "из -5.38% сегодня рынок дал -2.69%, сам токен -2.69%"
+    },
+    "FET": {
+      "market_share_pct": 60.4,
+      "move_pct": -4.58,
+      "market_part_pct": -2.69,
+      "own_part_pct": -1.89,
+      "text_ru": "из -4.58% сегодня рынок дал -2.69%, сам токен -1.89%"
+    },
+    "FIL": {
+      "market_share_pct": 66.8,
+      "move_pct": -4.5,
+      "market_part_pct": -2.69,
+      "own_part_pct": -1.8,
+      "text_ru": "из -4.50% сегодня рынок дал -2.69%, сам токен -1.80%"
+    },
+    "GMX": {
+      "market_share_pct": 44.6,
+      "move_pct": -9.22,
+      "market_part_pct": -2.69,
+      "own_part_pct": -6.53,
+      "text_ru": "из -9.22% сегодня рынок дал -2.69%, сам токен -6.53%"
+    },
+    "INJ": {
+      "market_share_pct": 35.9,
+      "move_pct": -4.91,
+      "market_part_pct": -2.69,
+      "own_part_pct": -2.22,
+      "text_ru": "из -4.91% сегодня рынок дал -2.69%, сам токен -2.22%"
+    },
+    "JTO": {
+      "market_share_pct": 10.5,
+      "move_pct": -4.47,
+      "market_part_pct": -2.69,
+      "own_part_pct": -1.77,
+      "text_ru": "из -4.47% сегодня рынок дал -2.69%, сам токен -1.77%"
+    },
+    "LDO": {
+      "market_share_pct": 35.1,
+      "move_pct": -3.04,
+      "market_part_pct": -2.69,
+      "own_part_pct": -0.34,
+      "text_ru": "из -3.04% сегодня рынок дал -2.69%, сам токен -0.34%"
+    },
+    "LINK": {
+      "market_share_pct": 81.1,
+      "move_pct": -2.35,
+      "market_part_pct": -2.69,
+      "own_part_pct": 0.35,
+      "text_ru": "из -2.35% сегодня рынок дал -2.69%, сам токен +0.35%"
+    },
+    "MNT": {
+      "market_share_pct": 46.1,
+      "move_pct": -5.92,
+      "market_part_pct": -2.69,
+      "own_part_pct": -3.23,
+      "text_ru": "из -5.92% сегодня рынок дал -2.69%, сам токен -3.23%"
+    },
+    "MORPHO": {
+      "market_share_pct": 20.0,
+      "move_pct": -5.67,
+      "market_part_pct": -2.69,
+      "own_part_pct": -2.98,
+      "text_ru": "из -5.67% сегодня рынок дал -2.69%, сам токен -2.98%"
+    },
+    "ONDO": {
+      "market_share_pct": 33.9,
+      "move_pct": -6.74,
+      "market_part_pct": -2.69,
+      "own_part_pct": -4.04,
+      "text_ru": "из -6.74% сегодня рынок дал -2.69%, сам токен -4.04%"
+    },
+    "OP": {
+      "market_share_pct": 65.6,
+      "move_pct": 1.92,
+      "market_part_pct": -2.69,
+      "own_part_pct": 4.62,
+      "text_ru": "из +1.92% сегодня рынок дал -2.69%, сам токен +4.62%"
+    },
+    "PENDLE": {
+      "market_share_pct": 40.7,
+      "move_pct": -0.37,
+      "market_part_pct": -2.69,
+      "own_part_pct": 2.33,
+      "text_ru": "из -0.37% сегодня рынок дал -2.69%, сам токен +2.33%"
+    },
+    "PEPE": {
+      "market_share_pct": 73.2,
+      "move_pct": -2.83,
+      "market_part_pct": -2.69,
+      "own_part_pct": -0.14,
+      "text_ru": "из -2.83% сегодня рынок дал -2.69%, сам токен -0.14%"
+    },
+    "SAND": {
+      "market_share_pct": 63.8,
+      "move_pct": -6.06,
+      "market_part_pct": -2.69,
+      "own_part_pct": -3.37,
+      "text_ru": "из -6.06% сегодня рынок дал -2.69%, сам токен -3.37%"
+    },
+    "SEI": {
+      "market_share_pct": 58.0,
+      "move_pct": -2.09,
+      "market_part_pct": -2.69,
+      "own_part_pct": 0.6,
+      "text_ru": "из -2.09% сегодня рынок дал -2.69%, сам токен +0.60%"
+    },
+    "SNX": {
+      "market_share_pct": 39.3,
+      "move_pct": -3.19,
+      "market_part_pct": -2.69,
+      "own_part_pct": -0.49,
+      "text_ru": "из -3.19% сегодня рынок дал -2.69%, сам токен -0.49%"
+    },
+    "SOL": {
+      "market_share_pct": 74.3,
+      "move_pct": -0.43,
+      "market_part_pct": -2.69,
+      "own_part_pct": 2.26,
+      "text_ru": "из -0.43% сегодня рынок дал -2.69%, сам токен +2.26%"
+    },
+    "STRK": {
+      "market_share_pct": 52.9,
+      "move_pct": -5.03,
+      "market_part_pct": -2.69,
+      "own_part_pct": -2.34,
+      "text_ru": "из -5.03% сегодня рынок дал -2.69%, сам токен -2.34%"
+    },
+    "SUI": {
+      "market_share_pct": 64.4,
+      "move_pct": -1.47,
+      "market_part_pct": -2.69,
+      "own_part_pct": 1.23,
+      "text_ru": "из -1.47% сегодня рынок дал -2.69%, сам токен +1.23%"
+    },
+    "TAO": {
+      "market_share_pct": 54.9,
+      "move_pct": -2.84,
+      "market_part_pct": -2.69,
+      "own_part_pct": -0.15,
+      "text_ru": "из -2.84% сегодня рынок дал -2.69%, сам токен -0.15%"
+    },
+    "TIA": {
+      "market_share_pct": 64.4,
+      "move_pct": -2.55,
+      "market_part_pct": -2.69,
+      "own_part_pct": 0.14,
+      "text_ru": "из -2.55% сегодня рынок дал -2.69%, сам токен +0.14%"
+    },
+    "UNI": {
+      "market_share_pct": 44.3,
+      "move_pct": -0.14,
+      "market_part_pct": -2.69,
+      "own_part_pct": 2.55,
+      "text_ru": "из -0.14% сегодня рынок дал -2.69%, сам токен +2.55%"
+    },
+    "VIRTUAL": {
+      "market_share_pct": 57.7,
+      "move_pct": -5.9,
+      "market_part_pct": -2.69,
+      "own_part_pct": -3.2,
+      "text_ru": "из -5.90% сегодня рынок дал -2.69%, сам токен -3.20%"
+    },
+    "WIF": {
+      "market_share_pct": 67.0,
+      "move_pct": 0.5,
+      "market_part_pct": -2.69,
+      "own_part_pct": 3.19,
+      "text_ru": "из +0.50% сегодня рынок дал -2.69%, сам токен +3.19%"
+    },
+    "ZK": {
+      "market_share_pct": 66.4,
+      "move_pct": -2.27,
+      "market_part_pct": -2.69,
+      "own_part_pct": 0.42,
+      "text_ru": "из -2.27% сегодня рынок дал -2.69%, сам токен +0.42%"
+    }
+  }
+}
