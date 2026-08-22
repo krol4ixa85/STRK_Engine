@@ -33,6 +33,15 @@ on:
     - cron: '0 6 * * 1'
     # v5.4 · STRK AVNU daily scan — каждый день 03:30 UTC = 06:30 MSK
     - cron: '30 3 * * *'
+    # Ончейн · длинная история Coin Metrics + MVRV/NUPL + проверка правил.
+    # 05:10 UTC = 08:10 MSK. Проверил все расписания: минута свободна,
+    # соседи 04:00 (daily_token_scan) и 05:40 (decision_verify).
+    #
+    # Один job делает всё три шага подряд намеренно: сама выгрузка
+    # (16 700 дней и растёт) в репозиторий не коммитится — она под
+    # CC BY-NC и весит много. Она живёт только внутри прогона, а
+    # наружу выходят два маленьких файла с посчитанными индикаторами.
+    - cron: '10 5 * * *'
     # Type A #3 · News impact classifier — 4x/day (00, 06, 12, 18 UTC)
     - cron: '0 0,6,12,18 * * *'
     # Module 1+2 · Macro Narratives (Fed/US10Y/DXY/VIX + TOTAL phase) — 4x/day
@@ -142,6 +151,7 @@ on:
           - hive_prices
           - hive_health
           - hive_health_catalog
+          - onchain
           - funding_per_token
           - token_scan_single
           - phase_analyzer
@@ -2366,6 +2376,71 @@ jobs:
   # VERSION UPDATE · auto-bump on every push (for cache busting)
   # Generates VERSION.txt with unix timestamp → invalidates browser cache
   # ============================================================
+  # ============================================================
+  # ОНЧЕЙН · длинная история и оценочные метрики
+  #
+  # Зачем отдельно от остального: у Dune 26 недель на токен, и на
+  # такой выборке deflated Sharpe не проходит никогда, сколько
+  # правила ни улучшай. Coin Metrics Community отдаёт ежедневные
+  # метрики за 5-9 лет без ключа — на них гипотезы наконец можно
+  # проверять, а не только формулировать.
+  #
+  # Три шага в одном job, потому что промежуточная выгрузка
+  # (data/history/coinmetrics/) в git не попадает: она под лицензией
+  # CC BY-NC 4.0 и весит десятки мегабайт. Живёт внутри прогона,
+  # коммитятся только посчитанные индикаторы — два файла по паре
+  # сотен килобайт.
+  #
+  # Кредитов не тратит: источник бесплатный, ключ не нужен.
+  # ============================================================
+  onchain:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '10 5 * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'onchain')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Два прогона ОДНОЙ job одновременно писали в один файл и
+    # конфликтовали при rebase. Группа своя у каждой job, поэтому
+    # разные job по-прежнему идут параллельно.
+    concurrency:
+      group: strk-onchain
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests numpy purgedcv
+      - name: Coin Metrics · длинная история
+        run: python3 scripts/collectors/coinmetrics_history.py --since 2017-01-01
+      - name: MVRV · NUPL · реализованная капитализация
+        run: python3 scripts/onchain_indicators.py
+      - name: Проверка оценочных правил
+        continue-on-error: true
+        run: python3 scripts/onchain_significance.py --show-overlap
+      - name: Commit onchain indicators
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "STRK Engine Bot"
+          # Коммитим ТОЛЬКО посчитанное. Сама выгрузка остаётся в
+          # раннере и умирает вместе с ним — так и задумано.
+          [ -f data/cache/onchain_indicators.json ] && git add data/cache/onchain_indicators.json || echo "no indicators"
+          [ -f data/cache/onchain_significance.json ] && git add data/cache/onchain_significance.json || echo "no significance"
+          [ -f data/cache/coinmetrics_coverage.json ] && git add data/cache/coinmetrics_coverage.json || echo "no coverage"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: onchain indicators [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            echo "push отклонён (попытка $attempt) — подтягиваю main и повторяю"
+            git fetch origin main || true
+            git rebase -X theirs origin/main || { git rebase --abort || true; }
+            sleep $(( RANDOM % 7 + attempt * 4 ))
+          done
+          echo "::error::push не прошёл за 5 попыток — результат прогона потерян"
+          exit 1
+
   version_update:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
