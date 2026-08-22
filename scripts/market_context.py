@@ -376,10 +376,65 @@ def unloved(prices, dates, fund_rows):
     return out
 
 
-def main(days):
+def write_out(payload):
+    os.makedirs("data/cache", exist_ok=True)
+    with open(OUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+
+def fast_mode():
+    """
+    Только перпы. Один запрос отдаёт фандинг и открытый интерес сразу
+    по всем монетам — это секунда работы вместо сорока.
+
+    Зачем отдельно: фандинг и открытый интерес меняются в течение часа,
+    а синхронность и ширина считаются по дневным свечам и за час
+    измениться не могут. Гонять сорок запросов ради двух чисел незачем,
+    а показывать восьмичасовой фандинг как текущий — нельзя.
+    """
+    prev = load_json(OUT_FILE, {}) or {}
+    fund, ferr, rows = funding_now()
+    if not fund:
+        print(f"  Перпы недоступны: {ferr}")
+        return 1
+
+    # изменение открытого интереса с прошлого замера — по нему видно,
+    # набивается плечо или разгружается
+    old = (prev.get("funding") or {}).get("oi_total_usd")
+    if old:
+        fund["oi_change_pct"] = round((fund["oi_total_usd"] / old - 1) * 100, 2)
+        fund["oi_prev_at"] = prev.get("funding_updated_at") or prev.get("computed_at")
+
+    prev["funding"] = fund
+    prev["funding_updated_at"] = datetime.now(timezone.utc).isoformat()
+    prev.setdefault("computed_at", prev["funding_updated_at"])
+    prev["mode_last"] = "fast"
+    write_out(prev)
+
+    ch = fund.get("oi_change_pct")
+    print("=== Перпы ===\n")
+    print(f"  Фандинг: медиана {fund['median_annual_pct']:+.1f}% годовых — "
+          f"{fund['skew_ru']}")
+    print(f"  Открытый интерес: ${fund['oi_total_usd'] / 1e9:.2f} млрд"
+          + (f" · {ch:+.2f}% с прошлого замера" if ch is not None else ""))
+    print(f"\n✓ {OUT_FILE}")
+    return 0
+
+
+def main(days, fast=False):
+    if fast:
+        return fast_mode()
+
     prices, src = gather(days)
     if not prices:
+        # Пишем состояние ошибки, а не молчим. Пустой блок на дашборде
+        # неотличим от «всё спокойно», и разбираться приходится в логах.
         print(f"  Нет данных о ценах ({src})")
+        write_out({
+            "computed_at": datetime.now(timezone.utc).isoformat(),
+            "status": "ERROR",
+            "error_ru": f"не удалось получить цены: {src}",
+        })
         return 1
 
     dates, rets = daily_returns(prices)
@@ -461,6 +516,9 @@ def main(days):
     with open(OUT_FILE, "w", encoding="utf-8") as f:
         json.dump({
             "computed_at": datetime.now(timezone.utc).isoformat(),
+            "funding_updated_at": datetime.now(timezone.utc).isoformat(),
+            "status": "OK",
+            "mode_last": "full",
             "source": f"hyperliquid · {src}",
             "cost": "free · 0 credits",
             "measured": "медианно 57% дневного движения токена — это рынок "
@@ -491,5 +549,7 @@ def main(days):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=DEFAULT_DAYS)
+    ap.add_argument("--fast", action="store_true",
+                    help="только перпы: один запрос, секунда работы")
     a = ap.parse_args()
-    sys.exit(main(a.days))
+    sys.exit(main(a.days, a.fast))
