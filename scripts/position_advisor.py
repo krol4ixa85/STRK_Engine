@@ -445,28 +445,45 @@ def advise(pos, sig):
     out["aligned"] = aligned
 
     # Цели по направлению позиции и уровень слома
+    #
+    # ВАЖНО. Списки nearest_up / nearest_down и их distance_pct
+    # посчитаны в volume_profile ОТ ЕГО СОБСТВЕННОЙ цены, а профиль
+    # обновляется раз в шесть часов. Цена для расчёта прибыли берётся
+    # самая свежая — из price_reference, раз в полчаса. Источники
+    # разные, и за несколько часов уровень из «ниже» становится «выше».
+    #
+    # Поймано на живом шорте STRK 22.08: профиль считал цену 0.02876,
+    # свежая была 0.02794, и уровень 0.028481 попал в nearest_down —
+    # хотя относительно реальной цены он на 1.75% ВЫШЕ. Совет читался
+    # как «цель рядом, сними часть», а идти туда означало убыток.
+    #
+    # Поэтому классификация и расстояния пересчитываются здесь заново,
+    # от той цены, по которой считается прибыль.
     targets = vp.get("targets") or {}
-    if is_short:
-        to_target = targets.get("nearest_down") or []
-        to_risk = targets.get("nearest_up") or []
-    else:
-        to_target = targets.get("nearest_up") or []
-        to_risk = targets.get("nearest_down") or []
+    all_levels = list(targets.get("nearest_up") or []) + \
+                 list(targets.get("nearest_down") or [])
 
+    above, below = [], []
+    for lv in all_levels:
+        p = lv.get("price")
+        if not p or not price:
+            continue
+        item = {
+            "price": p,
+            "distance_pct": round(abs(p / price - 1) * 100, 2),
+            "label": lv.get("label"),
+        }
+        (above if p > price else below).append(item)
+
+    above.sort(key=lambda z: z["distance_pct"])
+    below.sort(key=lambda z: z["distance_pct"])
+
+    to_target, to_risk = (below, above) if is_short else (above, below)
     if to_target:
-        t = to_target[0]
-        out["next_target"] = {
-            "price": t["price"],
-            "distance_pct": abs(t["distance_pct"]),
-            "label": t["label"],
-        }
+        out["next_target"] = to_target[0]
     if to_risk:
-        r = to_risk[0]
-        out["invalidation"] = {
-            "price": r["price"],
-            "distance_pct": abs(r["distance_pct"]),
-            "label": r["label"],
-        }
+        out["invalidation"] = to_risk[0]
+    out["levels_recomputed_from"] = out_price_source
 
     # Сколько хода осталось против того, чем рискуем
     if out.get("next_target") and out.get("invalidation"):
