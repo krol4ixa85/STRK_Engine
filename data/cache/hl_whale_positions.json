@@ -1,12 +1,12 @@
 {
-  "computed_at": "2026-08-22T05:12:59.391210+00:00",
+  "computed_at": "2026-08-22T06:14:03.307330+00:00",
   "source": "hyperliquid_public",
   "cost": "free · 0 credits",
   "method": "watchlist построен из публичных сделок, накопленных hl_trade_collector; позиции читаются через clearinghouseState",
-  "trades_in_log": 407,
-  "addresses_ranked": 42,
+  "trades_in_log": 424,
+  "addresses_ranked": 43,
   "addresses_checked": 40,
-  "whales_directional": 28,
+  "whales_directional": 30,
   "market_makers_skipped": 5,
   "filters": {
     "lookback_days": 7,
@@ -16,206 +16,204 @@
   },
   "caveat": "Большой оборот не означает ум. Маркетмейкеры отсеяны по числу одновременных позиций, но фильтр грубый. Смотри на число адресов рядом с суммой.",
   "divergent_tokens": [
-    "BTC",
-    "ARB",
-    "PENDLE"
+    "ETHFI",
+    "ENA"
   ],
   "by_token": {
     "BTC": {
       "status": "OK",
       "whales_long": 4,
-      "whales_short": 10,
-      "long_usd": 11220399,
-      "short_usd": 89395717,
-      "net_usd": -78175318,
-      "net_pct": -77.7,
+      "whales_short": 12,
+      "long_usd": 13076304,
+      "short_usd": 98112089,
+      "net_usd": -85035785,
+      "net_pct": -76.5,
       "bias": "WHALES_SHORT",
-      "text_ru": "10 адресов в шортах на $89.4M против 4 в лонгах на $11.2M",
+      "text_ru": "12 адресов в шортах на $98.1M против 4 в лонгах на $13.1M",
       "concentration_note": null,
       "top_long": [
         {
           "address": "0xdf7787ca201aad020ef923c696905bd01ec1a98b",
-          "value_usd": 8135342,
-          "entry_price": 78542.1,
-          "pnl_usd": -120158
+          "value_usd": 8219667,
+          "entry_price": 78529.6,
+          "pnl_usd": -135831
         },
         {
           "address": "0xc3704b5ec0f8b3015276b773b8f68ca66776df51",
-          "value_usd": 2504838,
+          "value_usd": 2500113,
           "entry_price": 67556.0,
-          "pnl_usd": 318543
+          "pnl_usd": 313818
         },
         {
-          "address": "0x7b7f72a28fe109fa703eeed7984f2a8a68fedee2",
-          "value_usd": 572149,
-          "entry_price": 77000.2,
-          "pnl_usd": 2955
+          "address": "0xb48e45c76e7442d9944790085399e26b7d89b1ed",
+          "value_usd": 2317731,
+          "entry_price": 77339.6,
+          "pnl_usd": -2600
         }
       ],
       "top_short": [
         {
           "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
-          "value_usd": 72075309,
-          "entry_price": 64261.2,
-          "pnl_usd": -12234111
+          "value_usd": 72237259,
+          "entry_price": 64314.9,
+          "pnl_usd": -12098061
         },
         {
           "address": "0x0fd468a73084daa6ea77a9261e40fdec3e67e0c7",
-          "value_usd": 11080573,
-          "entry_price": 77551.5,
-          "pnl_usd": 28731
+          "value_usd": 11096506,
+          "entry_price": 77494.0,
+          "pnl_usd": 33044
         },
         {
-          "address": "0xf822fa0fd364c573fcdb7009fcf47601bc8be01a",
-          "value_usd": 2779880,
-          "entry_price": 62412.1,
-          "pnl_usd": -538269
+          "address": "0xcf3f419d08a5bdc2c6e5fbd9ad70904c5420f95f",
+          "value_usd": 7682323,
+          "entry_price": 77446.0,
+          "pnl_usd": 18199
         }
       ],
-      "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.0686,
-      "crowd_vs_whales": "DIVERGENT",
-      "crowd_vs_whales_ru": "толпа набрала лонги, а крупные стоят в шортах — расхождение, обычно правы крупные"
+      "crowd_bias": "NEUTRAL",
+      "crowd_premium_pct": 0.0217,
+      "crowd_vs_whales": "ALIGNED",
+      "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
     },
     "ETH": {
       "status": "OK",
-      "whales_long": 5,
-      "whales_short": 9,
-      "long_usd": 10133577,
-      "short_usd": 122519125,
-      "net_usd": -112385548,
-      "net_pct": -84.7,
-      "bias": "WHALES_SHORT",
-      "text_ru": "9 адресов в шортах на $122.5M против 5 в лонгах на $10.1M",
+      "whales_long": 8,
+      "whales_short": 7,
+      "long_usd": 5512080,
+      "short_usd": 117657963,
+      "net_usd": -112145883,
+      "net_pct": -91.0,
+      "bias": "SINGLE_WHALE_SHORT",
+      "text_ru": "перевес в шорт держат 7 адрес(а) против 8 с другой стороны — это мнение одного счёта, а не крупных в целом",
       "concentration_note": null,
       "top_long": [
         {
           "address": "0x9546b9d4103be41ce13483a8f299d0df0eeb181c",
-          "value_usd": 8577800,
+          "value_usd": 3645600,
           "entry_price": 2510.97,
-          "pnl_usd": -210615
+          "pnl_usd": -120864
         },
         {
           "address": "0x72d0b1f98fd9cdd4e46976edd86857b0266a62ea",
-          "value_usd": 812303,
-          "entry_price": 2423.41,
-          "pnl_usd": 9054
+          "value_usd": 960019,
+          "entry_price": 2434.56,
+          "pnl_usd": -1645
         },
         {
           "address": "0xb48e45c76e7442d9944790085399e26b7d89b1ed",
-          "value_usd": 543886,
+          "value_usd": 538301,
           "entry_price": 2132.55,
-          "pnl_usd": 71243
+          "pnl_usd": 65658
         }
       ],
       "top_short": [
         {
           "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
-          "value_usd": 100888986,
+          "value_usd": 99852962,
           "entry_price": 2015.88,
-          "pnl_usd": -18011773
+          "pnl_usd": -16975749
         },
         {
-          "address": "0x0622a2198712c9527817493553dca548f42e8088",
-          "value_usd": 9003304,
-          "entry_price": 2437.98,
-          "pnl_usd": -55479
+          "address": "0xd911e53d53b663972254e086450fd6198a25961e",
+          "value_usd": 5997309,
+          "entry_price": 2431.81,
+          "pnl_usd": 4726
         },
         {
           "address": "0xd260b2216b735277da6771564a01c04856e78321",
-          "value_usd": 5514142,
+          "value_usd": 5467275,
           "entry_price": 2327.38,
-          "pnl_usd": -277527
+          "pnl_usd": -230660
         }
       ],
       "crowd_bias": "NEUTRAL",
-      "crowd_premium_pct": 0.0,
-      "crowd_vs_whales": "ALIGNED",
-      "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
+      "crowd_premium_pct": -0.0278,
+      "crowd_vs_whales": "NEUTRAL"
     },
     "SOL": {
       "status": "OK",
-      "whales_long": 5,
+      "whales_long": 6,
       "whales_short": 4,
-      "long_usd": 3864163,
-      "short_usd": 44266917,
-      "net_usd": -40402754,
-      "net_pct": -83.9,
+      "long_usd": 2436158,
+      "short_usd": 44837949,
+      "net_usd": -42401791,
+      "net_pct": -89.7,
       "bias": "SINGLE_WHALE_SHORT",
-      "text_ru": "перевес в шорт держат 4 адрес(а) против 5 с другой стороны — это мнение одного счёта, а не крупных в целом",
+      "text_ru": "перевес в шорт держат 4 адрес(а) против 6 с другой стороны — это мнение одного счёта, а не крупных в целом",
       "concentration_note": null,
       "top_long": [
         {
           "address": "0xb48e45c76e7442d9944790085399e26b7d89b1ed",
-          "value_usd": 2608801,
+          "value_usd": 1874720,
           "entry_price": 87.9078,
-          "pnl_usd": 146787
-        },
-        {
-          "address": "0x7b7f72a28fe109fa703eeed7984f2a8a68fedee2",
-          "value_usd": 723718,
-          "entry_price": 92.898,
-          "pnl_usd": 786
+          "pnl_usd": 116563
         },
         {
           "address": "0x72d0b1f98fd9cdd4e46976edd86857b0266a62ea",
-          "value_usd": 474184,
-          "entry_price": 90.1853,
-          "pnl_usd": 14435
+          "value_usd": 410153,
+          "entry_price": 92.4081,
+          "pnl_usd": 6112
+        },
+        {
+          "address": "0x7b7f72a28fe109fa703eeed7984f2a8a68fedee2",
+          "value_usd": 71261,
+          "entry_price": 93.9775,
+          "pnl_usd": -191
         }
       ],
       "top_short": [
         {
           "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
-          "value_usd": 40787989,
-          "entry_price": 88.0295,
-          "pnl_usd": -2241721
+          "value_usd": 41215476,
+          "entry_price": 88.0543,
+          "pnl_usd": -2498211
         },
         {
           "address": "0xf822fa0fd364c573fcdb7009fcf47601bc8be01a",
-          "value_usd": 3373368,
+          "value_usd": 2844894,
           "entry_price": 76.008,
-          "pnl_usd": -620757
+          "pnl_usd": -538046
         },
         {
-          "address": "0xa775d1bd91ee2cc4cae6113e5fd9c0c17b355277",
-          "value_usd": 68844,
-          "entry_price": 90.3314,
-          "pnl_usd": -2031
+          "address": "0xa6e2dc44418f5ad213c86db4dbb203a59d13c49f",
+          "value_usd": 748456,
+          "entry_price": 94.1654,
+          "pnl_usd": 3082
         }
       ],
-      "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.2148,
+      "crowd_bias": "NEUTRAL",
+      "crowd_premium_pct": 0.0021,
       "crowd_vs_whales": "NEUTRAL"
     },
     "LINK": {
       "status": "OK",
       "whales_long": 2,
       "whales_short": 0,
-      "long_usd": 62230,
+      "long_usd": 190206,
       "short_usd": 0,
-      "net_usd": 62230,
+      "net_usd": 190206,
       "net_pct": 100.0,
       "bias": "WHALES_LONG",
-      "text_ru": "2 адресов в лонгах на $0.1M против 0 в шортах на $0.0M",
+      "text_ru": "2 адресов в лонгах на $0.2M против 0 в шортах на $0.0M",
       "concentration_note": null,
       "top_long": [
         {
           "address": "0x72d0b1f98fd9cdd4e46976edd86857b0266a62ea",
-          "value_usd": 53348,
-          "entry_price": 11.70469,
-          "pnl_usd": -752
+          "value_usd": 181150,
+          "entry_price": 11.73342,
+          "pnl_usd": 885
         },
         {
           "address": "0xa265636a3cf15e099c54632cb00c625d91543a13",
-          "value_usd": 8882,
+          "value_usd": 9056,
           "entry_price": 12.01048,
-          "pnl_usd": -344
+          "pnl_usd": -169
         }
       ],
       "top_short": [],
       "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.414,
+      "crowd_premium_pct": 0.0948,
       "crowd_vs_whales": "ALIGNED",
       "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
     },
@@ -227,9 +225,9 @@
       "status": "OK",
       "whales_long": 1,
       "whales_short": 0,
-      "long_usd": 27820,
+      "long_usd": 8361,
       "short_usd": 0,
-      "net_usd": 27820,
+      "net_usd": 8361,
       "net_pct": 100.0,
       "bias": "WHALES_LONG",
       "text_ru": "1 адресов в лонгах на $0.0M против 0 в шортах на $0.0M",
@@ -237,16 +235,16 @@
       "top_long": [
         {
           "address": "0xa265636a3cf15e099c54632cb00c625d91543a13",
-          "value_usd": 27820,
-          "entry_price": 0.52732,
-          "pnl_usd": 910
+          "value_usd": 8361,
+          "entry_price": 0.57804,
+          "pnl_usd": -39
         }
       ],
       "top_short": [],
-      "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.0845,
-      "crowd_vs_whales": "ALIGNED",
-      "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
+      "crowd_bias": "NEUTRAL",
+      "crowd_premium_pct": 0.0,
+      "crowd_vs_whales": "DIVERGENT",
+      "crowd_vs_whales_ru": "толпа набрала шорты, а крупные стоят в лонгах — расхождение, обычно правы крупные"
     },
     "MORPHO": {
       "status": "NO_POSITIONS",
@@ -258,88 +256,67 @@
     },
     "ARB": {
       "status": "OK",
-      "whales_long": 1,
-      "whales_short": 0,
-      "long_usd": 93522,
-      "short_usd": 0,
-      "net_usd": 93522,
-      "net_pct": 100.0,
-      "bias": "WHALES_LONG",
-      "text_ru": "1 адресов в лонгах на $0.1M против 0 в шортах на $0.0M",
+      "whales_long": 0,
+      "whales_short": 1,
+      "long_usd": 0,
+      "short_usd": 56868,
+      "net_usd": -56868,
+      "net_pct": -100.0,
+      "bias": "WHALES_SHORT",
+      "text_ru": "1 адресов в шортах на $0.1M против 0 в лонгах на $0.0M",
       "concentration_note": "перевес делает один адрес",
-      "top_long": [
+      "top_long": [],
+      "top_short": [
         {
           "address": "0xa265636a3cf15e099c54632cb00c625d91543a13",
-          "value_usd": 93522,
-          "entry_price": 0.09577,
-          "pnl_usd": 423
+          "value_usd": 56868,
+          "entry_price": 0.09992,
+          "pnl_usd": 825
         }
       ],
-      "top_short": [],
       "crowd_bias": "NEUTRAL",
       "crowd_premium_pct": 0.0,
-      "crowd_vs_whales": "DIVERGENT",
-      "crowd_vs_whales_ru": "толпа набрала шорты, а крупные стоят в лонгах — расхождение, обычно правы крупные"
+      "crowd_vs_whales": "ALIGNED",
+      "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
     },
     "AAVE": {
       "status": "OK",
-      "whales_long": 2,
-      "whales_short": 0,
-      "long_usd": 75985,
-      "short_usd": 0,
-      "net_usd": 75985,
-      "net_pct": 100.0,
-      "bias": "WHALES_LONG",
-      "text_ru": "2 адресов в лонгах на $0.1M против 0 в шортах на $0.0M",
-      "concentration_note": null,
+      "whales_long": 1,
+      "whales_short": 1,
+      "long_usd": 61203,
+      "short_usd": 5442,
+      "net_usd": 55761,
+      "net_pct": 83.7,
+      "bias": "SINGLE_WHALE_LONG",
+      "text_ru": "перевес в лонг держат 1 адрес(а) против 1 с другой стороны — это мнение одного счёта, а не крупных в целом",
+      "concentration_note": "перевес делает один адрес",
       "top_long": [
         {
           "address": "0x72d0b1f98fd9cdd4e46976edd86857b0266a62ea",
-          "value_usd": 66775,
-          "entry_price": 114.0491,
-          "pnl_usd": 489
-        },
-        {
-          "address": "0xf5d81a135f756ca16544e53c20fc20643ec3ad53",
-          "value_usd": 9210,
-          "entry_price": 118.1124,
-          "pnl_usd": -256
+          "value_usd": 61203,
+          "entry_price": 122.328,
+          "pnl_usd": -1370
         }
       ],
-      "top_short": [],
-      "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.2756,
-      "crowd_vs_whales": "ALIGNED",
-      "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
+      "top_short": [
+        {
+          "address": "0xf5d81a135f756ca16544e53c20fc20643ec3ad53",
+          "value_usd": 5442,
+          "entry_price": 120.0556,
+          "pnl_usd": 15
+        }
+      ],
+      "crowd_bias": "NEUTRAL",
+      "crowd_premium_pct": 0.0444,
+      "crowd_vs_whales": "NEUTRAL"
     },
     "OP": {
       "status": "NO_POSITIONS",
       "text_ru": "никто из отслеживаемых адресов не держит позицию"
     },
     "PENDLE": {
-      "status": "OK",
-      "whales_long": 0,
-      "whales_short": 1,
-      "long_usd": 0,
-      "short_usd": 9216,
-      "net_usd": -9216,
-      "net_pct": -100.0,
-      "bias": "WHALES_SHORT",
-      "text_ru": "1 адресов в шортах на $0.0M против 0 в лонгах на $0.0M",
-      "concentration_note": "перевес делает один адрес",
-      "top_long": [],
-      "top_short": [
-        {
-          "address": "0xa265636a3cf15e099c54632cb00c625d91543a13",
-          "value_usd": 9216,
-          "entry_price": 1.585234,
-          "pnl_usd": -102
-        }
-      ],
-      "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.1845,
-      "crowd_vs_whales": "DIVERGENT",
-      "crowd_vs_whales_ru": "толпа набрала лонги, а крупные стоят в шортах — расхождение, обычно правы крупные"
+      "status": "NO_POSITIONS",
+      "text_ru": "никто из отслеживаемых адресов не держит позицию"
     },
     "LDO": {
       "status": "NO_POSITIONS",
@@ -355,28 +332,34 @@
     },
     "ENA": {
       "status": "OK",
-      "whales_long": 1,
+      "whales_long": 2,
       "whales_short": 0,
-      "long_usd": 107503,
+      "long_usd": 452386,
       "short_usd": 0,
-      "net_usd": 107503,
+      "net_usd": 452386,
       "net_pct": 100.0,
       "bias": "WHALES_LONG",
-      "text_ru": "1 адресов в лонгах на $0.1M против 0 в шортах на $0.0M",
-      "concentration_note": "перевес делает один адрес",
+      "text_ru": "2 адресов в лонгах на $0.5M против 0 в шортах на $0.0M",
+      "concentration_note": null,
       "top_long": [
         {
+          "address": "0xb48e45c76e7442d9944790085399e26b7d89b1ed",
+          "value_usd": 347472,
+          "entry_price": 0.151088,
+          "pnl_usd": -2919
+        },
+        {
           "address": "0xa265636a3cf15e099c54632cb00c625d91543a13",
-          "value_usd": 107503,
-          "entry_price": 0.144192,
-          "pnl_usd": 776
+          "value_usd": 104914,
+          "entry_price": 0.150292,
+          "pnl_usd": -236
         }
       ],
       "top_short": [],
-      "crowd_bias": "LONG_HEAVY",
-      "crowd_premium_pct": 0.3481,
-      "crowd_vs_whales": "ALIGNED",
-      "crowd_vs_whales_ru": "толпа и крупные смотрят в одну сторону — движение подтверждено"
+      "crowd_bias": "NEUTRAL",
+      "crowd_premium_pct": 0.0,
+      "crowd_vs_whales": "DIVERGENT",
+      "crowd_vs_whales_ru": "толпа набрала шорты, а крупные стоят в лонгах — расхождение, обычно правы крупные"
     },
     "TAO": {
       "status": "NO_POSITIONS",
@@ -390,74 +373,53 @@
   "whales": [
     {
       "address": "0xf5d81a135f756ca16544e53c20fc20643ec3ad53",
-      "volume_usd": 103875,
-      "trades": 27,
-      "account_value_usd": 1098449,
+      "volume_usd": 109000,
+      "trades": 29,
+      "account_value_usd": 1106966,
       "positions_total": 18,
-      "positions_material": 9,
+      "positions_material": 6,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 365190,
-          "entry_price": 76850.6,
-          "unrealized_pnl_usd": -2376
+          "value_usd": 554311,
+          "entry_price": 77349.4,
+          "unrealized_pnl_usd": 570
         },
         {
           "coin": "ETH",
           "side": "LONG",
-          "value_usd": 146739,
-          "entry_price": 2405.04,
-          "unrealized_pnl_usd": 2740
+          "value_usd": 23020,
+          "entry_price": 2429.71,
+          "unrealized_pnl_usd": 10
         },
         {
           "coin": "SOL",
           "side": "LONG",
-          "value_usd": 46156,
-          "entry_price": 91.6641,
-          "unrealized_pnl_usd": 701
-        },
-        {
-          "coin": "XRP",
-          "side": "LONG",
-          "value_usd": 9614,
-          "entry_price": 1.449971,
-          "unrealized_pnl_usd": 359
+          "value_usd": 17913,
+          "entry_price": 93.83,
+          "unrealized_pnl_usd": -1
         },
         {
           "coin": "AAVE",
-          "side": "LONG",
-          "value_usd": 9210,
-          "entry_price": 118.1124,
-          "unrealized_pnl_usd": -256
-        },
-        {
-          "coin": "WLD",
-          "side": "LONG",
-          "value_usd": 5719,
-          "entry_price": 0.39828,
-          "unrealized_pnl_usd": -4
+          "side": "SHORT",
+          "value_usd": 5442,
+          "entry_price": 120.0556,
+          "unrealized_pnl_usd": 15
         },
         {
           "coin": "HYPE",
-          "side": "SHORT",
-          "value_usd": 29746,
-          "entry_price": 75.506,
-          "unrealized_pnl_usd": -587
-        },
-        {
-          "coin": "PUMP",
           "side": "LONG",
-          "value_usd": 29277,
-          "entry_price": 0.00378,
-          "unrealized_pnl_usd": 1561
+          "value_usd": 38493,
+          "entry_price": 78.4831,
+          "unrealized_pnl_usd": 15
         },
         {
           "coin": "ZEC",
-          "side": "SHORT",
-          "value_usd": 8294,
-          "entry_price": 717.8394,
-          "unrealized_pnl_usd": -671
+          "side": "LONG",
+          "value_usd": 35589,
+          "entry_price": 786.1116,
+          "unrealized_pnl_usd": 72
         }
       ]
     },
@@ -465,23 +427,23 @@
       "address": "0xa62b923a112d50d03e1e096bbd53422490dac104",
       "volume_usd": 91618,
       "trades": 10,
-      "account_value_usd": 49986,
+      "account_value_usd": 51124,
       "positions_total": 2,
       "positions_material": 2,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 132073,
-          "entry_price": 77262.7,
-          "unrealized_pnl_usd": -156
+          "value_usd": 92522,
+          "entry_price": 77288.3,
+          "unrealized_pnl_usd": 22
         },
         {
           "coin": "ETH",
-          "side": "SHORT",
-          "value_usd": 88564,
-          "entry_price": 2432.58,
-          "unrealized_pnl_usd": -658
+          "side": "LONG",
+          "value_usd": 91495,
+          "entry_price": 2429.65,
+          "unrealized_pnl_usd": 43
         }
       ]
     },
@@ -489,30 +451,30 @@
       "address": "0x9546b9d4103be41ce13483a8f299d0df0eeb181c",
       "volume_usd": 85192,
       "trades": 1,
-      "account_value_usd": 8217012,
+      "account_value_usd": 8634974,
       "positions_total": 3,
       "positions_material": 3,
       "positions": [
         {
           "coin": "ETH",
           "side": "LONG",
-          "value_usd": 8577800,
+          "value_usd": 3645600,
           "entry_price": 2510.97,
-          "unrealized_pnl_usd": -210615
+          "unrealized_pnl_usd": -120864
         },
         {
           "coin": "HYPE",
           "side": "LONG",
-          "value_usd": 23107740,
+          "value_usd": 23555700,
           "entry_price": 65.2077,
-          "unrealized_pnl_usd": 3545421
+          "unrealized_pnl_usd": 3993381
         },
         {
           "coin": "ZEC",
           "side": "LONG",
-          "value_usd": 5841566,
+          "value_usd": 5885622,
           "entry_price": 665.7412,
-          "unrealized_pnl_usd": 861961
+          "unrealized_pnl_usd": 906017
         }
       ]
     },
@@ -520,89 +482,89 @@
       "address": "0xa775d1bd91ee2cc4cae6113e5fd9c0c17b355277",
       "volume_usd": 85034,
       "trades": 13,
-      "account_value_usd": 20376,
+      "account_value_usd": 21185,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "SOL",
-          "side": "SHORT",
-          "value_usd": 68844,
-          "entry_price": 90.3314,
-          "unrealized_pnl_usd": -2031
+          "side": "LONG",
+          "value_usd": 31635,
+          "entry_price": 93.8962,
+          "unrealized_pnl_usd": -30
         }
       ]
     },
     {
       "address": "0x72d0b1f98fd9cdd4e46976edd86857b0266a62ea",
-      "volume_usd": 67883,
-      "trades": 12,
-      "account_value_usd": 1812774,
+      "volume_usd": 68663,
+      "trades": 13,
+      "account_value_usd": 1836803,
       "positions_total": 10,
       "positions_material": 9,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 552242,
-          "entry_price": 76818.3,
-          "unrealized_pnl_usd": -3803
+          "value_usd": 8106,
+          "entry_price": 77272.9,
+          "unrealized_pnl_usd": 0
         },
         {
           "coin": "ETH",
           "side": "LONG",
-          "value_usd": 812303,
-          "entry_price": 2423.41,
-          "unrealized_pnl_usd": 9054
+          "value_usd": 960019,
+          "entry_price": 2434.56,
+          "unrealized_pnl_usd": -1645
         },
         {
           "coin": "SOL",
           "side": "LONG",
-          "value_usd": 474184,
-          "entry_price": 90.1853,
-          "unrealized_pnl_usd": 14435
+          "value_usd": 410153,
+          "entry_price": 92.4081,
+          "unrealized_pnl_usd": 6112
         },
         {
           "coin": "BNB",
           "side": "SHORT",
-          "value_usd": 102063,
-          "entry_price": 708.201,
-          "unrealized_pnl_usd": 2134
+          "value_usd": 29170,
+          "entry_price": 700.411,
+          "unrealized_pnl_usd": 191
         },
         {
           "coin": "kPEPE",
           "side": "LONG",
-          "value_usd": 82028,
-          "entry_price": 0.004054,
-          "unrealized_pnl_usd": -1997
+          "value_usd": 173442,
+          "entry_price": 0.004012,
+          "unrealized_pnl_usd": 410
         },
         {
           "coin": "LINK",
           "side": "LONG",
-          "value_usd": 53348,
-          "entry_price": 11.70469,
-          "unrealized_pnl_usd": -752
+          "value_usd": 181150,
+          "entry_price": 11.73342,
+          "unrealized_pnl_usd": 885
         },
         {
           "coin": "AAVE",
           "side": "LONG",
-          "value_usd": 66775,
-          "entry_price": 114.0491,
-          "unrealized_pnl_usd": 489
+          "value_usd": 61203,
+          "entry_price": 122.328,
+          "unrealized_pnl_usd": -1370
         },
         {
           "coin": "ADA",
-          "side": "SHORT",
-          "value_usd": 38014,
-          "entry_price": 0.241591,
-          "unrealized_pnl_usd": 2552
+          "side": "LONG",
+          "value_usd": 50684,
+          "entry_price": 0.229229,
+          "unrealized_pnl_usd": 308
         },
         {
           "coin": "ZEC",
           "side": "LONG",
-          "value_usd": 62947,
-          "entry_price": 750.172,
-          "unrealized_pnl_usd": 2783
+          "value_usd": 41082,
+          "entry_price": 779.2014,
+          "unrealized_pnl_usd": 400
         }
       ]
     },
@@ -610,16 +572,16 @@
       "address": "0x8591a1dcc39e348e9741df5ae3cf89c070c0905f",
       "volume_usd": 64733,
       "trades": 8,
-      "account_value_usd": 12109,
+      "account_value_usd": 13104,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "SOL",
           "side": "SHORT",
-          "value_usd": 36716,
-          "entry_price": 90.4647,
-          "unrealized_pnl_usd": -1007
+          "value_usd": 29123,
+          "entry_price": 93.8013,
+          "unrealized_pnl_usd": -1
         }
       ]
     },
@@ -627,16 +589,16 @@
       "address": "0xba5f4f92f396e6de20d3dae5eefa65f4ecca806a",
       "volume_usd": 64173,
       "trades": 8,
-      "account_value_usd": 38274,
+      "account_value_usd": 42794,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "ETH",
           "side": "LONG",
-          "value_usd": 52849,
-          "entry_price": 2450.59,
-          "unrealized_pnl_usd": 3
+          "value_usd": 66640,
+          "entry_price": 2429.84,
+          "unrealized_pnl_usd": 1
         }
       ]
     },
@@ -644,16 +606,16 @@
       "address": "0x0fd468a73084daa6ea77a9261e40fdec3e67e0c7",
       "volume_usd": 60410,
       "trades": 1,
-      "account_value_usd": 2024060,
+      "account_value_usd": 2036105,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 11080573,
-          "entry_price": 77551.5,
-          "unrealized_pnl_usd": 28731
+          "value_usd": 11096506,
+          "entry_price": 77494.0,
+          "unrealized_pnl_usd": 33044
         }
       ]
     },
@@ -661,16 +623,16 @@
       "address": "0x470756b530bfa294b80dd4783a1fe13dcf3b3394",
       "volume_usd": 50237,
       "trades": 1,
-      "account_value_usd": 127055,
+      "account_value_usd": 128037,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "ZEC",
           "side": "LONG",
-          "value_usd": 871991,
+          "value_usd": 873090,
           "entry_price": 606.6606,
-          "unrealized_pnl_usd": 197991
+          "unrealized_pnl_usd": 199090
         }
       ]
     },
@@ -678,16 +640,16 @@
       "address": "0x706bb519b05b7dc01d048af9a5e29d1ef5d6d9e3",
       "volume_usd": 50113,
       "trades": 2,
-      "account_value_usd": 28836,
+      "account_value_usd": 26759,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 124112,
-          "entry_price": 77228.7,
-          "unrealized_pnl_usd": -196
+          "value_usd": 135528,
+          "entry_price": 77320.9,
+          "unrealized_pnl_usd": 100
         }
       ]
     },
@@ -695,23 +657,23 @@
       "address": "0xd260b2216b735277da6771564a01c04856e78321",
       "volume_usd": 49856,
       "trades": 5,
-      "account_value_usd": 2985871,
+      "account_value_usd": 3301365,
       "positions_total": 2,
       "positions_material": 2,
       "positions": [
         {
           "coin": "ETH",
           "side": "SHORT",
-          "value_usd": 5514142,
+          "value_usd": 5467275,
           "entry_price": 2327.38,
-          "unrealized_pnl_usd": -277527
+          "unrealized_pnl_usd": -230660
         },
         {
           "coin": "HYPE",
           "side": "LONG",
-          "value_usd": 13865634,
+          "value_usd": 14135508,
           "entry_price": 75.0797,
-          "unrealized_pnl_usd": 351283
+          "unrealized_pnl_usd": 621157
         }
       ]
     },
@@ -719,16 +681,16 @@
       "address": "0x6e8bc7cd0978397b06a14af2a8c31f5daeffea79",
       "volume_usd": 48239,
       "trades": 7,
-      "account_value_usd": 72451,
+      "account_value_usd": 68880,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 174061,
-          "entry_price": 77101.1,
-          "unrealized_pnl_usd": -605
+          "value_usd": 1598456,
+          "entry_price": 77306.5,
+          "unrealized_pnl_usd": 901
         }
       ]
     },
@@ -736,16 +698,16 @@
       "address": "0x351126a070c9cadef8064ddd7b2d289fc33163aa",
       "volume_usd": 42296,
       "trades": 6,
-      "account_value_usd": 68259,
+      "account_value_usd": 70463,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "ETH",
           "side": "SHORT",
-          "value_usd": 374403,
-          "entry_price": 2424.16,
-          "unrealized_pnl_usd": -4416
+          "value_usd": 929746,
+          "entry_price": 2435.29,
+          "unrealized_pnl_usd": 2063
         }
       ]
     },
@@ -753,16 +715,16 @@
       "address": "0xcf3f419d08a5bdc2c6e5fbd9ad70904c5420f95f",
       "volume_usd": 40711,
       "trades": 2,
-      "account_value_usd": 5313540,
+      "account_value_usd": 5379044,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 1033695,
-          "entry_price": 77094.9,
-          "unrealized_pnl_usd": -3675
+          "value_usd": 7682323,
+          "entry_price": 77446.0,
+          "unrealized_pnl_usd": 18199
         }
       ]
     },
@@ -770,110 +732,137 @@
       "address": "0xf286eef0a168efebf34b06917904aad0daffd172",
       "volume_usd": 39988,
       "trades": 4,
-      "account_value_usd": 22632,
-      "positions_total": 1,
-      "positions_material": 1,
+      "account_value_usd": 25456,
+      "positions_total": 2,
+      "positions_material": 2,
       "positions": [
         {
           "coin": "HYPE",
           "side": "LONG",
-          "value_usd": 46254,
+          "value_usd": 47146,
           "entry_price": 58.728,
-          "unrealized_pnl_usd": 11000
+          "unrealized_pnl_usd": 11892
+        },
+        {
+          "coin": "XMR",
+          "side": "LONG",
+          "value_usd": 9948,
+          "entry_price": 428.674,
+          "unrealized_pnl_usd": -62
         }
       ]
     },
     {
       "address": "0xa265636a3cf15e099c54632cb00c625d91543a13",
-      "volume_usd": 38621,
-      "trades": 13,
-      "account_value_usd": 364779,
+      "volume_usd": 39676,
+      "trades": 14,
+      "account_value_usd": 375588,
       "positions_total": 22,
-      "positions_material": 12,
+      "positions_material": 10,
       "positions": [
         {
           "coin": "LTC",
           "side": "LONG",
-          "value_usd": 31080,
-          "entry_price": 52.4661,
-          "unrealized_pnl_usd": -516
+          "value_usd": 27501,
+          "entry_price": 51.9302,
+          "unrealized_pnl_usd": -120
         },
         {
           "coin": "ARB",
-          "side": "LONG",
-          "value_usd": 93522,
-          "entry_price": 0.09577,
-          "unrealized_pnl_usd": 423
+          "side": "SHORT",
+          "value_usd": 56868,
+          "entry_price": 0.09992,
+          "unrealized_pnl_usd": 825
         },
         {
           "coin": "LINK",
           "side": "LONG",
-          "value_usd": 8882,
+          "value_usd": 9056,
           "entry_price": 12.01048,
-          "unrealized_pnl_usd": -344
+          "unrealized_pnl_usd": -169
         },
         {
-          "coin": "DOT",
+          "coin": "SEI",
           "side": "LONG",
-          "value_usd": 5260,
-          "entry_price": 0.92423,
-          "unrealized_pnl_usd": 68
-        },
-        {
-          "coin": "PENDLE",
-          "side": "SHORT",
-          "value_usd": 9216,
-          "entry_price": 1.585234,
-          "unrealized_pnl_usd": -102
-        },
-        {
-          "coin": "MEME",
-          "side": "SHORT",
-          "value_usd": 14785,
-          "entry_price": 0.000562,
-          "unrealized_pnl_usd": 1
+          "value_usd": 12729,
+          "entry_price": 0.04719,
+          "unrealized_pnl_usd": -13
         },
         {
           "coin": "ETHFI",
           "side": "LONG",
-          "value_usd": 27820,
-          "entry_price": 0.52732,
-          "unrealized_pnl_usd": 910
+          "value_usd": 8361,
+          "entry_price": 0.57804,
+          "unrealized_pnl_usd": -39
         },
         {
           "coin": "ENA",
           "side": "LONG",
-          "value_usd": 107503,
-          "entry_price": 0.144192,
-          "unrealized_pnl_usd": 776
+          "value_usd": 104914,
+          "entry_price": 0.150292,
+          "unrealized_pnl_usd": -236
         },
         {
           "coin": "kNEIRO",
           "side": "LONG",
-          "value_usd": 6804,
-          "entry_price": 0.09212,
-          "unrealized_pnl_usd": -172
+          "value_usd": 5336,
+          "entry_price": 0.09236,
+          "unrealized_pnl_usd": -9
         },
         {
           "coin": "FARTCOIN",
-          "side": "LONG",
-          "value_usd": 11520,
-          "entry_price": 0.17486,
-          "unrealized_pnl_usd": 500
+          "side": "SHORT",
+          "value_usd": 32713,
+          "entry_price": 0.18984,
+          "unrealized_pnl_usd": -44
         },
         {
           "coin": "NXPC",
           "side": "LONG",
-          "value_usd": 13120,
+          "value_usd": 13336,
           "entry_price": 0.225492,
-          "unrealized_pnl_usd": -463
+          "unrealized_pnl_usd": -247
         },
         {
           "coin": "MEGA",
           "side": "SHORT",
-          "value_usd": 23518,
-          "entry_price": 0.04195,
-          "unrealized_pnl_usd": 893
+          "value_usd": 24441,
+          "entry_price": 0.041593,
+          "unrealized_pnl_usd": 472
+        }
+      ]
+    },
+    {
+      "address": "0xd911e53d53b663972254e086450fd6198a25961e",
+      "volume_usd": 38373,
+      "trades": 8,
+      "account_value_usd": 2172554,
+      "positions_total": 1,
+      "positions_material": 1,
+      "positions": [
+        {
+          "coin": "ETH",
+          "side": "SHORT",
+          "value_usd": 5997309,
+          "entry_price": 2431.81,
+          "unrealized_pnl_usd": 4726
+        }
+      ]
+    },
+    {
+      "address": "0xa6e2dc44418f5ad213c86db4dbb203a59d13c49f",
+      "volume_usd": 36672,
+      "trades": 5,
+      "account_value_usd": 77933,
+      "positions_total": 1,
+      "positions_material": 1,
+      "positions": [
+        {
+          "coin": "SOL",
+          "side": "SHORT",
+          "value_usd": 748456,
+          "entry_price": 94.1654,
+          "unrealized_pnl_usd": 3082
         }
       ]
     },
@@ -881,16 +870,16 @@
       "address": "0x2cffce91b4e0c81df18726ff66b31b2b1545e1ad",
       "volume_usd": 33679,
       "trades": 4,
-      "account_value_usd": 36372,
+      "account_value_usd": 41814,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "BTC",
           "side": "LONG",
-          "value_usd": 8070,
-          "entry_price": 77359.3,
-          "unrealized_pnl_usd": 1
+          "value_usd": 38793,
+          "entry_price": 77243.4,
+          "unrealized_pnl_usd": 5
         }
       ]
     },
@@ -898,23 +887,23 @@
       "address": "0xdf7787ca201aad020ef923c696905bd01ec1a98b",
       "volume_usd": 33493,
       "trades": 1,
-      "account_value_usd": 672106,
+      "account_value_usd": 783063,
       "positions_total": 2,
       "positions_material": 2,
       "positions": [
         {
           "coin": "BTC",
           "side": "LONG",
-          "value_usd": 8135342,
-          "entry_price": 78542.1,
-          "unrealized_pnl_usd": -120158
+          "value_usd": 8219667,
+          "entry_price": 78529.6,
+          "unrealized_pnl_usd": -135831
         },
         {
           "coin": "NEAR",
           "side": "LONG",
-          "value_usd": 874223,
+          "value_usd": 927973,
           "entry_price": 2.11993,
-          "unrealized_pnl_usd": -137732
+          "unrealized_pnl_usd": -83982
         }
       ]
     },
@@ -922,65 +911,86 @@
       "address": "0xb48e45c76e7442d9944790085399e26b7d89b1ed",
       "volume_usd": 33187,
       "trades": 1,
-      "account_value_usd": 658308,
-      "positions_total": 8,
-      "positions_material": 8,
+      "account_value_usd": 630687,
+      "positions_total": 11,
+      "positions_material": 11,
       "positions": [
+        {
+          "coin": "BTC",
+          "side": "LONG",
+          "value_usd": 2317731,
+          "entry_price": 77339.6,
+          "unrealized_pnl_usd": -2600
+        },
         {
           "coin": "ETH",
           "side": "LONG",
-          "value_usd": 543886,
+          "value_usd": 538301,
           "entry_price": 2132.55,
-          "unrealized_pnl_usd": 71243
+          "unrealized_pnl_usd": 65658
         },
         {
           "coin": "SOL",
           "side": "LONG",
-          "value_usd": 2608801,
+          "value_usd": 1874720,
           "entry_price": 87.9078,
-          "unrealized_pnl_usd": 146787
+          "unrealized_pnl_usd": 116563
         },
         {
           "coin": "XRP",
           "side": "LONG",
-          "value_usd": 608720,
+          "value_usd": 535290,
           "entry_price": 1.081906,
-          "unrealized_pnl_usd": 174331
+          "unrealized_pnl_usd": 156623
+        },
+        {
+          "coin": "NEAR",
+          "side": "LONG",
+          "value_usd": 350313,
+          "entry_price": 1.94282,
+          "unrealized_pnl_usd": 212
+        },
+        {
+          "coin": "ENA",
+          "side": "LONG",
+          "value_usd": 347472,
+          "entry_price": 0.151088,
+          "unrealized_pnl_usd": -2919
         },
         {
           "coin": "HYPE",
           "side": "LONG",
-          "value_usd": 301277,
-          "entry_price": 76.7848,
-          "unrealized_pnl_usd": 1169
+          "value_usd": 357004,
+          "entry_price": 79.4501,
+          "unrealized_pnl_usd": -4179
         },
         {
           "coin": "FARTCOIN",
           "side": "LONG",
-          "value_usd": 276528,
+          "value_usd": 220814,
           "entry_price": 0.15725,
-          "unrealized_pnl_usd": 39303
+          "unrealized_pnl_usd": 38150
         },
         {
           "coin": "PUMP",
           "side": "LONG",
-          "value_usd": 380127,
+          "value_usd": 414884,
           "entry_price": 0.003251,
-          "unrealized_pnl_usd": 70531
+          "unrealized_pnl_usd": 105287
         },
         {
           "coin": "ZEC",
           "side": "LONG",
-          "value_usd": 1474741,
+          "value_usd": 785476,
           "entry_price": 600.4903,
-          "unrealized_pnl_usd": 356826
+          "unrealized_pnl_usd": 184986
         },
         {
-          "coin": "MON",
+          "coin": "LIT",
           "side": "LONG",
-          "value_usd": 230848,
-          "entry_price": 0.026257,
-          "unrealized_pnl_usd": 3421
+          "value_usd": 147095,
+          "entry_price": 2.987332,
+          "unrealized_pnl_usd": -2272
         }
       ]
     },
@@ -988,16 +998,40 @@
       "address": "0xc3704b5ec0f8b3015276b773b8f68ca66776df51",
       "volume_usd": 32379,
       "trades": 4,
-      "account_value_usd": 227620,
+      "account_value_usd": 246458,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "BTC",
           "side": "LONG",
-          "value_usd": 2504838,
+          "value_usd": 2500113,
           "entry_price": 67556.0,
-          "unrealized_pnl_usd": 318543
+          "unrealized_pnl_usd": 313818
+        }
+      ]
+    },
+    {
+      "address": "0x12e16e3dc4a4fb3c802be62105f15783eb95f92a",
+      "volume_usd": 31362,
+      "trades": 2,
+      "account_value_usd": 54613,
+      "positions_total": 2,
+      "positions_material": 2,
+      "positions": [
+        {
+          "coin": "BTC",
+          "side": "SHORT",
+          "value_usd": 274815,
+          "entry_price": 77344.5,
+          "unrealized_pnl_usd": 326
+        },
+        {
+          "coin": "HYPE",
+          "side": "LONG",
+          "value_usd": 272937,
+          "entry_price": 79.1253,
+          "unrealized_pnl_usd": -2066
         }
       ]
     },
@@ -1005,44 +1039,44 @@
       "address": "0xf822fa0fd364c573fcdb7009fcf47601bc8be01a",
       "volume_usd": 30094,
       "trades": 5,
-      "account_value_usd": 19349310,
+      "account_value_usd": 19406676,
       "positions_total": 10,
       "positions_material": 5,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 2779880,
+          "value_usd": 2774636,
           "entry_price": 62412.1,
-          "unrealized_pnl_usd": -538269
+          "unrealized_pnl_usd": -533026
         },
         {
           "coin": "ETH",
           "side": "SHORT",
-          "value_usd": 5289712,
+          "value_usd": 5153822,
           "entry_price": 1789.28,
-          "unrealized_pnl_usd": -1432825
+          "unrealized_pnl_usd": -1357027
         },
         {
           "coin": "SOL",
           "side": "SHORT",
-          "value_usd": 3373368,
+          "value_usd": 2844894,
           "entry_price": 76.008,
-          "unrealized_pnl_usd": -620757
+          "unrealized_pnl_usd": -538046
         },
         {
           "coin": "HYPE",
           "side": "SHORT",
-          "value_usd": 46176656,
+          "value_usd": 47017504,
           "entry_price": 65.8076,
-          "unrealized_pnl_usd": -6755003
+          "unrealized_pnl_usd": -7617612
         },
         {
           "coin": "PAXG",
           "side": "SHORT",
-          "value_usd": 425907,
+          "value_usd": 426754,
           "entry_price": 4192.472,
-          "unrealized_pnl_usd": -35722
+          "unrealized_pnl_usd": -36569
         }
       ]
     },
@@ -1050,23 +1084,16 @@
       "address": "0x4ef1c5ae65ab5b37629b7aa523e7e95e7da528e3",
       "volume_usd": 29852,
       "trades": 7,
-      "account_value_usd": 47308,
+      "account_value_usd": 56763,
       "positions_total": 2,
-      "positions_material": 2,
+      "positions_material": 1,
       "positions": [
         {
           "coin": "SOL",
           "side": "LONG",
-          "value_usd": 11304,
-          "entry_price": 88.1238,
-          "unrealized_pnl_usd": 610
-        },
-        {
-          "coin": "XRP",
-          "side": "SHORT",
-          "value_usd": 55811,
-          "entry_price": 1.430402,
-          "unrealized_pnl_usd": -3155
+          "value_usd": 30476,
+          "entry_price": 93.7988,
+          "unrealized_pnl_usd": -20
         }
       ]
     },
@@ -1074,58 +1101,58 @@
       "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
       "volume_usd": 28970,
       "trades": 20,
-      "account_value_usd": 52069345,
+      "account_value_usd": 52520681,
       "positions_total": 8,
       "positions_material": 7,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 72075309,
-          "entry_price": 64261.2,
-          "unrealized_pnl_usd": -12234111
+          "value_usd": 72237259,
+          "entry_price": 64314.9,
+          "unrealized_pnl_usd": -12098061
         },
         {
           "coin": "ETH",
           "side": "SHORT",
-          "value_usd": 100888986,
+          "value_usd": 99852962,
           "entry_price": 2015.88,
-          "unrealized_pnl_usd": -18011773
+          "unrealized_pnl_usd": -16975749
         },
         {
           "coin": "SOL",
           "side": "SHORT",
-          "value_usd": 40787989,
-          "entry_price": 88.0295,
-          "unrealized_pnl_usd": -2241721
+          "value_usd": 41215476,
+          "entry_price": 88.0543,
+          "unrealized_pnl_usd": -2498211
         },
         {
           "coin": "XRP",
           "side": "SHORT",
-          "value_usd": 6038200,
-          "entry_price": 1.587308,
-          "unrealized_pnl_usd": 283604
+          "value_usd": 6093276,
+          "entry_price": 1.587261,
+          "unrealized_pnl_usd": 230525
         },
         {
           "coin": "HYPE",
           "side": "SHORT",
-          "value_usd": 56237406,
-          "entry_price": 64.6278,
-          "unrealized_pnl_usd": -9087500
+          "value_usd": 58184671,
+          "entry_price": 64.8495,
+          "unrealized_pnl_usd": -10136775
         },
         {
           "coin": "FARTCOIN",
           "side": "SHORT",
-          "value_usd": 4336629,
+          "value_usd": 4497263,
           "entry_price": 0.20186,
-          "unrealized_pnl_usd": 438872
+          "unrealized_pnl_usd": 278239
         },
         {
           "coin": "PUMP",
           "side": "SHORT",
-          "value_usd": 3393275,
+          "value_usd": 3703532,
           "entry_price": 0.003667,
-          "unrealized_pnl_usd": -275593
+          "unrealized_pnl_usd": -585850
         }
       ]
     },
@@ -1133,44 +1160,44 @@
       "address": "0x7b7f72a28fe109fa703eeed7984f2a8a68fedee2",
       "volume_usd": 27163,
       "trades": 3,
-      "account_value_usd": 1945243,
+      "account_value_usd": 2028446,
       "positions_total": 5,
       "positions_material": 5,
       "positions": [
         {
           "coin": "BTC",
-          "side": "LONG",
-          "value_usd": 572149,
-          "entry_price": 77000.2,
-          "unrealized_pnl_usd": 2955
+          "side": "SHORT",
+          "value_usd": 581121,
+          "entry_price": 77311.5,
+          "unrealized_pnl_usd": 456
         },
         {
           "coin": "ETH",
-          "side": "SHORT",
-          "value_usd": 1100606,
-          "entry_price": 2444.79,
-          "unrealized_pnl_usd": -3728
+          "side": "LONG",
+          "value_usd": 164716,
+          "entry_price": 2431.02,
+          "unrealized_pnl_usd": -144
         },
         {
           "coin": "SOL",
           "side": "LONG",
-          "value_usd": 723718,
-          "entry_price": 92.898,
-          "unrealized_pnl_usd": 786
+          "value_usd": 71261,
+          "entry_price": 93.9775,
+          "unrealized_pnl_usd": -191
         },
         {
           "coin": "XRP",
           "side": "SHORT",
-          "value_usd": 193570,
-          "entry_price": 1.436482,
-          "unrealized_pnl_usd": -10401
+          "value_usd": 246321,
+          "entry_price": 1.536529,
+          "unrealized_pnl_usd": 1116
         },
         {
           "coin": "HYPE",
-          "side": "SHORT",
-          "value_usd": 224474,
-          "entry_price": 76.3066,
-          "unrealized_pnl_usd": -2534
+          "side": "LONG",
+          "value_usd": 48706,
+          "entry_price": 78.79,
+          "unrealized_pnl_usd": -152
         }
       ]
     },
@@ -1178,16 +1205,16 @@
       "address": "0x80db4a424f5e62fb4cbae8cb2822e611c85ee9ed",
       "volume_usd": 26419,
       "trades": 1,
-      "account_value_usd": 1041,
+      "account_value_usd": 1198,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "ETH",
           "side": "SHORT",
-          "value_usd": 15871,
+          "value_usd": 15715,
           "entry_price": 2515.2,
-          "unrealized_pnl_usd": 402
+          "unrealized_pnl_usd": 558
         }
       ]
     },
@@ -1195,51 +1222,51 @@
       "address": "0x3bcae23e8c380dab4732e9a159c0456f12d866f3",
       "volume_usd": 23069,
       "trades": 1,
-      "account_value_usd": 266248,
+      "account_value_usd": 274037,
       "positions_total": 7,
       "positions_material": 6,
       "positions": [
         {
           "coin": "BTC",
           "side": "SHORT",
-          "value_usd": 1078582,
+          "value_usd": 1076506,
           "entry_price": 78585.8,
-          "unrealized_pnl_usd": 16524
+          "unrealized_pnl_usd": 18601
         },
         {
           "coin": "ETH",
           "side": "SHORT",
-          "value_usd": 243537,
+          "value_usd": 241134,
           "entry_price": 2518.02,
-          "unrealized_pnl_usd": 6446
+          "unrealized_pnl_usd": 8848
         },
         {
           "coin": "XRP",
           "side": "SHORT",
-          "value_usd": 98128,
+          "value_usd": 98875,
           "entry_price": 1.577455,
-          "unrealized_pnl_usd": 3840
+          "unrealized_pnl_usd": 3093
         },
         {
           "coin": "ZEC",
           "side": "SHORT",
-          "value_usd": 72432,
+          "value_usd": 71967,
           "entry_price": 800.985,
-          "unrealized_pnl_usd": 946
+          "unrealized_pnl_usd": 1411
         },
         {
           "coin": "MON",
           "side": "LONG",
-          "value_usd": 572630,
+          "value_usd": 574391,
           "entry_price": 0.028333,
-          "unrealized_pnl_usd": -35893
+          "unrealized_pnl_usd": -34132
         },
         {
           "coin": "CHIP",
           "side": "LONG",
-          "value_usd": 44573,
+          "value_usd": 46299,
           "entry_price": 0.03297,
-          "unrealized_pnl_usd": -6287
+          "unrealized_pnl_usd": -4561
         }
       ]
     },
@@ -1247,40 +1274,16 @@
       "address": "0x0622a2198712c9527817493553dca548f42e8088",
       "volume_usd": 23069,
       "trades": 1,
-      "account_value_usd": 6235902,
+      "account_value_usd": 6314790,
       "positions_total": 1,
       "positions_material": 1,
       "positions": [
         {
           "coin": "ETH",
-          "side": "SHORT",
-          "value_usd": 9003304,
-          "entry_price": 2437.98,
-          "unrealized_pnl_usd": -55479
-        }
-      ]
-    },
-    {
-      "address": "0xe3f42af201ec36992a6b89e0ad6f814b901d1128",
-      "volume_usd": 20341,
-      "trades": 1,
-      "account_value_usd": 11094,
-      "positions_total": 2,
-      "positions_material": 2,
-      "positions": [
-        {
-          "coin": "PUMP",
           "side": "LONG",
-          "value_usd": 20002,
-          "entry_price": 0.002364,
-          "unrealized_pnl_usd": 8179
-        },
-        {
-          "coin": "ZEC",
-          "side": "LONG",
-          "value_usd": 10777,
-          "entry_price": 728.114,
-          "unrealized_pnl_usd": 852
+          "value_usd": 22289,
+          "entry_price": 2429.7,
+          "unrealized_pnl_usd": -7
         }
       ]
     }
