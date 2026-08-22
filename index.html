@@ -1516,7 +1516,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-22-02';
+const BUILD_STAMP = 'BUILD-2026-08-22-03';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
@@ -4651,6 +4651,15 @@ async function renderModalIntelligence(token) {
   // view_data.build_structure, здесь только рисование по координатам.
   // ═══════════════════════════════════════════════════════════════════
   {
+    // md объявлен через `const` внутри СОСЕДНЕГО блока `{...}` выше и
+    // сюда не виден. Обращение к нему отсюда роняло ReferenceError,
+    // ошибка всплывала из renderModalIntelligence и гасила ВЕСЬ блок
+    // слоёв решения: «Не удалось собрать слои решения».
+    //
+    // Моя проверка рендера этого не поймала, потому что я прогонял
+    // блок отдельно и сам подставлял md — то есть проверял кусок, а не
+    // его встройку. Берём данные тем же способом, что и соседний блок.
+    const md = viewData && viewData.modal && viewData.modal[token];
     const st = md && md.structure;
     if (st && st.levels) {
       const H = 300, PAD = 14;
