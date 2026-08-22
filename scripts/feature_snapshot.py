@@ -185,9 +185,38 @@ def main(dry, show_stats):
     if show_stats:
         return stats()
 
-    spec = load_json(FEATURES_FILE)
+    # Читаем контракт СТРОГО, а не через load_json: тот глотает любую
+    # ошибку и возвращает None, и тогда битый файл выглядит как
+    # отсутствующий. 22.08 features.json приехал через веб-интерфейс
+    # вставленным внутрь самого себя — 640 строк вместо 321 — и
+    # сообщение «нет файла» отправило бы искать не там.
+    if not os.path.exists(FEATURES_FILE):
+        print(f"  Нет файла {FEATURES_FILE}")
+        return 1
+    try:
+        with open(FEATURES_FILE, encoding="utf-8") as fh:
+            spec = json.load(fh)
+    except json.JSONDecodeError as e:
+        print(f"\n  ОСТАНОВЛЕНО: {FEATURES_FILE} — битый JSON")
+        print(f"  {e.msg}, строка {e.lineno}, символ {e.colno}\n")
+        try:
+            lines = open(FEATURES_FILE, encoding="utf-8").read().splitlines()
+            lo = max(0, e.lineno - 3)
+            for i in range(lo, min(len(lines), e.lineno + 2)):
+                mark = "→" if i + 1 == e.lineno else " "
+                print(f"  {mark} {i + 1:>4} | {lines[i][:100]}")
+            print(f"\n  Строк в файле: {len(lines)}. Если их сильно больше "
+                  f"трёхсот —")
+            print("  скорее всего файл вставился внутрь самого себя. Так бывает,")
+            print("  когда содержимое вставляют в редактор, не очистив старое.")
+            print("  Надёжный путь: удалить файл в репозитории, закоммитить "
+                  "удаление,")
+            print("  потом Add file → Upload files и залить заново.\n")
+        except Exception:
+            pass
+        return 1
     if not spec:
-        print(f"  Нет {FEATURES_FILE}")
+        print(f"  {FEATURES_FILE} пустой")
         return 1
 
     token_names = sorted(spec.get("features", {}))
