@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-view_data.py · v1.3 · 21.08.2026
+view_data.py · v1.4 · 21.08.2026
 STRK ENGINE · готовые данные для отображения
 
 ЗАЧЕМ
@@ -531,6 +531,150 @@ def build_whale_view(row):
     }
 
 
+# ─────────────────────────────────────────────────────────────
+# СТРУКТУРА АКТИВА · то, что нужно увидеть, а не прочитать
+#
+# Свинг-горизонт 3-14 дней. Вопросы на этом горизонте всего три:
+# где цена внутри структуры, что держит сверху, что держит снизу.
+# Всё остальное — детали, которые можно посмотреть потом.
+#
+# Здесь готовится всё для рисования: шкала, зоны, уровни, подписи.
+# Браузер только рисует прямоугольники по готовым координатам.
+# ─────────────────────────────────────────────────────────────
+
+# Окно вокруг цены. Уровни дальше него на свинге не работают:
+# до них цена идёт неделями, а решение принимается сегодня.
+SCALE_DOWN = 0.78
+SCALE_UP = 1.28
+
+
+def build_structure(token, v, advice_row=None):
+    """Готовая лестница уровней вокруг цены."""
+    if not v or v.get("status") != "OK":
+        return None
+    price = v.get("current_price")
+    if not price:
+        return None
+
+    lo_bound = price * SCALE_DOWN
+    hi_bound = price * SCALE_UP
+
+    def pct(p):
+        return round((p / price - 1) * 100, 1)
+
+    # ── Зоны стоимости ──
+    zones = []
+    for wname, label in (("30d", "зона стоимости · месяц"),
+                         ("7d", "зона стоимости · неделя")):
+        lv = ((v.get("windows") or {}).get(wname) or {}).get("levels") or {}
+        val, vah, poc = lv.get("val"), lv.get("vah"), lv.get("poc")
+        if val and vah and vah > val:
+            zones.append({
+                "window": wname,
+                "label": label,
+                "from": round(val, 8),
+                "to": round(vah, 8),
+                "poc": round(poc, 8) if poc else None,
+                "from_pct": pct(val),
+                "to_pct": pct(vah),
+                "poc_pct": pct(poc) if poc else None,
+            })
+
+    # ── Уровни ──
+    KIND_RU = {
+        "POC": "самый торгуемый уровень",
+        "VAH": "верх зоны стоимости",
+        "VAL": "низ зоны стоимости",
+        "HVN": "узел объёма",
+        "SWING_HIGH": "прошлый максимум",
+        "SWING_LOW": "прошлый минимум",
+    }
+    STRONG_KINDS = ("POC", "VAH", "VAL", "HVN")
+
+    levels = []
+    t = v.get("targets") or {}
+    for side, key in (("up", "nearest_up"), ("down", "nearest_down")):
+        for x in (t.get(key) or []):
+            pr = x.get("price")
+            if not pr or pr < lo_bound or pr > hi_bound:
+                continue
+            kind = x.get("kind") or ""
+            levels.append({
+                "price": round(pr, 8),
+                "pct": pct(pr),
+                "side": side,
+                "kind": kind,
+                "strong": kind in STRONG_KINDS,
+                "label": KIND_RU.get(kind, x.get("label") or kind),
+                "window": x.get("window"),
+            })
+    levels.sort(key=lambda x: -x["price"])
+
+    # Сколько уровней осталось за кадром — честно сказать, что они есть
+    beyond_up = len([x for x in (t.get("nearest_up") or []) if (x.get("price") or 0) > hi_bound])
+    beyond_down = len([x for x in (t.get("nearest_down") or []) if 0 < (x.get("price") or 0) < lo_bound])
+
+    # ── Где мы ──
+    pos = v.get("position") or {}
+    code = pos.get("code")
+    where = {"ABOVE_VALUE": "выше зоны стоимости",
+             "BELOW_VALUE": "ниже зоны стоимости",
+             "INSIDE_VALUE": "внутри зоны стоимости"}.get(code, "положение не определено")
+
+    read = []
+    d_poc = pos.get("distance_to_poc_pct")
+    if d_poc is not None:
+        read.append(f"Цена {where}, до самого торгуемого уровня {abs(d_poc):.0f}% "
+                    f"{'вниз' if d_poc > 0 else 'вверх'}.")
+    else:
+        read.append(f"Цена {where}.")
+
+    ups = [x for x in levels if x["side"] == "up"]
+    downs = [x for x in levels if x["side"] == "down"]
+    if ups:
+        u = ups[-1]
+        read.append(f"Сверху держит ${fmt_price(u['price'])} — {u['label']}, {abs(u['pct']):.1f}%.")
+    else:
+        read.append(f"Сверху в пределах {round((SCALE_UP-1)*100)}% ничего нет — "
+                    f"расти мешать нечему.")
+    if downs:
+        d0 = downs[0]
+        read.append(f"Снизу держит ${fmt_price(d0['price'])} — {d0['label']}, {abs(d0['pct']):.1f}%.")
+    else:
+        read.append(f"Снизу в пределах {round((1-SCALE_DOWN)*100)}% ничего нет — "
+                    f"падать мешать нечему.")
+
+    kind_up = pos.get("above_kind")
+    if code == "ABOVE_VALUE" and kind_up == "MARKUP":
+        read.append(f"Выход вверх подтверждён объёмом (×{pos.get('vol_ratio_recent')} "
+                    f"к среднему по рынку) — рынок принимает новую цену.")
+    elif code == "ABOVE_VALUE" and kind_up == "EXTENDED":
+        read.append("Цена ушла вверх, а объём этого не подтверждает — "
+                    "вероятен возврат в зону.")
+
+    entry = None
+    if advice_row and advice_row.get("entry_price"):
+        entry = {
+            "price": round(advice_row["entry_price"], 8),
+            "pct": pct(advice_row["entry_price"]),
+            "side": advice_row.get("side"),
+            "pnl_pct": advice_row.get("pnl_pct"),
+        }
+
+    return {
+        "price": round(price, 8),
+        "scale_min": round(lo_bound, 8),
+        "scale_max": round(hi_bound, 8),
+        "where": where,
+        "zones": zones,
+        "levels": levels,
+        "levels_beyond_up": beyond_up,
+        "levels_beyond_down": beyond_down,
+        "entry": entry,
+        "read": read,
+    }
+
+
 def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None, advice=None):
     """
     Всё, что нужно модалке актива, уже готовым. Раньше браузер сам
@@ -577,6 +721,7 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None, advice=None)
             "triggers": d.get("triggers") or [],
             "invalidations": d.get("invalidations") or [],
             "rules_fired": d.get("rules_fired") or [],
+            "structure": build_structure(token, v, advice_tokens.get(token)),
             "compass": {
                 # см. комментарий выше: балл без вердикта в интерфейс не идёт
                 "score": ((compass.get(token) or {}).get("score")
@@ -609,7 +754,7 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None, advice=None)
 
 
 def main():
-    print("=== View Data v1.1 ===\n")
+    print("=== View Data v1.2 ===\n")
 
     dec = load("decisions.json")
     comp = load("asset_compass.json")
