@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "comment": "Каталог правил. Формат заимствован у детектив-инженерии (Sigma / Elastic detection-rules): правило — это ДАННЫЕ, а не код. У каждого есть id, статус зрелости, список нужных фич, условие одной строкой, и — главное — блок measured с результатом проверки на истории. Голосовать имеет право только правило, прошедшее порог. Всё остальное считается, показывается и логируется, но на вердикт не влияет.",
+
+  "policy": {
+    "min_dsr_to_vote": 0.95,
+    "min_n_to_vote": 30,
+    "unmeasured_can_vote": false,
+    "comment_ru": "Правило без measured не голосует никогда — даже если выглядит очевидным. Это ровно то, чего не хватало: раньше детектор начинал влиять на решение в момент, когда его написали, а не в момент, когда его проверили."
+  },
+
+  "statuses": {
+    "draft": "написано, на истории не проверялось",
+    "testing": "проверяется, накапливаются наблюдения",
+    "measured_pass": "проверено, порог прошло — имеет право голоса",
+    "measured_fail": "проверено, порог не прошло — не голосует",
+    "deprecated": "выключено, оставлено для истории"
+  },
+
+  "rules": [
+    {
+      "id": "flow.accel_up",
+      "title": "Приток ускоряется",
+      "status": "measured_fail",
+      "side": "long",
+      "horizon_days": 14,
+      "requires": ["flow_1w_usd", "flow_accel_1w_usd", "flow_1w_significant"],
+      "condition": "flow_1w_usd > 0 and flow_accel_1w_usd > 0 and flow_1w_significant",
+      "evidence": ["flow_1w_usd", "flow_accel_1w_usd"],
+      "measured": {
+        "checked_at": "2026-08-22",
+        "method": "rule_significance.py · непересекающиеся наблюдения",
+        "n": 348,
+        "sharpe": -0.109,
+        "dsr": 0.0,
+        "hit_pct": 25.4,
+        "baseline_hit_pct": 25.1
+      },
+      "note_ru": "Это было главное бычье правило движка, оно давало +25% к размеру позиции. Попадание 25.4% против базовой линии 25.1% — разница в пределах шума. Отключено не потому, что 'плохое', а потому что измерено.",
+      "falsepositives": ["один крупный перевод между кошельками одного владельца выглядит как приток"]
+    },
+    {
+      "id": "flow.accel_down",
+      "title": "Отток ускоряется",
+      "status": "measured_fail",
+      "side": "short",
+      "horizon_days": 14,
+      "requires": ["flow_1w_usd", "flow_accel_1w_usd", "flow_1w_significant"],
+      "condition": "flow_1w_usd < 0 and flow_accel_1w_usd < 0 and flow_1w_significant",
+      "evidence": ["flow_1w_usd", "flow_accel_1w_usd"],
+      "measured": {
+        "checked_at": "2026-08-22",
+        "method": "rule_significance.py · непересекающиеся наблюдения",
+        "n": 121,
+        "dsr": 0.0
+      },
+      "falsepositives": ["вывод на холодное хранение читается как отток"]
+    },
+    {
+      "id": "flow.no_history",
+      "title": "Истории потоков не хватает",
+      "status": "draft",
+      "side": "none",
+      "horizon_days": 0,
+      "requires": ["flow_weeks_available"],
+      "condition": "flow_weeks_available < 12",
+      "evidence": ["flow_weeks_available"],
+      "note_ru": "Служебное правило: не сигнал, а метка качества данных. Полезно, чтобы видеть, по скольким токенам потоковые правила в принципе неприменимы."
+    },
+
+    {
+      "id": "vp.markup_confirmed",
+      "title": "Выход вверх подтверждён объёмом",
+      "status": "testing",
+      "side": "long",
+      "horizon_days": 14,
+      "requires": ["vp_position", "vp_above_kind", "vp_vol_ratio", "vp_market_median_vol_ratio"],
+      "condition": "vp_position == \"ABOVE_VALUE\" and vp_above_kind == \"MARKUP\"",
+      "evidence": ["vp_vol_ratio", "vp_market_median_vol_ratio", "vp_dist_to_poc_pct"],
+      "note_ru": "MARKUP означает объём выше медианы рынка, а не выше абсолютной константы. Абсолютный порог 1.3 в v2.1 помечал 38 токенов из 40 — то есть не различал ничего.",
+      "falsepositives": ["в день общерыночного всплеска объёма MARKUP получают почти все — нормировка на медиану это лечит, но не полностью"]
+    },
+    {
+      "id": "vp.extended_above_value",
+      "title": "Цена оторвалась от зоны стоимости без объёма",
+      "status": "testing",
+      "side": "short",
+      "horizon_days": 14,
+      "requires": ["vp_position", "vp_above_kind", "vp_dist_to_poc_pct"],
+      "condition": "vp_position == \"ABOVE_VALUE\" and vp_above_kind == \"EXTENDED\" and vp_dist_to_poc_pct > 15",
+      "evidence": ["vp_dist_to_poc_pct", "vp_vol_ratio"],
+      "note_ru": "Растяжка без объёма. Гипотеза возврата к POC — НЕ проверена."
+    },
+    {
+      "id": "vp.below_value",
+      "title": "Цена ниже зоны стоимости",
+      "status": "draft",
+      "side": "long",
+      "horizon_days": 28,
+      "requires": ["vp_position"],
+      "condition": "vp_position == \"BELOW_VALUE\"",
+      "evidence": ["vp_dist_to_poc_pct"]
+    },
+
+    {
+      "id": "funding.crowded_long",
+      "title": "Фандинг перегрет вверх",
+      "status": "draft",
+      "side": "short",
+      "horizon_days": 7,
+      "requires": ["funding_annual_pct", "oi_change_pct"],
+      "condition": "funding_annual_pct > 30 and oi_change_pct > 0",
+      "evidence": ["funding_annual_pct", "oi_change_pct"],
+      "falsepositives": ["в устойчивом тренде высокий фандинг держится неделями и ничего не разворачивает"]
+    },
+    {
+      "id": "funding.crowded_short",
+      "title": "Фандинг перегрет вниз",
+      "status": "draft",
+      "side": "long",
+      "horizon_days": 7,
+      "requires": ["funding_annual_pct", "oi_change_pct"],
+      "condition": "funding_annual_pct < -20 and oi_change_pct > 0",
+      "evidence": ["funding_annual_pct", "oi_change_pct"]
+    },
+
+    {
+      "id": "onchain.mvrv_cheap",
+      "title": "MVRV в нижней части собственной истории",
+      "status": "measured_fail",
+      "side": "long",
+      "horizon_days": 56,
+      "requires": ["mvrv_pct", "onchain_days"],
+      "condition": "onchain_days >= 400 and mvrv_pct <= 20",
+      "evidence": ["mvrv", "mvrv_pct", "nupl"],
+      "measured": {
+        "checked_at": "2026-08-22",
+        "method": "strategy_search.py · непересекающиеся, 126 кандидатов в сетке",
+        "n": 91,
+        "median_pct": 5.09,
+        "edge_vs_baseline_pts": 7.89,
+        "sharpe": 0.266,
+        "dsr": 0.49
+      },
+      "note_ru": "Лучший кандидат из 126 — и всё равно 0.49 при пороге 0.95. Это самая осмысленная из непрошедших гипотез: покупать слабость на горизонте около двух месяцев. Держим в testing-логе, не в голосовании."
+    },
+    {
+      "id": "onchain.mvrv_expensive",
+      "title": "MVRV в верхних 10% собственной истории",
+      "status": "measured_fail",
+      "side": "long",
+      "horizon_days": 28,
+      "requires": ["mvrv_pct", "onchain_days"],
+      "condition": "onchain_days >= 400 and mvrv_pct >= 90",
+      "evidence": ["mvrv", "mvrv_pct"],
+      "measured": {
+        "checked_at": "2026-08-22",
+        "method": "onchain_significance.py · непересекающиеся",
+        "n": 11,
+        "median_pct": 15.99,
+        "dsr": 0.96
+      },
+      "note_ru": "Формально DSR прошёл, но n=11 при пороге 30. Правило не голосует по min_n_to_vote. Именно такой случай раньше и попал бы в вердикт как 'доказано'."
+    },
+    {
+      "id": "onchain.holders_underwater",
+      "title": "Держатели в среднем в убытке",
+      "status": "draft",
+      "side": "long",
+      "horizon_days": 56,
+      "requires": ["mvrv", "onchain_days"],
+      "condition": "onchain_days >= 400 and mvrv < 1",
+      "evidence": ["mvrv", "nupl"]
+    },
+
+    {
+      "id": "data.price_unreliable",
+      "title": "Цене доверять нельзя",
+      "status": "draft",
+      "side": "none",
+      "horizon_days": 0,
+      "requires": ["price_status"],
+      "condition": "price_status != \"OK\"",
+      "evidence": ["price_status", "price"],
+      "note_ru": "Вето, а не сигнал. Если источники расходятся больше чем на 5%, любое правило по этому токену считать бессмысленно."
+    }
+  ]
+}
