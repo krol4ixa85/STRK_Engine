@@ -667,6 +667,7 @@ body > * {
 <a class="nav-macro" href="javascript:void(0)" onclick="switchView('macro')">🌍 Macro</a>
 <a href="reports/latest.html" style="border-left: 3px solid var(--purple, #8b5cf6); background: rgba(139, 92, 246, 0.06); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);" target="_blank">📊 FULL RUN</a></div>
 <div class="container">
+<div id="market-context" style="margin: 20px 0 0 0;"></div>
 <div id="overview-panel" style="margin: 24px 0 16px 0; padding: 20px; background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); border-radius: 16px; border: 1px solid var(--border);">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
 <div class="overview-card-clickable" id="overview-strk" onclick="switchView('strk')" style="padding: 14px; background: rgba(255,153,0,0.06); border-radius: 10px; border-left: 4px solid var(--orange, #FF9900);">
@@ -1438,6 +1439,71 @@ function renderPrecision(summary) {
 // Тонкий рендер. Сортировка, счётчики и переводы приходят готовыми
 // из scripts/view_data.py. Здесь только вывод — по правилу из
 // ПРАВИЛО_вычисления.md.
+// ═══════════════════════════════════════════════════════════════════
+// 🌐 КОНТЕКСТ РЫНКА · синхронность, ширина, перекос плеча
+//
+// Измерено на 42 токенах за 5.5 лет: медианно 57% дневного движения
+// токена — это движение рынка целиком, а не самого токена.
+//
+// Поэтому здесь НЕ прогноз, а состояние. Соблазн повесить стрелку
+// «рынок идёт вверх» большой, но связь фандинга с будущей доходностью
+// измерена и равна нулю (корреляция +0.03 / +0.09 / -0.05 на 7/14/28
+// днях). Стрелка без числа — это то, что мы из движка убирали.
+//
+// Всё считает scripts/market_context.py, здесь только отрисовка.
+// ═══════════════════════════════════════════════════════════════════
+async function renderMarketContext() {
+  const el = document.getElementById('market-context');
+  if (!el) return;
+  const mc = await _loadCache('market_context.json');
+  if (!mc) { el.innerHTML = ''; return; }
+
+  const s = mc.synchrony, b = mc.breadth, f = mc.funding;
+  const tone = s ? (s.pct_with_market >= 85 ? 'var(--orange, #FF9900)'
+                  : s.pct_with_market >= 70 ? 'var(--yellow, #d29922)'
+                  : 'var(--green, #2EA043)') : 'var(--text-muted)';
+
+  const cell = (label, value, sub, color) => `
+    <div style="padding: 12px 14px; background: var(--bg-elevated, #fff);
+                border-radius: 10px; border-left: 4px solid ${color};">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px;">${label}</div>
+      <div style="font-size: 18px; font-weight: 700; color: var(--text-bright);
+                  font-family: var(--font-data);">${value}</div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">${sub}</div>
+    </div>`;
+
+  let html = `<div style="display: grid; gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">`;
+
+  if (s) {
+    html += cell('Синхронность рынка',
+      `${s.pct_with_market.toFixed(0)}% · ${s.state}`,
+      `${s.up} вверх · ${s.down} вниз · рынок ${s.market_move_pct >= 0 ? '+' : ''}${s.market_move_pct}%`,
+      tone);
+  }
+  if (b) {
+    html += cell('Ширина',
+      `${b.above_30d_median} из ${b.tokens}`,
+      'выше своей месячной середины',
+      b.pct >= 75 ? 'var(--green, #2EA043)' : b.pct >= 40 ? 'var(--yellow, #d29922)' : 'var(--red, #f85149)');
+  }
+  if (f) {
+    html += cell('Плечо в перпах',
+      `${f.median_annual_pct >= 0 ? '+' : ''}${f.median_annual_pct.toFixed(1)}% годовых`,
+      `${f.skew_ru} · это контекст, не прогноз`,
+      'var(--text-muted)');
+  }
+  html += '</div>';
+
+  if (s && s.text_ru) {
+    html += `<div style="margin-top: 10px; padding: 10px 14px; font-size: 13px;
+             color: var(--text-secondary); background: var(--bg-subtle, #fafafa);
+             border-radius: 8px;">${s.text_ru}${b && b.text_ru ? ' · ' + b.text_ru : ''}</div>`;
+  }
+  el.innerHTML = html;
+}
+
 async function renderEngineSignals() {
   const el = document.getElementById('engine-signals');
   if (!el) return;
@@ -1516,7 +1582,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-22-03';
+const BUILD_STAMP = 'BUILD-2026-08-22-04';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
@@ -3553,6 +3619,7 @@ async function loadAll(manual = false) {
   safeRender('StrkTargets', () => renderStrkTargets());
   safeRender('Trades', () => renderTrades());
   safeRender('Summaries', () => renderModuleSummaries());
+  safeRender('MarketContext', () => renderMarketContext());
   safeRender('EngineSignals', () => renderEngineSignals());
 
   // Слежение за версией. Кэш на сервере отключён правильно, но браузер
@@ -4477,7 +4544,7 @@ async function renderModalIntelligence(token) {
   if (!el) return;
   el.innerHTML = '<div style="color: var(--text-muted); font-size: 12px;">Загружаю слои…</div>';
 
-  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll, viewData, posAdvice] = await Promise.all([
+  const [health, funding, scan, sector, news, unified, phaseAn, decisions, hlPerps, volProfile, cvdMulti, compassAll, viewData, posAdvice, marketCtx] = await Promise.all([
     _loadCache('hive_token_health.json'),
     _loadCache('funding_per_token.json'),
     _loadCache(`token_scan/${token}.json`),
@@ -4492,6 +4559,7 @@ async function renderModalIntelligence(token) {
     _loadCache('asset_compass.json'),
     _loadCache('view_data.json'),
     _loadCache('position_advice.json'),
+    _loadCache('market_context.json'),
   ]);
 
   // Серверные данные v1.1: phase_analyzer + decision_engine + HL perps
@@ -4661,6 +4729,32 @@ async function renderModalIntelligence(token) {
     // его встройку. Берём данные тем же способом, что и соседний блок.
     const md = viewData && viewData.modal && viewData.modal[token];
     const st = md && md.structure;
+
+    // Сколько сегодняшнего движения — рынок, а сколько сам токен.
+    // Ставится ПЕРЕД картинкой: если 80% движения дал рынок, то график
+    // токена красив не потому, что с токеном что-то происходит.
+    // marketCtx берётся из того же Promise.all, что и остальные кэши —
+    // объявлять его здесь заново нельзя, это была прошлая ошибка.
+    const mkShare = marketCtx && marketCtx.tokens && marketCtx.tokens[token];
+    if (mkShare) {
+      const sh = mkShare.market_share_pct;
+      const col = sh >= 70 ? 'var(--orange, #FF9900)'
+                : sh >= 45 ? 'var(--yellow, #d29922)'
+                : 'var(--green, #2EA043)';
+      const note = sh >= 70
+        ? 'ставка на этот токен — почти ставка на рынок целиком'
+        : sh >= 45 ? 'половина движения общая, половина своя'
+        : 'токен живёт своей жизнью — выбор актива здесь что-то решает';
+      html += `<div style="margin: 0 0 10px 0; padding: 10px 14px;
+          background: var(--bg-subtle, #fafafa); border-radius: 8px;
+          border-left: 4px solid ${col}; font-size: 13px;">
+        <b style="font-family: var(--font-data);">${sh.toFixed(0)}%</b>
+        движения ${token} за последние месяцы — это рынок, а не он сам.
+        <span style="color: var(--text-secondary);">${note}.</span>
+        <div style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+          ${mkShare.text_ru}</div>
+      </div>`;
+    }
     if (st && st.levels) {
       const H = 300, PAD = 14;
       const lo = st.scale_min, hi = st.scale_max;
