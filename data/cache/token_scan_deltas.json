@@ -1,25 +1,78 @@
 {
-  "computed_at": "2026-08-21T04:23:58.113162+00:00",
-  "previous_snapshot": "2026-08-20",
-  "current_snapshot": "2026-08-21",
+  "computed_at": "2026-08-22T04:17:32.804039+00:00",
+  "previous_snapshot": "2026-08-21",
+  "current_snapshot": "2026-08-22",
   "days_between": 1,
   "tokens_compared": 32,
-  "tokens_changed": 0,
-  "alerts": [],
+  "tokens_changed": 20,
+  "alerts": [
+    "AIXBT: ⚠ месячный приток стал отрицательным",
+    "CRV: фаза сменилась: ACCUMULATION_PHASE_B → EARLY_ACCUMULATION",
+    "FIL: фаза сменилась: MIXED_OR_NEUTRAL → EARLY_ACCUMULATION",
+    "MNT: фаза сменилась: WEAKENING → EARLY_ACCUMULATION",
+    "OP: фаза сменилась: MARKDOWN → MIXED_OR_NEUTRAL",
+    "WIF: фаза сменилась: MIXED_OR_NEUTRAL → MID_ACCUMULATION"
+  ],
   "tokens": {
     "AAVE": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 3,
+      "summary_ru": [
+        "месячный приток изменился на +22%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -3682900.0,
+          "to": -2872200.0,
+          "change_pct": 22.01,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 2606600.0000000005,
+          "to": 3417300.0000000005,
+          "change_pct": 31.1,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": -1718700.0,
+          "to": -907999.9999999999,
+          "change_pct": 47.17,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "AIXBT": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 2,
+      "summary_ru": [
+        "⚠ месячный приток стал отрицательным"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 8900.0,
+          "to": -2299.9999999999964,
+          "change_pct": -125.84,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 24999.99999999999,
+          "to": 28699.99999999999,
+          "change_pct": 14.8,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "AKT": {
       "status": "STABLE",
@@ -29,18 +82,65 @@
       "changes": []
     },
     "ARB": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 4,
+      "summary_ru": [
+        "месячный приток изменился на -46%",
+        "цена +7.0%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 459300.00000000006,
+          "to": 248700.0,
+          "change_pct": -45.85,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -967699.9999999999,
+          "to": -1178200.0,
+          "change_pct": -21.75,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": -1683699.9999999995,
+          "to": -1894199.9999999995,
+          "change_pct": -12.5,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 0.08138282,
+          "to": 0.08711078,
+          "change_pct": 7.04,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "AXS": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 1,
+      "summary_ru": [
+        "месячный приток изменился на +49%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 8700.000000000004,
+          "to": 13000.000000000002,
+          "change_pct": 49.43,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "BONK": {
       "status": "STABLE",
@@ -57,18 +157,116 @@
       "changes": []
     },
     "CRV": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 7,
+      "changes_significant": 7,
+      "summary_ru": [
+        "фаза сменилась: ACCUMULATION_PHASE_B → EARLY_ACCUMULATION",
+        "серия притока выросла до 3 нед",
+        "доля недель с притоком 58% → 62%",
+        "месячный приток изменился на +230%",
+        "цена +5.6%"
+      ],
+      "changes": [
+        {
+          "field": "phase_verdict",
+          "from": "ACCUMULATION_PHASE_B",
+          "to": "EARLY_ACCUMULATION",
+          "kind": "categorical",
+          "significant": true
+        },
+        {
+          "field": "current_positive_streak_weeks",
+          "from": 0.0,
+          "to": 3.0,
+          "change_pct": null,
+          "kind": "counter",
+          "significant": true
+        },
+        {
+          "field": "pct_positive_weeks_180d",
+          "from": 57.7,
+          "to": 61.5,
+          "change_pct": 6.59,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_30d_usd",
+          "from": 335300.00000000006,
+          "to": 1106000.0,
+          "change_pct": 229.85,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 911800.0,
+          "to": 1507100.0,
+          "change_pct": 65.29,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 1100300.0000000002,
+          "to": 1695600.0,
+          "change_pct": 54.1,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 0.24431182,
+          "to": 0.25803166,
+          "change_pct": 5.62,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "DOGE": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 4,
+      "summary_ru": [
+        "месячный приток изменился на +7%",
+        "цена +9.3%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 487400.0,
+          "to": 521800.00000000006,
+          "change_pct": 7.06,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -48899.99999999999,
+          "to": 239400.00000000003,
+          "change_pct": 589.57,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 7399.999999999969,
+          "to": 295699.99999999994,
+          "change_pct": 3895.95,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 0.07033571,
+          "to": 0.07685279,
+          "change_pct": 9.27,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "EIGEN": {
       "status": "STABLE",
@@ -78,81 +276,409 @@
       "changes": []
     },
     "ETHFI": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 1,
+      "summary_ru": [
+        "месячный приток изменился на -12%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 253600.0,
+          "to": 223700.0,
+          "change_pct": -11.79,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "FET": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 6,
+      "changes_significant": 6,
+      "summary_ru": [
+        "серия притока выросла до 1 нед",
+        "доля недель с притоком 42% → 46%",
+        "месячный приток изменился на +26%",
+        "цена +5.0%"
+      ],
+      "changes": [
+        {
+          "field": "current_positive_streak_weeks",
+          "from": 0.0,
+          "to": 1.0,
+          "change_pct": null,
+          "kind": "counter",
+          "significant": true
+        },
+        {
+          "field": "pct_positive_weeks_180d",
+          "from": 42.3,
+          "to": 46.2,
+          "change_pct": 9.22,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_30d_usd",
+          "from": -242400.0,
+          "to": -180400.0,
+          "change_pct": 25.58,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -104700.00000000013,
+          "to": -42700.000000000124,
+          "change_pct": 59.22,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 173499.99999999988,
+          "to": 235499.99999999988,
+          "change_pct": 35.73,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 0.12225093,
+          "to": 0.1283935,
+          "change_pct": 5.02,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "FIL": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 7,
+      "changes_significant": 5,
+      "summary_ru": [
+        "фаза сменилась: MIXED_OR_NEUTRAL → EARLY_ACCUMULATION",
+        "серия притока выросла до 3 нед",
+        "доля недель с притоком 65% → 69%",
+        "месячный приток изменился на -30%"
+      ],
+      "changes": [
+        {
+          "field": "phase_verdict",
+          "from": "MIXED_OR_NEUTRAL",
+          "to": "EARLY_ACCUMULATION",
+          "kind": "categorical",
+          "significant": true
+        },
+        {
+          "field": "current_positive_streak_weeks",
+          "from": 0.0,
+          "to": 3.0,
+          "change_pct": null,
+          "kind": "counter",
+          "significant": true
+        },
+        {
+          "field": "pct_positive_weeks_180d",
+          "from": 65.4,
+          "to": 69.2,
+          "change_pct": 5.81,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_30d_usd",
+          "from": 7599.999999999999,
+          "to": 5300.0,
+          "change_pct": -30.26,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 27700.0,
+          "to": 30900.0,
+          "change_pct": 11.55,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "GRT": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 2,
+      "summary_ru": [
+        "месячный приток изменился на +34%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -16700.0,
+          "to": -11000.0,
+          "change_pct": 34.13,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -106000.0,
+          "to": -100299.99999999999,
+          "change_pct": 5.38,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "LDO": {
       "status": "STABLE",
-      "changes_total": 0,
+      "changes_total": 4,
       "changes_significant": 0,
       "summary_ru": [],
       "changes": []
     },
     "LINK": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 4,
+      "summary_ru": [
+        "месячный приток изменился на +75%",
+        "цена +6.8%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 8331399.999999998,
+          "to": 14555299.999999998,
+          "change_pct": 74.7,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 5719799.999999997,
+          "to": 11943699.999999998,
+          "change_pct": 108.81,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 5928699.999999999,
+          "to": 12152600.0,
+          "change_pct": 104.98,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 9.65622211,
+          "to": 10.30788316,
+          "change_pct": 6.75,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "MNT": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 5,
+      "changes_significant": 3,
+      "summary_ru": [
+        "фаза сменилась: WEAKENING → EARLY_ACCUMULATION",
+        "месячный приток изменился на +76%"
+      ],
+      "changes": [
+        {
+          "field": "phase_verdict",
+          "from": "WEAKENING",
+          "to": "EARLY_ACCUMULATION",
+          "kind": "categorical",
+          "significant": true
+        },
+        {
+          "field": "netflow_30d_usd",
+          "from": 292500.0,
+          "to": 513599.99999999994,
+          "change_pct": 75.59,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -2250999.9999999995,
+          "to": -2029899.9999999995,
+          "change_pct": 9.82,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "MORPHO": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 1,
+      "summary_ru": [
+        "месячный приток изменился на -6%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": 646900.0,
+          "to": 608400.0,
+          "change_pct": -5.95,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "ONDO": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 3,
+      "summary_ru": [
+        "месячный приток изменился на -45%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -69200.0,
+          "to": -100499.99999999999,
+          "change_pct": -45.23,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 270200.0000000001,
+          "to": 238900.00000000012,
+          "change_pct": -11.58,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": -220199.99999999974,
+          "to": -251499.99999999974,
+          "change_pct": -14.21,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "OP": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 7,
+      "changes_significant": 7,
+      "summary_ru": [
+        "фаза сменилась: MARKDOWN → MIXED_OR_NEUTRAL",
+        "серия притока выросла до 1 нед",
+        "доля недель с притоком 38% → 42%",
+        "месячный приток изменился на +62%",
+        "цена +6.5%"
+      ],
+      "changes": [
+        {
+          "field": "phase_verdict",
+          "from": "MARKDOWN",
+          "to": "MIXED_OR_NEUTRAL",
+          "kind": "categorical",
+          "significant": true
+        },
+        {
+          "field": "current_positive_streak_weeks",
+          "from": 0.0,
+          "to": 1.0,
+          "change_pct": null,
+          "kind": "counter",
+          "significant": true
+        },
+        {
+          "field": "pct_positive_weeks_180d",
+          "from": 38.5,
+          "to": 42.3,
+          "change_pct": 9.87,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_30d_usd",
+          "from": -231600.0,
+          "to": -87399.99999999999,
+          "change_pct": 62.26,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -408500.0,
+          "to": -264300.0,
+          "change_pct": 35.3,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": -380300.0,
+          "to": -236099.99999999997,
+          "change_pct": 37.92,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 0.08448641,
+          "to": 0.08999458,
+          "change_pct": 6.52,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "PENDLE": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 4,
+      "summary_ru": [
+        "месячный приток изменился на +51%",
+        "цена +5.3%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -389800.0,
+          "to": -190299.99999999997,
+          "change_pct": 51.18,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -329100.0,
+          "to": -130099.99999999994,
+          "change_pct": 60.47,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 956399.9999999999,
+          "to": 1155400.0,
+          "change_pct": 20.81,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 1.35122157,
+          "to": 1.42279428,
+          "change_pct": 5.3,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "PEPE": {
       "status": "STABLE",
@@ -176,11 +702,22 @@
       "changes": []
     },
     "SAND": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 1,
+      "summary_ru": [
+        "месячный приток изменился на +7%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -70400.0,
+          "to": -65599.99999999999,
+          "change_pct": 6.82,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "STRK": {
       "status": "STABLE",
@@ -197,25 +734,125 @@
       "changes": []
     },
     "UNI": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 4,
+      "summary_ru": [
+        "месячный приток изменился на +86%",
+        "цена +5.7%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -1074500.0,
+          "to": -152700.00000000006,
+          "change_pct": 85.79,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": 4671600.0,
+          "to": 5593599.999999999,
+          "change_pct": 19.74,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 6255300.0,
+          "to": 7177300.0,
+          "change_pct": 14.74,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 3.35244307,
+          "to": 3.54350687,
+          "change_pct": 5.7,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "VIRTUAL": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 4,
+      "changes_significant": 3,
+      "summary_ru": [
+        "месячный приток изменился на +10%"
+      ],
+      "changes": [
+        {
+          "field": "netflow_30d_usd",
+          "from": -3832300.0,
+          "to": -3467100.0000000005,
+          "change_pct": 9.53,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_90d_usd",
+          "from": -3976800.0000000005,
+          "to": -3611600.0000000005,
+          "change_pct": 9.18,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "netflow_180d_usd",
+          "from": 2574000.000000001,
+          "to": 2939200.0000000005,
+          "change_pct": 14.19,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "WIF": {
-      "status": "STABLE",
-      "changes_total": 0,
-      "changes_significant": 0,
-      "summary_ru": [],
-      "changes": []
+      "status": "CHANGED",
+      "changes_total": 7,
+      "changes_significant": 4,
+      "summary_ru": [
+        "фаза сменилась: MIXED_OR_NEUTRAL → MID_ACCUMULATION",
+        "серия притока выросла до 5 нед",
+        "доля недель с притоком 65% → 69%",
+        "цена +17.1%"
+      ],
+      "changes": [
+        {
+          "field": "phase_verdict",
+          "from": "MIXED_OR_NEUTRAL",
+          "to": "MID_ACCUMULATION",
+          "kind": "categorical",
+          "significant": true
+        },
+        {
+          "field": "current_positive_streak_weeks",
+          "from": 0.0,
+          "to": 5.0,
+          "change_pct": null,
+          "kind": "counter",
+          "significant": true
+        },
+        {
+          "field": "pct_positive_weeks_180d",
+          "from": 65.4,
+          "to": 69.2,
+          "change_pct": 5.81,
+          "kind": "numeric",
+          "significant": true
+        },
+        {
+          "field": "price_now",
+          "from": 0.00026231,
+          "to": 0.0003073,
+          "change_pct": 17.15,
+          "kind": "numeric",
+          "significant": true
+        }
+      ]
     },
     "ZK": {
       "status": "STABLE",
