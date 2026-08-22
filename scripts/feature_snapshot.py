@@ -82,9 +82,26 @@ from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 try:
+    import rule_registry
     from rule_registry import FeatureStore, load_json, tokens_from_config
 except ImportError:
     raise SystemExit("ERROR: рядом должен лежать scripts/rule_registry.py")
+
+# Проверка совместимости. Эти два файла работают в паре, и залить можно
+# только один из них — через веб-интерфейс файлы загружаются по одному.
+# Именно так и вышло 22.08: снимок упал с
+#   TypeError: FeatureStore.__init__() got an unexpected keyword 'include_globals'
+# По такому сообщению непонятно, что делать. Здесь сказано прямо.
+NEED_API = 2
+_have = getattr(rule_registry, "FEATURE_STORE_API", 1)
+if _have < NEED_API:
+    raise SystemExit(
+        "\n  ОСТАНОВЛЕНО: рядом лежит СТАРАЯ версия scripts/rule_registry.py\n"
+        f"  нужна версия интерфейса {NEED_API}, найдена {_have}\n\n"
+        "  Что сделать: перезалить scripts/rule_registry.py — тот же файл,\n"
+        "  что и feature_snapshot.py, они работают только в паре.\n"
+        "  Заодно проверь config/features.json: в нём должна быть секция\n"
+        '  "globals" — если её нет, он тоже старый.\n')
 
 FEATURES_FILE = "config/features.json"
 HIST_DIR = "data/history/features"
