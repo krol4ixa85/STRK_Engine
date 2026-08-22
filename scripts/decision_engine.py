@@ -670,32 +670,200 @@ def verify():
     build_accuracy(recs)
 
 
+def _binom_tail(k, n, p):
+    """
+    Вероятность получить k или больше попаданий из n, если на самом деле
+    правило не лучше базовой линии p. Чистый Python, без scipy.
+
+    Это ответ на вопрос «а могло ли так выйти случайно». 12 из 20 при
+    базовой линии 55% выходит случайно почти в половине случаев —
+    и без этой цифры такая точность читается как достижение.
+    """
+    if n <= 0 or not 0.0 < p < 1.0:
+        return None
+    total, term = 0.0, (1.0 - p) ** n
+    for i in range(0, n + 1):
+        if i >= k:
+            total += term
+        if i < n:
+            term *= (n - i) / (i + 1) * p / (1.0 - p)
+    return min(1.0, max(0.0, total))
+
+
+def _tally(records, rule=None, version=None):
+    """Считает hit/miss/neutral по срезу лога."""
+    b = {"hit": 0, "miss": 0, "neutral": 0}
+    for r in records:
+        if r.get("status") not in ("HIT", "MISS", "NEUTRAL"):
+            continue
+        if version is not None and r.get("engine_version") != version:
+            continue
+        if rule is not None and rule not in (r.get("rules_fired") or []):
+            continue
+        b[r["status"].lower()] += 1
+    return b
+
+
+def _rate(b):
+    d = b["hit"] + b["miss"]
+    return (b["hit"] / d * 100) if d else None
+
+
 def build_accuracy(recs):
-    by_rule = {}
-    for r in recs:
-        if r.get("status") not in ("HIT", "MISS", "NEUTRAL"): continue
-        for rule in r.get("rules_fired", []):
-            b = by_rule.setdefault(rule, {"hit": 0, "miss": 0, "neutral": 0})
-            b[r["status"].lower()] += 1
-    out = {"computed_at": datetime.now(timezone.utc).isoformat(),
-           "engine_version": ENGINE_VERSION, "min_n_required": MIN_N_FOR_ACCURACY,
-           "rules": {}}
-    for rule, b in sorted(by_rule.items()):
+    """
+    ЧТО ЗДЕСЬ ПОЯВИЛОСЬ И ЗАЧЕМ
+
+    Раньше считалось только попадание правила: «40%». Само по себе это
+    число не значит ничего, потому что не с чем сравнить и всё смешано.
+    Три вещи, без которых первые закрытые прогнозы пришлось бы
+    переинтерпретировать задним числом:
+
+    1. БАЗОВАЯ ЛИНИЯ. Что получилось бы, если говорить одно и то же
+       всегда, без всякого правила. Для правил с ожиданием UP базовая
+       линия — «всегда UP» на тех же закрытых записях; для ожидания
+       «вверх не пойдёт» — «всегда не вверх». Правило обязано обыграть
+       эту линию, а не просто быть положительным на растущем рынке.
+
+    2. РАЗБИВКА ПО ВЕРСИЯМ ДВИЖКА. В логе 379 прогнозов, сделанных
+       СЕМЬЮ разными версиями (1.0 → 1.6). Между ними менялись знаки,
+       пороги и сама логика голосования: 21.08 правка phase_analyzer
+       поменяла вердикт у 24 токенов из 31. Складывать их в одну кучу
+       — это мерить среднюю температуру по больнице.
+
+    3. МОГЛО ЛИ ТАК ВЫЙТИ СЛУЧАЙНО. Биномиальный хвост относительно
+       базовой линии. Без него 12 из 20 читается как успех, хотя
+       случайно так выходит почти в половине случаев.
+    """
+    closed = [r for r in recs if r.get("status") in ("HIT", "MISS", "NEUTRAL")]
+
+    # Базовые линии по типу утверждения
+    up_recs = [r for r in closed if r.get("expectation") == "UP"]
+    notup_recs = [r for r in closed if r.get("expectation") != "UP"]
+    base = {
+        "UP": {"tally": _tally(up_recs), "n": len(up_recs)},
+        "NOT_UP": {"tally": _tally(notup_recs), "n": len(notup_recs)},
+    }
+    for k in base:
+        base[k]["hit_rate_pct"] = (round(_rate(base[k]["tally"]), 1)
+                                   if _rate(base[k]["tally"]) is not None else None)
+
+    def base_for(rule_records):
+        """Какая линия сравнения подходит правилу — по преобладающему ожиданию."""
+        ups = sum(1 for r in rule_records if r.get("expectation") == "UP")
+        return "UP" if ups * 2 > len(rule_records) else "NOT_UP"
+
+    rules_seen = sorted({rule for r in closed for rule in (r.get("rules_fired") or [])})
+    versions = sorted({r.get("engine_version") for r in closed if r.get("engine_version")})
+
+    out = {
+        "computed_at": datetime.now(timezone.utc).isoformat(),
+        "engine_version": ENGINE_VERSION,
+        "min_n_required": MIN_N_FOR_ACCURACY,
+        "closed_total": len(closed),
+        "pending_total": sum(1 for r in recs if r.get("status") == "PENDING"),
+        "versions_in_log": {v: sum(1 for r in recs if r.get("engine_version") == v)
+                            for v in sorted({r.get("engine_version") for r in recs
+                                             if r.get("engine_version")})},
+        "baseline": base,
+        "baseline_note": "правило сравнивается с тем, что дало бы то же "
+                         "утверждение, сказанное всегда и без правила",
+        "rules": {},
+        "by_version": {},
+    }
+
+    for rule in rules_seen:
+        rule_recs = [r for r in closed if rule in (r.get("rules_fired") or [])]
+        b = _tally(rule_recs)
         n = b["hit"] + b["miss"] + b["neutral"]
         directional = b["hit"] + b["miss"]
-        entry = {"n_closed": n, "hit": b["hit"], "miss": b["miss"],
-                 "neutral": b["neutral"], "enough_data": n >= MIN_N_FOR_ACCURACY}
-        if n >= MIN_N_FOR_ACCURACY and directional > 0:
-            entry["hit_rate_pct"] = round(b["hit"] / directional * 100, 1)
+        bkey = base_for(rule_recs)
+        bp = base[bkey]["hit_rate_pct"]
+
+        entry = {
+            "n_closed": n, "hit": b["hit"], "miss": b["miss"], "neutral": b["neutral"],
+            "enough_data": n >= MIN_N_FOR_ACCURACY,
+            "baseline_used": bkey, "baseline_hit_rate_pct": bp,
+        }
+        if directional > 0:
+            hr = round(_rate(b), 1)
+            entry["hit_rate_pct"] = hr
+            if bp is not None:
+                entry["edge_vs_baseline_pts"] = round(hr - bp, 1)
+                pv = _binom_tail(b["hit"], directional, bp / 100.0)
+                entry["could_be_chance"] = round(pv, 3) if pv is not None else None
         else:
             entry["hit_rate_pct"] = None
-            entry["reason"] = f"нужно ≥{MIN_N_FOR_ACCURACY}, есть {n}"
+
+        if n < MIN_N_FOR_ACCURACY:
+            entry["verdict"] = f"мало данных: нужно ≥{MIN_N_FOR_ACCURACY}, есть {n}"
+        elif entry.get("could_be_chance") is None:
+            entry["verdict"] = "нет базовой линии для сравнения"
+        elif entry["could_be_chance"] > 0.05:
+            entry["verdict"] = ("не отличимо от того, чтобы говорить это всегда "
+                                f"(случайно так выходит в {entry['could_be_chance'] * 100:.0f}% случаев)")
+        elif entry.get("edge_vs_baseline_pts", 0) > 0:
+            entry["verdict"] = "обыгрывает базовую линию"
+        else:
+            entry["verdict"] = "статистически отличимо, но ХУЖЕ базовой линии"
+
         out["rules"][rule] = entry
+
+        # Разбивка того же правила по версиям движка
+        per_v = {}
+        for v in versions:
+            bv = _tally(rule_recs, version=v)
+            nv = bv["hit"] + bv["miss"] + bv["neutral"]
+            if nv:
+                per_v[v] = {"n": nv, "hit": bv["hit"], "miss": bv["miss"],
+                            "neutral": bv["neutral"],
+                            "hit_rate_pct": (round(_rate(bv), 1)
+                                             if _rate(bv) is not None else None)}
+        if per_v:
+            entry["by_version"] = per_v
+
+    # Сводка по версиям целиком
+    for v in versions:
+        bv = _tally(closed, version=v)
+        nv = bv["hit"] + bv["miss"] + bv["neutral"]
+        out["by_version"][v] = {
+            "n_closed": nv, "hit": bv["hit"], "miss": bv["miss"],
+            "neutral": bv["neutral"],
+            "hit_rate_pct": round(_rate(bv), 1) if _rate(bv) is not None else None,
+        }
+
     os.makedirs(CACHE, exist_ok=True)
     with open(ACCURACY_FILE, "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2, ensure_ascii=False)
-    ready = sum(1 for v in out["rules"].values() if v["enough_data"])
-    print(f"Правил: {len(out['rules'])} · с выборкой: {ready}")
+
+    # ── печать
+    print(f"\nЗакрыто прогнозов: {len(closed)} · ещё ждут: {out['pending_total']}")
+    if not closed:
+        print("Пока нечего мерить — первые прогнозы закрываются 26–27 августа.")
+        print(f"Версий движка в логе: {len(out['versions_in_log'])} "
+              f"({', '.join(out['versions_in_log'])}) — считать их вместе нельзя,")
+        print("поэтому разбивка по версиям готова заранее.")
+        return
+
+    print(f"Базовая линия · «всегда вверх»: {base['UP']['hit_rate_pct']}% "
+          f"(n={base['UP']['n']}) · «всегда не вверх»: "
+          f"{base['NOT_UP']['hit_rate_pct']}% (n={base['NOT_UP']['n']})\n")
+    print(f"  {'ПРАВИЛО':30}{'n':>5}{'точн':>7}{'база':>7}{'+/-':>6}{'случайно':>10}  вердикт")
+    print("  " + "─" * 92)
+    for rule, e in sorted(out["rules"].items(),
+                          key=lambda kv: -(kv[1].get("edge_vs_baseline_pts") or -99)):
+        hr = f"{e['hit_rate_pct']:.0f}%" if e["hit_rate_pct"] is not None else "—"
+        bp = f"{e['baseline_hit_rate_pct']:.0f}%" if e["baseline_hit_rate_pct"] is not None else "—"
+        ed = (f"{e['edge_vs_baseline_pts']:+.0f}" if e.get("edge_vs_baseline_pts") is not None else "—")
+        ch = (f"{e['could_be_chance'] * 100:.0f}%" if e.get("could_be_chance") is not None else "—")
+        print(f"  {rule:30}{e['n_closed']:>5}{hr:>7}{bp:>7}{ed:>6}{ch:>10}  {e['verdict']}")
+
+    print(f"\n  {'ВЕРСИЯ ДВИЖКА':16}{'закрыто':>9}{'точность':>10}")
+    print("  " + "─" * 36)
+    for v, e in sorted(out["by_version"].items()):
+        hr = f"{e['hit_rate_pct']:.0f}%" if e["hit_rate_pct"] is not None else "—"
+        print(f"  {v:16}{e['n_closed']:>9}{hr:>10}")
+    print("\n  Версии считаются отдельно: между ними менялись знаки и пороги,")
+    print("  общая точность по всем сразу не значит ничего.")
 
 
 def run(only=None):
