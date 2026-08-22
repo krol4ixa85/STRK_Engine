@@ -1455,52 +1455,118 @@ function renderPrecision(summary) {
 async function renderMarketContext() {
   const el = document.getElementById('market-context');
   if (!el) return;
-  const mc = await _loadCache('market_context.json');
+  const [mc, pos] = await Promise.all([
+    _loadCache('market_context.json'),
+    _loadCache('position_advice.json'),
+  ]);
   if (!mc) { el.innerHTML = ''; return; }
 
   const s = mc.synchrony, b = mc.breadth, f = mc.funding;
-  const tone = s ? (s.pct_with_market >= 85 ? 'var(--orange, #FF9900)'
-                  : s.pct_with_market >= 70 ? 'var(--yellow, #d29922)'
-                  : 'var(--green, #2EA043)') : 'var(--text-muted)';
+  const unl = mc.unloved && mc.unloved.ranked || [];
 
-  const cell = (label, value, sub, color) => `
-    <div style="padding: 12px 14px; background: var(--bg-elevated, #fff);
-                border-radius: 10px; border-left: 4px solid ${color};">
-      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;
-                  letter-spacing: .4px; margin-bottom: 4px;">${label}</div>
-      <div style="font-size: 18px; font-weight: 700; color: var(--text-bright);
-                  font-family: var(--font-data);">${value}</div>
-      <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">${sub}</div>
+  // Один вывод крупно. Не прогноз: состояние рынка, которое меняет
+  // смысл всего остального на странице.
+  const sync = s ? s.pct_with_market : null;
+  const head = sync == null ? 'Состояние рынка не посчитано'
+    : sync >= 85 ? 'Рынок идёт одним куском'
+    : sync >= 70 ? 'Движение общее, токены почти не расходятся'
+    : sync >= 55 ? 'Рынок тянет, но токены расходятся'
+    : 'Токены разошлись — выбор актива сегодня решает';
+  const sub = sync == null ? ''
+    : sync >= 70
+      ? 'Входишь не в токен, а в рынок. Персональные сигналы сейчас значат мало, а несколько позиций в разных токенах — это одна позиция.'
+      : 'Сегодня разница между активами больше обычной — есть смысл выбирать.';
+  const tone = sync == null ? 'var(--text-muted)'
+    : sync >= 85 ? '#EA580C' : sync >= 70 ? 'var(--yellow)' : 'var(--green)';
+
+  const chip = (label, value) => `
+    <span style="display:inline-flex;align-items:baseline;gap:6px;padding:4px 10px;
+      background:var(--bg-subtle);border-radius:20px;font-size:12px;">
+      <span style="color:var(--text-muted);">${label}</span>
+      <b style="font-family:var(--font-data);">${value}</b></span>`;
+
+  let html = `<div style="padding:18px 20px;background:var(--bg-elevated,#fff);
+      border:1px solid var(--border);border-left:5px solid ${tone};
+      border-radius:12px;">
+    <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;
+      letter-spacing:.09em;font-weight:700;margin-bottom:6px;">Сейчас</div>
+    <div style="font-size:20px;font-weight:700;color:var(--text-bright);
+      line-height:1.3;">${head}</div>
+    ${sub ? `<div style="font-size:13.5px;color:var(--text-secondary);
+      margin-top:6px;max-width:70ch;">${sub}</div>` : ''}
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+      ${s ? chip('синхронность', s.pct_with_market.toFixed(0) + '%') : ''}
+      ${s ? chip('рынок за день', (s.market_move_pct >= 0 ? '+' : '') + s.market_move_pct + '%') : ''}
+      ${b ? chip('выше месячной середины', b.above_30d_median + '/' + b.tokens) : ''}
+      ${f ? chip('плечо в перпах', (f.median_annual_pct >= 0 ? '+' : '') + f.median_annual_pct.toFixed(0) + '% годовых') : ''}
     </div>`;
 
-  let html = `<div style="display: grid; gap: 12px;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">`;
-
-  if (s) {
-    html += cell('Синхронность рынка',
-      `${s.pct_with_market.toFixed(0)}% · ${s.state}`,
-      `${s.up} вверх · ${s.down} вниз · рынок ${s.market_move_pct >= 0 ? '+' : ''}${s.market_move_pct}%`,
-      tone);
-  }
-  if (b) {
-    html += cell('Ширина',
-      `${b.above_30d_median} из ${b.tokens}`,
-      'выше своей месячной середины',
-      b.pct >= 75 ? 'var(--green, #2EA043)' : b.pct >= 40 ? 'var(--yellow, #d29922)' : 'var(--red, #f85149)');
-  }
-  if (f) {
-    html += cell('Плечо в перпах',
-      `${f.median_annual_pct >= 0 ? '+' : ''}${f.median_annual_pct.toFixed(1)}% годовых`,
-      `${f.skew_ru} · это контекст, не прогноз`,
-      'var(--text-muted)');
+  // ── позиции
+  const open = pos && pos.by_token ? Object.entries(pos.by_token) : [];
+  html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+    <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;
+      letter-spacing:.09em;font-weight:700;margin-bottom:8px;">Твои позиции</div>`;
+  if (!open.length) {
+    html += `<div style="font-size:13.5px;color:var(--text-secondary);">
+      Открытых позиций нет. Если позиция есть, а здесь пусто — запиши её в журнал,
+      иначе движок про неё не знает и советы будут не про твою ситуацию.</div>`;
+  } else {
+    html += '<div style="display:grid;gap:8px;">';
+    open.forEach(([tok, a]) => {
+      const pnl = a.pnl_pct;
+      const col = pnl == null ? 'var(--text-muted)' : pnl >= 0 ? 'var(--green)' : 'var(--red)';
+      html += `<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;
+        padding:9px 12px;background:var(--bg-subtle);border-radius:8px;">
+        <b style="font-size:14px;">${tok}</b>
+        <span style="font-size:12px;color:var(--text-muted);">${a.side || ''}</span>
+        <b style="font-family:var(--font-data);color:${col};">${pnl == null ? '—' : (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%'}</b>
+        <span style="font-size:12.5px;color:var(--text-secondary);">${a.headline || ''}</span>
+      </div>`;
+    });
+    html += '</div>';
   }
   html += '</div>';
 
-  if (s && s.text_ru) {
-    html += `<div style="margin-top: 10px; padding: 10px 14px; font-size: 13px;
-             color: var(--text-secondary); background: var(--bg-subtle, #fafafa);
-             border-radius: 8px;">${s.text_ru}${b && b.text_ru ? ' · ' + b.text_ru : ''}</div>`;
+  // ── куда смотреть
+  if (unl.length) {
+    const top = unl.slice(0, 6);
+    html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;
+        letter-spacing:.09em;font-weight:700;margin-bottom:4px;">Куда смотреть в первую очередь</div>
+      <div style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px;max-width:74ch;">
+        Единственная закономерность, повторившаяся в четырёх независимых проверках:
+        лучше идёт то, что толпе сейчас не нравится — тихое, перепроданное, без перекоса в лонг.
+        <b>Ни одна из четырёх не прошла порог, лучшая DSR 0.62.</b>
+        Это порядок просмотра, а не сигнал на покупку.
+      </div>
+      <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <tr style="color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">
+          <th style="text-align:left;padding:0 10px 6px 0;">токен</th>
+          <th style="text-align:right;padding:0 10px 6px 0;">RSI</th>
+          <th style="text-align:right;padding:0 10px 6px 0;">фандинг</th>
+          <th style="text-align:left;padding:0 0 6px 0;">волатильность</th>
+        </tr>`;
+    top.forEach(r => {
+      const fn = r.funding_annual_pct == null ? '—'
+        : (r.funding_annual_pct >= 0 ? '+' : '') + r.funding_annual_pct.toFixed(0) + '%';
+      const vp = r.vol_pct == null ? '—' : 'тише ' + (100 - r.vol_pct).toFixed(0) + '% рынка';
+      html += `<tr style="border-top:1px solid var(--border);">
+        <td style="padding:7px 10px 7px 0;"><b>${r.token}</b></td>
+        <td style="padding:7px 10px 7px 0;text-align:right;font-family:var(--font-data);">${r.rsi.toFixed(0)}</td>
+        <td style="padding:7px 10px 7px 0;text-align:right;font-family:var(--font-data);">${fn}</td>
+        <td style="padding:7px 0;color:var(--text-secondary);">${vp}</td>
+      </tr>`;
+    });
+    html += '</table></div></div>';
   }
+
+  html += `<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);
+    font-size:12px;color:var(--text-muted);max-width:78ch;">
+    Движок сейчас не выбирает вход: право голоса имеют 0 правил из 12, остальные ещё не проверены.
+    Что он делает — показывает состояние рынка, структуру уровней и следит за открытыми позициями.
+    Всё ниже на странице — справка к этому, а не команда.</div>`;
+
+  html += '</div>';
   el.innerHTML = html;
 }
 
@@ -1582,7 +1648,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-22-04';
+const BUILD_STAMP = 'BUILD-2026-08-22-05';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
