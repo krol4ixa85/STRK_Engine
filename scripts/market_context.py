@@ -52,10 +52,10 @@ import statistics
 import urllib.request
 from datetime import datetime, timezone
 
-try:
-    import numpy as np
-except ImportError:
-    raise SystemExit("ERROR: pip install numpy")
+# numpy сознательно НЕ используется. Из него здесь нужна была одна
+# корреляция, а жёсткий импорт наверху убивал скрипт целиком в тех
+# воркфлоу, где numpy не ставится — быстрый режим падал ещё до первой
+# строки работы, и на дашборде это выглядело как пустой блок.
 
 API = "https://api.hyperliquid.xyz/info"
 VP_CACHE = "data/cache/volume_profile.json"
@@ -158,6 +158,21 @@ def market_index(rets, dates):
     return mkt
 
 
+def pearson(xs, ys):
+    """Корреляция Пирсона без внешних зависимостей."""
+    n = len(xs)
+    if n < 3:
+        return None
+    mx, my = sum(xs) / n, sum(ys) / n
+    num = sum((a - mx) * (b - my) for a, b in zip(xs, ys))
+    dx = math.sqrt(sum((a - mx) ** 2 for a in xs))
+    dy = math.sqrt(sum((b - my) ** 2 for b in ys))
+    if dx == 0 or dy == 0:
+        return None
+    c = num / (dx * dy)
+    return None if math.isnan(c) else c
+
+
 def r2_share(rets, mkt):
     """Доля дисперсии токена, объяснимая рынком, на последних R2_WINDOW днях."""
     out = {}
@@ -166,12 +181,8 @@ def r2_share(rets, mkt):
         pairs = [(mkt[d], r[d]) for d in recent if d in r]
         if len(pairs) < 60:
             continue
-        x = np.array([a for a, _ in pairs])
-        y = np.array([b for _, b in pairs])
-        if x.std() == 0 or y.std() == 0:
-            continue
-        c = float(np.corrcoef(x, y)[0, 1])
-        if not math.isnan(c):
+        c = pearson([a for a, _ in pairs], [b for _, b in pairs])
+        if c is not None:
             out[t] = round(c * c * 100, 1)
     return out
 
@@ -546,10 +557,31 @@ def main(days, fast=False):
     return 0
 
 
+def guarded(days, fast):
+    """
+    Любой сбой должен оставить след в JSON. Иначе шаг с
+    continue-on-error падает, прогон остаётся зелёным, а на дашборде
+    просто ничего нет — и понять причину можно только открыв логи
+    Actions. Так и вышло: скрипт умирал на импорте numpy.
+    """
+    try:
+        return main(days, fast)
+    except SystemExit:
+        raise
+    except Exception as e:
+        print(f"  СБОЙ: {type(e).__name__}: {e}")
+        prev = load_json(OUT_FILE, {}) or {}
+        prev["status"] = "ERROR"
+        prev["error_ru"] = f"{type(e).__name__}: {str(e)[:160]}"
+        prev["error_at"] = datetime.now(timezone.utc).isoformat()
+        write_out(prev)
+        return 1
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=DEFAULT_DAYS)
     ap.add_argument("--fast", action="store_true",
                     help="только перпы: один запрос, секунда работы")
     a = ap.parse_args()
-    sys.exit(main(a.days, a.fast))
+    sys.exit(guarded(a.days, a.fast))
