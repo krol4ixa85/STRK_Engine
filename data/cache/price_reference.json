@@ -1,13 +1,13 @@
 {
-  "computed_at": "2026-08-22T04:48:17.960883+00:00",
+  "computed_at": "2026-08-22T05:40:55.061024+00:00",
   "source_priority": [
     "hyperliquid_candles",
     "hive_prices"
   ],
   "cost": "free · 0 credits",
   "why": "Dune выводит цену из отдельных DEX-сделок и даёт мусор при неверных decimals. Здесь цены берутся с биржи.",
-  "tokens_ok": 35,
-  "tokens_suspicious": 6,
+  "tokens_ok": 41,
+  "tokens_suspicious": 0,
   "tokens_failed": 2,
   "checks": {
     "implausible_weekly_pct": 300.0,
@@ -24,7 +24,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 127.83,
+      "price_now": 121.64,
       "price_24h_ago": 123.0,
       "price_7d_ago": 86.121,
       "price_30d_ago": 94.931,
@@ -32,10 +32,10 @@
       "high_90d": 129.27,
       "low_90d": 57.743,
       "candles": 96,
-      "change_24h_pct": 3.93,
-      "change_7d_pct": 48.43,
-      "change_30d_pct": 34.66,
-      "change_90d_pct": 49.34
+      "change_24h_pct": -1.11,
+      "change_7d_pct": 41.24,
+      "change_30d_pct": 28.14,
+      "change_90d_pct": 42.1
     },
     "AIXBT": {
       "symbol": "AIXBT",
@@ -47,7 +47,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.023293,
+      "price_now": 0.021203,
       "price_24h_ago": 0.021601,
       "price_7d_ago": 0.017754,
       "price_30d_ago": 0.018034,
@@ -55,10 +55,10 @@
       "high_90d": 0.033233,
       "low_90d": 0.01584,
       "candles": 96,
-      "change_24h_pct": 7.83,
-      "change_7d_pct": 31.2,
-      "change_30d_pct": 29.16,
-      "change_90d_pct": -17.82
+      "change_24h_pct": -1.84,
+      "change_7d_pct": 19.43,
+      "change_30d_pct": 17.57,
+      "change_90d_pct": -25.2
     },
     "APT": {
       "symbol": "APT",
@@ -70,7 +70,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.7047,
+      "price_now": 0.6483,
       "price_24h_ago": 0.649,
       "price_7d_ago": 0.5366,
       "price_30d_ago": 0.6179,
@@ -78,28 +78,22 @@
       "high_90d": 1.0091,
       "low_90d": 0.5138,
       "candles": 96,
-      "change_24h_pct": 8.58,
-      "change_7d_pct": 31.33,
-      "change_30d_pct": 14.05,
-      "change_90d_pct": -25.42
+      "change_24h_pct": -0.11,
+      "change_7d_pct": 20.82,
+      "change_30d_pct": 4.92,
+      "change_90d_pct": -31.39
     },
     "ARB": {
       "symbol": "ARB",
-      "status": "SUSPICIOUS",
+      "status": "OK",
       "hl_name": "ARB",
       "source": "hyperliquid_candles",
       "hive_price_usd": 0.099644,
       "sanity": {
-        "ok": false,
-        "flags": [
-          {
-            "check": "source_agreement",
-            "value": 7.59,
-            "reason": "HL даёт $0.10721000, Hive $0.09964400 — расхождение 7.6%, доверять нельзя ни одному"
-          }
-        ]
+        "ok": true,
+        "flags": []
       },
-      "price_now": 0.10721,
+      "price_now": 0.10012,
       "price_24h_ago": 0.09815,
       "price_7d_ago": 0.07273,
       "price_30d_ago": 0.08607,
@@ -107,10 +101,10 @@
       "high_90d": 0.11867,
       "low_90d": 0.07043,
       "candles": 96,
-      "change_24h_pct": 9.23,
-      "change_7d_pct": 47.41,
-      "change_30d_pct": 24.56,
-      "change_90d_pct": 1.54
+      "change_24h_pct": 2.01,
+      "change_7d_pct": 37.66,
+      "change_30d_pct": 16.32,
+      "change_90d_pct": -5.17
     },
     "AXS": {
       "symbol": "AXS",
@@ -122,7 +116,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 1.1281,
+      "price_now": 1.0256,
       "price_24h_ago": 1.0685,
       "price_7d_ago": 0.8662,
       "price_30d_ago": 0.89798,
@@ -130,10 +124,10 @@
       "high_90d": 1.3078,
       "low_90d": 0.80117,
       "candles": 96,
-      "change_24h_pct": 5.58,
-      "change_7d_pct": 30.24,
-      "change_30d_pct": 25.63,
-      "change_90d_pct": -1.85
+      "change_24h_pct": -4.01,
+      "change_7d_pct": 18.4,
+      "change_30d_pct": 14.21,
+      "change_90d_pct": -10.77
     },
     "BONK": {
       "symbol": "BONK",
@@ -145,7 +139,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 3.602e-06,
+      "price_now": 3.28e-06,
       "price_24h_ago": 3.1129999999999997e-06,
       "price_7d_ago": 2.338e-06,
       "price_30d_ago": 2.8719999999999998e-06,
@@ -153,10 +147,10 @@
       "high_90d": 6.34e-06,
       "low_90d": 2.216e-06,
       "candles": 96,
-      "change_24h_pct": 15.71,
-      "change_7d_pct": 54.06,
-      "change_30d_pct": 25.42,
-      "change_90d_pct": -40.09
+      "change_24h_pct": 5.36,
+      "change_7d_pct": 40.29,
+      "change_30d_pct": 14.21,
+      "change_90d_pct": -45.44
     },
     "BTC": {
       "symbol": "BTC",
@@ -168,7 +162,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 78630.0,
+      "price_now": 77223.0,
       "price_24h_ago": 78383.0,
       "price_7d_ago": 63056.0,
       "price_30d_ago": 65069.0,
@@ -176,10 +170,10 @@
       "high_90d": 79584.0,
       "low_90d": 57768.0,
       "candles": 96,
-      "change_24h_pct": 0.32,
-      "change_7d_pct": 24.7,
-      "change_30d_pct": 20.84,
-      "change_90d_pct": 2.1
+      "change_24h_pct": -1.48,
+      "change_7d_pct": 22.47,
+      "change_30d_pct": 18.68,
+      "change_90d_pct": 0.27
     },
     "COMP": {
       "symbol": "COMP",
@@ -191,7 +185,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 20.769,
+      "price_now": 20.116,
       "price_24h_ago": 20.144,
       "price_7d_ago": 16.248,
       "price_30d_ago": 17.476,
@@ -199,10 +193,10 @@
       "high_90d": 23.908,
       "low_90d": 14.835,
       "candles": 96,
-      "change_24h_pct": 3.1,
-      "change_7d_pct": 27.82,
-      "change_30d_pct": 18.84,
-      "change_90d_pct": 3.27
+      "change_24h_pct": -0.14,
+      "change_7d_pct": 23.81,
+      "change_30d_pct": 15.11,
+      "change_90d_pct": 0.02
     },
     "CRV": {
       "symbol": "CRV",
@@ -214,7 +208,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.34767,
+      "price_now": 0.32211,
       "price_24h_ago": 0.34418,
       "price_7d_ago": 0.242,
       "price_30d_ago": 0.20883,
@@ -222,10 +216,10 @@
       "high_90d": 0.35466,
       "low_90d": 0.16988,
       "candles": 96,
-      "change_24h_pct": 1.01,
-      "change_7d_pct": 43.67,
-      "change_30d_pct": 66.48,
-      "change_90d_pct": 53.27
+      "change_24h_pct": -6.41,
+      "change_7d_pct": 33.1,
+      "change_30d_pct": 54.25,
+      "change_90d_pct": 42.0
     },
     "DOGE": {
       "symbol": "DOGE",
@@ -237,7 +231,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.10015,
+      "price_now": 0.090333,
       "price_24h_ago": 0.091648,
       "price_7d_ago": 0.069593,
       "price_30d_ago": 0.069189,
@@ -245,10 +239,10 @@
       "high_90d": 0.10672,
       "low_90d": 0.0678,
       "candles": 96,
-      "change_24h_pct": 9.28,
-      "change_7d_pct": 43.91,
-      "change_30d_pct": 44.75,
-      "change_90d_pct": -2.06
+      "change_24h_pct": -1.43,
+      "change_7d_pct": 29.8,
+      "change_30d_pct": 30.56,
+      "change_90d_pct": -11.66
     },
     "DYDX": {
       "symbol": "DYDX",
@@ -260,7 +254,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.13255,
+      "price_now": 0.12487,
       "price_24h_ago": 0.12307,
       "price_7d_ago": 0.11003,
       "price_30d_ago": 0.12403,
@@ -268,10 +262,10 @@
       "high_90d": 0.24559,
       "low_90d": 0.0955,
       "candles": 96,
-      "change_24h_pct": 7.7,
-      "change_7d_pct": 20.47,
-      "change_30d_pct": 6.87,
-      "change_90d_pct": -9.46
+      "change_24h_pct": 1.46,
+      "change_7d_pct": 13.49,
+      "change_30d_pct": 0.68,
+      "change_90d_pct": -14.71
     },
     "EIGEN": {
       "symbol": "EIGEN",
@@ -283,7 +277,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.2347,
+      "price_now": 0.2161,
       "price_24h_ago": 0.2201,
       "price_7d_ago": 0.1685,
       "price_30d_ago": 0.2168,
@@ -291,10 +285,10 @@
       "high_90d": 0.3165,
       "low_90d": 0.1525,
       "candles": 96,
-      "change_24h_pct": 6.63,
-      "change_7d_pct": 39.29,
-      "change_30d_pct": 8.26,
-      "change_90d_pct": 5.2
+      "change_24h_pct": -1.82,
+      "change_7d_pct": 28.25,
+      "change_30d_pct": -0.32,
+      "change_90d_pct": -3.14
     },
     "ENA": {
       "symbol": "ENA",
@@ -306,7 +300,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.16242,
+      "price_now": 0.149,
       "price_24h_ago": 0.14252,
       "price_7d_ago": 0.083931,
       "price_30d_ago": 0.088824,
@@ -314,10 +308,10 @@
       "high_90d": 0.16615,
       "low_90d": 0.069889,
       "candles": 96,
-      "change_24h_pct": 13.96,
-      "change_7d_pct": 93.52,
-      "change_30d_pct": 82.86,
-      "change_90d_pct": 64.57
+      "change_24h_pct": 4.55,
+      "change_7d_pct": 77.53,
+      "change_30d_pct": 67.75,
+      "change_90d_pct": 50.97
     },
     "ETH": {
       "symbol": "ETH",
@@ -329,7 +323,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 2522.0,
+      "price_now": 2433.1,
       "price_24h_ago": 2518.3,
       "price_7d_ago": 1882.3,
       "price_30d_ago": 1877.7,
@@ -337,10 +331,10 @@
       "high_90d": 2550.5,
       "low_90d": 1504.4,
       "candles": 96,
-      "change_24h_pct": 0.15,
-      "change_7d_pct": 33.99,
-      "change_30d_pct": 34.31,
-      "change_90d_pct": 20.18
+      "change_24h_pct": -3.38,
+      "change_7d_pct": 29.26,
+      "change_30d_pct": 29.58,
+      "change_90d_pct": 15.94
     },
     "ETHFI": {
       "symbol": "ETHFI",
@@ -352,7 +346,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.62913,
+      "price_now": 0.58538,
       "price_24h_ago": 0.60289,
       "price_7d_ago": 0.47868,
       "price_30d_ago": 0.45228,
@@ -360,10 +354,10 @@
       "high_90d": 0.63673,
       "low_90d": 0.26594,
       "candles": 96,
-      "change_24h_pct": 4.35,
-      "change_7d_pct": 31.43,
-      "change_30d_pct": 39.1,
-      "change_90d_pct": 70.82
+      "change_24h_pct": -2.9,
+      "change_7d_pct": 22.29,
+      "change_30d_pct": 29.43,
+      "change_90d_pct": 58.95
     },
     "FET": {
       "symbol": "FET",
@@ -375,7 +369,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.18403,
+      "price_now": 0.16428,
       "price_24h_ago": 0.17183,
       "price_7d_ago": 0.12758,
       "price_30d_ago": 0.15216,
@@ -383,10 +377,10 @@
       "high_90d": 0.289,
       "low_90d": 0.11929,
       "candles": 96,
-      "change_24h_pct": 7.1,
-      "change_7d_pct": 44.25,
-      "change_30d_pct": 20.95,
-      "change_90d_pct": -11.74
+      "change_24h_pct": -4.39,
+      "change_7d_pct": 28.77,
+      "change_30d_pct": 7.97,
+      "change_90d_pct": -21.21
     },
     "FIL": {
       "symbol": "FIL",
@@ -398,7 +392,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.86075,
+      "price_now": 0.79079,
       "price_24h_ago": 0.81012,
       "price_7d_ago": 0.67536,
       "price_30d_ago": 0.72733,
@@ -406,10 +400,10 @@
       "high_90d": 1.0988,
       "low_90d": 0.61051,
       "candles": 96,
-      "change_24h_pct": 6.25,
-      "change_7d_pct": 27.45,
-      "change_30d_pct": 18.34,
-      "change_90d_pct": -9.87
+      "change_24h_pct": -2.39,
+      "change_7d_pct": 17.09,
+      "change_30d_pct": 8.73,
+      "change_90d_pct": -17.2
     },
     "FXS": {
       "symbol": "FXS",
@@ -426,7 +420,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 7.8531,
+      "price_now": 7.4592,
       "price_24h_ago": 7.9297,
       "price_7d_ago": 6.6519,
       "price_30d_ago": 6.8229,
@@ -434,10 +428,10 @@
       "high_90d": 8.1731,
       "low_90d": 5.0465,
       "candles": 96,
-      "change_24h_pct": -0.97,
-      "change_7d_pct": 18.06,
-      "change_30d_pct": 15.1,
-      "change_90d_pct": 16.86
+      "change_24h_pct": -5.93,
+      "change_7d_pct": 12.14,
+      "change_30d_pct": 9.33,
+      "change_90d_pct": 11.0
     },
     "INJ": {
       "symbol": "INJ",
@@ -449,7 +443,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 5.3235,
+      "price_now": 4.9248,
       "price_24h_ago": 5.0633,
       "price_7d_ago": 4.1675,
       "price_30d_ago": 5.1699,
@@ -457,10 +451,10 @@
       "high_90d": 7.3416,
       "low_90d": 3.944,
       "candles": 96,
-      "change_24h_pct": 5.14,
-      "change_7d_pct": 27.74,
-      "change_30d_pct": 2.97,
-      "change_90d_pct": 3.76
+      "change_24h_pct": -2.74,
+      "change_7d_pct": 18.17,
+      "change_30d_pct": -4.74,
+      "change_90d_pct": -4.01
     },
     "JTO": {
       "symbol": "JTO",
@@ -472,7 +466,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.67676,
+      "price_now": 0.615,
       "price_24h_ago": 0.65235,
       "price_7d_ago": 0.57923,
       "price_30d_ago": 0.62901,
@@ -480,28 +474,22 @@
       "high_90d": 0.884,
       "low_90d": 0.40624,
       "candles": 96,
-      "change_24h_pct": 3.74,
-      "change_7d_pct": 16.84,
-      "change_30d_pct": 7.59,
-      "change_90d_pct": 34.72
+      "change_24h_pct": -5.73,
+      "change_7d_pct": 6.18,
+      "change_30d_pct": -2.23,
+      "change_90d_pct": 22.43
     },
     "LDO": {
       "symbol": "LDO",
-      "status": "SUSPICIOUS",
+      "status": "OK",
       "hl_name": "LDO",
       "source": "hyperliquid_candles",
       "hive_price_usd": 0.37868,
       "sanity": {
-        "ok": false,
-        "flags": [
-          {
-            "check": "source_agreement",
-            "value": 5.1,
-            "reason": "HL даёт $0.39800000, Hive $0.37868000 — расхождение 5.1%, доверять нельзя ни одному"
-          }
-        ]
+        "ok": true,
+        "flags": []
       },
-      "price_now": 0.398,
+      "price_now": 0.36892,
       "price_24h_ago": 0.37163,
       "price_7d_ago": 0.29796,
       "price_30d_ago": 0.38928,
@@ -509,10 +497,10 @@
       "high_90d": 0.41309,
       "low_90d": 0.23232,
       "candles": 96,
-      "change_24h_pct": 7.1,
-      "change_7d_pct": 33.57,
-      "change_30d_pct": 2.24,
-      "change_90d_pct": 16.49
+      "change_24h_pct": -0.73,
+      "change_7d_pct": 23.82,
+      "change_30d_pct": -5.23,
+      "change_90d_pct": 7.98
     },
     "LINK": {
       "symbol": "LINK",
@@ -524,7 +512,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 12.556,
+      "price_now": 11.783,
       "price_24h_ago": 12.009,
       "price_7d_ago": 9.4694,
       "price_30d_ago": 8.4681,
@@ -532,10 +520,10 @@
       "high_90d": 12.658,
       "low_90d": 6.9871,
       "candles": 96,
-      "change_24h_pct": 4.55,
-      "change_7d_pct": 32.6,
-      "change_30d_pct": 48.27,
-      "change_90d_pct": 33.17
+      "change_24h_pct": -1.88,
+      "change_7d_pct": 24.43,
+      "change_30d_pct": 39.15,
+      "change_90d_pct": 24.98
     },
     "MNT": {
       "symbol": "MNT",
@@ -547,7 +535,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.54907,
+      "price_now": 0.51143,
       "price_24h_ago": 0.51804,
       "price_7d_ago": 0.43336,
       "price_30d_ago": 0.40669,
@@ -555,10 +543,10 @@
       "high_90d": 0.72527,
       "low_90d": 0.38621,
       "candles": 96,
-      "change_24h_pct": 5.99,
-      "change_7d_pct": 26.7,
-      "change_30d_pct": 35.01,
-      "change_90d_pct": -15.88
+      "change_24h_pct": -1.28,
+      "change_7d_pct": 18.02,
+      "change_30d_pct": 25.75,
+      "change_90d_pct": -21.64
     },
     "MORPHO": {
       "symbol": "MORPHO",
@@ -570,7 +558,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 2.4577,
+      "price_now": 2.3108,
       "price_24h_ago": 2.3781,
       "price_7d_ago": 1.9547,
       "price_30d_ago": 1.9422,
@@ -578,28 +566,22 @@
       "high_90d": 2.5369,
       "low_90d": 1.5831,
       "candles": 96,
-      "change_24h_pct": 3.35,
-      "change_7d_pct": 25.73,
-      "change_30d_pct": 26.54,
-      "change_90d_pct": 9.42
+      "change_24h_pct": -2.83,
+      "change_7d_pct": 18.22,
+      "change_30d_pct": 18.98,
+      "change_90d_pct": 2.88
     },
     "ONDO": {
       "symbol": "ONDO",
-      "status": "SUSPICIOUS",
+      "status": "OK",
       "hl_name": "ONDO",
       "source": "hyperliquid_candles",
       "hive_price_usd": 0.399392,
       "sanity": {
-        "ok": false,
-        "flags": [
-          {
-            "check": "source_agreement",
-            "value": 6.7,
-            "reason": "HL даёт $0.42617000, Hive $0.39939200 — расхождение 6.7%, доверять нельзя ни одному"
-          }
-        ]
+        "ok": true,
+        "flags": []
       },
-      "price_now": 0.42617,
+      "price_now": 0.38901,
       "price_24h_ago": 0.39773,
       "price_7d_ago": 0.32344,
       "price_30d_ago": 0.40161,
@@ -607,28 +589,22 @@
       "high_90d": 0.47613,
       "low_90d": 0.2934,
       "candles": 96,
-      "change_24h_pct": 7.15,
-      "change_7d_pct": 31.76,
-      "change_30d_pct": 6.12,
-      "change_90d_pct": -3.01
+      "change_24h_pct": -2.19,
+      "change_7d_pct": 20.27,
+      "change_30d_pct": -3.14,
+      "change_90d_pct": -11.46
     },
     "OP": {
       "symbol": "OP",
-      "status": "SUSPICIOUS",
+      "status": "OK",
       "hl_name": "OP",
       "source": "hyperliquid_candles",
       "hive_price_usd": 0.10802,
       "sanity": {
-        "ok": false,
-        "flags": [
-          {
-            "check": "source_agreement",
-            "value": 14.08,
-            "reason": "HL даёт $0.12323000, Hive $0.10802000 — расхождение 14.1%, доверять нельзя ни одному"
-          }
-        ]
+        "ok": true,
+        "flags": []
       },
-      "price_now": 0.12323,
+      "price_now": 0.11007,
       "price_24h_ago": 0.10712,
       "price_7d_ago": 0.08478,
       "price_30d_ago": 0.09244,
@@ -636,10 +612,10 @@
       "high_90d": 0.13669,
       "low_90d": 0.08061,
       "candles": 96,
-      "change_24h_pct": 15.04,
-      "change_7d_pct": 45.35,
-      "change_30d_pct": 33.31,
-      "change_90d_pct": -1.7
+      "change_24h_pct": 2.75,
+      "change_7d_pct": 29.83,
+      "change_30d_pct": 19.07,
+      "change_90d_pct": -12.2
     },
     "PENDLE": {
       "symbol": "PENDLE",
@@ -651,7 +627,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 1.7599,
+      "price_now": 1.658,
       "price_24h_ago": 1.6554,
       "price_7d_ago": 1.3038,
       "price_30d_ago": 1.5739,
@@ -659,10 +635,10 @@
       "high_90d": 2.0059,
       "low_90d": 1.1483,
       "candles": 96,
-      "change_24h_pct": 6.31,
-      "change_7d_pct": 34.98,
-      "change_30d_pct": 11.82,
-      "change_90d_pct": -3.33
+      "change_24h_pct": 0.16,
+      "change_7d_pct": 27.17,
+      "change_30d_pct": 5.34,
+      "change_90d_pct": -8.93
     },
     "PEPE": {
       "symbol": "PEPE",
@@ -674,7 +650,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 4.529e-06,
+      "price_now": 4.038e-06,
       "price_24h_ago": 4.128e-06,
       "price_7d_ago": 2.621e-06,
       "price_30d_ago": 2.781e-06,
@@ -682,10 +658,10 @@
       "high_90d": 4.566e-06,
       "low_90d": 2.227e-06,
       "candles": 96,
-      "change_24h_pct": 9.71,
-      "change_7d_pct": 72.8,
-      "change_30d_pct": 62.86,
-      "change_90d_pct": 26.65
+      "change_24h_pct": -2.18,
+      "change_7d_pct": 54.06,
+      "change_30d_pct": 45.2,
+      "change_90d_pct": 12.92
     },
     "RNDR": {
       "symbol": "RNDR",
@@ -702,7 +678,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.051585,
+      "price_now": 0.046976,
       "price_24h_ago": 0.049038,
       "price_7d_ago": 0.039542,
       "price_30d_ago": 0.045875,
@@ -710,10 +686,10 @@
       "high_90d": 0.076149,
       "low_90d": 0.037319,
       "candles": 96,
-      "change_24h_pct": 5.19,
-      "change_7d_pct": 30.46,
-      "change_30d_pct": 12.45,
-      "change_90d_pct": -26.42
+      "change_24h_pct": -4.2,
+      "change_7d_pct": 18.8,
+      "change_30d_pct": 2.4,
+      "change_90d_pct": -33.0
     },
     "SEI": {
       "symbol": "SEI",
@@ -725,7 +701,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.05073,
+      "price_now": 0.047309,
       "price_24h_ago": 0.048044,
       "price_7d_ago": 0.039714,
       "price_30d_ago": 0.04539,
@@ -733,10 +709,10 @@
       "high_90d": 0.073104,
       "low_90d": 0.038195,
       "candles": 96,
-      "change_24h_pct": 5.59,
-      "change_7d_pct": 27.74,
-      "change_30d_pct": 11.76,
-      "change_90d_pct": -16.54
+      "change_24h_pct": -1.53,
+      "change_7d_pct": 19.12,
+      "change_30d_pct": 4.23,
+      "change_90d_pct": -22.17
     },
     "SNX": {
       "symbol": "SNX",
@@ -748,7 +724,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.2515,
+      "price_now": 0.23542,
       "price_24h_ago": 0.23604,
       "price_7d_ago": 0.19785,
       "price_30d_ago": 0.21988,
@@ -756,28 +732,22 @@
       "high_90d": 0.32637,
       "low_90d": 0.18866,
       "candles": 96,
-      "change_24h_pct": 6.55,
-      "change_7d_pct": 27.12,
-      "change_30d_pct": 14.38,
-      "change_90d_pct": -15.84
+      "change_24h_pct": -0.26,
+      "change_7d_pct": 18.99,
+      "change_30d_pct": 7.07,
+      "change_90d_pct": -21.22
     },
     "SOL": {
       "symbol": "SOL",
-      "status": "SUSPICIOUS",
+      "status": "OK",
       "hl_name": "SOL",
       "source": "hyperliquid_candles",
       "hive_price_usd": 93.62,
       "sanity": {
-        "ok": false,
-        "flags": [
-          {
-            "check": "source_agreement",
-            "value": 7.58,
-            "reason": "HL даёт $100.72000000, Hive $93.62000000 — расхождение 7.6%, доверять нельзя ни одному"
-          }
-        ]
+        "ok": true,
+        "flags": []
       },
-      "price_now": 100.72,
+      "price_now": 93.659,
       "price_24h_ago": 93.812,
       "price_7d_ago": 75.318,
       "price_30d_ago": 75.842,
@@ -785,28 +755,22 @@
       "high_90d": 102.9,
       "low_90d": 60.062,
       "candles": 96,
-      "change_24h_pct": 7.36,
-      "change_7d_pct": 33.73,
-      "change_30d_pct": 32.8,
-      "change_90d_pct": 18.2
+      "change_24h_pct": -0.16,
+      "change_7d_pct": 24.35,
+      "change_30d_pct": 23.49,
+      "change_90d_pct": 9.91
     },
     "STRK": {
       "symbol": "STRK",
-      "status": "SUSPICIOUS",
+      "status": "OK",
       "hl_name": "STRK",
       "source": "hyperliquid_candles",
       "hive_price_usd": 0.02932265,
       "sanity": {
-        "ok": false,
-        "flags": [
-          {
-            "check": "source_agreement",
-            "value": 5.07,
-            "reason": "HL даёт $0.03081000, Hive $0.02932265 — расхождение 5.1%, доверять нельзя ни одному"
-          }
-        ]
+        "ok": true,
+        "flags": []
       },
-      "price_now": 0.03081,
+      "price_now": 0.02834,
       "price_24h_ago": 0.02902,
       "price_7d_ago": 0.02302,
       "price_30d_ago": 0.02875,
@@ -814,10 +778,10 @@
       "high_90d": 0.04567,
       "low_90d": 0.0222,
       "candles": 96,
-      "change_24h_pct": 6.17,
-      "change_7d_pct": 33.84,
-      "change_30d_pct": 7.17,
-      "change_90d_pct": -22.57
+      "change_24h_pct": -2.34,
+      "change_7d_pct": 23.11,
+      "change_30d_pct": -1.43,
+      "change_90d_pct": -28.78
     },
     "SUI": {
       "symbol": "SUI",
@@ -829,7 +793,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.94945,
+      "price_now": 0.8401,
       "price_24h_ago": 0.84504,
       "price_7d_ago": 0.67725,
       "price_30d_ago": 0.74397,
@@ -837,10 +801,10 @@
       "high_90d": 1.164,
       "low_90d": 0.63552,
       "candles": 96,
-      "change_24h_pct": 12.36,
-      "change_7d_pct": 40.19,
-      "change_30d_pct": 27.62,
-      "change_90d_pct": -7.96
+      "change_24h_pct": -0.58,
+      "change_7d_pct": 24.05,
+      "change_30d_pct": 12.92,
+      "change_90d_pct": -18.56
     },
     "TAO": {
       "symbol": "TAO",
@@ -852,7 +816,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 250.5,
+      "price_now": 231.48,
       "price_24h_ago": 230.33,
       "price_7d_ago": 196.93,
       "price_30d_ago": 192.8,
@@ -860,10 +824,10 @@
       "high_90d": 293.25,
       "low_90d": 183.35,
       "candles": 96,
-      "change_24h_pct": 8.76,
-      "change_7d_pct": 27.2,
-      "change_30d_pct": 29.93,
-      "change_90d_pct": -8.83
+      "change_24h_pct": 0.5,
+      "change_7d_pct": 17.54,
+      "change_30d_pct": 20.06,
+      "change_90d_pct": -15.75
     },
     "TIA": {
       "symbol": "TIA",
@@ -875,7 +839,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.4218,
+      "price_now": 0.38354,
       "price_24h_ago": 0.39478,
       "price_7d_ago": 0.30094,
       "price_30d_ago": 0.34838,
@@ -883,10 +847,10 @@
       "high_90d": 0.49301,
       "low_90d": 0.27788,
       "candles": 96,
-      "change_24h_pct": 6.84,
-      "change_7d_pct": 40.16,
-      "change_30d_pct": 21.07,
-      "change_90d_pct": 1.73
+      "change_24h_pct": -2.85,
+      "change_7d_pct": 27.45,
+      "change_30d_pct": 10.09,
+      "change_90d_pct": -7.49
     },
     "UNI": {
       "symbol": "UNI",
@@ -898,7 +862,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 4.4367,
+      "price_now": 4.1417,
       "price_24h_ago": 4.1397,
       "price_7d_ago": 3.2393,
       "price_30d_ago": 3.7564,
@@ -906,10 +870,10 @@
       "high_90d": 4.5739,
       "low_90d": 2.316,
       "candles": 96,
-      "change_24h_pct": 7.17,
-      "change_7d_pct": 36.96,
-      "change_30d_pct": 18.11,
-      "change_90d_pct": 31.12
+      "change_24h_pct": 0.05,
+      "change_7d_pct": 27.86,
+      "change_30d_pct": 10.26,
+      "change_90d_pct": 22.41
     },
     "VIRTUAL": {
       "symbol": "VIRTUAL",
@@ -921,7 +885,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.76586,
+      "price_now": 0.69848,
       "price_24h_ago": 0.72642,
       "price_7d_ago": 0.56015,
       "price_30d_ago": 0.61259,
@@ -929,10 +893,10 @@
       "high_90d": 0.8579,
       "low_90d": 0.49725,
       "candles": 96,
-      "change_24h_pct": 5.43,
-      "change_7d_pct": 36.72,
-      "change_30d_pct": 25.02,
-      "change_90d_pct": 3.54
+      "change_24h_pct": -3.85,
+      "change_7d_pct": 24.7,
+      "change_30d_pct": 14.02,
+      "change_90d_pct": -5.57
     },
     "WIF": {
       "symbol": "WIF",
@@ -944,7 +908,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.22917,
+      "price_now": 0.20893,
       "price_24h_ago": 0.19953,
       "price_7d_ago": 0.1361,
       "price_30d_ago": 0.14347,
@@ -952,10 +916,10 @@
       "high_90d": 0.23151,
       "low_90d": 0.13282,
       "candles": 96,
-      "change_24h_pct": 14.85,
-      "change_7d_pct": 68.38,
-      "change_30d_pct": 59.73,
-      "change_90d_pct": 22.32
+      "change_24h_pct": 4.71,
+      "change_7d_pct": 53.51,
+      "change_30d_pct": 45.63,
+      "change_90d_pct": 11.52
     },
     "ZK": {
       "symbol": "ZK",
@@ -967,7 +931,7 @@
         "ok": true,
         "flags": []
       },
-      "price_now": 0.009979,
+      "price_now": 0.009327,
       "price_24h_ago": 0.009465,
       "price_7d_ago": 0.007434,
       "price_30d_ago": 0.009358,
@@ -975,10 +939,10 @@
       "high_90d": 0.015835,
       "low_90d": 0.007107,
       "candles": 96,
-      "change_24h_pct": 5.43,
-      "change_7d_pct": 34.23,
-      "change_30d_pct": 6.64,
-      "change_90d_pct": -31.65
+      "change_24h_pct": -1.46,
+      "change_7d_pct": 25.46,
+      "change_30d_pct": -0.33,
+      "change_90d_pct": -36.11
     },
     "AKT": {
       "symbol": "AKT",
