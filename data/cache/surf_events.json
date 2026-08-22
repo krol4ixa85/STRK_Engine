@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-22T01:21:34.436384+00:00",
+  "as_of": "2026-08-22T06:42:32.872663+00:00",
   "phase_used": "MARKUP",
   "hold_tokens": [
     "ARB",
@@ -15,18 +15,18 @@
     "LINK",
     "MORPHO",
     "ETHFI",
-    "OP",
-    "STRK",
-    "ARB",
     "ONDO",
+    "OP",
+    "ARB",
     "MNT",
+    "PENDLE",
     "DOGE",
-    "PENDLE"
+    "STRK"
   ],
   "sources": {
     "surf_used": true,
     "surf_articles": 110,
-    "rss_articles": 69,
+    "rss_articles": 83,
     "rss_feeds_count": 6
   },
   "events": [
@@ -57,32 +57,6 @@
       "query_context": ""
     },
     {
-      "id": "surf-c52c1d87",
-      "assets": [
-        "LINK"
-      ],
-      "type": "security",
-      "severity": "high",
-      "summary": "Can Chainlink turn this CCIP migration wave into a stronger LINK rally?",
-      "source_class": "surf_cited",
-      "source_name": "AMBCRYPTO",
-      "source_type": "surf",
-      "url": "https://ambcrypto.com/can-chainlink-turn-this-ccip-migration-wave-into-a-stronger-link-rally/",
-      "published": 1779337839,
-      "fomo_risk": true,
-      "score": 0.514,
-      "route": "macro",
-      "action_hint": {
-        "field": "INVALIDATION",
-        "action": "tighten",
-        "layman_ru": "\ud83d\udd34 Security event \u2014 \u0443\u0436\u0435\u0441\u0442\u043e\u0447\u0438\u0442\u044c INVALIDATION, \u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c exit"
-      },
-      "matched_keywords": [
-        "exploit"
-      ],
-      "query_context": "general"
-    },
-    {
       "id": "surf-4da156f5",
       "assets": [
         "ONDO"
@@ -109,18 +83,18 @@
       "query_context": "general"
     },
     {
-      "id": "surf-21c9d55a",
+      "id": "surf-cc97d597",
       "assets": [
-        "STRK"
+        "ARB"
       ],
       "type": "unlock",
       "severity": "high",
-      "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
+      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
       "source_class": "surf_cited",
       "source_name": "TRADINGVIEW",
       "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
-      "published": 1763722829,
+      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
+      "published": 1786245227,
       "fomo_risk": true,
       "score": 0.463,
       "route": "macro",
@@ -135,18 +109,18 @@
       "query_context": "general"
     },
     {
-      "id": "surf-cc97d597",
+      "id": "surf-21c9d55a",
       "assets": [
-        "ARB"
+        "STRK"
       ],
       "type": "unlock",
       "severity": "high",
-      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
+      "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
       "source_class": "surf_cited",
       "source_name": "TRADINGVIEW",
       "source_type": "surf",
-      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
-      "published": 1786245227,
+      "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
+      "published": 1763722829,
       "fomo_risk": true,
       "score": 0.463,
       "route": "macro",
@@ -323,6 +297,32 @@
       "query_context": ""
     },
     {
+      "id": "rss-ab6a3cdb",
+      "assets": [
+        "BTC"
+      ],
+      "type": "regulation",
+      "severity": "medium",
+      "summary": "Bitcoin ETFs draw $608M as Ether ETFs see largest inflow since October",
+      "source_class": "tier1_news",
+      "source_name": "CoinTelegraph",
+      "source_type": "rss",
+      "url": "https://cointelegraph.com/markets/bitcoin-etfs-ether-etfs-largest-inflow-october?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "published": "2026-08-21T07:50:01+00:00",
+      "fomo_risk": false,
+      "score": 0.428,
+      "route": "macro",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Regulation \u00b7 medium \u00b7 MARKUP \u2014 noted"
+      },
+      "matched_keywords": [
+        "etf inflow"
+      ],
+      "query_context": ""
+    },
+    {
       "id": "surf-118ee1bf",
       "assets": [
         "LINK"
@@ -398,6 +398,33 @@
       "matched_keywords": [
         "launched",
         "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-6f699925",
+      "assets": [
+        "ARB"
+      ],
+      "type": "unlock",
+      "severity": "medium",
+      "summary": "Arbitrum (ARB) - 92.65MM Token Unlock - 16 Dec 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:e73b9cc94094b:0-arbitrum-arb-92-65mm-token-unlock-16-dec-2025/",
+      "published": 1763787633,
+      "fomo_risk": true,
+      "score": 0.324,
+      "route": "archive",
+      "action_hint": {
+        "field": "SIZE",
+        "action": "down_or_watch",
+        "layman_ru": "\ud83d\udcc9 Unlock event \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE"
+      },
+      "matched_keywords": [
+        "unlock",
+        "unlocks"
       ],
       "query_context": "general"
     },
@@ -534,6 +561,59 @@
       "query_context": "general"
     },
     {
+      "id": "surf-d7f45543",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Ondo Finance now supports 24/7 conversions between OUSG and PYUSD",
+      "source_class": "surf_cited",
+      "source_name": "COINNESS",
+      "source_type": "surf",
+      "url": "https://coinness.com/en/news/1128359",
+      "published": 1747313880,
+      "fomo_risk": true,
+      "score": 0.229,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "confirm",
+        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
+      },
+      "matched_keywords": [
+        "launches",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-d8c3add5",
+      "assets": [
+        "ONDO"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Ondo Finance Announces Launch of RWA Tokenization Platform Ondo Global Markets",
+      "source_class": "surf_cited",
+      "source_name": "PANEWS",
+      "source_type": "surf",
+      "url": "https://www.panewslab.com/en/articles/wwheei43",
+      "published": 1738756126,
+      "fomo_risk": true,
+      "score": 0.229,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "confirm",
+        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
+      },
+      "matched_keywords": [
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
       "id": "surf-eaac1e47",
       "assets": [
         "OP"
@@ -556,86 +636,6 @@
       },
       "matched_keywords": [
         "hard fork"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-65270f88",
-      "assets": [
-        "STRK"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Starknet (STRK) - Privacy Perps - 01 Dec 2025",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:2271a2986094b:0-starknet-strk-privacy-perps-01-dec-2025/",
-      "published": 1763031634,
-      "fomo_risk": true,
-      "score": 0.229,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "confirm",
-        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-      },
-      "matched_keywords": [
-        "mainnet",
-        "launch"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-5dd8b892",
-      "assets": [
-        "STRK"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Starknet (STRK) - V0.14.2 Mainnet Upgrade - 20 April 2026",
-      "source_class": "surf_cited",
-      "source_name": "TRADINGVIEW",
-      "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:a717435e6094b:0-starknet-strk-v0-14-2-mainnet-upgrade-20-april-2026/",
-      "published": 1776704432,
-      "fomo_risk": true,
-      "score": 0.229,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "confirm",
-        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-      },
-      "matched_keywords": [
-        "mainnet",
-        "v0."
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-223d3a08",
-      "assets": [
-        "STRK"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Starknet successfully deploys STRK staking infrastructure on mainnet",
-      "source_class": "surf_cited",
-      "source_name": "COINNESS",
-      "source_type": "surf",
-      "url": "https://coinness.com/en/news/1112523",
-      "published": 1732523456,
-      "fomo_risk": true,
-      "score": 0.229,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "confirm",
-        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-      },
-      "matched_keywords": [
-        "mainnet"
       ],
       "query_context": "general"
     },
@@ -721,59 +721,6 @@
       "query_context": "general"
     },
     {
-      "id": "surf-d7f45543",
-      "assets": [
-        "ONDO"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Ondo Finance now supports 24/7 conversions between OUSG and PYUSD",
-      "source_class": "surf_cited",
-      "source_name": "COINNESS",
-      "source_type": "surf",
-      "url": "https://coinness.com/en/news/1128359",
-      "published": 1747313880,
-      "fomo_risk": true,
-      "score": 0.229,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "confirm",
-        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-      },
-      "matched_keywords": [
-        "launches",
-        "launch"
-      ],
-      "query_context": "general"
-    },
-    {
-      "id": "surf-d8c3add5",
-      "assets": [
-        "ONDO"
-      ],
-      "type": "upgrade",
-      "severity": "medium",
-      "summary": "Ondo Finance Announces Launch of RWA Tokenization Platform Ondo Global Markets",
-      "source_class": "surf_cited",
-      "source_name": "PANEWS",
-      "source_type": "surf",
-      "url": "https://www.panewslab.com/en/articles/wwheei43",
-      "published": 1738756126,
-      "fomo_risk": true,
-      "score": 0.229,
-      "route": "archive",
-      "action_hint": {
-        "field": "thesis_alive",
-        "action": "confirm",
-        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-      },
-      "matched_keywords": [
-        "launch"
-      ],
-      "query_context": "general"
-    },
-    {
       "id": "surf-a4803520",
       "assets": [],
       "type": "upgrade",
@@ -824,6 +771,86 @@
       "query_context": "general"
     },
     {
+      "id": "surf-65270f88",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - Privacy Perps - 01 Dec 2025",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:2271a2986094b:0-starknet-strk-privacy-perps-01-dec-2025/",
+      "published": 1763031634,
+      "fomo_risk": true,
+      "score": 0.229,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "confirm",
+        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "launch"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-5dd8b892",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet (STRK) - V0.14.2 Mainnet Upgrade - 20 April 2026",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:a717435e6094b:0-starknet-strk-v0-14-2-mainnet-upgrade-20-april-2026/",
+      "published": 1776704432,
+      "fomo_risk": true,
+      "score": 0.229,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "confirm",
+        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
+      },
+      "matched_keywords": [
+        "mainnet",
+        "v0."
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-223d3a08",
+      "assets": [
+        "STRK"
+      ],
+      "type": "upgrade",
+      "severity": "medium",
+      "summary": "Starknet successfully deploys STRK staking infrastructure on mainnet",
+      "source_class": "surf_cited",
+      "source_name": "COINNESS",
+      "source_type": "surf",
+      "url": "https://coinness.com/en/news/1112523",
+      "published": 1732523456,
+      "fomo_risk": true,
+      "score": 0.229,
+      "route": "archive",
+      "action_hint": {
+        "field": "thesis_alive",
+        "action": "confirm",
+        "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
+      },
+      "matched_keywords": [
+        "mainnet"
+      ],
+      "query_context": "general"
+    },
+    {
       "id": "surf-211d4a42",
       "assets": [
         "LINK"
@@ -850,6 +877,30 @@
       "query_context": "general"
     },
     {
+      "id": "rss-5e57aa01",
+      "assets": [],
+      "type": "partnership",
+      "severity": "medium",
+      "summary": "South Korea\u2019s Shinhan partners with Solana Foundation, Etherfuse, Orca for tokenized fund issuance",
+      "source_class": "tier1_news",
+      "source_name": "TheBlock",
+      "source_type": "rss",
+      "url": "https://www.theblock.co/news/regulation/2026-08-21-south-korea-shinhan-partners-solana-412420",
+      "published": "2026-08-21T06:32:48+00:00",
+      "fomo_risk": false,
+      "score": 0.19,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Partnership \u00b7 medium \u00b7 MARKUP \u2014 noted"
+      },
+      "matched_keywords": [
+        "partners with"
+      ],
+      "query_context": ""
+    },
+    {
       "id": "surf-4f33a5f2",
       "assets": [],
       "type": "roadmap",
@@ -870,6 +921,32 @@
       },
       "matched_keywords": [
         "roadmap"
+      ],
+      "query_context": "general"
+    },
+    {
+      "id": "surf-562b7466",
+      "assets": [
+        "LINK"
+      ],
+      "type": "partnership",
+      "severity": "high",
+      "summary": "Chainlink (LINK) and 2 others - Saturn CCIP Integration - 29 May 2026",
+      "source_class": "surf_cited",
+      "source_name": "TRADINGVIEW",
+      "source_type": "surf",
+      "url": "https://www.tradingview.com/news/coinmarketcal:8de2f5b6b094b:0-chainlink-link-and-2-others-saturn-ccip-integration-29-may-2026/",
+      "published": 1780074027,
+      "fomo_risk": true,
+      "score": 0.15,
+      "route": "archive",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Partnership \u00b7 high \u00b7 MARKUP \u2014 noted"
+      },
+      "matched_keywords": [
+        "integration"
       ],
       "query_context": "general"
     },
@@ -1028,84 +1105,12 @@
       },
       "matched_keywords": [],
       "query_context": "general"
-    },
-    {
-      "id": "rss-7bb54645",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "high",
-      "summary": "Coldcard ships firmware after $114 million bitcoin theft; says AI helped catch more bugs",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/tech/2026/08/21/coldcard-ships-firmware-after-usd114-million-bitcoin-theft-says-ai-helped-catch-more-bugs",
-      "published": "2026-08-21T12:10:55+00:00",
-      "fomo_risk": false,
-      "score": 0.085,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 high \u00b7 MARKUP \u2014 noted"
-      },
-      "matched_keywords": [],
-      "query_context": ""
-    },
-    {
-      "id": "rss-8ef783a8",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "high",
-      "summary": "Bitcoin, ether and solana climb as another $1 billion shorts get wiped out",
-      "source_class": "tier1_news",
-      "source_name": "CoinDesk",
-      "source_type": "rss",
-      "url": "https://www.coindesk.com/markets/2026/08/21/bitcoin-ether-and-solana-climb-as-another-usd1-billion-shorts-get-wiped-out",
-      "published": "2026-08-21T04:56:30+00:00",
-      "fomo_risk": false,
-      "score": 0.085,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 high \u00b7 MARKUP \u2014 noted"
-      },
-      "matched_keywords": [],
-      "query_context": ""
-    },
-    {
-      "id": "rss-5bbb3a36",
-      "assets": [
-        "BTC"
-      ],
-      "type": "narrative",
-      "severity": "high",
-      "summary": "Ray Dalio says to buy \u2018a bit\u2019 of Bitcoin amid potential debt crisis",
-      "source_class": "tier1_news",
-      "source_name": "CoinTelegraph",
-      "source_type": "rss",
-      "url": "https://cointelegraph.com/news/ray-dalio-buy-bitcoin-debt-crisis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "published": "2026-08-21T20:00:47+00:00",
-      "fomo_risk": false,
-      "score": 0.085,
-      "route": "archive",
-      "action_hint": {
-        "field": "MONITOR",
-        "action": "noted",
-        "layman_ru": "Narrative \u00b7 high \u00b7 MARKUP \u2014 noted"
-      },
-      "matched_keywords": [],
-      "query_context": ""
     }
   ],
   "route_counts": {
     "home": 1,
     "macro": 10,
-    "archive": 91
+    "archive": 100
   },
   "home_events": [
     {
@@ -1137,32 +1142,6 @@
   ],
   "macro_events": [
     {
-      "id": "surf-c52c1d87",
-      "assets": [
-        "LINK"
-      ],
-      "type": "security",
-      "severity": "high",
-      "summary": "Can Chainlink turn this CCIP migration wave into a stronger LINK rally?",
-      "source_class": "surf_cited",
-      "source_name": "AMBCRYPTO",
-      "source_type": "surf",
-      "url": "https://ambcrypto.com/can-chainlink-turn-this-ccip-migration-wave-into-a-stronger-link-rally/",
-      "published": 1779337839,
-      "fomo_risk": true,
-      "score": 0.514,
-      "route": "macro",
-      "action_hint": {
-        "field": "INVALIDATION",
-        "action": "tighten",
-        "layman_ru": "\ud83d\udd34 Security event \u2014 \u0443\u0436\u0435\u0441\u0442\u043e\u0447\u0438\u0442\u044c INVALIDATION, \u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c exit"
-      },
-      "matched_keywords": [
-        "exploit"
-      ],
-      "query_context": "general"
-    },
-    {
       "id": "surf-4da156f5",
       "assets": [
         "ONDO"
@@ -1189,18 +1168,18 @@
       "query_context": "general"
     },
     {
-      "id": "surf-21c9d55a",
+      "id": "surf-cc97d597",
       "assets": [
-        "STRK"
+        "ARB"
       ],
       "type": "unlock",
       "severity": "high",
-      "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
+      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
       "source_class": "surf_cited",
       "source_name": "TRADINGVIEW",
       "source_type": "surf",
-      "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
-      "published": 1763722829,
+      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
+      "published": 1786245227,
       "fomo_risk": true,
       "score": 0.463,
       "route": "macro",
@@ -1215,18 +1194,18 @@
       "query_context": "general"
     },
     {
-      "id": "surf-cc97d597",
+      "id": "surf-21c9d55a",
       "assets": [
-        "ARB"
+        "STRK"
       ],
       "type": "unlock",
       "severity": "high",
-      "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
+      "summary": "Starknet (STRK) - 127MM Token Unlock - 15 Dec 2025",
       "source_class": "surf_cited",
       "source_name": "TRADINGVIEW",
       "source_type": "surf",
-      "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
-      "published": 1786245227,
+      "url": "https://www.tradingview.com/news/coinmarketcal:0352df915094b:0-starknet-strk-127mm-token-unlock-15-dec-2025/",
+      "published": 1763722829,
       "fomo_risk": true,
       "score": 0.463,
       "route": "macro",
@@ -1401,15 +1380,41 @@
         "etf inflow"
       ],
       "query_context": ""
+    },
+    {
+      "id": "rss-ab6a3cdb",
+      "assets": [
+        "BTC"
+      ],
+      "type": "regulation",
+      "severity": "medium",
+      "summary": "Bitcoin ETFs draw $608M as Ether ETFs see largest inflow since October",
+      "source_class": "tier1_news",
+      "source_name": "CoinTelegraph",
+      "source_type": "rss",
+      "url": "https://cointelegraph.com/markets/bitcoin-etfs-ether-etfs-largest-inflow-october?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "published": "2026-08-21T07:50:01+00:00",
+      "fomo_risk": false,
+      "score": 0.428,
+      "route": "macro",
+      "action_hint": {
+        "field": "MONITOR",
+        "action": "noted",
+        "layman_ru": "Regulation \u00b7 medium \u00b7 MARKUP \u2014 noted"
+      },
+      "matched_keywords": [
+        "etf inflow"
+      ],
+      "query_context": ""
     }
   ],
   "per_asset_counts": {
-    "BTC": 26,
-    "LINK": 10,
+    "BTC": 32,
     "ONDO": 10,
+    "ARB": 11,
     "STRK": 10,
-    "ARB": 10,
     "MORPHO": 4,
+    "LINK": 10,
     "DOGE": 2,
     "ETH": 6,
     "PENDLE": 7,
@@ -1420,136 +1425,6 @@
     "AAVE": 1
   },
   "per_asset_top": {
-    "LINK": [
-      {
-        "id": "surf-c52c1d87",
-        "assets": [
-          "LINK"
-        ],
-        "type": "security",
-        "severity": "high",
-        "summary": "Can Chainlink turn this CCIP migration wave into a stronger LINK rally?",
-        "source_class": "surf_cited",
-        "source_name": "AMBCRYPTO",
-        "source_type": "surf",
-        "url": "https://ambcrypto.com/can-chainlink-turn-this-ccip-migration-wave-into-a-stronger-link-rally/",
-        "published": 1779337839,
-        "fomo_risk": true,
-        "score": 0.514,
-        "route": "macro",
-        "action_hint": {
-          "field": "INVALIDATION",
-          "action": "tighten",
-          "layman_ru": "\ud83d\udd34 Security event \u2014 \u0443\u0436\u0435\u0441\u0442\u043e\u0447\u0438\u0442\u044c INVALIDATION, \u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c exit"
-        },
-        "matched_keywords": [
-          "exploit"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-85abaf63",
-        "assets": [
-          "LINK"
-        ],
-        "type": "security",
-        "severity": "medium",
-        "summary": "Crisis of Confidence: 14 Protocols Exit or Suspend Bridging With LayerZero in 48 Hours",
-        "source_class": "surf_cited",
-        "source_name": "BITCOINWORLD",
-        "source_type": "surf",
-        "url": "https://bitcoinworld.co.in/layerzero-bridge-protocols-exit-suspend/",
-        "published": 1778293511,
-        "fomo_risk": true,
-        "score": 0.36,
-        "route": "macro",
-        "action_hint": {
-          "field": "MONITOR",
-          "action": "noted",
-          "layman_ru": "Security \u00b7 medium \u00b7 MARKUP \u2014 noted"
-        },
-        "matched_keywords": [
-          "security incident"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-118ee1bf",
-        "assets": [
-          "LINK"
-        ],
-        "type": "regulation",
-        "severity": "high",
-        "summary": "Chainlink ETF Approved \u2014 Is LINK on Track for a Break Toward $30?",
-        "source_class": "surf_cited",
-        "source_name": "BITZO",
-        "source_type": "surf",
-        "url": "https://bitzo.com/2025/12/chainlink-etf-approved-is-link-on-track-for-a-break-toward-30",
-        "published": 1764676754,
-        "fomo_risk": true,
-        "score": 0.337,
-        "route": "archive",
-        "action_hint": {
-          "field": "MONITOR",
-          "action": "watch",
-          "layman_ru": "\u26a1 Regulatory event high \u2014 \u043c\u0430\u043a\u0440\u043e impact"
-        },
-        "matched_keywords": [
-          "etf approv"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-211d4a42",
-        "assets": [
-          "LINK"
-        ],
-        "type": "partnership",
-        "severity": "medium",
-        "summary": "Mountain Protocol Integrates Chainlink CCIP for USDM Stablecoin",
-        "source_class": "surf_cited",
-        "source_name": "BEINCRYPTO",
-        "source_type": "surf",
-        "url": "https://beincrypto.com/mountain-protocol-integrates-chainlink-ccip/",
-        "published": 1729229562,
-        "fomo_risk": false,
-        "score": 0.209,
-        "route": "archive",
-        "action_hint": {
-          "field": "MONITOR",
-          "action": "noted",
-          "layman_ru": "Partnership \u00b7 medium \u00b7 MARKUP \u2014 noted"
-        },
-        "matched_keywords": [
-          "integration"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-e40a4c64",
-        "assets": [
-          "LINK"
-        ],
-        "type": "narrative",
-        "severity": "low",
-        "summary": "Chainlink (LINK) - Kraken & CCIP - 14 May 2026",
-        "source_class": "surf_cited",
-        "source_name": "TRADINGVIEW",
-        "source_type": "surf",
-        "url": "https://www.tradingview.com/news/coinmarketcal:c1126a600094b:0-chainlink-link-kraken-ccip-14-may-2026/",
-        "published": 1778778042,
-        "fomo_risk": false,
-        "score": 0.037,
-        "route": "archive",
-        "action_hint": {
-          "field": "MONITOR",
-          "action": "noted",
-          "layman_ru": "Narrative \u00b7 low \u00b7 MARKUP \u2014 noted"
-        },
-        "matched_keywords": [],
-        "query_context": "general"
-      }
-    ],
     "ONDO": [
       {
         "id": "surf-4da156f5",
@@ -1678,6 +1553,140 @@
           "layman_ru": "Narrative \u00b7 high \u00b7 MARKUP \u2014 noted"
         },
         "matched_keywords": [],
+        "query_context": "general"
+      }
+    ],
+    "ARB": [
+      {
+        "id": "surf-cc97d597",
+        "assets": [
+          "ARB"
+        ],
+        "type": "unlock",
+        "severity": "high",
+        "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
+        "published": 1786245227,
+        "fomo_risk": true,
+        "score": 0.463,
+        "route": "macro",
+        "action_hint": {
+          "field": "SIZE",
+          "action": "down_or_watch",
+          "layman_ru": "\ud83d\udcc9 Unlock event \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE"
+        },
+        "matched_keywords": [
+          "unlock"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "rss-6db31f40",
+        "assets": [
+          "ARB"
+        ],
+        "type": "regulation",
+        "severity": "medium",
+        "summary": "Arbitrum Activates Elara With Optional Compliance Filters for Dedicated Chains",
+        "source_class": "tier1_news",
+        "source_name": "The Defiant (RWA)",
+        "source_type": "rss",
+        "url": "https://thedefiant.io/news/blockchains/arbitrum-activates-elara-with-optional-compliance-filters-for-dedicated-chains",
+        "published": "2026-08-20T22:50:28+00:00",
+        "fomo_risk": false,
+        "score": 0.428,
+        "route": "macro",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Regulation \u00b7 medium \u00b7 MARKUP \u2014 noted"
+        },
+        "matched_keywords": [
+          "compliance"
+        ],
+        "query_context": ""
+      },
+      {
+        "id": "surf-6f699925",
+        "assets": [
+          "ARB"
+        ],
+        "type": "unlock",
+        "severity": "medium",
+        "summary": "Arbitrum (ARB) - 92.65MM Token Unlock - 16 Dec 2025",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:e73b9cc94094b:0-arbitrum-arb-92-65mm-token-unlock-16-dec-2025/",
+        "published": 1763787633,
+        "fomo_risk": true,
+        "score": 0.324,
+        "route": "archive",
+        "action_hint": {
+          "field": "SIZE",
+          "action": "down_or_watch",
+          "layman_ru": "\ud83d\udcc9 Unlock event \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE"
+        },
+        "matched_keywords": [
+          "unlock",
+          "unlocks"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-2cab10dd",
+        "assets": [
+          "ARB"
+        ],
+        "type": "roadmap",
+        "severity": "high",
+        "summary": "Arbitrum Foundation plans to allocate $14 million to ARB to subsidize security audits of network projects",
+        "source_class": "surf_cited",
+        "source_name": "PANEWS",
+        "source_type": "surf",
+        "url": "https://www.panewslab.com/en/articles/1qp8bwp5",
+        "published": 1753709021,
+        "fomo_risk": true,
+        "score": 0.231,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "noted",
+          "layman_ru": "\ud83d\udcc5 Roadmap update \u2014 \u0443\u0447\u0435\u0441\u0442\u044c \u0432 scenarios, \u043d\u043e \u041d\u0415 NEW_ENTRY"
+        },
+        "matched_keywords": [
+          "plans to"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-93b059d6",
+        "assets": [
+          "ARB"
+        ],
+        "type": "upgrade",
+        "severity": "medium",
+        "summary": "Robinhood US Launches Arbitrum (ARB)",
+        "source_class": "surf_cited",
+        "source_name": "PANEWS",
+        "source_type": "surf",
+        "url": "https://www.panewslab.com/en/articles/ejsnjto8",
+        "published": 1741180229,
+        "fomo_risk": true,
+        "score": 0.229,
+        "route": "archive",
+        "action_hint": {
+          "field": "thesis_alive",
+          "action": "confirm",
+          "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
+        },
+        "matched_keywords": [
+          "launches",
+          "launch"
+        ],
         "query_context": "general"
       }
     ],
@@ -1819,139 +1828,6 @@
         "query_context": "general"
       }
     ],
-    "ARB": [
-      {
-        "id": "surf-cc97d597",
-        "assets": [
-          "ARB"
-        ],
-        "type": "unlock",
-        "severity": "high",
-        "summary": "Arbitrum to Unlock 123.53 Million ARB on August 16",
-        "source_class": "surf_cited",
-        "source_name": "TRADINGVIEW",
-        "source_type": "surf",
-        "url": "https://www.tradingview.com/news/binance_news:611c654c7094b:0-arbitrum-to-unlock-123-53-million-arb-on-august-16/",
-        "published": 1786245227,
-        "fomo_risk": true,
-        "score": 0.463,
-        "route": "macro",
-        "action_hint": {
-          "field": "SIZE",
-          "action": "down_or_watch",
-          "layman_ru": "\ud83d\udcc9 Unlock event \u2192 \u0443\u043c\u0435\u043d\u044c\u0448\u0438\u0442\u044c SIZE"
-        },
-        "matched_keywords": [
-          "unlock"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "rss-6db31f40",
-        "assets": [
-          "ARB"
-        ],
-        "type": "regulation",
-        "severity": "medium",
-        "summary": "Arbitrum Activates Elara With Optional Compliance Filters for Dedicated Chains",
-        "source_class": "tier1_news",
-        "source_name": "The Defiant (RWA)",
-        "source_type": "rss",
-        "url": "https://thedefiant.io/news/blockchains/arbitrum-activates-elara-with-optional-compliance-filters-for-dedicated-chains",
-        "published": "2026-08-20T22:50:28+00:00",
-        "fomo_risk": false,
-        "score": 0.428,
-        "route": "macro",
-        "action_hint": {
-          "field": "MONITOR",
-          "action": "noted",
-          "layman_ru": "Regulation \u00b7 medium \u00b7 MARKUP \u2014 noted"
-        },
-        "matched_keywords": [
-          "compliance"
-        ],
-        "query_context": ""
-      },
-      {
-        "id": "surf-2cab10dd",
-        "assets": [
-          "ARB"
-        ],
-        "type": "roadmap",
-        "severity": "high",
-        "summary": "Arbitrum Foundation plans to allocate $14 million to ARB to subsidize security audits of network projects",
-        "source_class": "surf_cited",
-        "source_name": "PANEWS",
-        "source_type": "surf",
-        "url": "https://www.panewslab.com/en/articles/1qp8bwp5",
-        "published": 1753709021,
-        "fomo_risk": true,
-        "score": 0.231,
-        "route": "archive",
-        "action_hint": {
-          "field": "thesis_alive",
-          "action": "noted",
-          "layman_ru": "\ud83d\udcc5 Roadmap update \u2014 \u0443\u0447\u0435\u0441\u0442\u044c \u0432 scenarios, \u043d\u043e \u041d\u0415 NEW_ENTRY"
-        },
-        "matched_keywords": [
-          "plans to"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-93b059d6",
-        "assets": [
-          "ARB"
-        ],
-        "type": "upgrade",
-        "severity": "medium",
-        "summary": "Robinhood US Launches Arbitrum (ARB)",
-        "source_class": "surf_cited",
-        "source_name": "PANEWS",
-        "source_type": "surf",
-        "url": "https://www.panewslab.com/en/articles/ejsnjto8",
-        "published": 1741180229,
-        "fomo_risk": true,
-        "score": 0.229,
-        "route": "archive",
-        "action_hint": {
-          "field": "thesis_alive",
-          "action": "confirm",
-          "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-        },
-        "matched_keywords": [
-          "launches",
-          "launch"
-        ],
-        "query_context": "general"
-      },
-      {
-        "id": "surf-d214f47d",
-        "assets": [
-          "ARB"
-        ],
-        "type": "upgrade",
-        "severity": "medium",
-        "summary": "Arbitrum jumps 5% on Robinhood news \u2013 But THIS can ruin ARB\u2019s breakout",
-        "source_class": "surf_cited",
-        "source_name": "AMBCRYPTO",
-        "source_type": "surf",
-        "url": "https://ambcrypto.com/arbitrum-jumps-5-on-robinhood-news-but-what-can-ruin-arbs-breakout/",
-        "published": 1751468403,
-        "fomo_risk": true,
-        "score": 0.229,
-        "route": "archive",
-        "action_hint": {
-          "field": "thesis_alive",
-          "action": "confirm",
-          "layman_ru": "\u2705 Upgrade \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 thesis \u2014 \u0434\u0435\u0440\u0436\u0430\u0442\u044c"
-        },
-        "matched_keywords": [
-          "launch"
-        ],
-        "query_context": "general"
-      }
-    ],
     "MORPHO": [
       {
         "id": "surf-42c0895c",
@@ -2046,6 +1922,136 @@
         "published": 1744353935,
         "fomo_risk": true,
         "score": 0.019,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Narrative \u00b7 low \u00b7 MARKUP \u2014 noted"
+        },
+        "matched_keywords": [],
+        "query_context": "general"
+      }
+    ],
+    "LINK": [
+      {
+        "id": "surf-85abaf63",
+        "assets": [
+          "LINK"
+        ],
+        "type": "security",
+        "severity": "medium",
+        "summary": "Crisis of Confidence: 14 Protocols Exit or Suspend Bridging With LayerZero in 48 Hours",
+        "source_class": "surf_cited",
+        "source_name": "BITCOINWORLD",
+        "source_type": "surf",
+        "url": "https://bitcoinworld.co.in/layerzero-bridge-protocols-exit-suspend/",
+        "published": 1778293511,
+        "fomo_risk": true,
+        "score": 0.36,
+        "route": "macro",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Security \u00b7 medium \u00b7 MARKUP \u2014 noted"
+        },
+        "matched_keywords": [
+          "security incident"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-118ee1bf",
+        "assets": [
+          "LINK"
+        ],
+        "type": "regulation",
+        "severity": "high",
+        "summary": "Chainlink ETF Approved \u2014 Is LINK on Track for a Break Toward $30?",
+        "source_class": "surf_cited",
+        "source_name": "BITZO",
+        "source_type": "surf",
+        "url": "https://bitzo.com/2025/12/chainlink-etf-approved-is-link-on-track-for-a-break-toward-30",
+        "published": 1764676754,
+        "fomo_risk": true,
+        "score": 0.337,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "watch",
+          "layman_ru": "\u26a1 Regulatory event high \u2014 \u043c\u0430\u043a\u0440\u043e impact"
+        },
+        "matched_keywords": [
+          "etf approv"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-211d4a42",
+        "assets": [
+          "LINK"
+        ],
+        "type": "partnership",
+        "severity": "medium",
+        "summary": "Mountain Protocol Integrates Chainlink CCIP for USDM Stablecoin",
+        "source_class": "surf_cited",
+        "source_name": "BEINCRYPTO",
+        "source_type": "surf",
+        "url": "https://beincrypto.com/mountain-protocol-integrates-chainlink-ccip/",
+        "published": 1729229562,
+        "fomo_risk": false,
+        "score": 0.209,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Partnership \u00b7 medium \u00b7 MARKUP \u2014 noted"
+        },
+        "matched_keywords": [
+          "integration"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-562b7466",
+        "assets": [
+          "LINK"
+        ],
+        "type": "partnership",
+        "severity": "high",
+        "summary": "Chainlink (LINK) and 2 others - Saturn CCIP Integration - 29 May 2026",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:8de2f5b6b094b:0-chainlink-link-and-2-others-saturn-ccip-integration-29-may-2026/",
+        "published": 1780074027,
+        "fomo_risk": true,
+        "score": 0.15,
+        "route": "archive",
+        "action_hint": {
+          "field": "MONITOR",
+          "action": "noted",
+          "layman_ru": "Partnership \u00b7 high \u00b7 MARKUP \u2014 noted"
+        },
+        "matched_keywords": [
+          "integration"
+        ],
+        "query_context": "general"
+      },
+      {
+        "id": "surf-e40a4c64",
+        "assets": [
+          "LINK"
+        ],
+        "type": "narrative",
+        "severity": "low",
+        "summary": "Chainlink (LINK) - Kraken & CCIP - 14 May 2026",
+        "source_class": "surf_cited",
+        "source_name": "TRADINGVIEW",
+        "source_type": "surf",
+        "url": "https://www.tradingview.com/news/coinmarketcal:c1126a600094b:0-chainlink-link-kraken-ccip-14-may-2026/",
+        "published": 1778778042,
+        "fomo_risk": false,
+        "score": 0.037,
         "route": "archive",
         "action_hint": {
           "field": "MONITOR",
