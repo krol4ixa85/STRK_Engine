@@ -150,6 +150,172 @@
       "max_age_h": 48,
       "unit": "дней истории",
       "collector": "scripts/onchain_indicators.py"
+    },
+
+    "dune_net_flow_m_usd": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "net_flow_m_usd",
+      "max_age_h": 30,
+      "unit": "$M нетто-поток за окно",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_net_flow_pct": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "net_flow_pct",
+      "max_age_h": 30,
+      "unit": "% от оборота",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_buy_volume_m_usd": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "buy_volume_m_usd",
+      "max_age_h": 30,
+      "unit": "$M покупок",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_sell_volume_m_usd": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "sell_volume_m_usd",
+      "max_age_h": 30,
+      "unit": "$M продаж",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_direction": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "direction",
+      "max_age_h": 30,
+      "unit": "BUY_PRESSURE|SELL_PRESSURE|...",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_tx_count": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "tx_count",
+      "max_age_h": 30,
+      "unit": "сделок за окно",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_sector": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "sector",
+      "max_age_h": 30,
+      "unit": "сектор",
+      "collector": "scripts/collectors/dune_sector_collector.py"
+    },
+
+    "depth_2pct_usd": {
+      "file": "hive_token_health.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.depth.total_2pct_depth_usd",
+      "max_age_h": 30,
+      "unit": "$ глубина стакана ±2%",
+      "collector": "scripts/collectors/hive_token_health.py",
+      "irrecoverable": true
+    },
+    "depth_grade": {
+      "file": "hive_token_health.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.depth.depth_grade",
+      "max_age_h": 30,
+      "unit": "DEEP|OK|THIN",
+      "collector": "scripts/collectors/hive_token_health.py"
+    },
+    "volume_24h_usd": {
+      "file": "hive_token_health.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.depth.volume_24h_usd",
+      "max_age_h": 30,
+      "unit": "$ оборот за сутки",
+      "collector": "scripts/collectors/hive_token_health.py",
+      "irrecoverable": true
+    }
+  },
+
+  "globals": {
+    "comment_ru": "Фичи без разбивки по токенам — про рынок в целом или про STRK. Пишутся одной строкой с token = _GLOBAL.",
+
+    "wyckoff_phase": {
+      "file": "wyckoff_phase.json", "stamp": "as_of",
+      "path": "phase", "max_age_h": 30, "unit": "фаза",
+      "collector": "scripts/detectors/wyckoff_phase.py", "irrecoverable": true
+    },
+    "wyckoff_confidence": {
+      "file": "wyckoff_phase.json", "stamp": "as_of",
+      "path": "confidence", "max_age_h": 30, "unit": "HIGH|MEDIUM|LOW",
+      "collector": "scripts/detectors/wyckoff_phase.py", "irrecoverable": true
+    },
+    "wyckoff_score": {
+      "file": "wyckoff_phase.json", "stamp": "as_of",
+      "path": "score", "max_age_h": 30, "unit": "очки",
+      "collector": "scripts/detectors/wyckoff_phase.py", "irrecoverable": true
+    },
+    "confluence_signal": {
+      "file": "confluence_gate.json", "stamp": "as_of",
+      "path": "signal", "max_age_h": 30, "unit": "сигнал гейта",
+      "collector": "scripts/detectors/confluence_gate.py", "irrecoverable": true
+    },
+    "confluence_rally_score": {
+      "file": "confluence_gate.json", "stamp": "as_of",
+      "path": "rally_score", "max_age_h": 30, "unit": "очки",
+      "collector": "scripts/detectors/confluence_gate.py", "irrecoverable": true
+    },
+    "confluence_crash_score": {
+      "file": "confluence_gate.json", "stamp": "as_of",
+      "path": "crash_score", "max_age_h": 30, "unit": "очки",
+      "collector": "scripts/detectors/confluence_gate.py", "irrecoverable": true
+    },
+    "cex_flow_signal": {
+      "file": "cex_flow.json", "stamp": "as_of",
+      "path": "classification.signal", "max_age_h": 30, "unit": "сигнал",
+      "collector": "scripts/detectors/cex_flow.py", "irrecoverable": true
+    },
+    "cohort_aggregate": {
+      "file": "cohort_tracker.json", "stamp": "timestamp",
+      "path": "aggregate_signal", "max_age_h": 30, "unit": "сигнал когорт",
+      "collector": "scripts/detectors/cohort_tracker.py", "irrecoverable": true
+    },
+    "concentration_hhi": {
+      "file": "concentration_metrics.json", "stamp": "as_of",
+      "path": "hhi", "max_age_h": 30, "unit": "индекс концентрации",
+      "collector": "scripts/detectors/concentration_metrics.py", "irrecoverable": true
+    },
+    "concentration_entropy": {
+      "file": "concentration_metrics.json", "stamp": "as_of",
+      "path": "entropy_bits", "max_age_h": 30, "unit": "бит",
+      "collector": "scripts/detectors/concentration_metrics.py", "irrecoverable": true
+    },
+    "concentration_top5_pct": {
+      "file": "concentration_metrics.json", "stamp": "as_of",
+      "path": "top_5_share_pct", "max_age_h": 30, "unit": "% у топ-5",
+      "collector": "scripts/detectors/concentration_metrics.py", "irrecoverable": true
+    },
+    "funding_signal": {
+      "file": "funding_signal.json", "stamp": "as_of",
+      "path": "signal", "max_age_h": 30, "unit": "сигнал фандинга",
+      "collector": "scripts/collectors/funding_collector.py", "irrecoverable": true
+    },
+    "alt_cycle_phase": {
+      "file": "alt_cycle.json", "stamp": "generated_at",
+      "path": "phase", "max_age_h": 30, "unit": "фаза альтцикла",
+      "collector": "scripts/collectors/alt_cycle_collector.py", "irrecoverable": true
+    },
+    "market_median_vol_ratio": {
+      "file": "volume_profile.json", "stamp": "computed_at",
+      "path": "market_volume_context.median_vol_ratio", "max_age_h": 8,
+      "unit": "× медиана объёма по рынку",
+      "collector": "scripts/collectors/volume_profile_collector.py"
     }
   }
 }
