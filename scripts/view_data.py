@@ -262,8 +262,17 @@ def build_signals_table(dec, comp, vp, pa, whales=None):
             "action": action,
             "action_color": ACTION_COLOR.get(action, "muted"),
             "size_pct": d.get("size_pct") or 0,
-            "compass_score": c.get("score"),
-            "compass_verdict": c.get("verdict_ru"),
+            # ФИКС 22.08.2026 · балл компаса показываем ТОЛЬКО когда у
+            # компаса есть вердикт. У статусов LOW_COVERAGE / NO_DATA /
+            # DATA_SUSPICIOUS балл посчитан по неполной картине, и в
+            # таблице он выглядел как полноценный сигнал: AKT шёл строкой
+            # «компас +20» при том, что сам компас в этот же момент писал
+            # «измерено 40% картины — мало для вердикта».
+            "compass_score": c.get("score") if c.get("status") == "OK" else None,
+            "compass_verdict": (c.get("verdict_ru") if c.get("status") == "OK"
+                                else (c.get("verdict_ru") or "мало данных")),
+            "compass_status": c.get("status"),
+            "compass_coverage_pct": c.get("data_coverage_pct"),
             "phase": phase,
             "phase_ru": PHASE_RU.get(phase, phase or "—"),
             "flow": flow,
@@ -569,7 +578,10 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None, advice=None)
             "invalidations": d.get("invalidations") or [],
             "rules_fired": d.get("rules_fired") or [],
             "compass": {
-                "score": (compass.get(token) or {}).get("score"),
+                # см. комментарий выше: балл без вердикта в интерфейс не идёт
+                "score": ((compass.get(token) or {}).get("score")
+                          if (compass.get(token) or {}).get("status") == "OK" else None),
+                "status": (compass.get(token) or {}).get("status"),
                 "verdict_ru": (compass.get(token) or {}).get("verdict_ru"),
                 "components": (compass.get(token) or {}).get("components"),
                 "coverage_pct": (compass.get(token) or {}).get("data_coverage_pct"),
@@ -597,7 +609,7 @@ def build_modal_data(dec, comp, vp, pa, hl, cvd, pref, whales=None, advice=None)
 
 
 def main():
-    print("=== View Data v1.0 ===\n")
+    print("=== View Data v1.1 ===\n")
 
     dec = load("decisions.json")
     comp = load("asset_compass.json")
