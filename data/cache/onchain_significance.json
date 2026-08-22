@@ -1,0 +1,133 @@
+{
+  "computed_at": "2026-08-22T01:00:04.312891+00:00",
+  "horizon_days": 28,
+  "assets": 11,
+  "method": "перцентиль MVRV считается только по прошлому; наблюдения не пересекаются (шаг = горизонт)",
+  "caveat": "активы коррелированы между собой и период включает два бычьих цикла — независимость наблюдений неполная даже без перекрытия по времени",
+  "baseline_median_pct": -1.8282179186587477,
+  "baseline_n": 897,
+  "rules": [
+    {
+      "rule": "mvrv_p90 · исторически дорого",
+      "n": 17,
+      "median_pct": 15.99,
+      "edge_vs_baseline_pts": 17.82,
+      "sharpe": 0.531,
+      "psr": 1.0,
+      "dsr": 0.986,
+      "verdict": "преимущество"
+    },
+    {
+      "rule": "nupl > 0.5 · много бумажной прибыли",
+      "n": 81,
+      "median_pct": -0.62,
+      "edge_vs_baseline_pts": 1.21,
+      "sharpe": 0.258,
+      "psr": 0.999,
+      "dsr": 0.752,
+      "verdict": "возможно, нужно больше"
+    },
+    {
+      "rule": "mvrv_p75 · выше своей нормы",
+      "n": 94,
+      "median_pct": -1.68,
+      "edge_vs_baseline_pts": 0.14,
+      "sharpe": 0.195,
+      "psr": 0.993,
+      "dsr": 0.46,
+      "verdict": "не отличимо от случайности"
+    },
+    {
+      "rule": "mvrv_p10 · исторически дёшево",
+      "n": 181,
+      "median_pct": 1.26,
+      "edge_vs_baseline_pts": 3.08,
+      "sharpe": 0.153,
+      "psr": 0.987,
+      "dsr": 0.228,
+      "verdict": "не отличимо от случайности"
+    },
+    {
+      "rule": "mvrv_p25 · ниже своей нормы",
+      "n": 359,
+      "median_pct": -0.25,
+      "edge_vs_baseline_pts": 1.57,
+      "sharpe": 0.147,
+      "psr": 0.999,
+      "dsr": 0.118,
+      "verdict": "не отличимо от случайности"
+    },
+    {
+      "rule": "mvrv < 1 · держатели в убытке",
+      "n": 482,
+      "median_pct": -0.96,
+      "edge_vs_baseline_pts": 0.87,
+      "sharpe": 0.098,
+      "psr": 0.99,
+      "dsr": 0.006,
+      "verdict": "не отличимо от случайности"
+    }
+  ],
+  "overlapping_for_comparison": [
+    {
+      "rule": "mvrv_p10 · исторически дёшево",
+      "n": 4787,
+      "median_pct": 1.12,
+      "edge_vs_baseline_pts": 2.86,
+      "sharpe": 0.167,
+      "psr": 1.0,
+      "dsr": 1.0,
+      "verdict": "преимущество"
+    },
+    {
+      "rule": "mvrv_p75 · выше своей нормы",
+      "n": 2464,
+      "median_pct": -0.86,
+      "edge_vs_baseline_pts": 0.89,
+      "sharpe": 0.193,
+      "psr": 1.0,
+      "dsr": 1.0,
+      "verdict": "преимущество"
+    },
+    {
+      "rule": "mvrv_p90 · исторически дорого",
+      "n": 511,
+      "median_pct": 4.69,
+      "edge_vs_baseline_pts": 6.44,
+      "sharpe": 0.309,
+      "psr": 1.0,
+      "dsr": 1.0,
+      "verdict": "преимущество"
+    },
+    {
+      "rule": "nupl > 0.5 · много бумажной прибыли",
+      "n": 2229,
+      "median_pct": 1.68,
+      "edge_vs_baseline_pts": 3.43,
+      "sharpe": 0.217,
+      "psr": 1.0,
+      "dsr": 1.0,
+      "verdict": "преимущество"
+    },
+    {
+      "rule": "mvrv_p25 · ниже своей нормы",
+      "n": 9991,
+      "median_pct": -0.3,
+      "edge_vs_baseline_pts": 1.45,
+      "sharpe": 0.122,
+      "psr": 1.0,
+      "dsr": 0.998,
+      "verdict": "преимущество"
+    },
+    {
+      "rule": "mvrv < 1 · держатели в убытке",
+      "n": 13560,
+      "median_pct": -1.11,
+      "edge_vs_baseline_pts": 0.64,
+      "sharpe": 0.105,
+      "psr": 1.0,
+      "dsr": 0.889,
+      "verdict": "возможно, нужно больше"
+    }
+  ]
+}
