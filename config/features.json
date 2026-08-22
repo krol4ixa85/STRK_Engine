@@ -3,7 +3,327 @@
   "comment": "Контракт коллекторов. Каждая фича = одно число или строка из кэша, с адресом, сроком годности и единицей измерения. Правила ссылаются ТОЛЬКО на имена отсюда. Если фича протухла или её нет — правило, которому она нужна, не голосует. Не срабатывает 'нет' — именно НЕ ГОЛОСУЕТ.",
   "features": {
     "price": {
+      "file": "price_reference.json",{
+  "version": 1,
+  "comment": "Контракт коллекторов. Каждая фича = одно число или строка из кэша, с адресом, сроком годности и единицей измерения. Правила ссылаются ТОЛЬКО на имена отсюда. Если фича протухла или её нет — правило, которому она нужна, не голосует. Не срабатывает 'нет' — именно НЕ ГОЛОСУЕТ.",
+  "features": {
+    "price": {
       "file": "price_reference.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.price_usd",
+      "fallback_path": "tokens.{T}.hive_price_usd",
+      "max_age_h": 2,
+      "unit": "USD",
+      "collector": "scripts/collectors/price_reference.py"
+    },
+    "price_status": {
+      "file": "price_reference.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.status",
+      "max_age_h": 2,
+      "unit": "OK|SUSPICIOUS|FAILED",
+      "collector": "scripts/collectors/price_reference.py"
+    },
+
+    "flow_1w_usd": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.1w.last_usd",
+      "max_age_h": 30,
+      "unit": "USD за неделю",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_accel_1w_usd": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.1w.accel_usd",
+      "max_age_h": 30,
+      "unit": "USD, изменение скорости",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_1w_significant": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.1w.significant",
+      "max_age_h": 30,
+      "unit": "bool",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_4w_usd": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.windows.4w.last_usd",
+      "max_age_h": 30,
+      "unit": "USD за 4 недели",
+      "collector": "scripts/phase_analyzer.py"
+    },
+    "flow_weeks_available": {
+      "file": "phase_analysis.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.flow.weeks_available",
+      "max_age_h": 30,
+      "unit": "недель истории",
+      "collector": "scripts/phase_analyzer.py"
+    },
+
+    "vp_position": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.code",
+      "max_age_h": 8,
+      "unit": "ABOVE_VALUE|IN_VALUE|BELOW_VALUE",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_above_kind": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.above_kind",
+      "max_age_h": 8,
+      "unit": "MARKUP|EXTENDED",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_vol_ratio": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.vol_ratio_recent",
+      "max_age_h": 8,
+      "unit": "× к своему среднему",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_market_median_vol_ratio": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "market_volume_context.median_vol_ratio",
+      "max_age_h": 8,
+      "unit": "× медиана по рынку",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+    "vp_dist_to_poc_pct": {
+      "file": "volume_profile.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.position.distance_to_poc_pct",
+      "max_age_h": 8,
+      "unit": "% до самого торгуемого уровня",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    },
+
+    "funding_annual_pct": {
+      "file": "funding_per_token.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.funding_annualised_pct",
+      "max_age_h": 10,
+      "unit": "% годовых",
+      "collector": "scripts/collectors/funding_collector.py"
+    },
+    "oi_change_pct": {
+      "file": "funding_per_token.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.oi_change_pct",
+      "max_age_h": 10,
+      "unit": "% изменения открытого интереса",
+      "collector": "scripts/collectors/funding_collector.py"
+    },
+
+    "mvrv": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.current.mvrv",
+      "max_age_h": 48,
+      "unit": "отношение",
+      "collector": "scripts/onchain_indicators.py"
+    },
+    "mvrv_pct": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.current.mvrv_percentile",
+      "max_age_h": 48,
+      "unit": "перцентиль собственной истории",
+      "collector": "scripts/onchain_indicators.py"
+    },
+    "nupl": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.current.nupl",
+      "max_age_h": 48,
+      "unit": "доля бумажной прибыли",
+      "collector": "scripts/onchain_indicators.py"
+    },
+    "onchain_days": {
+      "file": "onchain_indicators.json",
+      "stamp": "computed_at",
+      "path": "assets.{t}.days",
+      "max_age_h": 48,
+      "unit": "дней истории",
+      "collector": "scripts/onchain_indicators.py"
+    },
+
+    "dune_net_flow_m_usd": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "net_flow_m_usd",
+      "max_age_h": 30,
+      "unit": "$M нетто-поток за окно",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_net_flow_pct": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "net_flow_pct",
+      "max_age_h": 30,
+      "unit": "% от оборота",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_buy_volume_m_usd": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "buy_volume_m_usd",
+      "max_age_h": 30,
+      "unit": "$M покупок",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_sell_volume_m_usd": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "sell_volume_m_usd",
+      "max_age_h": 30,
+      "unit": "$M продаж",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_direction": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "direction",
+      "max_age_h": 30,
+      "unit": "BUY_PRESSURE|SELL_PRESSURE|...",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_tx_count": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "tx_count",
+      "max_age_h": 30,
+      "unit": "сделок за окно",
+      "collector": "scripts/collectors/dune_sector_collector.py",
+      "irrecoverable": true
+    },
+    "dune_sector": {
+      "file": "dune_sector_netflow.json",
+      "stamp": "collected_at",
+      "rows": "rows", "match": "token", "value": "sector",
+      "max_age_h": 30,
+      "unit": "сектор",
+      "collector": "scripts/collectors/dune_sector_collector.py"
+    },
+
+    "depth_2pct_usd": {
+      "file": "hive_token_health.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.depth.total_2pct_depth_usd",
+      "max_age_h": 30,
+      "unit": "$ глубина стакана ±2%",
+      "collector": "scripts/collectors/hive_token_health.py",
+      "irrecoverable": true
+    },
+    "depth_grade": {
+      "file": "hive_token_health.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.depth.depth_grade",
+      "max_age_h": 30,
+      "unit": "DEEP|OK|THIN",
+      "collector": "scripts/collectors/hive_token_health.py"
+    },
+    "volume_24h_usd": {
+      "file": "hive_token_health.json",
+      "stamp": "computed_at",
+      "path": "tokens.{T}.depth.volume_24h_usd",
+      "max_age_h": 30,
+      "unit": "$ оборот за сутки",
+      "collector": "scripts/collectors/hive_token_health.py",
+      "irrecoverable": true
+    }
+  },
+
+  "globals": {
+    "comment_ru": "Фичи без разбивки по токенам — про рынок в целом или про STRK. Пишутся одной строкой с token = _GLOBAL.",
+
+    "wyckoff_phase": {
+      "file": "wyckoff_phase.json", "stamp": "as_of",
+      "path": "phase", "max_age_h": 30, "unit": "фаза",
+      "collector": "scripts/detectors/wyckoff_phase.py", "irrecoverable": true
+    },
+    "wyckoff_confidence": {
+      "file": "wyckoff_phase.json", "stamp": "as_of",
+      "path": "confidence", "max_age_h": 30, "unit": "HIGH|MEDIUM|LOW",
+      "collector": "scripts/detectors/wyckoff_phase.py", "irrecoverable": true
+    },
+    "wyckoff_score": {
+      "file": "wyckoff_phase.json", "stamp": "as_of",
+      "path": "score", "max_age_h": 30, "unit": "очки",
+      "collector": "scripts/detectors/wyckoff_phase.py", "irrecoverable": true
+    },
+    "confluence_signal": {
+      "file": "confluence_gate.json", "stamp": "as_of",
+      "path": "signal", "max_age_h": 30, "unit": "сигнал гейта",
+      "collector": "scripts/detectors/confluence_gate.py", "irrecoverable": true
+    },
+    "confluence_rally_score": {
+      "file": "confluence_gate.json", "stamp": "as_of",
+      "path": "rally_score", "max_age_h": 30, "unit": "очки",
+      "collector": "scripts/detectors/confluence_gate.py", "irrecoverable": true
+    },
+    "confluence_crash_score": {
+      "file": "confluence_gate.json", "stamp": "as_of",
+      "path": "crash_score", "max_age_h": 30, "unit": "очки",
+      "collector": "scripts/detectors/confluence_gate.py", "irrecoverable": true
+    },
+    "cex_flow_signal": {
+      "file": "cex_flow.json", "stamp": "as_of",
+      "path": "classification.signal", "max_age_h": 30, "unit": "сигнал",
+      "collector": "scripts/detectors/cex_flow.py", "irrecoverable": true
+    },
+    "cohort_aggregate": {
+      "file": "cohort_tracker.json", "stamp": "timestamp",
+      "path": "aggregate_signal", "max_age_h": 30, "unit": "сигнал когорт",
+      "collector": "scripts/detectors/cohort_tracker.py", "irrecoverable": true
+    },
+    "concentration_hhi": {
+      "file": "concentration_metrics.json", "stamp": "as_of",
+      "path": "hhi", "max_age_h": 30, "unit": "индекс концентрации",
+      "collector": "scripts/detectors/concentration_metrics.py", "irrecoverable": true
+    },
+    "concentration_entropy": {
+      "file": "concentration_metrics.json", "stamp": "as_of",
+      "path": "entropy_bits", "max_age_h": 30, "unit": "бит",
+      "collector": "scripts/detectors/concentration_metrics.py", "irrecoverable": true
+    },
+    "concentration_top5_pct": {
+      "file": "concentration_metrics.json", "stamp": "as_of",
+      "path": "top_5_share_pct", "max_age_h": 30, "unit": "% у топ-5",
+      "collector": "scripts/detectors/concentration_metrics.py", "irrecoverable": true
+    },
+    "funding_signal": {
+      "file": "funding_signal.json", "stamp": "as_of",
+      "path": "signal", "max_age_h": 30, "unit": "сигнал фандинга",
+      "collector": "scripts/collectors/funding_collector.py", "irrecoverable": true
+    },
+    "alt_cycle_phase": {
+      "file": "alt_cycle.json", "stamp": "generated_at",
+      "path": "phase", "max_age_h": 30, "unit": "фаза альтцикла",
+      "collector": "scripts/collectors/alt_cycle_collector.py", "irrecoverable": true
+    },
+    "market_median_vol_ratio": {
+      "file": "volume_profile.json", "stamp": "computed_at",
+      "path": "market_volume_context.median_vol_ratio", "max_age_h": 8,
+      "unit": "× медиана объёма по рынку",
+      "collector": "scripts/collectors/volume_profile_collector.py"
+    }
+  }
+}
       "stamp": "computed_at",
       "path": "tokens.{T}.price_usd",
       "fallback_path": "tokens.{T}.hive_price_usd",
