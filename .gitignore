@@ -61,6 +61,12 @@ data/cache/*.csv
 # ============================================================
 data/history/coinmetrics/
 
+# Свечи Hyperliquid: 198 000 баров по 41 токену, ~40 МБ. Тоже
+# восстанавливаются одной командой:
+#   python3 scripts/collectors/hl_history.py --interval 4h
+data/history/hl/
+data/history/hl_4h/
+
 # Разовые выгрузки Dune в корне — по 600 КБ каждая, на них никто
 # не ссылается. Четыре штуки уже лежат в истории (1.8 МБ).
 dune_data_*.json
