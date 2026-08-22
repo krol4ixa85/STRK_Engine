@@ -3,18 +3,22 @@ name: STRK Feature Snapshot
 # ============================================================
 # ОТДЕЛЬНЫЙ ФАЙЛ, А НЕ ДЖОБ В strk_engine.yml — НАМЕРЕННО.
 #
-# 1. Кредиты Dune. Этот воркфлоу не делает НИ ОДНОГО сетевого
-#    запроса: читает только те кэши, которые уже собраны. Держа
-#    его отдельно, невозможно случайно зацепить джоб со сбором
-#    и сжечь кредиты.
+# 1. Кредиты Dune. Здесь их не тратится НИ ОДНОГО. Срез читает
+#    только уже собранные кэши, контекст рынка ходит в публичный
+#    API Hyperliquid без ключа. Держа файл отдельно, невозможно
+#    случайно зацепить джоб со сбором и сжечь кредиты.
 #
 # 2. Надёжность. strk_engine.yml — 1536 строк и 34 джоба. Если
 #    там что-то падает, срез не должен падать вместе с ним.
 #    Пропущенный день срез не восстановит: значение исчезает.
 #
 # ЧТО ДЕЛАЕТ
-# Дописывает срез значений всех детекторов в
-# data/history/features/<дата>.jsonl и коммитит.
+# 1) Дописывает срез значений всех детекторов в
+#    data/history/features/<дата>.jsonl — это невосстановимо,
+#    поэтому шаг обязательный и падение job'а здесь оправдано.
+# 2) Считает контекст рынка для шапки дашборда
+#    (data/cache/market_context.json) — этот шаг с
+#    continue-on-error: пропущенный день восстановится сам.
 # ============================================================
 
 on:
@@ -47,10 +51,21 @@ jobs:
           python-version: '3.11'
 
       - name: Установить зависимости
-        run: pip install --quiet rule-engine
+        run: pip install --quiet rule-engine numpy
 
       - name: Записать срез
         run: python3 scripts/feature_snapshot.py
+
+      # Контекст рынка для шапки дашборда: синхронность, ширина,
+      # перекос плеча. Живёт здесь, потому что тоже не тратит кредиты —
+      # свечи и фандинг берутся у Hyperliquid, ключ не нужен.
+      #
+      # continue-on-error: если биржа не ответила, срез детекторов от
+      # этого страдать не должен. Пропущенный день контекста не страшен,
+      # пропущенный день среза — невосстановим.
+      - name: Контекст рынка
+        run: python3 scripts/market_context.py
+        continue-on-error: true
 
       - name: Сколько накоплено
         run: python3 scripts/feature_snapshot.py --stats
@@ -60,7 +75,9 @@ jobs:
         run: |
           git config user.name  "strk-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add data/history/features/ data/cache/feature_snapshot_status.json
+          git add data/history/features/ \
+                  data/cache/feature_snapshot_status.json \
+                  data/cache/market_context.json
 
           if git diff --cached --quiet; then
             echo "Изменений нет — коммитить нечего"
