@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-22T10:07:43.326875+00:00",
+  "computed_at": "2026-08-22T15:03:08.959372+00:00",
   "engine_version": "compass/1.0",
   "weights": {
     "onchain": 0.4,
@@ -9,11 +9,6 @@
   "thresholds_status": "HYPOTHESIS · пороги экспертные, на истории не проверены",
   "tokens_ok": 30,
   "top_long": [
-    {
-      "token": "DOGE",
-      "score": 26.0,
-      "verdict": "WEAK_LONG"
-    },
     {
       "token": "LINK",
       "score": 25.0,
@@ -25,13 +20,18 @@
       "verdict": "WEAK_LONG"
     },
     {
-      "token": "TAO",
-      "score": 20.0,
+      "token": "DOGE",
+      "score": 14.0,
       "verdict": "WEAK_LONG"
     },
     {
       "token": "MNT",
       "score": 14.0,
+      "verdict": "WEAK_LONG"
+    },
+    {
+      "token": "AXS",
+      "score": 12.0,
       "verdict": "WEAK_LONG"
     }
   ],
@@ -42,23 +42,23 @@
       "verdict": "STRONG_SHORT"
     },
     {
-      "token": "STRK",
-      "score": -56.0,
-      "verdict": "SHORT"
-    },
-    {
       "token": "SAND",
       "score": -50.0,
       "verdict": "SHORT"
     },
     {
-      "token": "VIRTUAL",
-      "score": -48.0,
+      "token": "GRT",
+      "score": -45.7,
       "verdict": "SHORT"
     },
     {
-      "token": "GRT",
-      "score": -45.7,
+      "token": "STRK",
+      "score": -44.0,
+      "verdict": "SHORT"
+    },
+    {
+      "token": "VIRTUAL",
+      "score": -42.0,
       "verdict": "SHORT"
     }
   ],
@@ -94,12 +94,12 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.134%)"
+              "detail": "перекос в лонги (+0.070%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (70% годовых)"
+              "detail": "держать лонг очень дорого (51% годовых)"
             }
           ],
           "has_data": true
@@ -111,7 +111,7 @@
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×3.52 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.51 — рынок принимает новую цену"
             },
             {
               "name": "агрессия CVD",
@@ -125,19 +125,11 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 123.45,
+      "current_price": 124.98,
       "targets_up": [
         {
-          "price": 124.8,
-          "distance_pct": 1.09,
-          "label": "свинг-хай 159д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 159
-        },
-        {
           "price": 126.88,
-          "distance_pct": 2.78,
+          "distance_pct": 1.52,
           "label": "свинг-хай 173д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -145,35 +137,42 @@
         },
         {
           "price": 128.1701,
-          "distance_pct": 3.82,
+          "distance_pct": 2.55,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
+        },
+        {
+          "price": 131.84,
+          "distance_pct": 5.49,
+          "label": "свинг-хай 188д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 188
         }
       ],
       "targets_down": [
         {
-          "price": 112.558244,
-          "distance_pct": -8.82,
+          "price": 121.02075,
+          "distance_pct": -3.17,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.83
+        },
+        {
+          "price": 113.541289,
+          "distance_pct": -9.15,
           "label": "VAH 14d",
           "kind": "VAH",
           "window": "14d"
         },
         {
-          "price": 111.12165,
-          "distance_pct": -9.99,
-          "label": "HVN 7d",
-          "kind": "HVN",
-          "window": "7d",
-          "volume_share_pct": 5.78
-        },
-        {
-          "price": 108.92185,
-          "distance_pct": -11.77,
-          "label": "HVN 7d",
-          "kind": "HVN",
-          "window": "7d",
-          "volume_share_pct": 6.88
+          "price": 110.02175,
+          "distance_pct": -11.97,
+          "label": "POC 7d",
+          "kind": "POC",
+          "window": "7d"
         }
       ]
     },
@@ -230,12 +229,7 @@
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×0.74)"
-            },
-            {
-              "name": "цели вверх",
-              "value": 0.0,
-              "detail": "только структурные, объёмных уровней сверху нет"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×0.72)"
             },
             {
               "name": "агрессия CVD",
@@ -249,11 +243,18 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.021656,
+      "current_price": 0.021406,
       "targets_up": [
         {
+          "price": 0.021589,
+          "distance_pct": 0.85,
+          "label": "VAH 90d",
+          "kind": "VAH",
+          "window": "90d"
+        },
+        {
           "price": 0.023738,
-          "distance_pct": 9.61,
+          "distance_pct": 10.89,
           "label": "свинг-хай 189д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -261,44 +262,35 @@
         },
         {
           "price": 0.024486,
-          "distance_pct": 13.07,
+          "distance_pct": 14.39,
           "label": "свинг-хай 62д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 62
-        },
-        {
-          "price": 0.025143,
-          "distance_pct": 16.1,
-          "label": "свинг-хай 70д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 70
         }
       ],
       "targets_down": [
         {
           "price": 0.021054,
-          "distance_pct": -2.78,
+          "distance_pct": -1.64,
           "label": "свинг-лоу 142д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 142
         },
         {
-          "price": 0.019941,
-          "distance_pct": -7.92,
+          "price": 0.020259,
+          "distance_pct": -5.36,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
         },
         {
-          "price": 0.019061,
-          "distance_pct": -11.98,
-          "label": "свинг-лоу 77д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 77
+          "price": 0.019196,
+          "distance_pct": -10.32,
+          "label": "VAH 14d",
+          "kind": "VAH",
+          "window": "14d"
         }
       ]
     },
@@ -378,7 +370,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (+0.010%)"
+              "detail": "баланс (+0.000%)"
             },
             {
               "name": "фандинг",
@@ -388,7 +380,7 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$4.4M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$4.3M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -400,7 +392,7 @@
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.54)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.41)"
             },
             {
               "name": "цели вверх",
@@ -419,11 +411,11 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.0999,
+      "current_price": 0.09909,
       "targets_up": [
         {
           "price": 0.10149,
-          "distance_pct": 1.59,
+          "distance_pct": 2.42,
           "label": "свинг-хай 41д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -431,7 +423,7 @@
         },
         {
           "price": 0.11144,
-          "distance_pct": 11.55,
+          "distance_pct": 12.46,
           "label": "свинг-хай 159д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -439,7 +431,7 @@
         },
         {
           "price": 0.11285,
-          "distance_pct": 12.96,
+          "distance_pct": 13.89,
           "label": "свинг-хай 176д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -448,36 +440,36 @@
       ],
       "targets_down": [
         {
-          "price": 0.093723,
-          "distance_pct": -6.18,
+          "price": 0.094662,
+          "distance_pct": -4.47,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
         },
         {
+          "price": 0.09337,
+          "distance_pct": -5.77,
+          "label": "свинг-лоу 167д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 167
+        },
+        {
           "price": 0.09093,
-          "distance_pct": -8.98,
+          "distance_pct": -8.23,
           "label": "свинг-лоу 197д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 197
-        },
-        {
-          "price": 0.08967,
-          "distance_pct": -10.24,
-          "label": "свинг-лоу 139д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 139
         }
       ]
     },
     "AXS": {
       "token": "AXS",
       "status": "OK",
-      "score": 6.0,
-      "verdict": "NEUTRAL",
-      "verdict_ru": "нейтрально",
+      "score": 12.0,
+      "verdict": "WEAK_LONG",
+      "verdict_ru": "слабый лонг",
       "components": {
         "onchain": {
           "score": 0.0,
@@ -519,23 +511,18 @@
           "has_data": true
         },
         "technical": {
-          "score": 0.2,
+          "score": 0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×3.82 — рынок принимает новую цену"
-            },
-            {
-              "name": "цели вверх",
-              "value": 0.0,
-              "detail": "только структурные, объёмных уровней сверху нет"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.86 — рынок принимает новую цену"
             },
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": 0.2,
+              "detail": "лёгкий перевес покупателей"
             }
           ],
           "has_data": true
@@ -544,11 +531,18 @@
       "data_coverage_pct": 100,
       "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
-      "current_price": 1.0231,
+      "current_price": 1.0065,
       "targets_up": [
         {
+          "price": 1.014417,
+          "distance_pct": 0.79,
+          "label": "POC 7d",
+          "kind": "POC",
+          "window": "7d"
+        },
+        {
           "price": 1.0755,
-          "distance_pct": 5.12,
+          "distance_pct": 6.86,
           "label": "свинг-хай 50д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -556,43 +550,36 @@
         },
         {
           "price": 1.1609,
-          "distance_pct": 13.47,
+          "distance_pct": 15.34,
           "label": "свинг-хай 136д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 136
-        },
-        {
-          "price": 1.181,
-          "distance_pct": 15.43,
-          "label": "свинг-хай 268д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 268
         }
       ],
       "targets_down": [
         {
-          "price": 1.017277,
-          "distance_pct": -0.57,
-          "label": "VAH 14d",
-          "kind": "VAH",
-          "window": "14d"
-        },
-        {
-          "price": 1.007063,
-          "distance_pct": -1.57,
-          "label": "HVN 7d",
+          "price": 1.000935,
+          "distance_pct": -0.55,
+          "label": "HVN 14d",
           "kind": "HVN",
-          "window": "7d",
-          "volume_share_pct": 9.87
+          "window": "14d",
+          "volume_share_pct": 5.84
         },
         {
           "price": 0.988623,
-          "distance_pct": -3.37,
+          "distance_pct": -1.78,
           "label": "POC 90d",
           "kind": "POC",
           "window": "90d"
+        },
+        {
+          "price": 0.978491,
+          "distance_pct": -2.78,
+          "label": "HVN 90d",
+          "kind": "HVN",
+          "window": "90d",
+          "volume_share_pct": 4.67
         }
       ]
     },
@@ -627,12 +614,12 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (+0.030%)"
+              "detail": "баланс (+0.032%)"
             },
             {
               "name": "фандинг",
               "value": 0.0,
-              "detail": "фандинг спокойный (14% годовых)"
+              "detail": "фандинг спокойный (11% годовых)"
             }
           ],
           "has_data": true
@@ -657,26 +644,26 @@
       },
       "data_coverage_pct": 100,
       "decision_action": "ВХОД ЧАСТЬЮ",
-      "decision_size_pct": 21,
-      "current_price": 0.003271,
+      "decision_size_pct": 28,
+      "current_price": 0.003207,
       "targets_up": [
         {
           "price": 0.003379,
-          "distance_pct": 3.3,
+          "distance_pct": 5.36,
           "label": "VAH 30d",
           "kind": "VAH",
           "window": "30d"
         },
         {
           "price": 0.00412,
-          "distance_pct": 25.96,
+          "distance_pct": 28.47,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
         },
         {
           "price": 0.005142,
-          "distance_pct": 57.2,
+          "distance_pct": 60.34,
           "label": "свинг-хай 68д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -685,26 +672,26 @@
       ],
       "targets_down": [
         {
-          "price": 0.003139,
-          "distance_pct": -4.04,
+          "price": 0.003174,
+          "distance_pct": -1.03,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
         },
         {
-          "price": 0.002991,
-          "distance_pct": -8.56,
+          "price": 0.003024,
+          "distance_pct": -5.71,
           "label": "VAH 14d",
           "kind": "VAH",
           "window": "14d"
         },
         {
-          "price": 0.002928,
-          "distance_pct": -10.49,
-          "label": "HVN 30d",
+          "price": 0.00297,
+          "distance_pct": -7.39,
+          "label": "HVN 90d",
           "kind": "HVN",
-          "window": "30d",
-          "volume_share_pct": 6.37
+          "window": "90d",
+          "volume_share_pct": 6.15
         }
       ]
     },
@@ -761,9 +748,9 @@
     "CRV": {
       "token": "CRV",
       "status": "OK",
-      "score": -37.0,
-      "verdict": "SHORT",
-      "verdict_ru": "шорт",
+      "score": 8.0,
+      "verdict": "NEUTRAL",
+      "verdict_ru": "нейтрально",
       "components": {
         "onchain": {
           "score": 0.5,
@@ -783,30 +770,30 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.9,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.164%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.123%)"
             },
             {
               "name": "фандинг",
-              "value": -0.4,
-              "detail": "держать лонг очень дорого (60% годовых)"
+              "value": 0.0,
+              "detail": "фандинг спокойный (11% годовых)"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": -1.0,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
-              "value": -0.6,
-              "detail": "цена на 59% выше справедливой, объём не подтверждает (×3.45)"
+              "value": 0.2,
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.42 — рынок принимает новую цену"
             },
             {
               "name": "агрессия CVD",
@@ -820,18 +807,18 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.3233,
+      "current_price": 0.33618,
       "targets_up": [
         {
           "price": 0.35167,
-          "distance_pct": 8.78,
+          "distance_pct": 4.61,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
         },
         {
           "price": 0.43,
-          "distance_pct": 33.0,
+          "distance_pct": 27.91,
           "label": "свинг-хай 255д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -839,7 +826,7 @@
         },
         {
           "price": 0.4385,
-          "distance_pct": 35.63,
+          "distance_pct": 30.44,
           "label": "свинг-хай 228д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -848,32 +835,33 @@
       ],
       "targets_down": [
         {
+          "price": 0.33153,
+          "distance_pct": -1.38,
+          "label": "свинг-лоу 247д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 247
+        },
+        {
           "price": 0.317291,
-          "distance_pct": -1.86,
+          "distance_pct": -5.62,
           "label": "POC 7d",
           "kind": "POC",
           "window": "7d"
         },
         {
-          "price": 0.29785,
-          "distance_pct": -7.87,
+          "price": 0.308256,
+          "distance_pct": -8.31,
           "label": "VAH 14d",
           "kind": "VAH",
           "window": "14d"
-        },
-        {
-          "price": 0.27055,
-          "distance_pct": -16.32,
-          "label": "VAH 30d",
-          "kind": "VAH",
-          "window": "30d"
         }
       ]
     },
     "DOGE": {
       "token": "DOGE",
       "status": "OK",
-      "score": 26.0,
+      "score": 14.0,
       "verdict": "WEAK_LONG",
       "verdict_ru": "слабый лонг",
       "components": {
@@ -895,18 +883,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.0,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.034%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.086%)"
             },
             {
               "name": "фандинг",
-              "value": 0.0,
-              "detail": "фандинг спокойный (11% годовых)"
+              "value": -0.2,
+              "detail": "лонги платят 45% годовых"
             }
           ],
           "has_data": true
@@ -918,7 +906,12 @@
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×5.0 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×5.19 — рынок принимает новую цену"
+            },
+            {
+              "name": "цели вверх",
+              "value": 0.0,
+              "detail": "только структурные, объёмных уровней сверху нет"
             },
             {
               "name": "агрессия CVD",
@@ -932,36 +925,44 @@
       "data_coverage_pct": 100,
       "decision_action": "ВХОД ЧАСТЬЮ",
       "decision_size_pct": 21,
-      "current_price": 0.093117,
+      "current_price": 0.091539,
       "targets_up": [
         {
+          "price": 0.0924,
+          "distance_pct": 0.94,
+          "label": "свинг-хай 71д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 71
+        },
+        {
           "price": 0.095982,
-          "distance_pct": 3.08,
+          "distance_pct": 4.85,
           "label": "свинг-хай 137д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 137
         },
         {
-          "price": 0.097859,
-          "distance_pct": 5.09,
-          "label": "VAH 7d",
-          "kind": "VAH",
-          "window": "7d"
-        },
-        {
-          "price": 0.10223,
-          "distance_pct": 9.79,
-          "label": "свинг-хай 127д назад",
+          "price": 0.097887,
+          "distance_pct": 6.93,
+          "label": "свинг-хай 150д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
-          "bars_ago": 127
+          "bars_ago": 150
         }
       ],
       "targets_down": [
         {
+          "price": 0.091056,
+          "distance_pct": -0.53,
+          "label": "POC 7d",
+          "kind": "POC",
+          "window": "7d"
+        },
+        {
           "price": 0.089112,
-          "distance_pct": -4.3,
+          "distance_pct": -2.65,
           "label": "свинг-лоу 153д назад",
           "kind": "SWING_LOW",
           "window": "365d",
@@ -969,28 +970,20 @@
         },
         {
           "price": 0.087998,
-          "distance_pct": -5.5,
+          "distance_pct": -3.87,
           "label": "свинг-лоу 146д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 146
-        },
-        {
-          "price": 0.086651,
-          "distance_pct": -6.94,
-          "label": "свинг-лоу 167д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 167
         }
       ]
     },
     "EIGEN": {
       "token": "EIGEN",
       "status": "OK",
-      "score": -16.0,
-      "verdict": "WEAK_SHORT",
-      "verdict_ru": "слабый шорт",
+      "score": -4.0,
+      "verdict": "NEUTRAL",
+      "verdict_ru": "нейтрально",
       "components": {
         "onchain": {
           "score": 0.2,
@@ -1026,24 +1019,24 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$3.8M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$3.3M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": -0.8,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.03)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.17)"
             },
             {
               "name": "агрессия CVD",
-              "value": -0.4,
-              "detail": "агрессия продавцов на нескольких окнах"
+              "value": 0.0,
+              "detail": "окна не согласованы"
             }
           ],
           "has_data": true
@@ -1052,11 +1045,11 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.2172,
+      "current_price": 0.2129,
       "targets_up": [
         {
           "price": 0.2228,
-          "distance_pct": 2.58,
+          "distance_pct": 4.65,
           "label": "свинг-хай 189д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1064,7 +1057,7 @@
         },
         {
           "price": 0.2263,
-          "distance_pct": 4.19,
+          "distance_pct": 6.29,
           "label": "HVN 90d",
           "kind": "HVN",
           "window": "90d",
@@ -1072,7 +1065,7 @@
         },
         {
           "price": 0.22958,
-          "distance_pct": 5.7,
+          "distance_pct": 7.83,
           "label": "POC 90d",
           "kind": "POC",
           "window": "90d"
@@ -1080,35 +1073,34 @@
       ],
       "targets_down": [
         {
-          "price": 0.21551,
-          "distance_pct": -0.78,
-          "label": "VAH 7d",
-          "kind": "VAH",
+          "price": 0.210991,
+          "distance_pct": -0.9,
+          "label": "POC 7d",
+          "kind": "POC",
           "window": "7d"
         },
         {
-          "price": 0.210991,
-          "distance_pct": -2.86,
-          "label": "HVN 7d",
-          "kind": "HVN",
-          "window": "7d",
-          "volume_share_pct": 6.1
+          "price": 0.204036,
+          "distance_pct": -4.16,
+          "label": "VAH 30d",
+          "kind": "VAH",
+          "window": "30d"
         },
         {
-          "price": 0.20808,
-          "distance_pct": -4.2,
-          "label": "VAH 14d",
-          "kind": "VAH",
-          "window": "14d"
+          "price": 0.19842,
+          "distance_pct": -6.8,
+          "label": "VAL 90d",
+          "kind": "VAL",
+          "window": "90d"
         }
       ]
     },
     "ETHFI": {
       "token": "ETHFI",
       "status": "OK",
-      "score": -22.0,
-      "verdict": "WEAK_SHORT",
-      "verdict_ru": "слабый шорт",
+      "score": -34.0,
+      "verdict": "SHORT",
+      "verdict_ru": "шорт",
       "components": {
         "onchain": {
           "score": 0.2,
@@ -1128,18 +1120,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.0,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.026%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.095%)"
             },
             {
               "name": "фандинг",
-              "value": 0.0,
-              "detail": "фандинг спокойный (16% годовых)"
+              "value": -0.2,
+              "detail": "лонги платят 40% годовых"
             }
           ],
           "has_data": true
@@ -1151,7 +1143,7 @@
             {
               "name": "положение к объёму",
               "value": -0.6,
-              "detail": "цена на 59% выше справедливой, объём не подтверждает (×2.96)"
+              "detail": "цена на 64% выше справедливой, объём не подтверждает (×3.1)"
             },
             {
               "name": "агрессия CVD",
@@ -1165,11 +1157,11 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.56842,
+      "current_price": 0.58464,
       "targets_up": [
         {
           "price": 0.59871,
-          "distance_pct": 5.33,
+          "distance_pct": 2.41,
           "label": "свинг-хай 165д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1177,14 +1169,14 @@
         },
         {
           "price": 0.630755,
-          "distance_pct": 10.97,
+          "distance_pct": 7.89,
           "label": "VAH 14d",
           "kind": "VAH",
           "window": "14d"
         },
         {
           "price": 0.63858,
-          "distance_pct": 12.34,
+          "distance_pct": 9.23,
           "label": "свинг-хай 207д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1193,35 +1185,34 @@
       ],
       "targets_down": [
         {
-          "price": 0.504227,
-          "distance_pct": -11.29,
+          "price": 0.573876,
+          "distance_pct": -1.84,
+          "label": "VAH 7d",
+          "kind": "VAH",
+          "window": "7d"
+        },
+        {
+          "price": 0.509988,
+          "distance_pct": -12.77,
           "label": "VAH 30d",
           "kind": "VAH",
           "window": "30d"
         },
         {
-          "price": 0.497807,
-          "distance_pct": -12.42,
+          "price": 0.500547,
+          "distance_pct": -14.38,
           "label": "POC 7d",
           "kind": "POC",
           "window": "7d"
-        },
-        {
-          "price": 0.483679,
-          "distance_pct": -14.91,
-          "label": "HVN 7d",
-          "kind": "HVN",
-          "window": "7d",
-          "volume_share_pct": 6.26
         }
       ]
     },
     "FET": {
       "token": "FET",
       "status": "OK",
-      "score": -21.0,
-      "verdict": "WEAK_SHORT",
-      "verdict_ru": "слабый шорт",
+      "score": -6.0,
+      "verdict": "NEUTRAL",
+      "verdict_ru": "нейтрально",
       "components": {
         "onchain": {
           "score": 0.0,
@@ -1241,18 +1232,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.9,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.166%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.103%)"
             },
             {
               "name": "фандинг",
-              "value": -0.4,
-              "detail": "держать лонг очень дорого (110% годовых)"
+              "value": -0.2,
+              "detail": "лонги платят 23% годовых"
             }
           ],
           "has_data": true
@@ -1264,7 +1255,7 @@
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×3.5 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.61 — рынок принимает новую цену"
             },
             {
               "name": "агрессия CVD",
@@ -1278,11 +1269,11 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.16722,
+      "current_price": 0.16413,
       "targets_up": [
         {
           "price": 0.17585,
-          "distance_pct": 5.16,
+          "distance_pct": 7.14,
           "label": "свинг-хай 178д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1290,7 +1281,7 @@
         },
         {
           "price": 0.18487,
-          "distance_pct": 10.55,
+          "distance_pct": 12.64,
           "label": "свинг-хай 189д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1298,7 +1289,7 @@
         },
         {
           "price": 0.19087,
-          "distance_pct": 14.14,
+          "distance_pct": 16.29,
           "label": "свинг-хай 50д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1307,26 +1298,26 @@
       ],
       "targets_down": [
         {
-          "price": 0.16256,
-          "distance_pct": -2.79,
-          "label": "VAH 30d",
-          "kind": "VAH",
-          "window": "30d"
-        },
-        {
-          "price": 0.160265,
-          "distance_pct": -4.16,
+          "price": 0.161904,
+          "distance_pct": -1.36,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
         },
         {
+          "price": 0.160083,
+          "distance_pct": -2.47,
+          "label": "VAH 14d",
+          "kind": "VAH",
+          "window": "14d"
+        },
+        {
           "price": 0.154929,
-          "distance_pct": -7.35,
+          "distance_pct": -5.61,
           "label": "HVN 90d",
           "kind": "HVN",
           "window": "90d",
-          "volume_share_pct": 3.71
+          "volume_share_pct": 3.74
         }
       ]
     },
@@ -1371,7 +1362,7 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$1.9M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$1.8M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -1397,11 +1388,19 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.78791,
+      "current_price": 0.77827,
       "targets_up": [
         {
+          "price": 0.783389,
+          "distance_pct": 0.66,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.31
+        },
+        {
           "price": 0.81683,
-          "distance_pct": 3.67,
+          "distance_pct": 4.95,
           "label": "свинг-хай 49д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1409,43 +1408,37 @@
         },
         {
           "price": 0.83104,
-          "distance_pct": 5.47,
+          "distance_pct": 6.78,
           "label": "свинг-хай 66д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 66
-        },
-        {
-          "price": 0.854655,
-          "distance_pct": 8.47,
-          "label": "VAH 90d",
-          "kind": "VAH",
-          "window": "90d"
         }
       ],
       "targets_down": [
         {
-          "price": 0.783738,
-          "distance_pct": -0.53,
-          "label": "VAH 14d",
-          "kind": "VAH",
-          "window": "14d"
-        },
-        {
-          "price": 0.775356,
-          "distance_pct": -1.59,
-          "label": "HVN 14d",
-          "kind": "HVN",
-          "window": "14d",
-          "volume_share_pct": 5.31
+          "price": 0.77258,
+          "distance_pct": -0.73,
+          "label": "свинг-лоу 197д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 197
         },
         {
           "price": 0.76188,
-          "distance_pct": -3.3,
+          "distance_pct": -2.11,
           "label": "HVN 90d",
           "kind": "HVN",
           "window": "90d",
           "volume_share_pct": 6.08
+        },
+        {
+          "price": 0.752114,
+          "distance_pct": -3.36,
+          "label": "HVN 90d",
+          "kind": "HVN",
+          "window": "90d",
+          "volume_share_pct": 5.56
         }
       ]
     },
@@ -1524,35 +1517,35 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.2,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.028%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.081%)"
             },
             {
               "name": "фандинг",
               "value": -0.2,
-              "detail": "лонги платят 33% годовых"
+              "detail": "лонги платят 27% годовых"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": -0.6,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.06)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.08)"
             },
             {
               "name": "агрессия CVD",
-              "value": -0.2,
-              "detail": "лёгкий перевес продавцов"
+              "value": 0.0,
+              "detail": "окна не согласованы"
             }
           ],
           "has_data": true
@@ -1561,54 +1554,55 @@
       "data_coverage_pct": 100,
       "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.37365,
+      "current_price": 0.36084,
       "targets_up": [
         {
+          "price": 0.36512,
+          "distance_pct": 1.19,
+          "label": "свинг-хай 189д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 189
+        },
+        {
           "price": 0.382337,
-          "distance_pct": 2.32,
+          "distance_pct": 5.96,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
         },
         {
           "price": 0.41309,
-          "distance_pct": 10.56,
+          "distance_pct": 14.48,
           "label": "свинг-хай 30д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 30
-        },
-        {
-          "price": 0.45217,
-          "distance_pct": 21.01,
-          "label": "свинг-хай 128д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 128
         }
       ],
       "targets_down": [
         {
-          "price": 0.362351,
-          "distance_pct": -3.02,
-          "label": "POC 7d",
-          "kind": "POC",
-          "window": "7d"
-        },
-        {
           "price": 0.35824,
-          "distance_pct": -4.12,
+          "distance_pct": -0.72,
           "label": "свинг-лоу 110д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 110
         },
         {
-          "price": 0.352078,
-          "distance_pct": -5.77,
-          "label": "VAH 14d",
+          "price": 0.354176,
+          "distance_pct": -1.85,
+          "label": "VAH 30d",
           "kind": "VAH",
-          "window": "14d"
+          "window": "30d"
+        },
+        {
+          "price": 0.34371,
+          "distance_pct": -4.75,
+          "label": "свинг-лоу 124д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 124
         }
       ]
     },
@@ -1643,12 +1637,12 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.089%)"
+              "detail": "перекос в лонги (+0.098%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (60% годовых)"
+              "detail": "держать лонг очень дорого (66% годовых)"
             }
           ],
           "has_data": true
@@ -1674,18 +1668,18 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 11.772,
+      "current_price": 11.793,
       "targets_up": [
         {
           "price": 12.371674,
-          "distance_pct": 5.09,
+          "distance_pct": 4.91,
           "label": "VAH 30d",
           "kind": "VAH",
           "window": "30d"
         },
         {
           "price": 14.405,
-          "distance_pct": 22.37,
+          "distance_pct": 22.15,
           "label": "свинг-хай 220д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1693,7 +1687,7 @@
         },
         {
           "price": 15.0,
-          "distance_pct": 27.42,
+          "distance_pct": 27.19,
           "label": "свинг-хай 256д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -1702,26 +1696,27 @@
       ],
       "targets_down": [
         {
+          "price": 11.732,
+          "distance_pct": -0.52,
+          "label": "свинг-лоу 247д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 247
+        },
+        {
           "price": 11.603,
-          "distance_pct": -1.44,
+          "distance_pct": -1.61,
           "label": "свинг-лоу 274д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 274
         },
         {
-          "price": 11.28452,
-          "distance_pct": -4.14,
+          "price": 11.3956,
+          "distance_pct": -3.37,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
-        },
-        {
-          "price": 10.659644,
-          "distance_pct": -9.45,
-          "label": "VAH 14d",
-          "kind": "VAH",
-          "window": "14d"
         }
       ]
     },
@@ -1755,13 +1750,13 @@
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.014%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.064%)"
             },
             {
               "name": "фандинг",
-              "value": -0.4,
-              "detail": "держать лонг очень дорого (70% годовых)"
+              "value": -0.2,
+              "detail": "лонги платят 33% годовых"
             },
             {
               "name": "открытый интерес",
@@ -1778,7 +1773,7 @@
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×3.62 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.57 — рынок принимает новую цену"
             }
           ],
           "has_data": true
@@ -1787,26 +1782,26 @@
       "data_coverage_pct": 100,
       "decision_action": "ВХОД ЧАСТЬЮ",
       "decision_size_pct": 21,
-      "current_price": 0.49764,
+      "current_price": 0.48865,
       "targets_up": [
         {
+          "price": 0.49138,
+          "distance_pct": 0.56,
+          "label": "VAH 14d",
+          "kind": "VAH",
+          "window": "14d"
+        },
+        {
           "price": 0.511221,
-          "distance_pct": 2.73,
+          "distance_pct": 4.62,
           "label": "HVN 7d",
           "kind": "HVN",
           "window": "7d",
-          "volume_share_pct": 9.19
+          "volume_share_pct": 8.99
         },
         {
-          "price": 0.535396,
-          "distance_pct": 7.59,
-          "label": "VAH 90d",
-          "kind": "VAH",
-          "window": "90d"
-        },
-        {
-          "price": 0.541788,
-          "distance_pct": 8.87,
+          "price": 0.535353,
+          "distance_pct": 9.56,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
@@ -1814,22 +1809,22 @@
       ],
       "targets_down": [
         {
-          "price": 0.48787,
-          "distance_pct": -1.96,
-          "label": "VAH 14d",
-          "kind": "VAH",
-          "window": "14d"
+          "price": 0.485481,
+          "distance_pct": -0.65,
+          "label": "POC 7d",
+          "kind": "POC",
+          "window": "7d"
         },
         {
-          "price": 0.46552,
-          "distance_pct": -6.45,
+          "price": 0.468825,
+          "distance_pct": -4.06,
           "label": "VAH 30d",
           "kind": "VAH",
           "window": "30d"
         },
         {
-          "price": 0.445971,
-          "distance_pct": -10.38,
+          "price": 0.44705,
+          "distance_pct": -8.51,
           "label": "POC 14d",
           "kind": "POC",
           "window": "14d"
@@ -1839,9 +1834,9 @@
     "MORPHO": {
       "token": "MORPHO",
       "status": "OK",
-      "score": 6.0,
-      "verdict": "NEUTRAL",
-      "verdict_ru": "нейтрально",
+      "score": -15.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": 0.3,
@@ -1861,18 +1856,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.2,
+          "score": -0.9,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.007%)"
+              "value": -0.5,
+              "detail": "лонги сильно переплачивают (+0.153%)"
             },
             {
               "name": "фандинг",
-              "value": -0.2,
-              "detail": "лонги платят 20% годовых"
+              "value": -0.4,
+              "detail": "держать лонг очень дорого (65% годовых)"
             }
           ],
           "has_data": true
@@ -1884,7 +1879,7 @@
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.62)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.51)"
             },
             {
               "name": "агрессия CVD",
@@ -1898,54 +1893,52 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 2.2748,
+      "current_price": 2.2494,
       "targets_up": [
         {
+          "price": 2.27846,
+          "distance_pct": 1.29,
+          "label": "VAH 14d",
+          "kind": "VAH",
+          "window": "14d"
+        },
+        {
           "price": 2.3114,
-          "distance_pct": 1.61,
+          "distance_pct": 2.76,
           "label": "свинг-хай 43д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 43
         },
         {
-          "price": 2.342225,
-          "distance_pct": 2.96,
+          "price": 2.3572,
+          "distance_pct": 4.79,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
-        },
-        {
-          "price": 2.4203,
-          "distance_pct": 6.4,
-          "label": "свинг-хай 89д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 89
         }
       ],
       "targets_down": [
         {
           "price": 2.15538,
-          "distance_pct": -5.25,
+          "distance_pct": -4.18,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
         },
         {
           "price": 2.116,
-          "distance_pct": -6.98,
+          "distance_pct": -5.93,
           "label": "VAH 30d",
           "kind": "VAH",
           "window": "30d"
         },
         {
-          "price": 2.054383,
-          "distance_pct": -9.69,
-          "label": "HVN 14d",
-          "kind": "HVN",
-          "window": "14d",
-          "volume_share_pct": 4.7
+          "price": 2.050212,
+          "distance_pct": -8.86,
+          "label": "POC 7d",
+          "kind": "POC",
+          "window": "7d"
         }
       ]
     },
@@ -1980,7 +1973,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (+0.000%)"
+              "detail": "баланс (+0.005%)"
             },
             {
               "name": "фандинг",
@@ -2011,61 +2004,64 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.3859,
+      "current_price": 0.37274,
       "targets_up": [
         {
+          "price": 0.378615,
+          "distance_pct": 1.58,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.53
+        },
+        {
+          "price": 0.385235,
+          "distance_pct": 3.35,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.41
+        },
+        {
           "price": 0.39237,
-          "distance_pct": 1.68,
+          "distance_pct": 5.27,
           "label": "свинг-хай 68д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 68
-        },
-        {
-          "price": 0.399468,
-          "distance_pct": 3.52,
-          "label": "POC 30d",
-          "kind": "POC",
-          "window": "30d"
-        },
-        {
-          "price": 0.407916,
-          "distance_pct": 5.71,
-          "label": "VAH 90d",
-          "kind": "VAH",
-          "window": "90d"
         }
       ],
       "targets_down": [
         {
-          "price": 0.379902,
-          "distance_pct": -1.55,
-          "label": "VAH 14d",
-          "kind": "VAH",
-          "window": "14d"
-        },
-        {
           "price": 0.364972,
-          "distance_pct": -5.42,
+          "distance_pct": -2.08,
           "label": "HVN 90d",
           "kind": "HVN",
           "window": "90d",
-          "volume_share_pct": 4.63
+          "volume_share_pct": 4.61
         },
         {
           "price": 0.36009,
-          "distance_pct": -6.69,
+          "distance_pct": -3.39,
           "label": "свинг-лоу 246д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 246
+        },
+        {
+          "price": 0.35473,
+          "distance_pct": -4.83,
+          "label": "свинг-лоу 233д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 233
         }
       ]
     },
     "OP": {
       "token": "OP",
       "status": "OK",
-      "score": -12.0,
+      "score": -18.0,
       "verdict": "WEAK_SHORT",
       "verdict_ru": "слабый шорт",
       "components": {
@@ -2109,13 +2105,13 @@
           "has_data": true
         },
         "technical": {
-          "score": -0.4,
+          "score": -0.6,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.31)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.36)"
             },
             {
               "name": "цели вверх",
@@ -2124,8 +2120,8 @@
             },
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": -0.2,
+              "detail": "лёгкий перевес продавцов"
             }
           ],
           "has_data": true
@@ -2134,11 +2130,19 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.11123,
+      "current_price": 0.10916,
       "targets_up": [
         {
+          "price": 0.11128,
+          "distance_pct": 1.94,
+          "label": "свинг-хай 49д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 49
+        },
+        {
           "price": 0.11242,
-          "distance_pct": 1.07,
+          "distance_pct": 2.99,
           "label": "свинг-хай 70д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -2146,52 +2150,44 @@
         },
         {
           "price": 0.1208,
-          "distance_pct": 8.6,
+          "distance_pct": 10.66,
           "label": "свинг-хай 136д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 136
-        },
-        {
-          "price": 0.13214,
-          "distance_pct": 18.8,
-          "label": "свинг-хай 171д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 171
         }
       ],
       "targets_down": [
         {
-          "price": 0.1091,
-          "distance_pct": -1.91,
-          "label": "свинг-лоу 175д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 175
-        },
-        {
           "price": 0.105321,
-          "distance_pct": -5.31,
+          "distance_pct": -3.52,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
         },
         {
-          "price": 0.099892,
-          "distance_pct": -10.19,
+          "price": 0.100964,
+          "distance_pct": -7.51,
           "label": "VAH 7d",
           "kind": "VAH",
           "window": "7d"
+        },
+        {
+          "price": 0.09846,
+          "distance_pct": -9.8,
+          "label": "свинг-лоу 146д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 146
         }
       ]
     },
     "PENDLE": {
       "token": "PENDLE",
       "status": "OK",
-      "score": -34.0,
-      "verdict": "SHORT",
-      "verdict_ru": "шорт",
+      "score": -22.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": 0.2,
@@ -2211,18 +2207,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.6,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.084%)"
+              "detail": "перекос в лонги (+0.137%)"
             },
             {
               "name": "фандинг",
-              "value": -0.4,
-              "detail": "держать лонг очень дорого (73% годовых)"
+              "value": 0.0,
+              "detail": "фандинг спокойный (12% годовых)"
             }
           ],
           "has_data": true
@@ -2234,7 +2230,7 @@
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×3.37)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×3.16)"
             },
             {
               "name": "цели вверх",
@@ -2253,11 +2249,19 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 1.6692,
+      "current_price": 1.662,
       "targets_up": [
         {
+          "price": 1.6771,
+          "distance_pct": 0.91,
+          "label": "свинг-хай 32д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 32
+        },
+        {
           "price": 2.0059,
-          "distance_pct": 20.17,
+          "distance_pct": 20.69,
           "label": "свинг-хай 92д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -2265,51 +2269,43 @@
         },
         {
           "price": 2.2008,
-          "distance_pct": 31.85,
+          "distance_pct": 32.42,
           "label": "свинг-хай 102д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 102
-        },
-        {
-          "price": 2.2345,
-          "distance_pct": 33.87,
-          "label": "свинг-хай 212д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 212
         }
       ],
       "targets_down": [
         {
-          "price": 1.6545,
-          "distance_pct": -0.88,
-          "label": "свинг-лоу 241д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 241
-        },
-        {
           "price": 1.5704,
-          "distance_pct": -5.92,
+          "distance_pct": -5.51,
           "label": "свинг-лоу 316д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 316
         },
         {
-          "price": 1.550667,
-          "distance_pct": -7.1,
-          "label": "VAH 7d",
+          "price": 1.51726,
+          "distance_pct": -8.71,
+          "label": "VAH 14d",
           "kind": "VAH",
-          "window": "7d"
+          "window": "14d"
+        },
+        {
+          "price": 1.478769,
+          "distance_pct": -11.02,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.78
         }
       ]
     },
     "PEPE": {
       "token": "PEPE",
       "status": "OK",
-      "score": -18.0,
+      "score": -12.0,
       "verdict": "WEAK_SHORT",
       "verdict_ru": "слабый шорт",
       "components": {
@@ -2331,18 +2327,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.4,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.147%)"
+              "detail": "перекос в лонги (+0.075%)"
             },
             {
               "name": "фандинг",
-              "value": -0.2,
-              "detail": "лонги платят 48% годовых"
+              "value": 0.0,
+              "detail": "фандинг спокойный (20% годовых)"
             }
           ],
           "has_data": true
@@ -2354,7 +2350,7 @@
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×3.63 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.65 — рынок принимает новую цену"
             },
             {
               "name": "цели вверх",
@@ -2373,11 +2369,19 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.004164,
+      "current_price": 0.004029,
       "targets_up": [
         {
+          "price": 0.004124,
+          "distance_pct": 2.36,
+          "label": "свинг-хай 127д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 127
+        },
+        {
           "price": 0.004449,
-          "distance_pct": 6.84,
+          "distance_pct": 10.42,
           "label": "свинг-хай 178д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -2385,41 +2389,32 @@
         },
         {
           "price": 0.004589,
-          "distance_pct": 10.21,
+          "distance_pct": 13.9,
           "label": "свинг-хай 104д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 104
-        },
-        {
-          "price": 0.004899,
-          "distance_pct": 17.65,
-          "label": "свинг-хай 267д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 267
         }
       ],
       "targets_down": [
         {
           "price": 0.003958,
-          "distance_pct": -4.95,
+          "distance_pct": -1.76,
           "label": "свинг-лоу 264д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 264
         },
         {
-          "price": 0.003731,
-          "distance_pct": -10.4,
-          "label": "свинг-лоу 115д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 115
+          "price": 0.003752,
+          "distance_pct": -6.88,
+          "label": "VAH 7d",
+          "kind": "VAH",
+          "window": "7d"
         },
         {
           "price": 0.003636,
-          "distance_pct": -12.68,
+          "distance_pct": -9.75,
           "label": "свинг-лоу 247д назад",
           "kind": "SWING_LOW",
           "window": "365d",
@@ -2480,7 +2475,7 @@
     "RPL": {
       "token": "RPL",
       "status": "OK",
-      "score": -45.7,
+      "score": -37.1,
       "verdict": "SHORT",
       "verdict_ru": "шорт",
       "components": {
@@ -2508,13 +2503,13 @@
           "has_data": false
         },
         "technical": {
-          "score": 0.0,
+          "score": 0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": 0.2,
+              "detail": "лёгкий перевес покупателей"
             }
           ],
           "has_data": true
@@ -2558,12 +2553,12 @@
             {
               "name": "премия HL",
               "value": 0.2,
-              "detail": "перекос в шорты (-0.073%)"
+              "detail": "перекос в шорты (-0.087%)"
             },
             {
               "name": "фандинг",
               "value": 0.0,
-              "detail": "фандинг спокойный (5% годовых)"
+              "detail": "фандинг спокойный (11% годовых)"
             },
             {
               "name": "открытый интерес",
@@ -2580,7 +2575,7 @@
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×3.18)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×3.21)"
             },
             {
               "name": "агрессия CVD",
@@ -2594,61 +2589,61 @@
       "data_coverage_pct": 100,
       "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.047982,
+      "current_price": 0.046145,
       "targets_up": [
         {
-          "price": 0.052972,
-          "distance_pct": 10.4,
-          "label": "свинг-хай 50д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 50
+          "price": 0.046441,
+          "distance_pct": 0.64,
+          "label": "HVN 90d",
+          "kind": "HVN",
+          "window": "90d",
+          "volume_share_pct": 6.43
         },
-        {
-          "price": 0.056293,
-          "distance_pct": 17.32,
-          "label": "VAH 90d",
-          "kind": "VAH",
-          "window": "90d"
-        },
-        {
-          "price": 0.057031,
-          "distance_pct": 18.86,
-          "label": "свинг-хай 69д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 69
-        }
-      ],
-      "targets_down": [
         {
           "price": 0.047171,
-          "distance_pct": -1.69,
+          "distance_pct": 2.22,
           "label": "POC 90d",
           "kind": "POC",
           "window": "90d"
         },
         {
-          "price": 0.046441,
-          "distance_pct": -3.21,
-          "label": "HVN 90d",
-          "kind": "HVN",
-          "window": "90d",
-          "volume_share_pct": 6.41
-        },
+          "price": 0.052972,
+          "distance_pct": 14.79,
+          "label": "свинг-хай 50д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 50
+        }
+      ],
+      "targets_down": [
         {
-          "price": 0.045166,
-          "distance_pct": -5.87,
+          "price": 0.045493,
+          "distance_pct": -1.41,
           "label": "VAH 14d",
           "kind": "VAH",
           "window": "14d"
+        },
+        {
+          "price": 0.04499,
+          "distance_pct": -2.5,
+          "label": "свинг-лоу 57д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 57
+        },
+        {
+          "price": 0.044381,
+          "distance_pct": -3.82,
+          "label": "VAH 30d",
+          "kind": "VAH",
+          "window": "30d"
         }
       ]
     },
     "STRK": {
       "token": "STRK",
       "status": "OK",
-      "score": -56.0,
+      "score": -44.0,
       "verdict": "SHORT",
       "verdict_ru": "шорт",
       "components": {
@@ -2670,40 +2665,40 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.4,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.072%)"
+              "detail": "перекос в лонги (+0.073%)"
             },
             {
               "name": "фандинг",
-              "value": -0.2,
-              "detail": "лонги платят 29% годовых"
+              "value": 0.0,
+              "detail": "фандинг спокойный (14% годовых)"
             },
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$2.8M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$2.7M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": -0.4,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.87)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.88)"
             },
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": 0.2,
+              "detail": "лёгкий перевес покупателей"
             }
           ],
           "has_data": true
@@ -2712,65 +2707,64 @@
       "data_coverage_pct": 100,
       "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.02876,
+      "current_price": 0.02753,
       "targets_up": [
         {
+          "price": 0.028481,
+          "distance_pct": 3.45,
+          "label": "HVN 90d",
+          "kind": "HVN",
+          "window": "90d",
+          "volume_share_pct": 4.68
+        },
+        {
+          "price": 0.028886,
+          "distance_pct": 4.93,
+          "label": "POC 90d",
+          "kind": "POC",
+          "window": "90d"
+        },
+        {
           "price": 0.03171,
-          "distance_pct": 10.26,
+          "distance_pct": 15.18,
           "label": "свинг-хай 26д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 26
-        },
-        {
-          "price": 0.03227,
-          "distance_pct": 12.2,
-          "label": "свинг-хай 48д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 48
-        },
-        {
-          "price": 0.033951,
-          "distance_pct": 18.05,
-          "label": "VAH 90d",
-          "kind": "VAH",
-          "window": "90d"
         }
       ],
       "targets_down": [
         {
-          "price": 0.028481,
-          "distance_pct": -0.97,
-          "label": "HVN 90d",
-          "kind": "HVN",
-          "window": "90d",
-          "volume_share_pct": 4.66
-        },
-        {
-          "price": 0.02799,
-          "distance_pct": -2.68,
-          "label": "свинг-лоу 55д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 55
-        },
-        {
           "price": 0.02723,
-          "distance_pct": -5.32,
+          "distance_pct": -1.09,
           "label": "свинг-лоу 35д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 35
+        },
+        {
+          "price": 0.026765,
+          "distance_pct": -2.78,
+          "label": "VAH 30d",
+          "kind": "VAH",
+          "window": "30d"
+        },
+        {
+          "price": 0.02599,
+          "distance_pct": -5.59,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.4
         }
       ]
     },
     "TAO": {
       "token": "TAO",
       "status": "OK",
-      "score": 20.0,
-      "verdict": "WEAK_LONG",
-      "verdict_ru": "слабый лонг",
+      "score": 8.0,
+      "verdict": "NEUTRAL",
+      "verdict_ru": "нейтрально",
       "components": {
         "onchain": {
           "score": 0.2,
@@ -2790,35 +2784,35 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.2,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.028%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.061%)"
             },
             {
               "name": "фандинг",
               "value": -0.2,
-              "detail": "лонги платят 30% годовых"
+              "detail": "лонги платят 27% годовых"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": 0.6,
+          "score": 0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×3.66 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×3.52 — рынок принимает новую цену"
             },
             {
               "name": "агрессия CVD",
-              "value": 0.4,
-              "detail": "агрессия покупателей на нескольких окнах"
+              "value": 0.2,
+              "detail": "лёгкий перевес покупателей"
             }
           ],
           "has_data": true
@@ -2826,65 +2820,63 @@
       },
       "data_coverage_pct": 100,
       "decision_action": "ВХОД ЧАСТЬЮ",
-      "decision_size_pct": 17,
-      "current_price": 229.2,
+      "decision_size_pct": 14,
+      "current_price": 223.97,
       "targets_up": [
         {
+          "price": 226.108,
+          "distance_pct": 0.95,
+          "label": "VAH 7d",
+          "kind": "VAH",
+          "window": "7d"
+        },
+        {
           "price": 248.342,
-          "distance_pct": 8.35,
+          "distance_pct": 10.88,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
         },
         {
           "price": 289.83,
-          "distance_pct": 26.45,
+          "distance_pct": 29.41,
           "label": "свинг-хай 68д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 68
-        },
-        {
-          "price": 293.25,
-          "distance_pct": 27.95,
-          "label": "свинг-хай 92д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 92
         }
       ],
       "targets_down": [
         {
-          "price": 227.06,
-          "distance_pct": -0.93,
-          "label": "свинг-лоу 215д назад",
-          "kind": "SWING_LOW",
-          "window": "365d",
-          "bars_ago": 215
-        },
-        {
-          "price": 219.132444,
-          "distance_pct": -4.39,
+          "price": 220.527556,
+          "distance_pct": -1.54,
           "label": "VAH 14d",
           "kind": "VAH",
           "window": "14d"
         },
         {
-          "price": 208.2636,
-          "distance_pct": -9.13,
-          "label": "HVN 90d",
-          "kind": "HVN",
-          "window": "90d",
-          "volume_share_pct": 3.9
+          "price": 209.1716,
+          "distance_pct": -6.61,
+          "label": "VAH 30d",
+          "kind": "VAH",
+          "window": "30d"
+        },
+        {
+          "price": 206.22,
+          "distance_pct": -7.93,
+          "label": "свинг-лоу 241д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 241
         }
       ]
     },
     "UNI": {
       "token": "UNI",
       "status": "OK",
-      "score": -1.0,
-      "verdict": "NEUTRAL",
-      "verdict_ru": "нейтрально",
+      "score": -28.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": 0.35,
@@ -2904,30 +2896,30 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.2,
+          "score": -0.6,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.079%)"
+              "detail": "перекос в лонги (+0.088%)"
             },
             {
               "name": "фандинг",
-              "value": 0.0,
-              "detail": "фандинг спокойный (11% годовых)"
+              "value": -0.4,
+              "detail": "держать лонг очень дорого (80% годовых)"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": -0.3,
+          "score": -0.8,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
-              "value": 0.1,
-              "detail": "цена внутри зоны объёма"
+              "value": -0.4,
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.24)"
             },
             {
               "name": "цели вверх",
@@ -2946,19 +2938,11 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 4.1877,
+      "current_price": 4.2889,
       "targets_up": [
         {
-          "price": 4.2887,
-          "distance_pct": 2.41,
-          "label": "свинг-хай 178д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 178
-        },
-        {
           "price": 4.5176,
-          "distance_pct": 7.88,
+          "distance_pct": 5.33,
           "label": "свинг-хай 192д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -2966,43 +2950,50 @@
         },
         {
           "price": 4.5739,
-          "distance_pct": 9.22,
+          "distance_pct": 6.65,
           "label": "свинг-хай 22д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 22
+        },
+        {
+          "price": 5.8478,
+          "distance_pct": 36.35,
+          "label": "свинг-хай 220д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 220
         }
       ],
       "targets_down": [
         {
-          "price": 4.026262,
-          "distance_pct": -3.86,
-          "label": "HVN 30d",
-          "kind": "HVN",
-          "window": "30d",
-          "volume_share_pct": 5.35
-        },
-        {
-          "price": 3.98442,
-          "distance_pct": -4.85,
-          "label": "HVN 14d",
-          "kind": "HVN",
-          "window": "14d",
-          "volume_share_pct": 5.08
-        },
-        {
-          "price": 3.94154,
-          "distance_pct": -5.88,
-          "label": "VAH 14d",
+          "price": 4.264976,
+          "distance_pct": -0.56,
+          "label": "VAH 30d",
           "kind": "VAH",
-          "window": "14d"
+          "window": "30d"
+        },
+        {
+          "price": 4.130521,
+          "distance_pct": -3.69,
+          "label": "HVN 7d",
+          "kind": "HVN",
+          "window": "7d",
+          "volume_share_pct": 5.03
+        },
+        {
+          "price": 4.053002,
+          "distance_pct": -5.5,
+          "label": "VAH 7d",
+          "kind": "VAH",
+          "window": "7d"
         }
       ]
     },
     "VIRTUAL": {
       "token": "VIRTUAL",
       "status": "OK",
-      "score": -48.0,
+      "score": -42.0,
       "verdict": "SHORT",
       "verdict_ru": "шорт",
       "components": {
@@ -3029,18 +3020,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.4,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.070%)"
+              "detail": "перекос в лонги (+0.075%)"
             },
             {
               "name": "фандинг",
-              "value": -0.2,
-              "detail": "лонги платят 21% годовых"
+              "value": 0.0,
+              "detail": "фандинг спокойный (12% годовых)"
             }
           ],
           "has_data": true
@@ -3052,7 +3043,7 @@
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.3)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.23)"
             },
             {
               "name": "цели вверх",
@@ -3071,11 +3062,19 @@
       "data_coverage_pct": 100,
       "decision_action": "ЖДАТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.70328,
+      "current_price": 0.68687,
       "targets_up": [
         {
+          "price": 0.69946,
+          "distance_pct": 1.83,
+          "label": "свинг-хай 189д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 189
+        },
+        {
           "price": 0.75506,
-          "distance_pct": 7.36,
+          "distance_pct": 9.93,
           "label": "свинг-хай 150д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -3083,25 +3082,17 @@
         },
         {
           "price": 0.76991,
-          "distance_pct": 9.47,
+          "distance_pct": 12.09,
           "label": "свинг-хай 81д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 81
-        },
-        {
-          "price": 0.79614,
-          "distance_pct": 13.2,
-          "label": "свинг-хай 127д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 127
         }
       ],
       "targets_down": [
         {
           "price": 0.67676,
-          "distance_pct": -3.77,
+          "distance_pct": -1.47,
           "label": "свинг-лоу 91д назад",
           "kind": "SWING_LOW",
           "window": "365d",
@@ -3109,7 +3100,7 @@
         },
         {
           "price": 0.665,
-          "distance_pct": -5.44,
+          "distance_pct": -3.18,
           "label": "свинг-лоу 115д назад",
           "kind": "SWING_LOW",
           "window": "365d",
@@ -3117,7 +3108,7 @@
         },
         {
           "price": 0.648723,
-          "distance_pct": -7.76,
+          "distance_pct": -5.55,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
@@ -3127,9 +3118,9 @@
     "WIF": {
       "token": "WIF",
       "status": "OK",
-      "score": 10.0,
-      "verdict": "WEAK_LONG",
-      "verdict_ru": "слабый лонг",
+      "score": 4.0,
+      "verdict": "NEUTRAL",
+      "verdict_ru": "нейтрально",
       "components": {
         "onchain": {
           "score": 0.4,
@@ -3149,13 +3140,13 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.0,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.000%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.088%)"
             },
             {
               "name": "фандинг",
@@ -3177,7 +3168,7 @@
             {
               "name": "положение к объёму",
               "value": 0.2,
-              "detail": "цена вышла вверх из зоны объёма на объёме ×5.07 — рынок принимает новую цену"
+              "detail": "цена вышла вверх из зоны объёма на объёме ×5.11 — рынок принимает новую цену"
             },
             {
               "name": "цели вверх",
@@ -3196,11 +3187,19 @@
       "data_coverage_pct": 100,
       "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.20412,
+      "current_price": 0.20067,
       "targets_up": [
         {
+          "price": 0.20422,
+          "distance_pct": 1.77,
+          "label": "свинг-хай 92д назад",
+          "kind": "SWING_HIGH",
+          "window": "365d",
+          "bars_ago": 92
+        },
+        {
           "price": 0.20651,
-          "distance_pct": 1.17,
+          "distance_pct": 2.91,
           "label": "свинг-хай 135д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
@@ -3208,40 +3207,32 @@
         },
         {
           "price": 0.22255,
-          "distance_pct": 9.03,
+          "distance_pct": 10.9,
           "label": "свинг-хай 171д назад",
           "kind": "SWING_HIGH",
           "window": "365d",
           "bars_ago": 171
-        },
-        {
-          "price": 0.22663,
-          "distance_pct": 11.03,
-          "label": "свинг-хай 128д назад",
-          "kind": "SWING_HIGH",
-          "window": "365d",
-          "bars_ago": 128
         }
       ],
       "targets_down": [
         {
-          "price": 0.192614,
-          "distance_pct": -5.64,
-          "label": "VAH 7d",
+          "price": 0.187648,
+          "distance_pct": -6.49,
+          "label": "VAH 14d",
           "kind": "VAH",
-          "window": "7d"
+          "window": "14d"
         },
         {
-          "price": 0.186537,
-          "distance_pct": -8.61,
-          "label": "HVN 7d",
-          "kind": "HVN",
-          "window": "7d",
-          "volume_share_pct": 7.05
+          "price": 0.18549,
+          "distance_pct": -7.56,
+          "label": "свинг-лоу 97д назад",
+          "kind": "SWING_LOW",
+          "window": "365d",
+          "bars_ago": 97
         },
         {
           "price": 0.182165,
-          "distance_pct": -10.76,
+          "distance_pct": -9.22,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
@@ -3251,9 +3242,9 @@
     "ZK": {
       "token": "ZK",
       "status": "OK",
-      "score": -32.0,
-      "verdict": "SHORT",
-      "verdict_ru": "шорт",
+      "score": -26.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": -0.5,
@@ -3295,18 +3286,18 @@
           "has_data": true
         },
         "technical": {
-          "score": -0.4,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "положение к объёму",
               "value": -0.4,
-              "detail": "цена выше зоны объёма, объём не подтверждает (×2.17)"
+              "detail": "цена выше зоны объёма, объём не подтверждает (×2.19)"
             },
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": 0.2,
+              "detail": "лёгкий перевес покупателей"
             }
           ],
           "has_data": true
@@ -3315,27 +3306,27 @@
       "data_coverage_pct": 100,
       "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
-      "current_price": 0.009433,
+      "current_price": 0.009193,
       "targets_up": [
         {
           "price": 0.010045,
-          "distance_pct": 6.49,
+          "distance_pct": 9.27,
           "label": "HVN 90d",
           "kind": "HVN",
           "window": "90d",
-          "volume_share_pct": 5.51
+          "volume_share_pct": 5.49
         },
         {
           "price": 0.010381,
-          "distance_pct": 10.05,
+          "distance_pct": 12.92,
           "label": "HVN 90d",
           "kind": "HVN",
           "window": "90d",
-          "volume_share_pct": 5.82
+          "volume_share_pct": 5.8
         },
         {
           "price": 0.011472,
-          "distance_pct": 21.62,
+          "distance_pct": 24.79,
           "label": "VAH 90d",
           "kind": "VAH",
           "window": "90d"
@@ -3344,25 +3335,26 @@
       "targets_down": [
         {
           "price": 0.009121,
-          "distance_pct": -3.31,
+          "distance_pct": -0.78,
           "label": "свинг-лоу 35д назад",
           "kind": "SWING_LOW",
           "window": "365d",
           "bars_ago": 35
         },
         {
-          "price": 0.00902,
-          "distance_pct": -4.38,
-          "label": "VAH 7d",
-          "kind": "VAH",
-          "window": "7d"
-        },
-        {
-          "price": 0.008389,
-          "distance_pct": -11.07,
+          "price": 0.00833,
+          "distance_pct": -9.39,
           "label": "VAH 30d",
           "kind": "VAH",
           "window": "30d"
+        },
+        {
+          "price": 0.007894,
+          "distance_pct": -14.13,
+          "label": "HVN 30d",
+          "kind": "HVN",
+          "window": "30d",
+          "volume_share_pct": 6.67
         }
       ]
     }

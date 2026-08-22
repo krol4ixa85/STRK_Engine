@@ -447,6 +447,37 @@ tr:hover td { background: var(--bg-subtle); }
     body.view-rotation .section-macro-wrap { display: none !important; }
     body.view-macro .section-strk-wrap,
     body.view-macro .section-rotation-wrap { display: none !important; }
+
+    /* ── КОРОТКИЙ ДОМАШНИЙ ЭКРАН ──────────────────────────────
+       Домашняя страница открывалась двадцатью с лишним блоками, и
+       найти в них ответ на «что сейчас» было нельзя. Теперь на
+       Home по умолчанию виден только блок «Сейчас»; остальное
+       открывается кнопкой и никуда не делось. Разделы STRK /
+       Rotation / Macro в меню слева работают как работали. */
+    body.view-home:not(.show-all) #overview-panel,
+    body.view-home:not(.show-all) .section-macro-wrap,
+    body.view-home:not(.show-all) .section-strk-wrap,
+    body.view-home:not(.show-all) .section-rotation-wrap { display: none !important; }
+
+    #show-all-toggle {
+      display: none;
+      width: 100%;
+      margin: 14px 0 4px;
+      padding: 12px 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-align: left;
+    }
+    #show-all-toggle:hover { background: var(--bg-secondary); }
+    #show-all-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    body.view-home #show-all-toggle { display: block; }
+    #show-all-toggle .hint { font-weight: 400; color: var(--text-muted); }
     body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-strk-wrap,
     body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-rotation-wrap,
     body:not(.view-home):not(.view-strk):not(.view-rotation):not(.view-macro) .section-macro-wrap { display: block; }
@@ -668,6 +699,10 @@ body > * {
 <a href="reports/latest.html" style="border-left: 3px solid var(--purple, #8b5cf6); background: rgba(139, 92, 246, 0.06); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);" target="_blank">📊 FULL RUN</a></div>
 <div class="container">
 <div id="market-context" style="margin: 20px 0 0 0;"></div>
+<button id="show-all-toggle" type="button" onclick="toggleShowAll()">
+  ▶ Показать все остальные блоки
+  <span class="hint"> · макро, ротация, STRK, сигналы движка — 20+ блоков</span>
+</button>
 <div id="overview-panel" style="margin: 24px 0 16px 0; padding: 20px; background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%); border-radius: 16px; border: 1px solid var(--border);">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
 <div class="overview-card-clickable" id="overview-strk" onclick="switchView('strk')" style="padding: 14px; background: rgba(255,153,0,0.06); border-radius: 10px; border-left: 4px solid var(--orange, #FF9900);">
@@ -1459,7 +1494,32 @@ async function renderMarketContext() {
     _loadCache('market_context.json'),
     _loadCache('position_advice.json'),
   ]);
-  if (!mc) { el.innerHTML = ''; return; }
+  // Пустой блок неотличим от «всё спокойно». Если данных нет или
+  // расчёт упал — говорим это прямо, а не показываем ничего.
+  if (!mc || mc.status === 'ERROR') {
+    el.innerHTML = `<div style="padding:14px 18px;background:var(--bg-subtle);
+      border:1px solid var(--border);border-left:5px solid var(--yellow);
+      border-radius:12px;font-size:13.5px;color:var(--text-secondary);">
+      <b style="color:var(--text-bright);">Контекст рынка не посчитан.</b>
+      ${mc && mc.error_ru ? ' ' + mc.error_ru + '.' : ''}
+      Запусти <code>scripts/market_context.py</code> или прогон
+      <b>STRK Feature Snapshot</b> в Actions.</div>`;
+    return;
+  }
+
+  // Возраст данных. Перпы освежаются каждые 30 минут отдельным быстрым
+  // прогоном, остальное — раз в 8 часов по дневным свечам, поэтому у
+  // них разные отметки времени и разный смысл «свежести».
+  const ago = (iso) => {
+    if (!iso) return null;
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (!isFinite(m) || m < 0) return null;
+    return m < 60 ? m + ' мин назад'
+         : m < 1440 ? Math.round(m / 60) + ' ч назад'
+         : Math.round(m / 1440) + ' дн назад';
+  };
+  const fundAge = ago(mc.funding_updated_at || mc.computed_at);
+  const fullAge = ago(mc.computed_at);
 
   const s = mc.synchrony, b = mc.breadth, f = mc.funding;
   const unl = mc.unloved && mc.unloved.ranked || [];
@@ -1498,8 +1558,33 @@ async function renderMarketContext() {
       ${s ? chip('синхронность', s.pct_with_market.toFixed(0) + '%') : ''}
       ${s ? chip('рынок за день', (s.market_move_pct >= 0 ? '+' : '') + s.market_move_pct + '%') : ''}
       ${b ? chip('выше месячной середины', b.above_30d_median + '/' + b.tokens) : ''}
-      ${f ? chip('плечо в перпах', (f.median_annual_pct >= 0 ? '+' : '') + f.median_annual_pct.toFixed(0) + '% годовых') : ''}
     </div>`;
+
+  // ── перпы отдельной строкой: они живут минутами, остальное — сутками
+  if (f) {
+    const oiCh = f.oi_change_pct;
+    const oiCol = oiCh == null ? 'var(--text-muted)'
+                : oiCh > 0 ? '#EA580C' : 'var(--green)';
+    html += `<div style="margin-top:14px;padding:11px 14px;background:var(--bg-subtle);
+      border-radius:9px;display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;">
+      <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;
+        letter-spacing:.09em;font-weight:700;">Перпы</span>
+      <span style="font-size:13.5px;">фандинг
+        <b style="font-family:var(--font-data);">${f.median_annual_pct >= 0 ? '+' : ''}${f.median_annual_pct.toFixed(1)}%</b>
+        годовых · ${f.skew_ru}</span>
+      <span style="font-size:13.5px;">открытый интерес
+        <b style="font-family:var(--font-data);">$${(f.oi_total_usd / 1e9).toFixed(2)} млрд</b>
+        ${oiCh == null ? '' : `<b style="font-family:var(--font-data);color:${oiCol};">${oiCh >= 0 ? '+' : ''}${oiCh.toFixed(2)}%</b>`}</span>
+      ${fundAge ? `<span style="font-size:12px;color:var(--text-muted);
+        margin-left:auto;">обновлено ${fundAge}</span>` : ''}
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:6px;max-width:76ch;">
+      Фандинг и открытый интерес освежаются каждые 30 минут. Куда пойдёт цена,
+      они не говорят — связь измерена и равна нулю. Что они показывают: набивается
+      плечо или разгружается. Растущий открытый интерес при перекошенном фандинге —
+      это про риск резкого движения, а не про его направление.
+    </div>`;
+  }
 
   // ── позиции
   const open = pos && pos.by_token ? Object.entries(pos.by_token) : [];
@@ -1564,7 +1649,8 @@ async function renderMarketContext() {
     font-size:12px;color:var(--text-muted);max-width:78ch;">
     Движок сейчас не выбирает вход: право голоса имеют 0 правил из 12, остальные ещё не проверены.
     Что он делает — показывает состояние рынка, структуру уровней и следит за открытыми позициями.
-    Всё ниже на странице — справка к этому, а не команда.</div>`;
+    Всё ниже на странице — справка к этому, а не команда.
+    ${fullAge ? `<br>Синхронность, ширина и список — посчитаны ${fullAge} по дневным свечам.` : ''}</div>`;
 
   html += '</div>';
   el.innerHTML = html;
@@ -1648,7 +1734,7 @@ async function renderEngineSignals() {
 // свежая страница открыта или браузер держит старую из памяти.
 // За 21.08 мы трижды искали причину «не показывается» там, где её
 // не было: файл на сервере обновлялся, а вкладка оставалась прежней.
-const BUILD_STAMP = 'BUILD-2026-08-22-05';
+const BUILD_STAMP = 'BUILD-2026-08-22-07';
 
 function showBuildStamp() {
   const host = document.querySelector('.header-actions') ||
@@ -4389,6 +4475,20 @@ function toggleSignalsTable() {
 // ============================================================
 // v5.0 · View Switcher
 // ============================================================
+// Кнопка на домашнем экране. Ничего не удаляет — только показывает
+// или прячет. Состояние не запоминается специально: по умолчанию
+// всегда короткий экран, иначе смысл сокращения теряется на второй день.
+function toggleShowAll() {
+  const b = document.body;
+  const on = b.classList.toggle('show-all');
+  const btn = document.getElementById('show-all-toggle');
+  if (btn) {
+    btn.innerHTML = on
+      ? '▼ Свернуть остальные блоки <span class="hint"> · оставить только «Сейчас»</span>'
+      : '▶ Показать все остальные блоки <span class="hint"> · макро, ротация, STRK, сигналы движка — 20+ блоков</span>';
+  }
+}
+
 function switchView(view) {
   const body = document.body;
   const titles = {
@@ -4403,6 +4503,7 @@ function switchView(view) {
   
   // Add new view class
   body.classList.add('view-' + view);
+  if (view !== 'home') body.classList.remove('show-all');
   
   // Update breadcrumb
   const bcTitle = document.getElementById('breadcrumb-title');
@@ -4725,8 +4826,18 @@ async function renderModalIntelligence(token) {
     }
 
     // ── ЭКРАН 2 · ПЯТЬ СЛОЁВ · откуда следует вывод ──
+    //
+    // Свёрнуто. Слои показывают баллы («Поток +1.00», «Давление -0.90»)
+    // и выглядят как обоснование вердикта, но право голоса сейчас
+    // имеют ноль правил из двенадцати: ни один из этих баллов не
+    // проверен на истории. На коротком экране им не место — они
+    // заслоняют то, что измерено: карту уровней и позицию.
     if (md && md.layers && md.layers.length) {
-      html += `<div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; font-family: var(--font-data);">Откуда это следует</div>`;
+      html += `<details style="margin-top:4px;"><summary style="cursor:pointer;
+        font-size:11px; color:var(--text-muted); text-transform:uppercase;
+        letter-spacing:0.09em; font-weight:700; user-select:none;
+        font-family:var(--font-data);">Откуда это следует · слои движка</summary>
+        <div style="padding-top:8px;">`;
       for (const L of md.layers) {
         const s2 = L.score;
         const lc = s2 == null ? C.muted : s2 > 0.15 ? C.green : s2 < -0.15 ? C.red : C.muted;
@@ -4745,36 +4856,20 @@ async function renderModalIntelligence(token) {
           <div style="font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.45;">${L.detail}</div>
         </div>`;
       }
+      // Закрываем свёртку слоёв ЗДЕСЬ, внутри той же ветки, что её
+      // открыла. Снаружи — закрывалась бы и когда слоёв нет: у BTC
+      // так и вышло — лишний </details> ломал разметку.
+      html += `</div></details>`;
     }
 
     html += `</div>`;
   }
 
-  // ── ЭКРАН 3 · всё остальное, свёрнуто ──
-  html += `<details style="margin-bottom: 12px;">
-    <summary style="cursor: pointer; padding: 10px 13px; background: var(--bg-subtle); border-radius: var(--r-md); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-secondary); user-select: none;">
-      ▼ Все измерения по активу
-    </summary>
-    <div style="padding-top: 12px;">`;
-
-  // ── 1 · СВЕЖЕСТЬ ИСТОЧНИКОВ ────────────────────────────────
-  const sources = [
-    { name: 'Фандинг / OI', iso: funding && funding.computed_at, cadence: '30 мин · бесплатно' },
-    { name: 'Ликвидность / держатели', iso: health && health.computed_at, cadence: 'раз в неделю · Hive' },
-    { name: 'Фаза / потоки', iso: scan && scan.collected_at, cadence: 'раз в неделю · Dune' },
-    { name: 'Сектор', iso: sector && (sector.collected_at || sector.as_of), cadence: '2× в сутки · Dune' },
-  ];
-  html += '<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">';
-  for (const s of sources) {
-    const a = _ageBadge(s.iso);
-    html += `<div title="${s.cadence}" style="font-size: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.5); border: 1px solid ${a.color}33;">
-      <span style="color: var(--text-secondary);">${s.name}</span>
-      <span style="color: ${a.color}; font-weight: 700; margin-left: 5px;">${a.text}</span>
-    </div>`;
-  }
-  html += '</div>';
-
-  // ── 2 · ФАНДИНГ И ОТКРЫТЫЙ ИНТЕРЕС ─────────────────────────
+  // Блок свежести источников раньше открывал свёрнутый <details>
+  // ЗДЕСЬ — то есть карта структуры и совет по позиции оказывались
+  // ВНУТРИ свёртки, и на коротком экране их не было видно вообще.
+  // Ровно то, на что было «непонятно, где смотреть». Свёртка теперь
+  // начинается ниже, после позиции; источники переехали внутрь неё.
   const f = funding && funding.tokens && funding.tokens[token];
   // ═══════════════════════════════════════════════════════════════════
   // ═══════════════════════════════════════════════════════════════════
@@ -5150,6 +5245,46 @@ async function renderModalIntelligence(token) {
   }
 
   // ═══════════════════════════════════════════════════════════════════
+  // ГРАНИЦА КОРОТКОГО ЭКРАНА
+  //
+  // Выше — то, ради чего модалку открывают на свинге: сколько в
+  // движении рынка, где цена внутри уровней, что с открытой позицией.
+  // Три вещи.
+  //
+  // Ниже — двадцать с лишним блоков справки. Они не удалены: часть из
+  // них показывает данные, которых больше нигде нет. Но по умолчанию
+  // закрыты, потому что при нуле правил с правом голоса их вердикты —
+  // это описания, а не команды, и в развёрнутом виде они заслоняют
+  // те самые три вещи.
+  // ═══════════════════════════════════════════════════════════════════
+  html += `<details style="margin-top: 10px;">
+    <summary style="cursor: pointer; padding: 11px 14px; background: var(--bg-subtle);
+      border-radius: 8px; border: 1px solid var(--border); font-size: 12.5px;
+      font-weight: 600; color: var(--text-secondary); user-select: none;">
+      ▶ Показать все остальные данные по активу
+      <span style="font-weight:400;color:var(--text-muted);"> · компас, цели, перекос,
+      стакан, держатели, потоки, сектор, новости</span>
+    </summary>
+    <div style="padding-top: 12px;">`;
+
+  // ── СВЕЖЕСТЬ ИСТОЧНИКОВ ─────────────────────────────────────
+  const sources = [
+    { name: 'Фандинг / OI', iso: funding && funding.computed_at, cadence: '30 мин · бесплатно' },
+    { name: 'Ликвидность / держатели', iso: health && health.computed_at, cadence: 'раз в неделю · Hive' },
+    { name: 'Фаза / потоки', iso: scan && scan.collected_at, cadence: 'раз в неделю · Dune' },
+    { name: 'Сектор', iso: sector && (sector.collected_at || sector.as_of), cadence: '2× в сутки · Dune' },
+  ];
+  html += '<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">';
+  for (const s of sources) {
+    const a = _ageBadge(s.iso);
+    html += `<div title="${s.cadence}" style="font-size: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.5); border: 1px solid ${a.color}33;">
+      <span style="color: var(--text-secondary);">${s.name}</span>
+      <span style="color: ${a.color}; font-weight: 700; margin-left: 5px;">${a.text}</span>
+    </div>`;
+  }
+  html += '</div>';
+
+  // ═══════════════════════════════════════════════════════════════════
   // 🧭 КОМПАС · шкала SHORT ← → LONG
   // Всё посчитано в scripts/asset_compass.py. Здесь только отрисовка:
   // позиция маркера, ширина баров, цвета. Никаких вычислений вердикта.
@@ -5410,11 +5545,10 @@ async function renderModalIntelligence(token) {
   // Всё что ниже — для проверки и разбора, а не для быстрого решения.
   // Открывается по клику, чтобы главный ответ не тонул в данных.
   // ═══════════════════════════════════════════════════════════════════
-  html += `<details style="margin-top: 6px;">
-    <summary style="cursor: pointer; padding: 10px 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-secondary); user-select: none;">
-      ▼ Все данные по активу · перекос, стакан, держатели, потоки, сектор, новости
-    </summary>
-    <div style="padding-top: 10px;">`;
+  // Второй <details> больше не нужен: всё, что ниже позиции, уже
+  // свёрнуто одной кнопкой выше. Оставляю разделитель, чтобы группы
+  // блоков не слипались.
+  html += `<div style="height:6px;"></div>`;
 
   html += '<div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 14px 0 6px;">⚖️ Перекос позиций</div>';
   if (f && f.status === 'OK') {

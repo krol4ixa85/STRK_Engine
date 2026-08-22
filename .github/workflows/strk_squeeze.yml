@@ -75,6 +75,16 @@ jobs:
       # cex_flow.json + cohort_tracker.json — stale от main workflow
       # (обновляются каждый час, для squeeze 30-min stale допустимо)
       # ============================================================
+      # Перпы обновляются минутами, а полный контекст рынка считается
+      # раз в 8 часов по дневным свечам. Показывать восьмичасовой
+      # фандинг как текущий нельзя, поэтому здесь он освежается каждые
+      # 30 минут: --fast делает ОДИН запрос (метаданные всех монет
+      # сразу) и трогает в JSON только блок funding. Синхронность и
+      # ширина считаются по дневным свечам и за полчаса измениться не
+      # могут — их этот режим не пересчитывает.
+      - name: Перпы · фандинг и открытый интерес
+        run: python3 scripts/market_context.py --fast || true
+
       - name: Squeeze detector (compute state)
         run: python3 scripts/detectors/squeeze_detector.py || true
 
@@ -106,6 +116,7 @@ jobs:
                     data/cache/funding_signal.json \
                     data/cache/technical_momentum.json \
                     data/cache/cvd_analysis.json \
+                    data/cache/market_context.json \
                     data/history/squeeze_alerts.jsonl \
                     data/history/exit_signals.jsonl 2>/dev/null || true
 

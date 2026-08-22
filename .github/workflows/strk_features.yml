@@ -51,7 +51,7 @@ jobs:
           python-version: '3.11'
 
       - name: Установить зависимости
-        run: pip install --quiet rule-engine numpy
+        run: pip install --quiet rule-engine
 
       - name: Записать срез
         run: python3 scripts/feature_snapshot.py
@@ -63,6 +63,8 @@ jobs:
       # continue-on-error: если биржа не ответила, срез детекторов от
       # этого страдать не должен. Пропущенный день контекста не страшен,
       # пропущенный день среза — невосстановим.
+      # numpy тут не нужен: скрипт считает корреляцию сам. Раньше
+      # жёсткий import numpy убивал его до первой строки работы.
       - name: Контекст рынка
         run: python3 scripts/market_context.py
         continue-on-error: true
