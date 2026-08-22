@@ -61,6 +61,17 @@ try:
 except ImportError:
     raise SystemExit("ERROR: pip install rule-engine")
 
+# Версия интерфейса FeatureStore. Её читает feature_snapshot.py, чтобы
+# отличить «залита старая версия этого файла» от настоящей поломки.
+# 22.08 прогон в Actions упал с TypeError: got an unexpected keyword
+# argument 'include_globals' — по этому сообщению невозможно понять, что
+# делать. Теперь будет сказано прямо, какой файл перезалить.
+#
+#   1 — первая версия
+#   2 — + include_globals, табличные источники (rows/match/value),
+#         keep_stale, is_irrecoverable
+FEATURE_STORE_API = 2
+
 CACHE_DIR = "data/cache"
 FEATURES_FILE = "config/features.json"
 RULES_FILE = "config/rules.json"
@@ -114,10 +125,18 @@ def parse_utc(s):
 
 
 class FeatureStore:
-    """Читает кэши один раз, отдаёт фичи по имени с проверкой срока годности."""
+    """Читает кэши один раз, отдаёт фичи по имени с проверкой срока годности.
 
-    def __init__(self, spec, now=None):
-        self.spec = spec.get("features", {})
+    include_globals=True добавляет в набор фичи из секции "globals" —
+    те, что не разбиты по токенам (фаза Wyckoff, счёт гейта, HHI).
+    """
+
+    def __init__(self, spec, now=None, include_globals=False):
+        self.spec = dict(spec.get("features", {}))
+        if include_globals:
+            g = {k: v for k, v in (spec.get("globals") or {}).items()
+                 if isinstance(v, dict)}
+            self.spec.update(g)
         self.now = now or datetime.now(timezone.utc)
         self._files = {}
         self.file_age_h = {}
@@ -139,8 +158,17 @@ class FeatureStore:
         self.file_age_h[fname] = age
         return age
 
-    def get(self, name, token):
-        """→ (value, state, reason). state: OK | NO_DATA | STALE"""
+    def get(self, name, token, keep_stale=False):
+        """
+        → (value, state, reason). state: OK | NO_DATA | STALE
+
+        keep_stale=True возвращает протухшее значение вместе с меткой
+        STALE, а не выбрасывает его. Для правил выбрасывать правильно:
+        решение на старых данных принимать нельзя. Для СОХРАНЕНИЯ —
+        наоборот: выброшенное значение исчезает навсегда, а поток Dune
+        задним числом не скачать. Фильтровать надо при анализе, не при
+        записи.
+        """
         s = self.spec.get(name)
         if not s:
             return None, NO_DATA, f"фича {name} не объявлена в {FEATURES_FILE}"
@@ -151,8 +179,26 @@ class FeatureStore:
 
         age = self.age_hours(s["file"], s.get("stamp"))
         max_age = s.get("max_age_h")
-        if age is not None and max_age and age > max_age:
+        is_stale = age is not None and max_age and age > max_age
+        if is_stale and not keep_stale:
             return None, STALE, f"{s['file']} обновлён {age:.0f} ч назад при сроке {max_age} ч"
+
+        # Табличный источник: выгрузка Dune и подобные, где данные лежат
+        # списком строк, а не деревом. Ищем строку по полю match.
+        if s.get("rows"):
+            rows = dig(d, s["rows"])
+            if not isinstance(rows, list):
+                return None, NO_DATA, f"в {s['file']} нет таблицы {s['rows']}"
+            mf, vf = s.get("match", "token"), s.get("value")
+            for r in rows:
+                if not isinstance(r, dict):
+                    continue
+                if str(r.get(mf, "")).upper() == token.upper():
+                    v = r.get(vf)
+                    if v is not None:
+                        return v, (STALE if is_stale else "OK"), (
+                            f"возраст {age:.0f} ч" if is_stale else None)
+            return None, NO_DATA, f"в {s['file']} нет строки для {token}"
 
         # Ключи токенов в кэшах не согласованы: где-то LINK, где-то link.
         # Пробуем оба регистра, а не полагаемся на то, как коллектор
@@ -164,9 +210,17 @@ class FeatureStore:
             for form in (token.upper(), token.lower()):
                 v = dig(d, p.replace("{T}", form).replace("{t}", form))
                 if v is not None:
-                    return v, "OK", None
+                    return v, (STALE if is_stale else "OK"), (
+                        f"возраст {age:.0f} ч" if is_stale else None)
 
         return None, NO_DATA, f"в {s['file']} нет значения для {token}"
+
+    def is_irrecoverable(self, name):
+        """Можно ли эту фичу скачать задним числом. False — значит нельзя."""
+        return bool((self.spec.get(name) or {}).get("irrecoverable"))
+
+    def names(self):
+        return sorted(self.spec)
 
     def unit(self, name):
         return (self.spec.get(name) or {}).get("unit", "")
