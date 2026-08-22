@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-08-22T18:01:21.301457+00:00",
+  "computed_at": "2026-08-22T19:11:38.708879+00:00",
   "engine_version": "compass/1.0",
   "weights": {
     "onchain": 0.4,
@@ -11,7 +11,7 @@
   "top_long": [
     {
       "token": "LINK",
-      "score": 16.0,
+      "score": 25.0,
       "verdict": "WEAK_LONG"
     },
     {
@@ -30,15 +30,15 @@
       "verdict": "NEUTRAL"
     },
     {
-      "token": "AXS",
-      "score": 6.0,
+      "token": "WIF",
+      "score": 4.0,
       "verdict": "NEUTRAL"
     }
   ],
   "top_short": [
     {
-      "token": "VIRTUAL",
-      "score": -66.0,
+      "token": "STRK",
+      "score": -65.0,
       "verdict": "STRONG_SHORT"
     },
     {
@@ -47,18 +47,18 @@
       "verdict": "STRONG_SHORT"
     },
     {
-      "token": "STRK",
-      "score": -56.0,
+      "token": "VIRTUAL",
+      "score": -60.0,
       "verdict": "SHORT"
     },
     {
       "token": "SAND",
-      "score": -50.0,
+      "score": -47.0,
       "verdict": "SHORT"
     },
     {
-      "token": "ETHFI",
-      "score": -49.0,
+      "token": "GRT",
+      "score": -45.7,
       "verdict": "SHORT"
     }
   ],
@@ -66,9 +66,9 @@
     "AAVE": {
       "token": "AAVE",
       "status": "OK",
-      "score": -10.0,
-      "verdict": "NEUTRAL",
-      "verdict_ru": "нейтрально",
+      "score": -19.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": 0.35,
@@ -88,18 +88,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.6,
+          "score": -0.9,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.2,
-              "detail": "перекос в лонги (+0.119%)"
+              "value": -0.5,
+              "detail": "лонги сильно переплачивают (+0.151%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (89% годовых)"
+              "detail": "держать лонг очень дорого (87% годовых)"
             }
           ],
           "has_data": true
@@ -207,7 +207,7 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.080%)"
+              "detail": "перекос в лонги (+0.081%)"
             },
             {
               "name": "фандинг",
@@ -370,7 +370,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (+0.000%)"
+              "detail": "баланс (+0.030%)"
             },
             {
               "name": "фандинг",
@@ -467,7 +467,7 @@
     "AXS": {
       "token": "AXS",
       "status": "OK",
-      "score": 6.0,
+      "score": 0.0,
       "verdict": "NEUTRAL",
       "verdict_ru": "нейтрально",
       "components": {
@@ -489,13 +489,13 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.0,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.000%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.090%)"
             },
             {
               "name": "фандинг",
@@ -586,7 +586,7 @@
     "BONK": {
       "token": "BONK",
       "status": "OK",
-      "score": -4.0,
+      "score": -10.0,
       "verdict": "NEUTRAL",
       "verdict_ru": "нейтрально",
       "components": {
@@ -614,18 +614,18 @@
             {
               "name": "премия HL",
               "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.182%)"
+              "detail": "лонги сильно переплачивают (+0.302%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (96% годовых)"
+              "detail": "держать лонг очень дорого (116% годовых)"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": 0.1,
+          "score": -0.1,
           "weight": 0.3,
           "parts": [
             {
@@ -635,8 +635,8 @@
             },
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": -0.2,
+              "detail": "лёгкий перевес продавцов"
             }
           ],
           "has_data": true
@@ -644,7 +644,7 @@
       },
       "data_coverage_pct": 100,
       "decision_action": "ВХОД ЧАСТЬЮ",
-      "decision_size_pct": 28,
+      "decision_size_pct": 14,
       "current_price": 0.003207,
       "targets_up": [
         {
@@ -698,7 +698,7 @@
     "CFG": {
       "token": "CFG",
       "status": "OK",
-      "score": -8.6,
+      "score": 0.0,
       "verdict": "NEUTRAL",
       "verdict_ru": "нейтрально",
       "components": {
@@ -726,13 +726,13 @@
           "has_data": false
         },
         "technical": {
-          "score": -0.2,
+          "score": 0.0,
           "weight": 0.3,
           "parts": [
             {
               "name": "агрессия CVD",
-              "value": -0.2,
-              "detail": "лёгкий перевес продавцов"
+              "value": 0.0,
+              "detail": "окна не согласованы"
             }
           ],
           "has_data": true
@@ -776,7 +776,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (+0.012%)"
+              "detail": "баланс (+0.038%)"
             },
             {
               "name": "фандинг",
@@ -889,12 +889,12 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.126%)"
+              "detail": "перекос в лонги (+0.121%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (53% годовых)"
+              "detail": "держать лонг очень дорого (61% годовых)"
             }
           ],
           "has_data": true
@@ -1009,7 +1009,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (-0.046%)"
+              "detail": "баланс (+0.000%)"
             },
             {
               "name": "фандинг",
@@ -1019,7 +1019,7 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$3.1M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$3.0M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -1098,7 +1098,7 @@
     "ETHFI": {
       "token": "ETHFI",
       "status": "OK",
-      "score": -49.0,
+      "score": -40.0,
       "verdict": "SHORT",
       "verdict_ru": "шорт",
       "components": {
@@ -1120,18 +1120,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.9,
+          "score": -0.6,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.238%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.122%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (137% годовых)"
+              "detail": "держать лонг очень дорого (112% годовых)"
             }
           ],
           "has_data": true
@@ -1238,12 +1238,12 @@
             {
               "name": "премия HL",
               "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.267%)"
+              "detail": "лонги сильно переплачивают (+0.205%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (78% годовых)"
+              "detail": "держать лонг очень дорого (108% годовых)"
             }
           ],
           "has_data": true
@@ -1352,7 +1352,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (-0.023%)"
+              "detail": "баланс (+0.005%)"
             },
             {
               "name": "фандинг",
@@ -1362,7 +1362,7 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$1.9M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$1.8M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -1386,7 +1386,7 @@
         }
       },
       "data_coverage_pct": 100,
-      "decision_action": "ЖДАТЬ",
+      "decision_action": "НЕ ВХОДИТЬ",
       "decision_size_pct": 0,
       "current_price": 0.77827,
       "targets_up": [
@@ -1522,13 +1522,13 @@
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.2,
-              "detail": "перекос в лонги (+0.083%)"
+              "value": 0.0,
+              "detail": "баланс (+0.036%)"
             },
             {
               "name": "фандинг",
-              "value": 0.0,
-              "detail": "фандинг спокойный (19% годовых)"
+              "value": -0.2,
+              "detail": "лонги платят 25% годовых"
             }
           ],
           "has_data": true
@@ -1609,7 +1609,7 @@
     "LINK": {
       "token": "LINK",
       "status": "OK",
-      "score": 16.0,
+      "score": 25.0,
       "verdict": "WEAK_LONG",
       "verdict_ru": "слабый лонг",
       "components": {
@@ -1631,13 +1631,13 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.9,
+          "score": -0.6,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.151%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.075%)"
             },
             {
               "name": "фандинг",
@@ -1751,17 +1751,17 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.081%)"
+              "detail": "перекос в лонги (+0.124%)"
             },
             {
               "name": "фандинг",
               "value": -0.2,
-              "detail": "лонги платят 21% годовых"
+              "detail": "лонги платят 46% годовых"
             },
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$3.5M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$3.4M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -1862,12 +1862,12 @@
             {
               "name": "премия HL",
               "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.190%)"
+              "detail": "лонги сильно переплачивают (+0.154%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (82% годовых)"
+              "detail": "держать лонг очень дорого (117% годовых)"
             }
           ],
           "has_data": true
@@ -1945,9 +1945,9 @@
     "ONDO": {
       "token": "ONDO",
       "status": "OK",
-      "score": -9.0,
-      "verdict": "NEUTRAL",
-      "verdict_ru": "нейтрально",
+      "score": -15.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": 0.0,
@@ -1967,18 +1967,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.0,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.040%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.134%)"
             },
             {
               "name": "фандинг",
               "value": 0.0,
-              "detail": "фандинг спокойный (11% годовых)"
+              "detail": "фандинг спокойный (12% годовых)"
             }
           ],
           "has_data": true
@@ -2089,7 +2089,7 @@
             {
               "name": "премия HL",
               "value": 0.0,
-              "detail": "баланс (+0.000%)"
+              "detail": "баланс (+0.027%)"
             },
             {
               "name": "фандинг",
@@ -2099,7 +2099,7 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$2.9M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$2.8M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -2185,9 +2185,9 @@
     "PENDLE": {
       "token": "PENDLE",
       "status": "OK",
-      "score": -10.0,
-      "verdict": "NEUTRAL",
-      "verdict_ru": "нейтрально",
+      "score": -19.0,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": 0.2,
@@ -2207,18 +2207,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.2,
+          "score": -0.5,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.2,
-              "detail": "перекос в лонги (+0.067%)"
+              "value": -0.5,
+              "detail": "лонги сильно переплачивают (+0.188%)"
             },
             {
               "name": "фандинг",
               "value": 0.0,
-              "detail": "фандинг спокойный (14% годовых)"
+              "detail": "фандинг спокойный (11% годовых)"
             }
           ],
           "has_data": true
@@ -2305,7 +2305,7 @@
     "PEPE": {
       "token": "PEPE",
       "status": "OK",
-      "score": -12.0,
+      "score": -21.0,
       "verdict": "WEAK_SHORT",
       "verdict_ru": "слабый шорт",
       "components": {
@@ -2327,18 +2327,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.6,
+          "score": -0.9,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.2,
-              "detail": "перекос в лонги (+0.098%)"
+              "value": -0.5,
+              "detail": "лонги сильно переплачивают (+0.172%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (74% годовых)"
+              "detail": "держать лонг очень дорого (80% годовых)"
             }
           ],
           "has_data": true
@@ -2475,9 +2475,9 @@
     "RPL": {
       "token": "RPL",
       "status": "OK",
-      "score": -45.7,
-      "verdict": "SHORT",
-      "verdict_ru": "шорт",
+      "score": -28.6,
+      "verdict": "WEAK_SHORT",
+      "verdict_ru": "слабый шорт",
       "components": {
         "onchain": {
           "score": -0.8,
@@ -2503,13 +2503,13 @@
           "has_data": false
         },
         "technical": {
-          "score": 0.0,
+          "score": 0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": 0.4,
+              "detail": "агрессия покупателей на нескольких окнах"
             }
           ],
           "has_data": true
@@ -2525,7 +2525,7 @@
     "SAND": {
       "token": "SAND",
       "status": "OK",
-      "score": -50.0,
+      "score": -47.0,
       "verdict": "SHORT",
       "verdict_ru": "шорт",
       "components": {
@@ -2547,18 +2547,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.2,
+          "score": 0.3,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.2,
-              "detail": "перекос в шорты (-0.091%)"
+              "value": 0.0,
+              "detail": "баланс (-0.050%)"
             },
             {
               "name": "фандинг",
-              "value": 0.0,
-              "detail": "фандинг спокойный (11% годовых)"
+              "value": 0.3,
+              "detail": "шорты платят 25% годовых"
             },
             {
               "name": "открытый интерес",
@@ -2643,9 +2643,9 @@
     "STRK": {
       "token": "STRK",
       "status": "OK",
-      "score": -56.0,
-      "verdict": "SHORT",
-      "verdict_ru": "шорт",
+      "score": -65.0,
+      "verdict": "STRONG_SHORT",
+      "verdict_ru": "сильный шорт",
       "components": {
         "onchain": {
           "score": -0.8,
@@ -2665,18 +2665,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.4,
+          "score": -0.7,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": -0.2,
-              "detail": "перекос в лонги (+0.107%)"
+              "value": -0.5,
+              "detail": "лонги сильно переплачивают (+0.180%)"
             },
             {
               "name": "фандинг",
               "value": -0.2,
-              "detail": "лонги платят 44% годовых"
+              "detail": "лонги платят 46% годовых"
             },
             {
               "name": "открытый интерес",
@@ -2790,12 +2790,12 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.137%)"
+              "detail": "перекос в лонги (+0.123%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (58% годовых)"
+              "detail": "держать лонг очень дорого (79% годовых)"
             }
           ],
           "has_data": true
@@ -2902,12 +2902,12 @@
             {
               "name": "премия HL",
               "value": -0.5,
-              "detail": "лонги сильно переплачивают (+0.166%)"
+              "detail": "лонги сильно переплачивают (+0.176%)"
             },
             {
               "name": "фандинг",
               "value": -0.4,
-              "detail": "держать лонг очень дорого (119% годовых)"
+              "detail": "держать лонг очень дорого (93% годовых)"
             }
           ],
           "has_data": true
@@ -2993,9 +2993,9 @@
     "VIRTUAL": {
       "token": "VIRTUAL",
       "status": "OK",
-      "score": -66.0,
-      "verdict": "STRONG_SHORT",
-      "verdict_ru": "сильный шорт",
+      "score": -60.0,
+      "verdict": "SHORT",
+      "verdict_ru": "шорт",
       "components": {
         "onchain": {
           "score": -0.6,
@@ -3020,18 +3020,18 @@
           "has_data": true
         },
         "derivatives": {
-          "score": -0.6,
+          "score": -0.4,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.085%)"
+              "detail": "перекос в лонги (+0.134%)"
             },
             {
               "name": "фандинг",
-              "value": -0.4,
-              "detail": "держать лонг очень дорого (54% годовых)"
+              "value": -0.2,
+              "detail": "лонги платят 26% годовых"
             }
           ],
           "has_data": true
@@ -3146,17 +3146,17 @@
             {
               "name": "премия HL",
               "value": -0.2,
-              "detail": "перекос в лонги (+0.061%)"
+              "detail": "перекос в лонги (+0.108%)"
             },
             {
               "name": "фандинг",
               "value": 0.0,
-              "detail": "фандинг спокойный (14% годовых)"
+              "detail": "фандинг спокойный (13% годовых)"
             },
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$4.7M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$4.6M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
@@ -3264,13 +3264,13 @@
           "has_data": true
         },
         "derivatives": {
-          "score": 0.0,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
               "name": "премия HL",
-              "value": 0.0,
-              "detail": "баланс (+0.000%)"
+              "value": -0.2,
+              "detail": "перекос в лонги (+0.077%)"
             },
             {
               "name": "фандинг",
@@ -3280,13 +3280,13 @@
             {
               "name": "открытый интерес",
               "value": 0.0,
-              "detail": "$0.6M — деривативов мало, сигналам этого блока веры меньше"
+              "detail": "$0.5M — деривативов мало, сигналам этого блока веры меньше"
             }
           ],
           "has_data": true
         },
         "technical": {
-          "score": -0.4,
+          "score": -0.2,
           "weight": 0.3,
           "parts": [
             {
@@ -3296,8 +3296,8 @@
             },
             {
               "name": "агрессия CVD",
-              "value": 0.0,
-              "detail": "окна не согласованы"
+              "value": 0.2,
+              "detail": "лёгкий перевес покупателей"
             }
           ],
           "has_data": true
