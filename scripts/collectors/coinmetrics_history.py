@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-coinmetrics_history.py · v1.0 · 22.08.2026
+coinmetrics_history.py · v1.1 · 22.08.2026
 STRK ENGINE · длинная история ончейн-метрик
 
 ЗАЧЕМ
@@ -79,6 +79,7 @@ Coin Metrics Community Data — CC BY-NC 4.0, некоммерческая.
 import os
 import sys
 import json
+import re
 import time
 import argparse
 from datetime import datetime, timezone
@@ -158,33 +159,82 @@ def api_get(path, params, attempt=1):
     return None, f"HTTP {r.status_code}: {r.text[:120]}"
 
 
+# Сколько активов спрашиваем за один запрос. Меньше — больше запросов,
+# но один неподдерживаемый актив портит меньший кусок.
+CHUNK = 8
+
+# Сколько раз готовы выбросить неподдерживаемый актив и повторить.
+# Больше числа активов в чанке смысла не имеет.
+UNSUPPORTED_RETRIES = CHUNK
+
+
+def _unsupported_from_error(msg):
+    """
+    Coin Metrics на неизвестный актив отвечает 400 и НАЗЫВАЕТ его:
+      Bad parameter 'assets'. Value 'tao' is not supported.
+    Достаём имя, чтобы выбросить именно его, а не гадать.
+    """
+    m = re.search(r"Value '([^']+)' is not supported", msg or "")
+    return m.group(1) if m else None
+
+
 def discover(assets):
     """
-    Что реально доступно по каждому активу. Один запрос вместо
-    угадывания именами — та же ошибка, на которой в августе
-    погорел ценовой коллектор Hive.
-    """
-    data, err = api_get("catalog-v2/asset-metrics",
-                        {"assets": ",".join(assets), "page_size": 1000})
-    time.sleep(REQUEST_DELAY)
-    if err:
-        return {}, err
+    Что реально доступно по каждому активу.
 
+    ФИКС 22.08.2026 · раньше все активы спрашивались одним запросом,
+    и ОДИН неподдерживаемый ронял весь сбор:
+
+        ✗ каталог недоступен: 400 — Value 'tao' is not supported
+
+    Список из 33 тикеров я взял из вселенной движка, не сверив с тем,
+    что Coin Metrics вообще знает. Это ровно та ошибка «угадал имена
+    вместо того чтобы спросить», на которой в августе погорел ценовой
+    коллектор Hive.
+
+    Теперь: спрашиваем пачками, а на 400 выбрасываем именно тот актив,
+    который назвал сервер, и повторяем. Неизвестные тикеры отсеиваются
+    сами и попадают в отчёт, а сбор идёт дальше.
+    """
     cov = {}
-    for row in (data or {}).get("data", []):
-        asset = row.get("asset")
-        mets = {}
-        for m in row.get("metrics", []):
-            mid = m.get("metric")
-            if mid not in WANTED:
+    unsupported = []
+
+    for i in range(0, len(assets), CHUNK):
+        chunk = list(assets[i:i + CHUNK])
+        tries = 0
+        while chunk and tries <= UNSUPPORTED_RETRIES:
+            data, err = api_get("catalog-v2/asset-metrics",
+                                {"assets": ",".join(chunk), "page_size": 1000})
+            time.sleep(REQUEST_DELAY)
+            if not err:
+                for row in (data or {}).get("data", []):
+                    asset = row.get("asset")
+                    mets = {}
+                    for m in row.get("metrics", []):
+                        mid = m.get("metric")
+                        if mid not in WANTED:
+                            continue
+                        freqs = m.get("frequencies") or []
+                        daily = [f for f in freqs if f.get("frequency") == "1d"]
+                        if daily:
+                            mets[mid] = daily[0].get("min_time")
+                    if mets:
+                        cov[asset] = mets
+                break
+
+            bad = _unsupported_from_error(err)
+            if bad and bad in chunk:
+                chunk.remove(bad)
+                unsupported.append(bad)
+                tries += 1
                 continue
-            freqs = m.get("frequencies") or []
-            daily = [f for f in freqs if f.get("frequency") == "1d"]
-            if daily:
-                mets[mid] = daily[0].get("min_time")
-        if mets:
-            cov[asset] = mets
-    return cov, None
+
+            # Ошибка не про неизвестный актив — этот кусок пропускаем,
+            # но остальные всё равно собираем.
+            print(f"  ! чанк {i//CHUNK + 1}: {err}")
+            break
+
+    return cov, unsupported
 
 
 def fetch_series(asset, metrics, since):
@@ -226,15 +276,18 @@ def main(only=None, since="2015-01-01"):
     assets = [a for a in ASSETS if not only or a in only]
     print(f"  Запрошено активов: {len(assets)}")
 
-    cov, err = discover(assets)
-    if err:
-        print(f"  ✗ каталог недоступен: {err}")
+    cov, unsupported = discover(assets)
+    if not cov:
+        print("  ✗ ни по одному активу каталог не ответил")
         return 1
-    print(f"  Покрытие есть по: {len(cov)} активам\n")
+    print(f"  Покрытие есть по: {len(cov)} активам")
+    if unsupported:
+        print(f"  Coin Metrics не знает: {', '.join(sorted(unsupported))}")
 
-    missing = [a for a in assets if a not in cov]
+    missing = [a for a in assets if a not in cov and a not in unsupported]
     if missing:
-        print(f"  Нет данных: {', '.join(missing)}\n")
+        print(f"  Знает, но нужных метрик нет: {', '.join(missing)}")
+    print()
 
     os.makedirs(OUT_DIR, exist_ok=True)
     summary = {}
@@ -299,6 +352,7 @@ def main(only=None, since="2015-01-01"):
             "source": "coinmetrics_community",
             "assets_ok": ok_cnt,
             "assets_missing": missing,
+            "assets_unsupported": unsupported,
             "note": "SOPR и реализованная капитализация напрямую недоступны "
                     "на бесплатном тарифе; MVRV есть, NUPL выводится из него",
             "by_asset": summary,
