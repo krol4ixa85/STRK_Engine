@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-asset_compass.py · v1.2 · 21.08.2026
+asset_compass.py · v1.3 · 22.08.2026
 STRK ENGINE · шкала LONG / SHORT по каждому активу
 
 ЗАЧЕМ
@@ -424,7 +424,7 @@ def discover_tokens():
 
 
 def main(only=None):
-    print("=== Asset Compass v1.2 ===\n")
+    print("=== Asset Compass v1.3 ===\n")
 
     sig = {
         "phase": load("phase_analysis.json", {}) or {},
@@ -451,7 +451,14 @@ def main(only=None):
         r = compute(t, sig)
         out_tokens[t] = r
         if r.get("status") != "OK":
-            print(f"  {t:8} {'—':>7} данные забракованы")
+            # Причины разные, и путать их нельзя: «забракованы фильтром
+            # качества» и «измерена треть картины» — это не одно и то же.
+            why = {
+                "DATA_SUSPICIOUS": "данные забракованы фильтром качества",
+                "LOW_COVERAGE": f"измерено {r.get('data_coverage_pct', 0)}% картины — мало для вердикта",
+                "NO_DATA": "ни один слой не посчитан",
+            }.get(r.get("status"), r.get("verdict_ru") or "нет вердикта")
+            print(f"  {t:8} {'—':>7} {why}")
             continue
         ok += 1
         c = r["components"]
@@ -460,7 +467,13 @@ def main(only=None):
               f"{c['technical']['score']:>+6.2f}  {r['data_coverage_pct']:>8}%")
 
     # Крайности — с них начинается внимание
-    scored = [r for r in out_tokens.values() if r.get("score") is not None]
+    # ФИКС 22.08.2026 · было `if r.get("score") is not None`.
+    # После введения LOW_COVERAGE у таких строк балл есть, а вердикта
+    # нет — и AKT одновременно печатался как «данные забракованы» и как
+    # второй сильнейший лонг (+20). Ровно та же путаница, которую этот
+    # заход и лечил: неполная картина не должна попадать в крайности.
+    scored = [r for r in out_tokens.values()
+              if r.get("status") == "OK" and r.get("score") is not None]
     longs = sorted(scored, key=lambda r: -r["score"])[:5]
     shorts = sorted(scored, key=lambda r: r["score"])[:5]
 
